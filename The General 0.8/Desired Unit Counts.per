@@ -1,0 +1,4634 @@
+;Desired Unit Counts.per
+
+;New unit line goals:
+
+;;====GOAL: g-trebuchet-line
+
+;(defrule
+;(true)
+;=>
+;(up-get-fact unit-type-count-total trebuchet g-trebuchet-line)
+;(up-get-fact unit-type-count-total unpacked-trebuchet-class g-temp)
+;(up-modify-goal g-trebuchet-line g:+ g-temp)
+;)
+
+;;====GOAL: g-huskarl-line
+
+;(defrule
+;(true)
+;=>
+;(up-get-fact unit-type-count-total huskarl-line g-huskarl-line)
+;(up-get-fact unit-type-count-total barracks-huskarl g-temp)
+;(up-modify-goal g-huskarl-line g:+ g-temp)
+;(up-get-fact unit-type-count-total barracks-elite-huskarl g-temp)
+;(up-modify-goal g-huskarl-line g:+ g-temp)
+;)
+
+;====GOAL: g-tarkan-line
+
+(defrule
+(true)
+=>
+(up-get-fact unit-type-count-total tarkan-line g-tarkan-line)
+)
+
+#load-if-defined UP-GAME-WK
+
+	(defrule
+	(true)
+	=>
+	(up-get-fact unit-type-count-total stable-tarkan g-temp)
+	(up-modify-goal g-tarkan-line g:+ g-temp)
+	(up-get-fact unit-type-count-total stable-elite-tarkan g-temp)
+	(up-modify-goal g-tarkan-line g:+ g-temp)
+	)
+
+#end-if
+
+;;====GOAL: g-monk-line
+
+;(defrule
+;(true)
+;=>
+;(up-get-fact unit-type-count-total monk g-monk-line)
+;(up-get-fact unit-type-count-total monk-with-relic g-temp)
+;(up-modify-goal g-monk-line g:+ g-temp)
+;)
+
+;====GOAL: g-mangonel-line
+
+(defrule
+(true)
+=>
+(up-get-fact unit-type-count-total mangonel-line g-mangonel-line)
+(up-get-fact unit-type-count-total wk-onager g-temp)
+(up-modify-goal g-mangonel-line g:+ g-temp)
+)
+
+#load-if-defined UP-GAME-WK
+
+	(defrule
+	(true)
+	=>
+	(up-get-fact unit-type-count-total wk-onager g-temp)
+	(up-modify-goal g-mangonel-line g:+ g-temp)
+	)
+	
+#end-if
+
+;====GOAL: g-unique-unit-line
+
+(defrule
+(true)
+=>
+(up-get-fact unit-type-count-total my-unique-unit g-unique-unit-line)
+(up-get-fact unit-type-count-total my-elite-unique-unit g-temp)
+(up-modify-goal g-unique-unit-line g:+ g-temp)
+)
+
+;====GOAL: g-unique-ship-line
+
+(defrule
+(true)
+=>
+(set-goal g-unique-ship-line 0)
+)
+
+#load-if-defined KOREAN-CIV
+
+	(defrule
+	(true)
+	=>
+	(up-get-fact unit-type-count-total turtle-ship-line g-unique-ship-line)
+	)
+	
+#end-if
+
+#load-if-defined PORTUGUESE-CIV
+
+	(defrule
+	(true)
+	=>
+	(up-get-fact unit-type-count-total caravel g-unique-ship-line)
+	(up-get-fact unit-type-count-total elite-caravel g-temp)
+	(up-modify-goal g-unique-ship-line g:+ g-temp)
+	)
+	
+#end-if
+
+#load-if-defined VIKING-CIV
+
+	(defrule
+	(true)
+	=>
+	(up-get-fact unit-type-count-total longboat-line g-unique-ship-line)
+	)
+	
+#end-if
+
+;====GOAL: g-skirmisher-line
+
+(defrule
+(true)
+=>
+(up-get-fact unit-type-count-total skirmisher-line g-skirmisher-line)
+)
+
+#load-if-defined UP-GAME-WK
+
+	(defrule
+	(true)
+	=>
+	(up-get-fact unit-type-count-total imperial-skirmisher g-temp)
+	(up-modify-goal g-skirmisher-line g:+ g-temp)
+	)
+	
+#end-if
+
+;====GOAL: g-eagle-scout-line
+
+(defrule
+(true)
+=>
+(up-get-fact unit-type-count-total eagle-warrior-line g-eagle-scout-line)
+)
+
+#load-if-defined UP-GAME-WK
+
+	(defrule
+	(true)
+	=>
+	(up-get-fact unit-type-count-total heavy-eagle-warrior g-temp)	;castle age eagle warrior in WK
+	(up-modify-goal g-eagle-scout-line g:+ g-temp)
+	)
+
+#end-if
+
+;====GOAL: g-genitour-line
+
+(defrule
+(true)
+=>
+(up-get-fact unit-type-count-total genitour g-genitour-line)
+(up-get-fact unit-type-count-total elite-genitour g-temp)
+(up-modify-goal g-genitour-line g:+ g-temp)
+)
+
+;====GOAL: g-battle-elephant-line
+
+(defrule
+(true)
+=>
+(up-get-fact unit-type-count-total battle-elephant g-battle-elephant-line)
+(up-get-fact unit-type-count-total elite-battle-elephant g-temp)
+(up-modify-goal g-battle-elephant-line g:+ g-temp)
+;(up-chat-data-to-self "num eles: %d" g: g-battle-elephant-line)
+)
+
+;====GOAL: g-fire-galley-line
+
+(defrule
+(true)
+=>
+(up-get-fact unit-type-count-total fire-ship-line g-fire-galley-line)
+)
+
+#load-if-defined UP-GAME-WK
+
+	(defrule
+	(true)
+	=>
+	(up-get-fact unit-type-count-total wk-fire-ship g-temp)
+	(up-modify-goal g-fire-galley-line g:+ g-temp)
+	)
+	
+#end-if
+
+;====GOAL: g-demolition-raft-line
+
+(defrule
+(true)
+=>
+(up-get-fact unit-type-count-total demolition-ship-line g-demolition-raft-line)
+)
+
+#load-if-defined UP-GAME-WK
+
+	(defrule
+	(true)
+	=>
+	(up-get-fact unit-type-count-total wk-demolition-ship g-temp)
+	(up-modify-goal g-demolition-raft-line g:+ g-temp)
+	)
+	
+#end-if
+
+;====GOAL: g-watch-tower-line
+
+(defrule
+(true)
+=>
+(up-get-fact unit-type-count-total watch-tower g-watch-tower-line)
+(up-get-fact unit-type-count-total guard-tower g-temp)
+(up-modify-goal g-watch-tower-line g:+ g-temp)
+(up-get-fact unit-type-count-total keep g-temp)
+(up-modify-goal g-watch-tower-line g:+ g-temp)
+)
+
+;====GOAL: g-camel-line
+
+(defrule
+(true)
+=>
+(up-get-fact unit-type-count-total camel-line g-camel-line)
+)
+
+#load-if-defined UP-GAME-WK
+
+	(defrule
+	(true)
+	=>
+	(up-get-fact unit-type-count-total imperial-camel g-temp)
+	(up-modify-goal g-camel-line g:+ g-temp)
+	)
+	
+#end-if
+
+;====GOAL: g-siege-class
+
+(defrule
+(true)
+=>
+(up-get-fact unit-type-count-total siege-weapon-class g-siege-class)
+(up-get-fact unit-type-count-total scorpion-class g-temp)
+(up-modify-goal g-siege-class g:+ g-temp)
+(up-get-fact unit-type-count-total petard-class g-temp)
+(up-modify-goal g-siege-class g:+ g-temp)
+(up-modify-goal g-siege-class c:+ trebuchet-set)
+)
+
+
+
+;====Reset
+
+(defrule
+(true)
+=>
+(up-modify-goal g-desired-military-pop c:= 0)
+(up-modify-goal g-desired-navy-pop c:= 0)
+(up-modify-goal g-desired-num-villager c:= 0)
+(up-modify-goal g-desired-num-fishing-ship c:= 0)
+(up-modify-goal g-desired-num-trade-cart c:= 0)
+(up-modify-goal g-desired-num-trade-cog c:= 0)
+(up-modify-goal g-desired-num-militia c:= 0)
+(up-modify-goal g-desired-num-spearman c:= 0)
+(up-modify-goal g-desired-num-eagle-warrior c:= 0)
+(up-modify-goal g-desired-num-archer c:= 0)
+(up-modify-goal g-desired-num-skirmisher c:= 0)
+(up-modify-goal g-desired-num-cavalry-archer c:= 0)
+(up-modify-goal g-desired-num-hand-cannoneer c:= 0)
+(up-modify-goal g-desired-num-scout-cavalry c:= 0)
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal g-desired-num-knight c:= 0)
+(up-modify-goal g-desired-num-camel c:= 0)
+(up-modify-goal g-desired-num-battering-ram c:= 0)
+(up-modify-goal g-desired-num-mangonel c:= 0)
+(up-modify-goal g-desired-num-scorpion c:= 0)
+(up-modify-goal g-desired-num-bombard-cannon c:= 0)
+(up-modify-goal g-desired-num-trebuchet c:= 0)
+(up-modify-goal g-desired-num-petard c:= 0)
+(up-modify-goal g-desired-num-galley c:= 0)
+(up-modify-goal g-desired-num-fire-ship c:= 0)
+(up-modify-goal g-desired-num-demolition-ship c:= 0)
+(up-modify-goal g-desired-num-cannon-galleon c:= 0)
+(up-modify-goal g-desired-num-monk c:= 0)
+(up-modify-goal g-desired-num-transport-ship c:= 0)
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal g-desired-num-unique-unit c:= 0)
+(up-modify-goal g-desired-num-unique-ship c:= 0)
+(up-modify-goal g-desired-num-slinger c:= 0)
+(up-modify-goal g-desired-num-genitour c:= 0)
+(up-modify-goal g-desired-num-condottiero c:= 0)
+(up-modify-goal g-desired-num-battle-elephant c:= 0)
+(up-modify-goal g-desired-num-missionary c:= 0)
+(up-modify-goal g-desired-num-infantry c:= 0)
+(up-modify-goal g-desired-num-archers c:= 0)
+(up-modify-goal g-desired-num-cavalry-archers c:= 0)
+(up-modify-goal g-desired-num-cavalry c:= 0)
+(up-modify-goal g-desired-num-siege c:= 0)
+(up-modify-goal g-desired-num-hand-cannoneers c:= 0)
+(up-modify-goal g-desired-num-monks c:= 0)
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal g-desired-num-warships c:= 0)
+(up-modify-goal g-desired-num-house c:= 0)
+(up-modify-goal g-desired-num-mill c:= 0)
+(up-modify-goal g-desired-num-mining-camp c:= 0)
+(up-modify-goal g-desired-num-lumber-camp c:= 0)
+(up-modify-goal g-desired-num-dock c:= 0)
+(up-modify-goal g-desired-num-farm c:= 0)
+(up-modify-goal g-desired-num-blacksmith c:= 0)
+(up-modify-goal g-desired-num-market c:= 0)
+(up-modify-goal g-desired-num-monastery c:= 0)
+(up-modify-goal g-desired-num-university c:= 0)
+(up-modify-goal g-desired-num-wonder c:= 0)
+(up-modify-goal g-desired-num-barracks c:= 0)
+(up-modify-goal g-desired-num-archery-range c:= 0)
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal g-desired-num-stable c:= 0)
+(up-modify-goal g-desired-num-siege-workshop c:= 0)
+(up-modify-goal g-desired-num-outpost c:= 0)
+(up-modify-goal g-desired-num-watch-tower c:= 0)
+(up-modify-goal g-desired-num-bombard-tower c:= 0)
+(up-modify-goal g-desired-num-castle c:= 0)
+(up-modify-goal g-desired-num-fish-trap c:= 0)
+(up-modify-goal g-desired-num-feitoria c:= 0)
+(set-goal g-primary-unit -1)
+(set-goal g-secondary-unit -1)
+(set-goal g-tertiary-unit -1)
+)
+
+
+
+;====================<<<<<<<<<<MILITARY>>>>>>>>>>====================
+
+;STRONGBOW STRATEGY - Crossbowman Rush
+
+(defrule
+(up-compare-goal g-strategy == gv-strongbow)
+(up-compare-goal g-age-status >= gv-advancing-to-feudal)
+(or
+	(food-amount > 400)
+	(goal g-town-under-attack YES))
+=>
+(up-modify-goal g-desired-num-archer c:= 5)
+(up-modify-goal g-desired-military-pop g:= g-desired-num-archer)
+(set-goal g-primary-unit archer)
+)
+
+(defrule
+(up-compare-goal g-strategy == gv-strongbow)
+(up-compare-goal g-age-status >= gv-advancing-to-castle)
+=>
+(up-modify-goal g-desired-num-archer c:= 30)
+(up-modify-goal g-desired-num-battering-ram c:= 5)
+(up-modify-goal g-desired-military-pop c:= 35)
+(set-goal g-primary-unit archer)
+)
+
+;KRUSH STRATEGY - 2 stable Knight Rush
+
+(defrule
+(up-compare-goal g-strategy == gv-krush)
+=>
+(up-modify-goal g-desired-num-knight c:= 12)
+(up-modify-goal g-desired-military-pop g:= g-desired-num-knight)
+(set-goal g-primary-unit knight)
+)
+
+;CRUSH STRATEGY - 2 stable Camel Rush
+
+(defrule
+(up-compare-goal g-strategy == gv-crush)
+=>
+(up-modify-goal g-desired-num-camel c:= 12)
+(up-modify-goal g-desired-military-pop g:= g-desired-num-camel)
+(set-goal g-primary-unit camel)
+)
+
+;EAGLES REVENGE STRATEGY - Eagle Warrior Rush
+
+(defrule
+(up-compare-goal g-strategy == gv-eagles-revenge)
+(up-compare-goal g-age-status == gv-advancing-to-castle)
+=>
+(up-modify-goal g-desired-num-eagle-warrior g:= g-starting-scout-alive)	;= 1 if alive, = 0 if dead
+(up-modify-goal g-desired-num-eagle-warrior c:+ 2)
+(up-modify-goal g-desired-military-pop g:= g-desired-num-eagle-warrior)
+(set-goal g-primary-unit eagle-warrior)
+)
+
+(defrule
+(up-compare-goal g-strategy == gv-eagles-revenge)
+(current-age >= castle-age)
+=>
+(up-modify-goal g-desired-num-eagle-warrior c:= 15)
+(up-modify-goal g-desired-military-pop g:= g-desired-num-eagle-warrior)
+(set-goal g-primary-unit eagle-warrior)
+)
+
+#load-if-defined AZTEC-CIV
+	
+	;CASTLE MILITARY - standard Castle Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-archer c:= 15)
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 10)
+	(up-modify-goal g-desired-num-eagle-warrior c:= 20)
+	(up-modify-goal g-desired-num-battering-ram c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit eagle-warrior)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit archer)
+	)
+	
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	(goal g-town-under-attack NO)
+	=>
+	(up-modify-goal g-desired-num-monk c:= 7)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-archer c:= 12)
+	(up-modify-goal g-desired-num-skirmisher c:= 20)
+	(up-modify-goal g-desired-num-spearman c:= 10)
+	(up-modify-goal g-desired-num-eagle-warrior c:= 23)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit eagle-warrior)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit archer)
+	)
+	
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	(goal g-town-under-attack NO)
+	=>
+	(up-modify-goal g-desired-num-monk c:= 7)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 35)
+	(up-modify-goal g-desired-num-spearman c:= 28)
+	(up-modify-goal g-desired-num-unique-unit c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 40)
+	(up-modify-goal g-desired-num-spearman c:= 33)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+
+#end-if
+
+#load-if-defined BERBERS-CIV	;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 30)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined BRITON-CIV
+	
+	;CASTLE MILITARY - standard Castle Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-archer c:= 32)
+	(up-modify-goal g-desired-num-spearman c:= 22)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 12)
+	(up-modify-goal g-desired-num-knight c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit archer)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit knight)
+	)
+	
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	(building-type-count castle > 0)
+	=>
+	(up-modify-goal g-desired-num-archer c:- 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 10)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-archer c:= 29)
+	(up-modify-goal g-desired-num-skirmisher c:= 10)
+	(up-modify-goal g-desired-num-spearman c:= 20)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 12)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit archer)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	(building-type-count castle > 0)
+	=>
+	(up-modify-goal g-desired-num-archer c:- 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 20)
+	(set-goal g-primary-unit my-unique-unit)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 30)
+	(up-modify-goal g-desired-num-militia c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit spearman)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 33)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 5)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+
+#end-if
+
+#load-if-defined BURMESE-CIV	;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 15)
+	(up-modify-goal g-desired-num-battle-elephant c:= 15)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit battle-elephant)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-battle-elephant c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit battle-elephant)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined BYZANTINE-CIV	;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 30)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined CELTIC-CIV		;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 30)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined CHINESE-CIV	;needs adjusting
+	
+	;CASTLE MILITARY - standard Castle Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-archer c:= 32)
+	(up-modify-goal g-desired-num-spearman c:= 22)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 12)
+	(up-modify-goal g-desired-num-knight c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit archer)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit knight)
+	)
+	
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	(building-type-count castle > 0)
+	=>
+	(up-modify-goal g-desired-num-archer c:- 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 10)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-archer c:= 29)
+	(up-modify-goal g-desired-num-skirmisher c:= 10)
+	(up-modify-goal g-desired-num-spearman c:= 20)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 12)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit archer)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	(building-type-count castle > 0)
+	=>
+	(up-modify-goal g-desired-num-archer c:- 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 20)
+	(set-goal g-primary-unit my-unique-unit)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 30)
+	(up-modify-goal g-desired-num-militia c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit spearman)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 33)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 5)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined ETHIOPIAN-CIV		;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 30)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined FRANKISH-CIV		;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 30)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined GOTHIC-CIV		;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 30)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined HUN-CIV
+
+	;CASTLE MILITARY - standard Castle Age military
+	
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-cavalry-archer c:= 25)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 23)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit cavalry-archer)
+	(set-goal g-secondary-unit knight)
+	(set-goal g-tertiary-unit spearman)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-cavalry-archer c:= 16)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 18)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit cavalry-archer)
+	(set-goal g-tertiary-unit spearman)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 25)
+	(up-modify-goal g-desired-num-spearman c:= 20)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 26)
+	(up-modify-goal g-desired-num-unique-unit c:= 7)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit my-unique-unit)
+	(set-goal g-secondary-unit scout-cavalry)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 28)
+	(up-modify-goal g-desired-num-spearman c:= 22)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 28)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit scout-cavalry)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit spearman)
+	)
+	
+#end-if
+
+#load-if-defined INCAN-CIV
+	
+	;CASTLE MILITARY - standard Castle Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-slinger c:= 15)
+	(up-modify-goal g-desired-num-skirmisher c:= 20)
+	(up-modify-goal g-desired-num-spearman c:= 10)
+	(up-modify-goal g-desired-num-eagle-warrior c:= 19)
+	(up-modify-goal g-desired-num-unique-unit c:= 10)
+	(up-modify-goal g-desired-num-battering-ram c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit eagle-warrior)
+	(set-goal g-secondary-unit slinger)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-slinger c:= 10)
+	(up-modify-goal g-desired-num-skirmisher c:= 18)
+	(up-modify-goal g-desired-num-spearman c:= 12)
+	(up-modify-goal g-desired-num-eagle-warrior c:= 13)
+	(up-modify-goal g-desired-num-unique-unit c:= 18)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit my-unique-unit)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit eagle-warrior)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 35)
+	(up-modify-goal g-desired-num-spearman c:= 28)
+	(up-modify-goal g-desired-num-unique-unit c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit my-unique-unit)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit spearman)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 35)
+	(up-modify-goal g-desired-num-spearman c:= 33)
+	(up-modify-goal g-desired-num-unique-unit c:= 10)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+
+#end-if
+
+#load-if-defined INDIAN-CIV
+
+	;CASTLE MILITARY - standard Castle Age military
+	
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-archer c:= 16)
+	(up-modify-goal g-desired-num-spearman c:= 21)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-camel c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit camel)
+	(set-goal g-secondary-unit archer)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-hand-cannoneer c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 22)
+	(up-modify-goal g-desired-num-camel c:= 24)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit camel)
+	(set-goal g-secondary-unit hand-cannoneer)
+	(set-goal g-tertiary-unit spearman)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit scout-cavalry)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 28)
+	(up-modify-goal g-desired-num-spearman c:= 23)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit scout-cavalry)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit spearman)
+	)
+
+#end-if
+
+#load-if-defined ITALIAN-CIV		;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 30)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined JAPANESE-CIV		;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 30)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined KHMER-CIV	;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 15)
+	(up-modify-goal g-desired-num-battle-elephant c:= 15)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit battle-elephant)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-battle-elephant c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit battle-elephant)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined KOREAN-CIV		;needs adjusting
+	
+	;CASTLE MILITARY - standard Castle Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-archer c:= 25)
+	(up-modify-goal g-desired-num-spearman c:= 29)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 12)
+	(up-modify-goal g-desired-num-knight c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit archer)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	(building-type-count castle > 0)
+	=>
+	(up-modify-goal g-desired-num-archer c:- 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 10)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-archer c:= 27)
+	(up-modify-goal g-desired-num-skirmisher c:= 10)
+	(up-modify-goal g-desired-num-spearman c:= 20)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 12)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-num-mangonel c:= 5)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit archer)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	(building-type-count castle > 0)
+	=>
+	(up-modify-goal g-desired-num-archer c:- 15)
+	(up-modify-goal g-desired-num-unique-unit c:= 15)
+	(set-goal g-primary-unit my-unique-unit)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit mangonel)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 30)
+	(up-modify-goal g-desired-num-militia c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit spearman)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 33)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 5)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined MAGYAR-CIV		;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+	
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-cavalry-archer c:= 25)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 23)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit cavalry-archer)
+	(set-goal g-tertiary-unit spearman)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-cavalry-archer c:= 16)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 18)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit cavalry-archer)
+	(set-goal g-tertiary-unit spearman)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 25)
+	(up-modify-goal g-desired-num-spearman c:= 20)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 26)
+	(up-modify-goal g-desired-num-unique-unit c:= 7)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit my-unique-unit)
+	(set-goal g-secondary-unit scout-cavalry)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 28)
+	(up-modify-goal g-desired-num-spearman c:= 22)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 28)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit scout-cavalry)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit spearman)
+	)
+	
+#end-if
+
+#load-if-defined MALAY-CIV	;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 15)
+	(up-modify-goal g-desired-num-battle-elephant c:= 15)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit battle-elephant)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-battle-elephant c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit battle-elephant)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined MALIAN-CIV		;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 30)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined MAYAN-CIV
+	
+	;CASTLE MILITARY - standard Castle Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-archer c:= 27)
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-eagle-warrior c:= 14)
+	(up-modify-goal g-desired-num-battering-ram c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit archer)
+	(set-goal g-secondary-unit eagle-warrior)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	(building-type-count castle > 0)
+	=>
+	(up-modify-goal g-desired-num-archer c:- 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 10)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-archer c:= 29)
+	(up-modify-goal g-desired-num-skirmisher c:= 19)
+	(up-modify-goal g-desired-num-spearman c:= 10)
+	(up-modify-goal g-desired-num-eagle-warrior c:= 13)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit archer)
+	(set-goal g-secondary-unit eagle-warrior)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	(research-completed ri-imperial-unique-tech)
+	=>
+	(up-modify-goal g-desired-num-archer c:= -10)
+	(up-modify-goal g-desired-num-eagle-warrior c:+ 10)
+	(set-goal g-primary-unit eagle-warrior)
+	(set-goal g-secondary-unit archer)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	(building-type-count castle > 0)
+	=>
+	(up-modify-goal g-desired-num-archer c:- 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 10)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;LOW GOLD - limited gold army
+	;TRASH WAR - no gold army
+
+	(defrule
+	(or
+		(up-compare-goal g-strategy == gv-low-gold)
+		(up-compare-goal g-strategy == gv-trash-war))
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 40)
+	(up-modify-goal g-desired-num-spearman c:= 33)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+
+#end-if
+
+#load-if-defined MONGOL-CIV		;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+	
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-cavalry-archer c:= 25)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 23)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit cavalry-archer)
+	(set-goal g-secondary-unit knight)
+	(set-goal g-tertiary-unit spearman)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-cavalry-archer c:= 16)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 18)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit cavalry-archer)
+	(set-goal g-tertiary-unit spearman)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 25)
+	(up-modify-goal g-desired-num-spearman c:= 20)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 26)
+	(up-modify-goal g-desired-num-unique-unit c:= 7)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit my-unique-unit)
+	(set-goal g-secondary-unit scout-cavalry)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 28)
+	(up-modify-goal g-desired-num-spearman c:= 22)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 28)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit scout-cavalry)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit spearman)
+	)
+	
+#end-if
+
+#load-if-defined PERSIAN-CIV		;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 30)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined PORTUGUESE-CIV		;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 30)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined SARACEN-CIV		;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-archer c:= 20)
+	(up-modify-goal g-desired-num-skirmisher c:= 16)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-camel c:= 16)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit camel)
+	(set-goal g-secondary-unit archer)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-camel c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit camel)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined SLAVIC-CIV		;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 30)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined SPANISH-CIV		;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 30)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined TEUTONIC-CIV		;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 30)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined TURKISH-CIV		;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 30)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	(defrule
+	(unit-available genitour)
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:- 22)
+	(up-modify-goal g-desired-num-genitour c:= 22)
+	(set-goal g-secondary-unit genitour)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-bombard-cannon c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	(defrule
+	(unit-available genitour)
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:- 15)
+	(up-modify-goal g-desired-num-genitour c:= 15)
+	(set-goal g-tertiary-unit genitour)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	(defrule
+	(unit-available genitour)
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:- 21)
+	(up-modify-goal g-desired-num-genitour c:= 21)
+	(set-goal g-secondary-unit genitour)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	(defrule
+	(unit-available genitour)
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:- 31)
+	(up-modify-goal g-desired-num-genitour c:= 31)
+	(set-goal g-secondary-unit genitour)
+	)
+	
+#end-if
+
+#load-if-defined VIETNAMESE-CIV		;needs adjusting
+	
+	;CASTLE MILITARY - standard Castle Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-archer c:= 32)
+	(up-modify-goal g-desired-num-spearman c:= 22)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 12)
+	(up-modify-goal g-desired-num-battle-elephant c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit archer)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit battle-elephant)
+	)
+	
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	(building-type-count castle > 0)
+	=>
+	(up-modify-goal g-desired-num-archer c:- 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 10)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-archer c:= 29)
+	(up-modify-goal g-desired-num-skirmisher c:= 10)
+	(up-modify-goal g-desired-num-spearman c:= 20)
+	(up-modify-goal g-desired-num-battle-elephant c:= 12)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit archer)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit battle-elephant)
+	)
+	
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	(building-type-count castle > 0)
+	=>
+	(up-modify-goal g-desired-num-archer c:- 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 20)
+	(set-goal g-primary-unit my-unique-unit)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 30)
+	(up-modify-goal g-desired-num-militia c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit spearman)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 33)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 5)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined VIKING-CIV		;needs adjusting
+
+	;CASTLE MILITARY - standard Castle Age military
+						
+	(defrule
+	(up-compare-goal g-strategy == gv-castle-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 22)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 30)
+	(up-modify-goal g-desired-num-unique-unit c:= 8)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit my-unique-unit)
+	)
+	
+	;IMPERIAL MILITARY - standard Imperial Age military
+
+	(defrule
+	(up-compare-goal g-strategy == gv-imperial-military)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-spearman c:= 15)
+	(up-modify-goal g-desired-num-knight c:= 19)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-unique-unit c:= 12)
+	(up-modify-goal g-desired-num-battering-ram c:= 3)
+	(up-modify-goal g-desired-num-trebuchet c:= 5)
+	(up-modify-goal g-desired-num-monk c:= 1)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit knight)
+	(set-goal g-secondary-unit my-unique-unit)
+	(set-goal g-tertiary-unit skirmisher)
+	)
+	
+	;LOW GOLD - limited gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-low-gold)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 21)
+	(up-modify-goal g-desired-num-spearman c:= 18)
+	(up-modify-goal g-desired-num-militia c:= 12)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-unique-unit c:= 5)
+	(up-modify-goal g-desired-num-battering-ram c:= 4)
+	(up-modify-goal g-desired-num-monk c:= 0)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit militiaman)
+	(set-goal g-secondary-unit skirmisher)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+	;TRASH WAR - no gold army
+
+	(defrule
+	(up-compare-goal g-strategy == gv-trash-war)
+	=>
+	(up-modify-goal g-desired-num-skirmisher c:= 31)
+	(up-modify-goal g-desired-num-spearman c:= 25)
+	(up-modify-goal g-desired-num-militia c:= 7)
+	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-battering-ram c:= 2)
+	(up-modify-goal g-desired-military-pop c:= 80)
+	(set-goal g-primary-unit skirmisher)
+	(set-goal g-secondary-unit spearman)
+	(set-goal g-tertiary-unit scout-cavalry)
+	)
+	
+#end-if
+
+#load-if-defined MALAY-CIV
+
+	(defrule
+	(up-compare-goal g-desired-num-unique-unit > 0)
+	=>
+	(up-modify-goal g-desired-num-unique-unit c:* 2)
+	)
+
+#end-if
+
+
+
+
+
+;====================<<<<<<<<<<CIVILIANS>>>>>>>>>>====================
+
+
+
+;Villagers
+
+(defrule
+(true)
+=>
+(up-modify-goal g-desired-num-villager c:max 8)
+(up-modify-goal g-required-num-villager c:max 8)
+;(up-chat-data-to-all "Num villager: %d" g: g-desired-num-villager)
+)
+
+(defrule
+(up-compare-goal g-age-status < gv-advancing-to-feudal)
+(or
+	(goal g-strategy gv-krush)
+	(or
+		(goal g-strategy gv-eagles-revenge)
+		(goal g-strategy gv-crush)))
+=>
+(up-modify-goal g-desired-num-villager c:= 29)
+(up-modify-goal g-required-num-villager c:= 29)
+;(up-chat-data-to-all "Num villager: %d" g: g-desired-num-villager)
+)
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-feudal)
+(current-age < castle-age)
+(or
+	(goal g-strategy gv-krush)
+	(or
+		(goal g-strategy gv-eagles-revenge)
+		(goal g-strategy gv-crush)))
+=>
+(up-modify-goal g-desired-num-villager c:= 31)
+(up-modify-goal g-required-num-villager c:= 29)
+;(up-chat-data-to-all "Num villager: %d" g: g-desired-num-villager)
+)
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-castle)
+=>
+(up-modify-goal g-desired-num-villager c:= 120)
+(up-modify-goal g-required-num-villager c:= 75)
+;(up-chat-data-to-all "Num villager: %d" g: g-desired-num-villager)
+)
+
+;Trade Carts
+
+(defrule
+(up-compare-goal g-desired-num-trade-cart < 20)
+(or
+	(goal g-strategy gv-low-gold)
+	(or
+		(goal g-strategy gv-trash-war)
+		(game-time >= 2700)))
+(game-time < 3600)
+(player-in-game any-ally)
+(players-building-type-count any-ally market > 0)
+=>
+(up-modify-goal g-desired-num-trade-cart c:= 20)
+(up-get-fact population-cap 0 g-desired-num-villager)
+(up-modify-goal g-desired-num-villager g:- g-desired-military-pop)
+(up-modify-goal g-desired-num-villager g:- g-desired-num-trade-cart)
+)
+
+(defrule
+(up-compare-goal g-desired-num-trade-cart < 40)
+(or
+	(goal g-strategy gv-low-gold)
+	(or
+		(goal g-strategy gv-trash-war)
+		(game-time > 3600)))
+(player-in-game any-ally)
+(players-building-type-count any-ally market > 0)
+=>
+(up-modify-goal g-desired-num-trade-cart c:= 40)
+(up-get-fact population-cap 0 g-desired-num-villager)
+(up-modify-goal g-desired-num-villager g:- g-desired-military-pop)
+(up-modify-goal g-desired-num-villager g:- g-desired-num-trade-cart)
+)
+
+(defrule
+(up-object-type-count c: villager g:> g-desired-num-villager)
+(population-headroom < 5)
+=>
+(delete-unit villager)
+)
+
+(defrule
+(up-object-type-count c: trade-cart g:> g-desired-num-trade-cart)
+(population-headroom < 5)
+=>
+(delete-unit trade-cart)
+)
+
+(defrule
+(up-compare-goal g-desired-num-trade-cart > 0)
+(timer-triggered t-30-sec)
+=>
+(up-chat-data-to-player my-player-number "Des mil %d" g: g-desired-military-pop)
+(up-chat-data-to-player my-player-number "Des trade %d" g: g-desired-num-trade-cart)
+(up-chat-data-to-player my-player-number "Des vil %d" g: g-desired-num-villager)
+)
+
+
+
+
+
+
+
+
+;====GOAL: g-desired-num-infantry
+
+(defrule
+(true)
+=>
+(up-modify-goal g-desired-num-infantry g:= g-desired-num-militia)
+(up-modify-goal g-desired-num-infantry g:+ g-desired-num-spearman)
+(up-modify-goal g-desired-num-infantry g:+ g-desired-num-eagle-warrior)
+(up-modify-goal g-desired-num-infantry g:+ g-desired-num-condottiero)
+)
+
+(defrule
+(or
+	(civ-selected aztec)
+	(or
+		(civ-selected celtic)
+		(or
+			(civ-selected frankish)
+			(or
+				(civ-selected gothic)
+				(or
+					(civ-selected japanese)
+					(civ-selected teutonic))))))
+=>
+(up-modify-goal g-desired-num-infantry g:+ g-desired-num-unique-unit)
+)
+
+(defrule
+(or
+	(civ-selected viking)
+	(or
+		(civ-selected incan)
+		(or
+			(civ-selected ethiopian)
+			(or
+				(civ-selected malian)
+				(civ-selected malay)))))
+=>
+(up-modify-goal g-desired-num-infantry g:+ g-desired-num-unique-unit)
+)
+
+;====GOAL: g-desired-num-archers
+
+(defrule
+(true)
+=>
+(up-modify-goal g-desired-num-archers g:= g-desired-num-archer)
+(up-modify-goal g-desired-num-archers g:+ g-desired-num-skirmisher)
+(up-modify-goal g-desired-num-archers g:+ g-desired-num-slinger)
+)
+
+(defrule
+(or
+	(civ-selected briton)
+	(or
+		(civ-selected chinese)
+		(or
+			(civ-selected mayan)
+			(or
+				(civ-selected italian)
+				(civ-selected vietnamese)))))
+=>
+(up-modify-goal g-desired-num-archers g:+ g-desired-num-unique-unit)
+)
+
+;====GOAL: g-desired-num-cavalry-archers
+
+(defrule
+(true)
+=>
+(up-modify-goal g-desired-num-cavalry-archers g:= g-desired-num-cavalry-archer)
+(up-modify-goal g-desired-num-cavalry-archers g:+ g-desired-num-genitour)
+)
+
+(defrule
+(or
+	(civ-selected korean)
+	(or
+		(civ-selected mongol)
+		(or
+			(civ-selected spanish)
+			(or
+				(civ-selected indian)
+				(or
+					(civ-selected berbers)
+					(civ-selected burmese))))))
+=>
+(up-modify-goal g-desired-num-cavalry-archers g:+ g-desired-num-unique-unit)
+)
+
+;====GOAL: g-desired-num-cavalry
+
+(defrule
+(true)
+=>
+(up-modify-goal g-desired-num-cavalry g:= g-desired-num-scout-cavalry)
+(up-modify-goal g-desired-num-cavalry g:+ g-desired-num-knight)
+(up-modify-goal g-desired-num-cavalry g:+ g-desired-num-camel)
+(up-modify-goal g-desired-num-cavalry g:+ g-desired-num-battle-elephant)
+)
+
+(defrule
+(or
+	(civ-selected byzantine)
+	(or
+		(civ-selected hun)
+		(or
+			(civ-selected persian)
+			(or
+				(civ-selected saracen)
+				(or
+					(civ-selected magyar)
+					(civ-selected slavic))))))
+=>
+(up-modify-goal g-desired-num-cavalry g:+ g-desired-num-unique-unit)
+)
+
+;====GOAL: g-desired-num-siege
+
+(defrule
+(true)
+=>
+(up-modify-goal g-desired-num-siege g:= g-desired-num-battering-ram)
+(up-modify-goal g-desired-num-siege g:+ g-desired-num-mangonel)
+(up-modify-goal g-desired-num-siege g:+ g-desired-num-scorpion)
+(up-modify-goal g-desired-num-siege g:+ g-desired-num-bombard-cannon)
+(up-modify-goal g-desired-num-siege g:+ g-desired-num-trebuchet)
+(up-modify-goal g-desired-num-siege g:+ g-desired-num-petard)
+)
+
+(defrule
+(civ-selected portuguese)
+=>
+(up-modify-goal g-desired-num-siege g:+ g-desired-num-unique-unit)
+)
+
+;====GOAL: g-desired-num-hand-cannoneers
+
+(defrule
+(true)
+=>
+(up-modify-goal g-desired-num-hand-cannoneers g:= g-desired-num-hand-cannoneer)
+)
+
+(defrule
+(or
+	(civ-selected turkish)
+	(or
+		(civ-selected spanish)
+		(civ-selected burmese)))
+=>
+(up-modify-goal g-desired-num-hand-cannoneers g:+ g-desired-num-unique-unit)
+)
+
+;====GOAL: g-desired-num-monks
+
+(defrule
+(true)
+=>
+(up-modify-goal g-desired-num-monks g:= g-desired-num-monk)
+(up-modify-goal g-desired-num-monks g:+ g-desired-num-missionary)
+)
+
+;====GOAL: g-desired-num-warships
+
+(defrule
+(true)
+=>
+(up-modify-goal g-desired-num-warships g:= g-desired-num-galley)
+(up-modify-goal g-desired-num-warships g:+ g-desired-num-fire-ship)
+(up-modify-goal g-desired-num-warships g:+ g-desired-num-demolition-ship)
+(up-modify-goal g-desired-num-warships g:+ g-desired-num-cannon-galleon)
+(up-modify-goal g-desired-num-warships g:+ g-desired-num-unique-ship)
+)
+
+;====GOAL: g-desired-num-archer-armor-units
+
+(defrule
+(true)
+=>
+(up-modify-goal g-desired-num-archer-armor-units g:= g-desired-num-archers)
+(up-modify-goal g-desired-num-archer-armor-units g:+ g-desired-num-cavalry-archers)
+(up-modify-goal g-desired-num-archer-armor-units g:+ g-desired-num-hand-cannoneers)
+)
+
+;====GOAL: g-desired-num-melee-attack-units
+
+(defrule
+(true)
+=>
+(up-modify-goal g-desired-num-melee-attack-units g:= g-desired-num-infantry)
+(up-modify-goal g-desired-num-melee-attack-units g:+ g-desired-num-cavalry)
+)
+
+
+
+;========<<<<BUILDINGS>>>>========
+
+;====Town Centers
+
+(defrule
+;(up-compare-goal g-age-status < gv-advancing-to-castle)
+(current-age <= feudal-age)
+=>
+(up-modify-goal g-desired-num-town-center c:max 1)
+)
+
+;(defrule
+;(or
+;	(food-amount > 500)
+;	(or
+;		(military-population >= 12)
+;		(up-compare-goal g-attack-status > gv-first-attack-marching)))
+;(up-compare-goal g-strategy == gv-krush)
+;=>
+;(up-modify-goal g-desired-num-town-center c:max 3)
+;)
+
+(defrule
+;(up-compare-goal g-age-status >= gv-advancing-to-castle)
+(current-age >= castle-age)
+=>
+(up-modify-goal g-desired-num-town-center c:max 3)
+)
+
+(defrule
+(current-age == imperial-age)
+=>
+(up-modify-goal g-desired-num-town-center c:max 5)
+)
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-castle)
+(up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+(up-compare-goal g-attack-status >= gv-first-attack-marching)
+(goal g-town-under-attack NO)
+=>
+(up-setup-cost-data 1 g-food-cost)
+(up-add-object-cost c: town-center-foundation c: 1)
+(up-get-cost-delta g-food-delta)
+)
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-castle)
+(up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+(up-compare-goal g-attack-status >= gv-first-attack-marching)
+(goal g-town-under-attack NO)
+(up-compare-goal g-wood-delta < 0)
+=>
+(up-modify-escrow wood g:max g-wood-cost)
+)
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-castle)
+(up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+(up-compare-goal g-attack-status >= gv-first-attack-marching)
+(goal g-town-under-attack NO)
+(up-compare-goal g-stone-delta < 0)
+=>
+(up-modify-escrow stone g:max g-stone-cost)
+)
+
+
+;====Houses
+
+(defrule
+(true)
+=>
+(up-get-fact building-type-count-total house g-desired-num-house)
+)
+
+#load-if-not-defined CHINESE-CIV
+
+	(defrule
+	(building-type-count-total house < 2)
+	=>
+	(up-modify-goal g-desired-num-house c:= 2)
+	;(up-chat-data-to-all "Num house: %d" g: g-desired-num-house)
+	)
+	
+#end-if
+
+#load-if-not-defined INCAN-CIV
+	#load-if-not-defined CHINESE-CIV
+		;Figure out how many houses are needed and add it
+		;to g-desired-num-house
+		(defrule
+		(current-age == dark-age)
+		(up-compare-goal g-true-housing-headroom <= 1)
+		(population-headroom > 0)
+		(building-type-count-total house >= 2)
+		(up-pending-objects c: house == 0)
+		=>
+		(up-modify-goal g-temp g:= g-true-housing-headroom)
+		(up-modify-goal g-temp c:- 1)	;matches number in condition above
+		(up-modify-goal g-temp c:z/ -5)	;use negative 5 because g-temp is zero or negative at this point
+		(up-modify-goal g-temp c:+ 1)
+		(up-modify-goal g-desired-num-house g:+ g-temp)
+		;(up-chat-data-to-self "Num house: %d" g: g-desired-num-house)
+		)
+	#else 	;Chinese civ
+		;Figure out how many houses are needed and add it
+		;to g-desired-num-house
+		(defrule
+		(game-time > 2)
+		(current-age == dark-age)
+		(up-compare-goal g-true-housing-headroom <= 1)
+		(population-headroom > 0)
+		(up-pending-objects c: house == 0)
+		=>
+		(up-modify-goal g-temp g:= g-true-housing-headroom)
+		(up-modify-goal g-temp c:- 1)	;matches number in condition above
+		(up-modify-goal g-temp c:z/ -5)	;use negative 5 because g-temp is zero or negative at this point
+		(up-modify-goal g-temp c:+ 1)
+		(up-modify-goal g-desired-num-house g:+ g-temp)
+		;(up-chat-data-to-self "Num house: %d" g: g-desired-num-house)
+		)
+	#end-if
+
+	(defrule
+	(current-age == feudal-age)
+	(up-compare-goal g-true-housing-headroom <= 3)
+	(population-headroom > 0)
+	(up-pending-objects c: house == 0)
+	=>
+	(up-modify-goal g-temp g:= g-true-housing-headroom)
+	(up-modify-goal g-temp c:- 3)	;matches number in condition above
+	(up-modify-goal g-temp c:z/ -5)	;use negative 5 because g-temp is zero or negative at this point
+	(up-modify-goal g-temp c:+ 1)
+	(up-modify-goal g-desired-num-house g:+ g-temp)
+	;(up-chat-data-to-all "Num house: %d" g: g-desired-num-house)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-true-housing-headroom <= 5)
+	(population-headroom > 0)
+	(up-pending-objects c: house == 0)
+	=>
+	(up-modify-goal g-temp g:= g-true-housing-headroom)
+	(up-modify-goal g-temp c:- 5)	;matches number in condition above
+	(up-modify-goal g-temp c:z/ -5)	;use negative 5 because g-temp is zero or negative at this point
+	(up-modify-goal g-temp c:+ 1)
+	(up-modify-goal g-desired-num-house g:+ g-temp)
+	;(up-chat-data-to-all "Num house: %d" g: g-desired-num-house)
+	)
+	
+#else	;Incan Civ
+
+	;Figure out how many houses are needed and add it
+	;to g-desired-num-house
+	(defrule
+	(current-age == dark-age)
+	(up-compare-goal g-true-housing-headroom <= 1)
+	(population-headroom > 0)
+	(building-type-count-total house >= 2)
+	(up-pending-objects c: house == 0)
+	=>
+	(up-modify-goal g-temp g:= g-true-housing-headroom)
+	(up-modify-goal g-temp c:- 1)	;matches number in condition above
+	(up-modify-goal g-temp c:z/ -10)	;use negative 10 because g-temp is zero or negative at this point
+	(up-modify-goal g-temp c:+ 1)
+	(up-modify-goal g-desired-num-house g:+ g-temp)
+	;(up-chat-data-to-all "Num house: %d" g: g-desired-num-house)
+	)
+
+	(defrule
+	(current-age == feudal-age)
+	(up-compare-goal g-true-housing-headroom <= 3)
+	(population-headroom > 0)
+	(up-pending-objects c: house == 0)
+	=>
+	(up-modify-goal g-temp g:= g-true-housing-headroom)
+	(up-modify-goal g-temp c:- 3)	;matches number in condition above
+	(up-modify-goal g-temp c:z/ -10)	;use negative 10 because g-temp is zero or negative at this point
+	(up-modify-goal g-temp c:+ 1)
+	(up-modify-goal g-desired-num-house g:+ g-temp)
+	;(up-chat-data-to-all "Num house: %d" g: g-desired-num-house)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-true-housing-headroom <= 5)
+	(population-headroom > 0)
+	(up-pending-objects c: house == 0)
+	=>
+	(up-modify-goal g-temp g:= g-true-housing-headroom)
+	(up-modify-goal g-temp c:- 5)	;matches number in condition above
+	(up-modify-goal g-temp c:z/ -10)	;use negative 10 because g-temp is zero or negative at this point
+	(up-modify-goal g-temp c:+ 1)
+	(up-modify-goal g-desired-num-house g:+ g-temp)
+	;(up-chat-data-to-all "Num house: %d" g: g-desired-num-house)
+	)
+	
+#end-if
+
+;====Lumber Camps (used for first two lumber camps only)
+
+(defrule
+(game-time > 30)
+(resource-found wood)
+(or
+	(and
+		(unit-type-count villager-wood > 3)
+		(dropsite-min-distance wood > 3))
+	(up-compare-goal g-desired-num-wood-vils > 0))
+(building-type-count lumber-camp == 0)
+(up-pending-objects c: lumber-camp == 0)
+=>
+(up-modify-goal g-desired-num-lumber-camp c:max 1)
+;(up-chat-data-to-all "Num LC: %d" g: g-desired-num-lumber-camp)
+)
+
+(defrule
+(building-type-count lumber-camp == 1)
+(game-time > 300)
+(or
+	(and
+		(unit-type-count villager-wood > 6)
+		(dropsite-min-distance wood > 3))
+	(up-compare-goal g-desired-num-wood-vils > 5))
+(up-pending-objects c: lumber-camp == 0)
+=>
+(up-modify-goal g-desired-num-lumber-camp c:max 2)
+;(up-chat-data-to-all "Num LC: %d" g: g-desired-num-lumber-camp)
+)
+
+;====Mills
+
+(defrule
+(building-type-count-total lumber-camp > 0)
+(resource-found food)
+(building-type-count-total mill == 0)
+(or
+	(up-compare-goal g-desired-num-foragers > 0)
+	(and
+		(game-time > 180)
+		(unit-type-count villager-food == 0)))
+=>
+(up-modify-goal g-desired-num-mill c:max 1)
+;(up-chat-data-to-all "Num mill: %d" g: g-desired-num-mill)
+)
+
+(defrule
+(game-time > 25)
+(or
+	(building-type-count-total lumber-camp > 0)
+	(or
+		(unit-type-count villager-forager > 3)
+		(unit-type-count villager-shepherd == 0)))
+(resource-found food)
+(building-type-count-total mill == 0)
+=>
+(up-modify-goal g-desired-num-mill c:max 1)
+;(up-chat-data-to-all "Num mill: %d" g: g-desired-num-mill)
+)
+
+(defrule
+(unit-type-count villager-forager > 0)
+(unit-type-count villager >= 22)
+(building-type-count-total mill == 1)
+(up-compare-goal g-desired-num-mill < 2)
+=>
+(up-modify-goal g-temp s:= sn-focus-player-number)
+(set-strategic-number sn-focus-player-number 0)
+(up-full-reset-search)
+(up-set-target-point g-position-self-x)
+(up-filter-distance c: -1 c: 20)
+(up-find-remote c: forage-bush c: 12)
+(up-get-search-state g-local-total)
+)
+
+(defrule
+(unit-type-count villager-forager > 0)
+(unit-type-count villager >= 22)
+(building-type-count-total mill == 1)
+(up-compare-goal g-desired-num-mill < 2)
+=>
+(set-strategic-number sn-focus-player-number 0)
+(up-full-reset-search)
+(up-set-target-point g-position-self-x)
+(up-filter-distance c: -1 c: 20)
+(up-find-remote c: forage-bush c: 40)
+(up-get-search-state g-local-total)
+)
+
+(defrule
+(unit-type-count villager-forager > 0)
+(unit-type-count villager >= 22)
+(building-type-count-total mill == 1)
+(up-compare-goal g-desired-num-mill < 2)
+(up-compare-goal g-remote-total > 6)	;more than standard berries
+=>
+(set-goal g-desired-num-mill 2)
+(up-modify-sn sn-focus-player-number g:= g-temp)
+)
+
+(defrule
+(game-time >= 300)
+(building-type-count-total mill == 0)
+(up-compare-goal g-desired-num-mill < 1)
+=>
+(up-modify-goal g-desired-num-mill c:= 1)
+)
+
+;REMOVE THE NEXT TWO RULES LATER!!!!!!!!!!!!!!!!!!!!
+
+(defrule
+(game-time > 30)
+(unit-type-count villager-forager > 2)
+;(dropsite-min-distance food > 3)
+(up-compare-goal g-desired-num-mill < 1)
+=>
+(up-modify-goal g-desired-num-mill c:max 1)
+)
+
+(defrule
+(game-time > 60)
+(unit-type-count villager-forager > 0)
+;(dropsite-min-distance food > 3)
+(up-compare-goal g-desired-num-mill < 1)
+=>
+(up-modify-goal g-desired-num-mill c:max 1)
+)
+
+;====Mining Camps (used for first two mining camps only)
+
+(defrule
+(game-time > 30)
+(resource-found gold)
+(building-type-count-total lumber-camp > 0)
+(or
+	(and
+		(unit-type-count villager-gold > 1)
+		(dropsite-min-distance gold > 4))
+	(up-compare-goal g-desired-num-gold-vils > 0))
+(dropsite-min-distance gold < 30)
+=>
+(up-modify-goal g-desired-num-mining-camp c:= 1)
+)
+
+
+(defrule
+(game-time > 30)
+(resource-found stone)
+(building-type-count-total lumber-camp > 0)
+(dropsite-min-distance gold < 5)
+(or
+	(and
+		(unit-type-count villager-stone > 1)
+		(dropsite-min-distance stone > 4))
+	(up-compare-goal g-desired-num-stone-vils > 0))
+(dropsite-min-distance stone < 30)
+=>
+(up-modify-goal g-desired-num-mining-camp c:= 2)
+)
+
+;====Docks
+
+;N/A
+
+;====Farms
+
+(defrule
+(up-compare-goal g-desired-num-farm g:<= g-desired-num-farmers)
+(current-age <= feudal-age)
+(wood-amount > 275)
+(unit-type-count villager > 15)
+=>
+(up-modify-goal g-desired-num-farm g:max g-desired-num-farmers)
+)
+
+(defrule
+(up-compare-goal g-desired-num-farm g:<= g-desired-num-farmers)
+(current-age == dark-age)
+(unit-type-count villager > 15)
+(up-object-type-count-total c: lumber-camp g:>= g-desired-num-lumber-camp)
+(up-object-type-count-total c: mining-camp g:>= g-desired-num-mining-camp)
+(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
+(up-object-type-count-total c: dock g:>= g-desired-num-dock)
+=>
+(up-modify-goal g-desired-num-farm g:max g-desired-num-farmers)
+)
+
+(defrule
+(current-age == feudal-age)
+(or
+	(up-compare-goal g-desired-num-farm g:<= g-desired-num-farmers)
+	(idle-farm-count == 0))
+(up-object-type-count-total c: lumber-camp g:>= g-desired-num-lumber-camp)
+(up-object-type-count-total c: mining-camp g:>= g-desired-num-mining-camp)
+(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
+(up-object-type-count-total c: dock g:>= g-desired-num-dock)
+(up-object-type-count-total c: archery-range g:>= g-desired-num-archery-range)
+(up-object-type-count-total c: stable g:>= g-desired-num-stable)
+(up-object-type-count-total c: blacksmith g:>= g-desired-num-blacksmith)
+(up-object-type-count-total c: market g:>= g-desired-num-market)
+=>
+(up-modify-goal g-desired-num-farm g:max g-desired-num-farmers)
+)
+
+(defrule
+(current-age >= castle-age)
+(or
+	(idle-farm-count < 2)
+	(up-compare-goal g-desired-num-farm g:<= g-desired-num-farmers))
+=>
+(up-modify-goal g-desired-num-farm g:max g-desired-num-farmers)
+)
+
+(defrule
+(current-age >= castle-age)
+(or
+	(idle-farm-count < 2)
+	(up-object-type-count-total c: farm g:<= g-desired-num-farm))
+(goal g-town-under-attack NO)
+=>
+(up-setup-cost-data 1 g-food-cost)
+(up-add-object-cost c: farm c: 1)
+(up-get-cost-delta g-food-delta)
+)
+
+(defrule
+(current-age >= castle-age)
+(or
+	(idle-farm-count < 2)
+	(up-object-type-count-total c: farm g:< g-desired-num-farm))
+(goal g-town-under-attack NO)
+(up-compare-goal g-wood-delta < 0)
+=>
+(up-modify-escrow wood g:max g-wood-cost)
+)
+
+
+;====Barracks
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-feudal)
+(or
+	(building-type-count-total mining-camp > 0)
+	(and
+		(up-compare-goal g-desired-num-gold-vils == 0)
+		(up-compare-goal g-desired-num-stone-vils == 0)))
+=>
+(up-modify-goal g-desired-num-barracks c:max 1)
+)
+
+(defrule
+(current-age >= feudal-age)
+(or
+	(up-compare-goal g-desired-num-militia > 0)
+	(or
+		(up-compare-goal g-desired-num-spearman > 0)
+		(or
+			(up-compare-goal g-desired-num-eagle-warrior > 0)
+			(up-compare-goal g-desired-num-condottiero > 0))))
+=>
+(up-modify-goal g-desired-num-barracks c:max 1)
+)
+
+#load-if-defined GOTHIC-CIV
+
+	(defrule
+	(research-completed ri-castle-unique-tech)
+	(up-compare-goal g-desired-num-unique-unit > 0)
+	=>
+	(up-modify-goal g-desired-num-barracks c:max 1)
+	)
+	
+#end-if
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-castle)
+(goal g-strategy gv-eagles-revenge)
+=>
+(up-modify-goal g-desired-num-barracks c:max 2)
+)
+
+(defrule
+(current-age >= castle-age)
+=>
+(up-modify-goal g-temp g:= g-desired-num-militia)
+(up-modify-goal g-temp g:+ g-desired-num-spearman)
+(up-modify-goal g-temp g:+ g-desired-num-eagle-warrior)
+(up-modify-goal g-temp g:+ g-desired-num-condottiero)
+)
+
+#load-if-defined GOTHIC-CIV
+
+	(defrule
+	(current-age >= castle-age)
+	(research-completed ri-castle-unique-tech)
+	=>
+	(up-modify-goal g-temp g:+ g-desired-num-unique-unit)
+	)
+	
+#end-if
+
+(defrule
+(civilian-population >= 80)
+(up-compare-goal g-temp > 12)
+(up-compare-goal g-desired-num-barracks < 2)
+=>
+(up-modify-goal g-desired-num-barracks c:max 2)
+)
+
+(defrule
+(civilian-population >= 100)
+(up-compare-goal g-temp > 25)
+(up-compare-goal g-desired-num-barracks < 3)
+=>
+(up-modify-goal g-desired-num-barracks c:max 3)
+)
+
+(defrule
+(civilian-population >= 100)
+(up-compare-goal g-temp > 38)
+(up-compare-goal g-desired-num-barracks < 4)
+=>
+(up-modify-goal g-desired-num-barracks c:max 4)
+)
+
+(defrule
+(civilian-population >= 100)
+(up-compare-goal g-temp > 50)
+(up-compare-goal g-desired-num-barracks < 5)
+=>
+(up-modify-goal g-desired-num-barracks c:max 5)
+)
+
+;====Archery Range
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-feudal)
+(or
+	(up-compare-goal g-desired-num-archer > 0)
+	(or
+		(up-compare-goal g-desired-num-skirmisher > 0)
+		(or
+			(up-compare-goal g-desired-num-cavalry-archer > 0)
+			(or
+				(up-compare-goal g-desired-num-hand-cannoneer > 0)
+				(or
+					(up-compare-goal g-desired-num-slinger > 0)
+					(up-compare-goal g-desired-num-genitour > 0))))))
+=>
+(up-modify-goal g-desired-num-archery-range c:max 1)
+)
+
+(defrule
+(current-age >= feudal-age)
+(goal g-strategy gv-strongbow)
+(building-type-count-total blacksmith > 0)
+=>
+(up-modify-goal g-desired-num-archery-range c:max 2)
+)
+
+(defrule
+(current-age == feudal-age)
+(goal g-strategy gv-eagles-revenge)
+(building-type-count-total archery-range == 0)
+(up-compare-goal g-desired-num-archery-range == 0)
+=>
+(up-modify-goal g-desired-num-archery-range c:max 1)
+)
+
+(defrule
+(current-age == imperial-age)
+=>
+(up-modify-goal g-temp g:= g-desired-num-archer)
+(up-modify-goal g-temp g:+ g-desired-num-skirmisher)
+(up-modify-goal g-temp g:+ g-desired-num-cavalry-archer)
+(up-modify-goal g-temp g:+ g-desired-num-hand-cannoneer)
+(up-modify-goal g-temp g:+ g-desired-num-slinger)
+(up-modify-goal g-temp g:+ g-desired-num-genitour)
+)
+
+(defrule
+(civilian-population >= 80)
+(up-compare-goal g-temp > 12)
+(up-compare-goal g-desired-num-archery-range < 2)
+=>
+(up-modify-goal g-desired-num-archery-range c:max 2)
+)
+
+(defrule
+(civilian-population >= 100)
+(up-compare-goal g-temp > 25)
+(up-compare-goal g-desired-num-archery-range < 3)
+=>
+(up-modify-goal g-desired-num-archery-range c:max 3)
+)
+
+(defrule
+(civilian-population >= 100)
+(up-compare-goal g-temp > 38)
+(up-compare-goal g-desired-num-archery-range < 4)
+=>
+(up-modify-goal g-desired-num-archery-range c:max 4)
+)
+
+(defrule
+(civilian-population >= 100)
+(up-compare-goal g-temp > 50)
+(up-compare-goal g-desired-num-archery-range < 5)
+=>
+(up-modify-goal g-desired-num-archery-range c:max 5)
+)
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-feudal)
+(up-compare-goal g-desired-num-archery-range > 0)
+(up-compare-goal g-desired-num-barracks < 1)
+=>
+(up-modify-goal g-desired-num-barracks c:max 1)
+)
+
+;====Stable
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-feudal)
+(or
+	(up-compare-goal g-desired-num-scout-cavalry > 0)
+	(or
+		(up-compare-goal g-desired-num-knight > 0)
+		(or
+			(up-compare-goal g-desired-num-camel > 0)
+			(up-compare-goal g-desired-num-battle-elephant > 0))))
+=>
+(up-modify-goal g-desired-num-stable c:max 1)
+)
+
+(defrule
+(current-age >= feudal-age)
+(or
+	(goal g-strategy gv-krush)
+	(goal g-strategy gv-crush))
+(building-type-count-total blacksmith > 0)
+=>
+(up-modify-goal g-desired-num-stable c:max 2)
+)
+
+(defrule
+(current-age >= castle-age)
+=>
+(up-modify-goal g-temp g:= g-desired-num-scout-cavalry)
+(up-modify-goal g-temp g:+ g-desired-num-knight)
+(up-modify-goal g-temp g:+ g-desired-num-camel)
+(up-modify-goal g-temp g:+ g-desired-num-battle-elephant)
+)
+
+#load-if-defined HUN-CIV
+
+	(defrule
+	(current-age >= castle-age)
+	(research-completed ri-castle-unique-tech)
+	=>
+	(up-modify-goal g-temp g:+ g-desired-num-unique-unit)
+	)
+	
+#end-if
+
+(defrule
+(current-age >= castle-age)
+(civilian-population >= 80)
+(up-compare-goal g-temp >= 12)
+(up-compare-goal g-desired-num-stable < 2)
+=>
+(up-modify-goal g-desired-num-stable c:max 2)
+)
+
+(defrule
+(civilian-population >= 100)
+(up-compare-goal g-temp > 25)
+(up-compare-goal g-desired-num-stable < 3)
+=>
+(up-modify-goal g-desired-num-stable c:max 3)
+)
+
+(defrule
+(civilian-population >= 100)
+(up-compare-goal g-temp > 38)
+(up-compare-goal g-desired-num-stable < 4)
+=>
+(up-modify-goal g-desired-num-stable c:max 4)
+)
+
+(defrule
+(civilian-population >= 100)
+(up-compare-goal g-temp > 50)
+(up-compare-goal g-desired-num-stable < 5)
+=>
+(up-modify-goal g-desired-num-stable c:max 5)
+)
+
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-feudal)
+(up-compare-goal g-desired-num-stable > 0)
+(up-compare-goal g-desired-num-barracks < 1)
+=>
+(up-modify-goal g-desired-num-barracks c:max 1)
+)
+
+;====Siege Workshop
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-castle)
+(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
+(or
+	(up-compare-goal g-desired-num-battering-ram > 0)
+	(or
+		(up-compare-goal g-desired-num-mangonel > 0)
+		(or
+			(up-compare-goal g-desired-num-scorpion > 0)
+			(up-compare-goal g-desired-num-bombard-cannon > 0))))
+=>
+(up-modify-goal g-desired-num-siege-workshop c:max 1)
+)
+
+(defrule
+(current-age >= castle-age)
+=>
+(up-modify-goal g-temp g:= g-desired-num-battering-ram)
+(up-modify-goal g-temp g:+ g-desired-num-mangonel)
+(up-modify-goal g-temp g:+ g-desired-num-scorpion)
+(up-modify-goal g-temp g:+ g-desired-num-bombard-cannon)
+)
+
+(defrule
+(current-age >= castle-age)
+(civilian-population >= 80)
+(up-compare-goal g-temp >= 8)
+(up-compare-goal g-desired-num-siege-workshop < 2)
+=>
+(up-modify-goal g-desired-num-siege-workshop c:max 2)
+)
+
+(defrule
+(civilian-population >= 100)
+(up-compare-goal g-temp > 15)
+(up-compare-goal g-desired-num-siege-workshop < 3)
+=>
+(up-modify-goal g-desired-num-siege-workshop c:max 3)
+)
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-castle)
+(up-compare-goal g-desired-num-siege-workshop > 0)
+(up-compare-goal g-desired-num-blacksmith < 1)
+=>
+(up-modify-goal g-desired-num-blacksmith c:max 1)
+)
+
+(defrule
+(up-object-type-count-total c: siege-workshop g:< g-desired-num-siege-workshop)
+(goal g-town-under-attack NO)
+=>
+(up-setup-cost-data 1 g-food-cost)
+(up-add-object-cost c: siege-workshop c: 1)
+(up-get-cost-delta g-food-delta)
+)
+
+(defrule
+(up-object-type-count-total c: siege-workshop g:< g-desired-num-siege-workshop)
+(up-compare-goal g-wood-delta < 0)
+(goal g-town-under-attack NO)
+=>
+(up-modify-escrow wood g:max g-wood-cost)
+)
+
+;====Blacksmith
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-feudal)
+=>
+(up-modify-goal g-desired-num-blacksmith c:max 1)
+)
+
+(defrule
+(goal g-age-status gv-save-for-castle)
+(up-compare-goal g-desired-num-blacksmith == 0)
+(up-compare-goal g-desired-num-market == 0)
+(or
+	(up-compare-goal g-desired-num-archery-range == 0)
+	(up-compare-goal g-desired-num-stable == 0))
+(building-type-count-total blacksmith == 0)
+(building-type-count-total market == 0)
+(or	
+	(building-type-count-total archery-range == 0)
+	(building-type-count-total stable == 0))
+=>
+(up-modify-goal g-desired-num-blacksmith c:max 1)
+)
+
+(defrule
+(up-compare-goal g-desired-num-blacksmith == 1)
+(food-amount >= 3000)
+(gold-amount >= 2500)
+(current-age == castle-age)
+(or
+	(and
+		(research-available ri-forging)
+		(up-compare-goal g-desired-num-melee-attack-units > 0))
+	(and
+		(research-available ri-fletching)
+		(up-compare-goal g-desired-num-pierce-attack-units > 0)))
+=>
+(up-modify-goal g-desired-num-blacksmith c:max 2)
+)
+
+(defrule
+(up-compare-goal g-desired-num-blacksmith == 1)
+(food-amount >= 3000)
+(gold-amount >= 2500)
+(current-age == castle-age)
+(or
+	(and
+		(research-available ri-iron-casting)
+		(up-compare-goal g-desired-num-melee-attack-units > 0))
+	(and
+		(research-available ri-bodkin-arrow)
+		(up-compare-goal g-desired-num-pierce-attack-units > 0)))
+=>
+(up-modify-goal g-desired-num-blacksmith c:max 2)
+)
+
+;====Market
+
+;(defrule
+;(or
+;	(current-age >= castle-age)
+;	(wood-amount > 300))
+;(or
+;	(up-compare-goal g-strategy != gv-strongbow)
+;	(building-type-count-total archery-range > 0))
+;(or
+;	(up-compare-goal g-strategy != gv-krush)
+;	(building-type-count-total stable > 0))
+;(building-type-count-total blacksmith > 0)
+;=>
+;(up-modify-goal g-desired-num-market c:max 1)
+;)
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-feudal)
+(or
+	(building-type-count-total town-center >= 3)
+	(up-compare-goal g-desired-num-trade-cart > 0))
+=>
+(up-modify-goal g-desired-num-market c:max 1)
+)
+
+(defrule
+(goal g-age-status gv-save-for-castle)
+(up-compare-goal g-desired-num-market == 0)
+(up-compare-goal g-desired-num-archery-range == 0)
+(up-compare-goal g-desired-num-stable == 0)
+(building-type-count-total market == 0)
+(building-type-count-total archery-range == 0)
+(building-type-count-total stable == 0)
+=>
+(up-modify-goal g-desired-num-market c:max 1)
+)
+
+(defrule
+(or
+	(up-compare-goal g-strategy >= gv-low-gold)
+	(up-compare-goal g-desired-num-trade-cart > 0))
+=>
+(up-modify-goal g-desired-num-market c:max 3)
+)
+
+(defrule
+(or
+	(up-compare-goal g-strategy == gv-trash-war)
+	(up-compare-goal g-desired-num-trade-cart > 20))
+=>
+(up-modify-goal g-desired-num-market c:max 4)
+)
+
+;====GOAL: g-desired-num-monks
+
+(defrule
+(true)
+=>
+(up-modify-goal g-desired-num-monks g:= g-desired-num-monk)
+(up-modify-goal g-desired-num-monks g:+ g-desired-num-missionary)
+)
+
+#load-if-not-defined BRITON-CIV
+
+	;====Monastery
+
+	(defrule
+	(up-compare-goal g-age-status >= gv-advancing-to-castle)
+	(up-compare-goal g-desired-num-monks > 0)
+	(goal g-town-under-attack NO)
+	(or
+		(wood-amount >= 450)
+		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center))
+	(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
+	(up-object-type-count-total c: archery-range g:>= g-desired-num-archery-range)
+	(up-object-type-count-total c: stable g:>= g-desired-num-stable)
+	(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+	(up-object-type-count-total c: blacksmith g:>= g-desired-num-blacksmith)
+	(up-object-type-count-total c: market g:>= g-desired-num-market)
+	=>
+	(up-modify-goal g-desired-num-monastery c:max 1)
+	)
+
+	(defrule
+	(goal g-age-status gv-save-for-imperial)
+	(up-compare-goal g-desired-num-monastery == 0)
+	(up-compare-goal g-desired-num-castle == 0)
+	(building-type-count-total monastery == 0)
+	(building-type-count-total castle == 0)
+	=>
+	(up-modify-goal g-desired-num-monastery c:max 1)
+	)
+
+	;====University
+
+	(defrule
+	(up-compare-goal g-age-status >= gv-advancing-to-castle)
+	(goal g-town-under-attack NO)
+	(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
+	(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
+	(up-object-type-count-total c: archery-range g:>= g-desired-num-archery-range)
+	(up-object-type-count-total c: stable g:>= g-desired-num-stable)
+	(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+	(up-object-type-count-total c: blacksmith g:>= g-desired-num-blacksmith)
+	(up-object-type-count-total c: market g:>= g-desired-num-market)
+	(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
+	(military-population > 25)
+	=>
+	(up-modify-goal g-desired-num-university c:max 1)
+	)
+
+	(defrule
+	(goal g-age-status gv-save-for-imperial)
+	(up-compare-goal g-desired-num-university == 0)
+	(up-compare-goal g-desired-num-castle == 0)
+	(building-type-count-total university == 0)
+	(building-type-count-total castle == 0)
+	=>
+	(up-modify-goal g-desired-num-university c:max 1)
+	)
+
+#end-if
+
+#load-if-defined BRITON-CIV
+
+	;====Monastery
+
+	(defrule
+	(up-compare-goal g-age-status >= gv-advancing-to-castle)
+	(up-compare-goal g-desired-num-monks > 0)
+	(goal g-town-under-attack NO)
+	(or
+		(wood-amount >= 313)
+		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center))
+	(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
+	(up-object-type-count-total c: archery-range g:>= g-desired-num-archery-range)
+	(up-object-type-count-total c: stable g:>= g-desired-num-stable)
+	(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+	(up-object-type-count-total c: blacksmith g:>= g-desired-num-blacksmith)
+	(up-object-type-count-total c: market g:>= g-desired-num-market)
+	=>
+	(up-modify-goal g-desired-num-monastery c:max 1)
+	)
+
+	(defrule
+	(goal g-age-status gv-save-for-imperial)
+	(up-compare-goal g-desired-num-monastery == 0)
+	(up-compare-goal g-desired-num-castle == 0)
+	(building-type-count-total monastery == 0)
+	(building-type-count-total castle == 0)
+	=>
+	(up-modify-goal g-desired-num-monastery c:max 1)
+	)
+
+	;====University
+
+	(defrule
+	(up-compare-goal g-age-status >= gv-advancing-to-castle)
+	(goal g-town-under-attack NO)
+	(or
+		(wood-amount >= 338)
+		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center))
+	(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
+	(up-object-type-count-total c: archery-range g:>= g-desired-num-archery-range)
+	(up-object-type-count-total c: stable g:>= g-desired-num-stable)
+	(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+	(up-object-type-count-total c: blacksmith g:>= g-desired-num-blacksmith)
+	(up-object-type-count-total c: market g:>= g-desired-num-market)
+	(up-object-type-count-total c: market g:>= g-desired-num-monastery)
+	=>
+	(up-modify-goal g-desired-num-university c:max 1)
+	)
+
+	(defrule
+	(goal g-age-status gv-save-for-imperial)
+	(up-compare-goal g-desired-num-university == 0)
+	(up-compare-goal g-desired-num-castle == 0)
+	(building-type-count-total university == 0)
+	(building-type-count-total castle == 0)
+	=>
+	(up-modify-goal g-desired-num-university c:max 1)
+	)
+
+#end-if
+
+;====Wonder
+
+(defrule
+(taunt-detected any-ally 37)
+(can-build wonder)
+=>
+(up-modify-goal g-desired-num-wonder c:max 1)
+(acknowledge-taunt this-any-ally 37)
+(chat-to-player this-any-ally "A wonder? Dunno why, but okay.")
+)
+
+(defrule
+(taunt-detected any-ally 37)
+(not
+	(can-build wonder))
+=>
+(up-modify-goal g-desired-num-wonder c:max 1)
+(acknowledge-taunt this-any-ally 37)
+(chat-to-player this-any-ally "Can't build a wonder yet. Will build one soon.")
+)
+
+;====Feitoria
+
+;N/A
+
+;====Outpost
+
+;N/A
+
+;====Watch Tower
+
+(defrule
+(goal g-town-under-attack NO)
+(up-compare-goal g-desired-num-watch-tower < 1)
+=>
+(up-modify-goal g-desired-num-watch-tower c:max 1)
+)
+
+(defrule
+(goal g-town-under-attack YES)
+(up-compare-goal g-desired-num-watch-tower >= 1)
+=>
+(up-modify-goal g-desired-num-watch-tower c:= 0)
+)
+
+
+
+;====Bombard Tower
+
+;N/A
+
+;====Castle
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-castle)
+(or
+	(up-compare-goal g-desired-num-unique-unit > 0)
+	(or
+		(up-compare-goal g-desired-num-trebuchet > 0)
+		(up-compare-goal g-desired-num-petard > 0)))
+=>
+(up-modify-goal g-desired-num-castle c:max 1)
+)
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-castle)
+(or
+	(up-compare-goal g-attack-status >= gv-first-attack)
+	(up-compare-flag g-excess-resources-flag == gv-stone))
+(building-type-count-total castle == 0)
+(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
+=>
+(up-modify-goal g-desired-num-castle c:max 1)
+)
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-castle)
+(up-compare-goal g-attack-status >= gv-first-attack)
+(building-type-count-total castle > 0)
+(or
+	(military-population >= 25)
+	(or
+		(civilian-population >= 75)
+		(current-age >= imperial-age)))
+(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
+=>
+(up-modify-goal g-desired-num-castle c:max 3)
+)
+
+
+
+
+
+
+
+
+
+
+;====GOAL: g-desired-num-pierce-attack-units
+
+(defrule
+(true)
+=>
+(up-modify-goal g-desired-num-pierce-attack-units g:= g-desired-num-archers)
+(up-modify-goal g-desired-num-pierce-attack-units g:+ g-desired-num-cavalry-archers)
+(up-modify-goal g-desired-num-pierce-attack-units g:+ g-desired-num-watch-tower)
+(up-modify-goal g-desired-num-pierce-attack-units g:+ g-desired-num-castle)
+;(up-modify-goal g-desired-num-pierce-attack-units g:+ g-desired-num-town-center)
+(up-modify-goal g-desired-num-pierce-attack-units g:+ g-desired-num-galley)
+(up-modify-goal g-desired-num-pierce-attack-units g:+ g-desired-num-scorpion)
+)
+
+(defrule
+(or
+	(civ-selected viking)
+	(civ-selected portuguese))
+=>
+(up-modify-goal g-desired-num-pierce-attack-units g:+ g-desired-num-unique-ship)
+)
+
+
+
+;====GOAL: g-primary-unit-class
+
+(defrule
+(or
+	(goal g-primary-unit militiaman)
+	(or
+		(goal g-primary-unit spearman)
+		(or
+			(goal g-primary-unit eagle-warrior)
+			(or
+				(goal g-primary-unit condottiero)
+				(and
+					(goal g-primary-unit my-unique-unit)
+					(goal g-unique-unit-class gv-infantry))))))
+=>
+(set-goal g-primary-unit-class gv-infantry)
+)
+
+(defrule
+(or
+	(goal g-primary-unit archer)
+	(or
+		(goal g-primary-unit skirmisher)
+		(or
+			(goal g-primary-unit slinger)
+			(and
+				(goal g-primary-unit my-unique-unit)
+				(goal g-unique-unit-class gv-archer)))))
+=>
+(set-goal g-primary-unit-class gv-archer)
+)
+
+(defrule
+(or
+	(goal g-primary-unit cavalry-archer)
+	(or
+		(goal g-primary-unit genitour)
+		(and
+			(goal g-primary-unit my-unique-unit)
+			(goal g-unique-unit-class gv-cavalry-archer))))
+=>
+(set-goal g-primary-unit-class gv-cavalry-archer)
+)
+
+(defrule
+(or
+	(goal g-primary-unit scout-cavalry)
+	(or
+		(goal g-primary-unit knight)
+		(or
+			(goal g-primary-unit camel)
+			(or
+				(goal g-primary-unit battle-elephant)
+				(and
+					(goal g-primary-unit my-unique-unit)
+					(goal g-unique-unit-class gv-cavalry))))))
+=>
+(set-goal g-primary-unit-class gv-cavalry)
+)
+
+(defrule
+(or
+	(goal g-primary-unit battering-ram)
+	(or
+		(goal g-primary-unit mangonel)
+		(or
+			(goal g-primary-unit scorpion)
+			(or
+				(goal g-primary-unit bombard-cannon)
+				(or
+					(goal g-primary-unit trebuchet)
+					(and
+						(goal g-primary-unit my-unique-unit)
+						(goal g-unique-unit-class gv-siege)))))))
+=>
+(set-goal g-primary-unit-class gv-siege)
+)
+
+(defrule
+(or
+	(civ-selected spanish)
+	(civ-selected burmese))
+(goal g-primary-unit my-unique-unit)
+=>
+(set-goal g-primary-unit-class gv-conquistador)
+)
+
+(defrule
+(civ-selected turkish)
+(goal g-primary-unit my-unique-unit)
+=>
+(set-goal g-primary-unit-class gv-janissary)
+)
+
+(defrule
+(civ-selected burmese)
+(goal g-primary-unit my-unique-unit)
+=>
+(set-goal g-primary-unit-class gv-ballista-elephant)
+)
+
+
+
+;====GOAL: g-secondary-unit-class
+
+(defrule
+(or
+	(goal g-secondary-unit militiaman)
+	(or
+		(goal g-secondary-unit spearman)
+		(or
+			(goal g-secondary-unit eagle-warrior)
+			(or
+				(goal g-secondary-unit condottiero)
+				(and
+					(goal g-secondary-unit my-unique-unit)
+					(goal g-unique-unit-class gv-infantry))))))
+=>
+(set-goal g-secondary-unit-class gv-infantry)
+)
+
+(defrule
+(or
+	(goal g-secondary-unit archer)
+	(or
+		(goal g-secondary-unit skirmisher)
+		(or
+			(goal g-secondary-unit slinger)
+			(and
+				(goal g-secondary-unit my-unique-unit)
+				(goal g-unique-unit-class gv-archer)))))
+=>
+(set-goal g-secondary-unit-class gv-archer)
+)
+
+(defrule
+(or
+	(goal g-secondary-unit cavalry-archer)
+	(or
+		(goal g-secondary-unit genitour)
+		(and
+			(goal g-secondary-unit my-unique-unit)
+			(goal g-unique-unit-class gv-cavalry-archer))))
+=>
+(set-goal g-secondary-unit-class gv-cavalry-archer)
+)
+
+(defrule
+(or
+	(goal g-secondary-unit scout-cavalry)
+	(or
+		(goal g-secondary-unit knight)
+		(or
+			(goal g-secondary-unit camel)
+			(or
+				(goal g-secondary-unit battle-elephant)
+				(and
+					(goal g-secondary-unit my-unique-unit)
+					(goal g-unique-unit-class gv-cavalry))))))
+=>
+(set-goal g-secondary-unit-class gv-cavalry)
+)
+
+(defrule
+(or
+	(goal g-secondary-unit battering-ram)
+	(or
+		(goal g-secondary-unit mangonel)
+		(or
+			(goal g-secondary-unit scorpion)
+			(or
+				(goal g-secondary-unit bombard-cannon)
+				(or
+					(goal g-secondary-unit trebuchet)
+					(and
+						(goal g-secondary-unit my-unique-unit)
+						(goal g-unique-unit-class gv-siege)))))))
+=>
+(set-goal g-secondary-unit-class gv-siege)
+)
+
+(defrule
+(or
+	(civ-selected spanish)
+	(civ-selected burmese))
+(goal g-secondary-unit my-unique-unit)
+=>
+(set-goal g-secondary-unit-class gv-conquistador)
+)
+
+(defrule
+(civ-selected turkish)
+(goal g-secondary-unit my-unique-unit)
+=>
+(set-goal g-secondary-unit-class gv-janissary)
+)
+
+(defrule
+(civ-selected burmese)
+(goal g-secondary-unit my-unique-unit)
+=>
+(set-goal g-secondary-unit-class gv-ballista-elephant)
+)
+
+
+
+;====GOAL: g-tertiary-unit-class
+
+(defrule
+(or
+	(goal g-tertiary-unit militiaman)
+	(or
+		(goal g-tertiary-unit spearman)
+		(or
+			(goal g-tertiary-unit eagle-warrior)
+			(or
+				(goal g-tertiary-unit condottiero)
+				(and
+					(goal g-tertiary-unit my-unique-unit)
+					(goal g-unique-unit-class gv-infantry))))))
+=>
+(set-goal g-tertiary-unit-class gv-infantry)
+)
+
+(defrule
+(or
+	(goal g-tertiary-unit archer)
+	(or
+		(goal g-tertiary-unit skirmisher)
+		(or
+			(goal g-tertiary-unit slinger)
+			(and
+				(goal g-tertiary-unit my-unique-unit)
+				(goal g-unique-unit-class gv-archer)))))
+=>
+(set-goal g-tertiary-unit-class gv-archer)
+)
+
+(defrule
+(or
+	(goal g-tertiary-unit cavalry-archer)
+	(or
+		(goal g-tertiary-unit genitour)
+		(and
+			(goal g-tertiary-unit my-unique-unit)
+			(goal g-unique-unit-class gv-cavalry-archer))))
+=>
+(set-goal g-tertiary-unit-class gv-cavalry-archer)
+)
+
+(defrule
+(or
+	(goal g-tertiary-unit scout-cavalry)
+	(or
+		(goal g-tertiary-unit knight)
+		(or
+			(goal g-tertiary-unit camel)
+			(or
+				(goal g-tertiary-unit battle-elephant)
+				(and
+					(goal g-tertiary-unit my-unique-unit)
+					(goal g-unique-unit-class gv-cavalry))))))
+=>
+(set-goal g-tertiary-unit-class gv-cavalry)
+)
+
+(defrule
+(or
+	(goal g-tertiary-unit battering-ram)
+	(or
+		(goal g-tertiary-unit mangonel)
+		(or
+			(goal g-tertiary-unit scorpion)
+			(or
+				(goal g-tertiary-unit bombard-cannon)
+				(or
+					(goal g-tertiary-unit trebuchet)
+					(and
+						(goal g-tertiary-unit my-unique-unit)
+						(goal g-unique-unit-class gv-siege)))))))
+=>
+(set-goal g-tertiary-unit-class gv-siege)
+)
+
+(defrule
+(or
+	(civ-selected spanish)
+	(civ-selected burmese))
+(goal g-tertiary-unit my-unique-unit)
+=>
+(set-goal g-tertiary-unit-class gv-conquistador)
+)
+
+(defrule
+(civ-selected turkish)
+(goal g-tertiary-unit my-unique-unit)
+=>
+(set-goal g-tertiary-unit-class gv-janissary)
+)
+
+(defrule
+(civ-selected burmese)
+(goal g-tertiary-unit my-unique-unit)
+=>
+(set-goal g-tertiary-unit-class gv-ballista-elephant)
+)
+
+
+
+;====================<<<<<<<<<<ESCROW>>>>>>>>>>====================
+
+;Reset escrow to constant train unit's cost if escrow is lower than unit's cost
+
+(defrule
+(up-object-type-count-total g: g-constant-train-unit g:< g-desired-num-constant-train-unit)
+(goal g-town-under-attack NO)
+=>
+(up-setup-cost-data 1 g-food-cost)
+(up-add-object-cost g: g-constant-train-unit c: 1)
+(up-modify-escrow food g:max g-food-cost)
+(up-modify-escrow wood g:max g-wood-cost)
+(up-modify-escrow stone g:max g-stone-cost)
+(up-modify-escrow gold g:max g-gold-cost)
+)

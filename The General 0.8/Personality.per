@@ -1,0 +1,694 @@
+;Personality.per
+	
+(defrule
+(game-time > 2)
+(up-compare-goal g-general != PENDING)
+=>
+(generate-random-number 100)
+(up-get-fact random-number 0 g-random-number)
+(disable-self)
+)
+
+#load-if-not-defined VIETNAMESE-CIV
+
+	(defrule
+	(true)
+	=>
+	(up-get-fact player-number 0 g-initial-chat-delay)
+	(up-modify-goal g-initial-chat-delay c:* 3)
+	(up-modify-goal g-initial-chat-delay c:+ 10)
+	(disable-self)
+	)
+	
+#end-if
+
+#load-if-defined AZTEC-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-eagles-revenge)
+	(set-goal g-initial-strategy gv-eagles-revenge)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+	
+	;Chat
+	
+	(defrule
+	(goal g-general gv-cuauhtemoc)
+	(current-age == dark-age)
+	(game-time g:> g-initial-chat-delay)
+	=>
+	(chat-to-all "I am Cuauhtemoc.")
+	(disable-self)
+	)
+	
+	(defrule
+	(goal g-general gv-cuauhtemoc)
+	(current-age == feudal-age)
+	=>
+	(chat-to-all "I am Cuauhtemoc, Eagle Warrior of Tenochtitlan.")
+	(disable-self)
+	)
+	
+	(defrule
+	(goal g-general gv-cuauhtemoc)
+	(current-age == castle-age)
+	=>
+	(chat-to-all "I am Cuauhtemoc, Jaguar Warrior of Tenochtitlan.")
+	(disable-self)
+	)
+	
+	(defrule
+	(goal g-general gv-cuauhtemoc)
+	(current-age == imperial-age)
+	=>
+	(chat-to-all "I am Cuauhtemoc, Emperor of Tenochtitlan.")
+	(disable-self)
+	)
+	
+	(defrule
+	(goal g-general gv-montezuma)
+	(game-time g:> g-initial-chat-delay)
+	=>
+	(chat-to-all "My magicians have foretold it.")
+	(chat-to-all "It is time for a garland war!")
+	(disable-self)
+	)
+
+#end-if
+
+#load-if-defined BERBERS-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+	
+#end-if
+
+#load-if-defined BRITON-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+	
+	;Longshanks
+	
+	(defrule
+	(goal g-general gv-longshanks)
+	(game-time g:> g-initial-chat-delay)
+	=>
+	(set-strategic-number sn-focus-player-number 1)
+	(set-goal g-temp 500)
+	(disable-self)
+	)
+	
+		(defrule
+		(goal g-general gv-longshanks)
+		(game-time g:> g-initial-chat-delay)
+		(goal g-temp 500)
+		=>
+		(up-store-player-name focus-player)
+		)
+		
+		(defrule
+		(up-compare-text c: text-william-wallace >= 0)
+		(goal g-general gv-longshanks)
+		(game-time g:> g-initial-chat-delay)
+		(goal g-temp 500)
+		=>
+		(set-goal g-temp 501)
+		)
+		
+		(defrule
+		(goal g-general gv-longshanks)
+		(game-time g:> g-initial-chat-delay)
+		(goal g-temp 500)
+		(up-compare-sn sn-focus-player-number < 8)
+		=>
+		(up-modify-sn sn-focus-player-number c:+ 1)
+		(up-jump-rule -3)
+		)
+	
+	(defrule
+	(goal g-general gv-longshanks)
+	(goal g-temp 500)
+	=>
+	(chat-to-enemies "I see you don't have William Wallace to save you.")
+	(chat-to-enemies "Good.")
+	(disable-self)
+	)
+	
+	(defrule
+	(goal g-general gv-longshanks)
+	(goal g-temp 501)
+	(stance-toward focus-player enemy)
+	=>
+	(chat-to-all "Wallace? What are you doing here?")
+	(disable-self)
+	)
+	
+	(defrule
+	(goal g-general gv-longshanks)
+	(goal g-temp 501)
+	(stance-toward focus-player ally)
+	=>
+	(chat-to-all "You're not going to turn traitor are you, William Wallace?")
+	(disable-self)
+	)
+		
+	;Henry V
+	
+	(defrule
+	(goal g-general gv-henry-v)
+	(game-time g:> g-initial-chat-delay)
+	=>
+	(chat-to-allies "For he today that sheds his blood with me shall be my brother.")
+	(chat-to-allies "I look forward to drawing our swords together, my friend.")
+	(disable-self)
+	)
+	
+	;King Arthur
+	
+	(defrule
+	(goal g-general gv-arthur)
+	(game-time g:> g-initial-chat-delay)
+	=>
+	(chat-to-all "I am Arthur, King of the Britons.")
+	(disable-self)
+	)
+
+#end-if
+
+#load-if-defined BURMESE-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+	
+#end-if
+
+#load-if-defined BYZANTINE-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+
+#end-if
+
+#load-if-defined CELTIC-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+
+#end-if
+
+#load-if-defined CHINESE-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+
+#end-if
+
+#load-if-defined ETHIOPIAN-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+	
+#end-if
+
+#load-if-defined FRANKISH-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+
+#end-if
+
+#load-if-defined GOTHIC-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+
+#end-if
+
+#load-if-defined HUN-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+
+#end-if
+
+#load-if-defined INCAN-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-eagles-revenge)
+	(set-goal g-initial-strategy gv-eagles-revenge)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+
+#end-if
+
+#load-if-defined INDIAN-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-crush)
+	(set-goal g-initial-strategy gv-crush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+	
+#end-if
+
+#load-if-defined ITALIAN-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+	
+#end-if
+
+#load-if-defined JAPANESE-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+
+#end-if
+
+#load-if-defined KHMER-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+	
+#end-if
+
+#load-if-defined KOREAN-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+	
+	;Chat
+
+	(defrule
+	(goal g-general gv-wang-geon)
+	(game-time g:> g-initial-chat-delay)
+	(up-compare-goal g-random-number <= 50)
+	=>
+	(chat-to-enemies "Want to see the might of Goryeo today?")
+	(chat-to-enemies "It would be my pleasure.")
+	(disable-self)
+	)
+
+	(defrule
+	(goal g-general gv-yi-sun-shin)
+	(game-time g:> g-initial-chat-delay)
+	(cc-players-unit-type-count 0 ocean-fish-class == 0)
+	(cc-players-unit-type-count 0 shore-fish-class == 0)
+	=>
+	(chat-to-all "No turtle ships??? Dang.")
+	(disable-self)
+	)
+
+#end-if
+
+#load-if-defined MAGYAR-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+	
+#end-if
+
+#load-if-defined MALAY-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+	
+#end-if
+
+#load-if-defined MALIAN-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+	
+#end-if
+
+#load-if-defined MAYAN-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-eagles-revenge)
+	(set-goal g-initial-strategy gv-eagles-revenge)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+
+#end-if
+
+#load-if-defined MONGOL-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+
+#end-if
+
+#load-if-defined PERSIAN-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+
+#end-if
+
+#load-if-defined PORTUGUESE-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+	
+#end-if
+
+#load-if-defined SARACEN-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+
+#end-if
+
+#load-if-defined SLAVIC-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+	
+#end-if
+
+#load-if-defined SPANISH-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+
+#end-if
+
+#load-if-defined TEUTONIC-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+
+#end-if
+
+#load-if-defined TURKISH-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+
+#end-if
+
+#load-if-defined VIETNAMESE-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+	
+	(defrule
+	(true)
+	=>
+	(set-goal g-initial-chat-delay 34)
+	(set-goal g-get-enemy-locations gv-start)	;start = 0, then loops through player numbers
+	(disable-self)
+	)
+	
+	(defrule
+	(game-time g:>= g-initial-chat-delay)
+	(goal g-get-enemy-locations gv-start)
+	(player-in-game any-enemy)
+	(player-in-game any-ally)
+	=>
+	(chat-to-allies "Vietnamese scouts are the best.")
+	(disable-self)
+	)
+	
+	(defrule
+	(game-time g:>= g-initial-chat-delay)
+	(goal g-get-enemy-locations gv-start)
+	(player-in-game any-enemy)
+	(player-in-game any-ally)
+	=>
+	(set-goal g-get-enemy-locations 1)
+	(up-modify-goal g-initial-chat-delay c:+ 6)
+	)
+	
+		(defrule
+		(game-time g:>= g-initial-chat-delay)
+		(up-compare-goal g-get-enemy-locations > gv-start)
+		(up-compare-goal g-get-enemy-locations < gv-done)
+		=>
+		(up-modify-sn sn-focus-player-number g:= g-get-enemy-locations)	;is p1 for first loop
+		)
+	
+		(defrule
+		(game-time g:>= g-initial-chat-delay)
+		(up-compare-goal g-get-enemy-locations > gv-start)
+		(up-compare-goal g-get-enemy-locations < gv-done)
+		(nand
+			(player-in-game focus-player)
+			(stance-toward focus-player enemy))
+		=>
+		(up-jump-rule 3)
+		)
+		
+		(defrule
+		(game-time g:>= g-initial-chat-delay)
+		(up-compare-goal g-get-enemy-locations > gv-start)
+		(up-compare-goal g-get-enemy-locations < gv-done)
+		(player-in-game focus-player)
+		(stance-toward focus-player enemy)
+		=>
+		(up-full-reset-search)
+		(up-find-remote c: town-center c: 1)
+		)
+		
+		(defrule
+		(game-time g:>= g-initial-chat-delay)
+		(up-compare-goal g-get-enemy-locations > gv-start)
+		(up-compare-goal g-get-enemy-locations < gv-done)
+		(player-in-game focus-player)
+		(stance-toward focus-player enemy)
+		(up-set-target-object search-remote c: 0)
+		=>
+		(up-get-player-color focus-player g-temp)
+		(up-chat-data-to-player every-ally "Found %s." c: 7031232)
+		(up-store-player-name focus-player)
+		(up-chat-data-to-player every-ally "%s is here." c: 7031232)
+		(up-get-point position-object g-point-x)
+		(up-set-target-point g-point-x)
+		(up-send-flare g-point-x)
+		)
+		
+		(defrule
+		(game-time g:>= g-initial-chat-delay)
+		(up-compare-goal g-get-enemy-locations > gv-start)
+		(up-compare-goal g-get-enemy-locations < gv-done)
+		(player-in-game focus-player)
+		(stance-toward focus-player enemy)
+		(up-set-target-object search-remote c: 0)
+		=>
+		(up-modify-goal g-get-enemy-locations c:+ 1)
+		(up-modify-sn sn-focus-player-number g:= g-get-enemy-locations)
+		(up-modify-goal g-initial-chat-delay c:+ 6)
+		(up-jump-rule -5)
+		)
+		
+		(defrule
+		(game-time g:>= g-initial-chat-delay)
+		(up-compare-goal g-get-enemy-locations > gv-start)
+		(up-compare-goal g-get-enemy-locations < gv-done)
+		=>
+		(up-modify-goal g-get-enemy-locations c:+ 1)
+		(up-modify-sn sn-focus-player-number g:= g-get-enemy-locations)
+		(up-jump-rule -6)
+		)
+		
+	(defrule
+	(goal g-get-enemy-locations gv-done)
+	(game-time g:>= g-initial-chat-delay)
+	=>
+	(chat-to-allies "Send taunt 16, and I will flare enemy locations again.")
+	(set-goal g-get-enemy-locations PENDING)
+	)
+		
+	(defrule
+	(taunt-detected any-ally 16)
+	=>
+	(acknowledge-taunt this-any-ally 16)
+	(chat-to-player this-any-ally "Here are the enemy locations.")
+	(up-get-fact game-time 0 g-initial-chat-delay)
+	(set-goal g-get-enemy-locations gv-start)
+	)
+	
+#end-if
+
+#load-if-defined VIKING-CIV
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-strategy gv-krush)
+	(set-goal g-initial-strategy gv-krush)
+	(set-goal g-strategy-type gv-fc)
+	(disable-self)
+	)
+
+#end-if

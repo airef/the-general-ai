@@ -1,0 +1,2989 @@
+;Technology Research.per
+
+;================<<<<<<<<DARK AGE>>>>>>>>================
+
+;Feudal Age
+
+(defrule
+(can-research-with-escrow feudal-age)
+(research-completed ri-loom)
+(or
+	(up-object-type-count-total c: villager g:>= g-desired-num-villager)
+	(and
+		(players-current-age any-enemy >= feudal-age)
+		(goal g-town-under-attack YES)))
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: feudal-age)
+(set-goal g-use-escrow without-escrow)
+)
+
+;Loom
+
+(defrule
+(dropsite-min-distance live-boar > 18)
+(dropsite-min-distance live-boar < 38)
+(or
+	(up-compare-goal g-desired-num-boar-hunters > 0)
+	(unit-type-count villager >= 8))
+(can-research ri-loom)
+=>
+(research ri-loom)
+)
+
+(defrule
+(or
+	(up-object-type-count c: villager g:>= g-desired-num-villager)
+	(goal g-town-under-attack YES))
+(can-research ri-loom)
+=>
+(research ri-loom)
+)
+
+(defrule
+(or
+	(civ-selected chinese)
+	(civ-selected mayan))
+=>
+(research ri-loom)
+)
+
+
+
+
+
+;================<<<<<<<<FEUDAL AGE>>>>>>>>================
+
+;====Castle Age
+
+(defrule
+(can-research-with-escrow castle-age)
+(or
+	(up-object-type-count-total c: villager g:>= g-desired-num-villager)
+	(or
+		(players-current-age any-enemy >= castle-age)
+		(goal g-town-under-attack YES)))
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: castle-age)
+(set-goal g-use-escrow without-escrow)
+)
+
+
+
+;====Unit Upgrades
+
+;Man-at-Arms
+
+(defrule
+(can-research ri-man-at-arms)
+(up-compare-goal g-desired-num-militia >= 5)
+=>
+(research ri-man-at-arms)
+)
+
+
+
+;====Essential Techs
+
+;Double-Bit Axe
+
+(defrule
+(can-research-with-escrow ri-double-bit-axe)
+(or
+	(up-compare-goal g-strategy == gv-krush)
+	(or
+		(up-compare-goal g-strategy == gv-eagles-revenge)
+		(up-compare-goal g-strategy == gv-crush)))
+(up-compare-goal g-age-status >= gv-advancing-to-castle)
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-double-bit-axe)
+(set-goal g-use-escrow without-escrow)
+)
+
+(defrule
+(can-research-with-escrow ri-double-bit-axe)
+(up-compare-goal g-strategy != gv-krush)
+(up-compare-goal g-strategy != gv-eagles-revenge)
+(up-compare-goal g-strategy != gv-crush)
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-double-bit-axe)
+(set-goal g-use-escrow without-escrow)
+)
+
+;Horse Collar
+
+(defrule
+(can-research-with-escrow ri-horse-collar)
+(or
+	(up-compare-goal g-strategy == gv-krush)
+	(or
+		(up-compare-goal g-strategy == gv-crush)
+		(up-compare-goal g-strategy == gv-eagles-revenge)))
+(up-compare-goal g-age-status >= gv-advancing-to-castle)
+(up-research-status	c: ri-double-bit-axe >= research-pending)
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-horse-collar)
+(set-goal g-use-escrow without-escrow)
+)
+
+(defrule
+(can-research-with-escrow ri-horse-collar)
+(up-compare-goal g-strategy != gv-krush)
+(up-compare-goal g-strategy != gv-eagles-revenge)
+(up-compare-goal g-strategy != gv-crush)
+(or
+	(up-research-status	c: ri-double-bit-axe >= research-pending)
+	(up-compare-goal g-age-status >= gv-advancing-to-castle))
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-horse-collar)
+(set-goal g-use-escrow without-escrow)
+)
+
+;Wheelbarrow
+
+(defrule
+(up-compare-goal g-strategy != gv-krush)
+(up-compare-goal g-strategy != gv-eagles-revenge)
+(up-compare-goal g-strategy != gv-crush)
+(unit-type-count-total villager >= 30)
+(goal g-town-under-attack NO)
+(can-research ri-wheel-barrow)
+(food-amount > 200)
+(or
+	(unit-type-count-total villager >= 40)
+	(unit-type-count villager-farmer >= 12))
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-wheel-barrow)
+(set-goal g-use-escrow without-escrow)
+)
+
+(defrule
+(or
+	(up-compare-goal g-strategy == gv-krush)
+	(or
+		(up-compare-goal g-strategy == gv-eagles-revenge)
+		(up-compare-goal g-strategy == gv-crush)))
+(current-age >= castle-age)
+(unit-type-count-total villager >= 30)
+(goal g-town-under-attack NO)
+(can-research ri-wheel-barrow)
+(or
+	(unit-type-count-total villager >= 40)
+	(unit-type-count villager-farmer >= 12))
+(up-compare-goal g-attack-status >= gv-first-attack)
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-wheel-barrow)
+(set-goal g-use-escrow without-escrow)
+)
+
+;Bloodlines
+
+(defrule
+(up-compare-goal g-strategy != gv-krush)
+(up-compare-goal g-strategy != gv-crush)
+(can-research ri-bloodlines)
+(or
+	(up-compare-goal g-desired-num-cavalry >= 4)
+	(up-compare-goal g-desired-num-cavalry-archers >= 4))
+=>
+(research ri-bloodlines)
+)
+
+(defrule
+(or
+	(up-compare-goal g-strategy == gv-krush)
+	(up-compare-goal g-strategy == gv-crush))
+(can-research-with-escrow ri-bloodlines)
+(up-compare-goal g-desired-num-cavalry >= 4)
+(or
+	(unit-type-count cavalry-class >= 8)
+	(up-compare-goal g-attack-status >= gv-first-attack))
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-bloodlines)
+(set-goal g-use-escrow without-escrow)
+)
+
+;Fletching
+
+(defrule
+(can-research-with-escrow ri-fletching)
+(up-compare-goal g-desired-num-pierce-attack-units > 5)
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-fletching)
+(set-goal g-use-escrow without-escrow)
+)
+
+
+
+;====Mining Camp
+
+;Gold Mining
+
+(defrule
+(can-research ri-gold-mining)
+(goal g-town-under-attack NO)
+(unit-type-count villager-gold >= 10)
+(up-research-status c: ri-double-bit-axe >= research-pending)
+(or
+	(up-research-status	c: ri-horse-collar >= research-pending)
+	(up-research-status c: castle-age >= research-pending))
+=>
+(research ri-gold-mining)
+)
+
+;Stone Mining
+
+(defrule
+(can-research ri-stone-mining)
+(up-compare-goal g-age-status >= gv-advancing-to-castle)
+(unit-type-count villager-stone >= 6)
+(up-research-status c: ri-double-bit-axe >= research-pending)
+(or
+	(up-research-status	c: ri-horse-collar >= research-pending)
+	(up-research-status c: castle-age >= research-pending))
+(or
+	(up-compare-goal g-desired-num-castle > 0)
+	(up-compare-goal g-desired-num-watch-tower > 1))
+
+=>
+(research ri-stone-mining)
+)
+
+
+
+;====Blacksmith
+
+;Scale Barding
+
+(defrule
+(can-research ri-scale-barding)
+;(not
+;	(research-available ri-bloodlines))
+(or
+	(up-compare-goal g-strategy == gv-krush)
+	(up-compare-goal g-strategy == gv-crush))
+(or
+	(up-compare-goal g-attack-status >= gv-first-attack)
+	(and
+		(food-amount >= 400)
+		(current-age >= castle-age)))
+(up-compare-goal g-desired-num-cavalry >= 4)
+=>
+(research ri-scale-barding)
+)
+
+(defrule
+(can-research ri-scale-barding)
+;(not
+;	(research-available ri-bloodlines))
+(up-compare-goal g-strategy != gv-krush)
+(up-compare-goal g-strategy != gv-crush)
+(or
+	(up-compare-goal g-attack-status >= gv-first-attack)
+	(food-amount >= 250))
+(up-compare-goal g-desired-num-cavalry >= 4)
+=>
+(research ri-scale-barding)
+)
+
+;Scale Mail
+
+(defrule
+(can-research ri-scale-mail)
+(up-compare-goal g-desired-num-infantry >= 5)
+(up-compare-goal g-strategy == gv-eagles-revenge)
+(or
+	(up-compare-goal g-attack-status >= gv-first-attack)
+	(and
+		(food-amount >= 400)
+		(current-age >= castle-age)))
+=>
+(research ri-scale-mail)
+)
+
+(defrule
+(can-research ri-scale-mail)
+(up-compare-goal g-desired-num-infantry >= 5)
+(up-compare-goal g-strategy != gv-eagles-revenge)
+(or
+	(up-compare-goal g-attack-status >= gv-first-attack)
+	(food-amount >= 200))
+=>
+(research ri-scale-mail)
+)
+
+;Padded Archer Armor
+
+(defrule
+(can-research ri-padded-archer-armor)
+(up-compare-goal g-desired-num-archer-armor-units >= 5)
+(up-compare-goal g-strategy == gv-strongbow)
+(or
+	(up-compare-goal g-attack-status >= gv-first-attack)
+	(and
+		(food-amount >= 300)
+		(current-age >= castle-age)))
+=>
+(research ri-padded-archer-armor)
+)
+
+(defrule
+(can-research ri-padded-archer-armor)
+(up-compare-goal g-desired-num-archer-armor-units >= 5)
+(up-compare-goal g-strategy != gv-strongbow)
+(or
+	(up-compare-goal g-attack-status >= gv-first-attack)
+	(food-amount >= 150))
+=>
+(research ri-padded-archer-armor)
+)
+
+;Forging
+
+(defrule
+(can-research ri-forging)
+(up-compare-goal g-desired-num-melee-attack-units >= 8)
+(and
+	(or
+		(up-compare-goal g-strategy == gv-krush)
+		(up-compare-goal g-strategy == gv-crush))
+	(up-research-status c: ri-chain-barding != research-available))
+(or
+	(up-compare-goal g-attack-status >= gv-first-attack)
+	(and
+		(food-amount >= 500)
+		(current-age >= castle-age)))
+=>
+(research ri-forging)
+)
+
+(defrule
+(can-research ri-forging)
+(up-compare-goal g-desired-num-melee-attack-units >= 8)
+(up-compare-goal g-strategy != gv-krush)
+(up-compare-goal g-strategy != gv-crush)
+=>
+(research ri-forging)
+)
+
+
+
+;====Barracks
+
+;Tracking
+
+;(defrule
+;(can-research ri-tracking)
+;(goal g-town-under-attack NO)
+;(goal g-meso-civ YES)
+;(or
+;	(unit-type-count eagle-warrior > 0)
+;	(and
+;		(unit-type-count infantry-class > 15)
+;		(food-amount > 500)))
+;(up-research-status c: ri-double-bit-axe >= research-pending)
+;(up-research-status c: ri-horse-collar >= research-pending)
+;=>
+;(research ri-tracking)
+;)
+
+(defrule
+(can-research ri-tracking)
+(goal g-town-under-attack NO)
+(current-age >= castle-age)
+(unit-type-count infantry-class > 15)
+(food-amount > 500)
+(up-research-status c: ri-forging >= research-pending)
+(up-research-status c: ri-scale-mail >= research-pending)
+=>
+(research ri-tracking)
+)
+
+
+
+;====Town Center
+
+;Town Watch
+
+(defrule
+(can-research ri-town-watch)
+(goal g-town-under-attack NO)
+(or
+	(up-object-type-count-total c: villager g:>= g-desired-num-villager)
+	(housing-headroom == 0))
+(research-completed ri-wheel-barrow)
+=>
+(research ri-town-watch)
+)
+
+(defrule
+(can-research ri-town-watch)
+(or
+	(up-building-type-in-town c: watch-tower > 0)
+	(up-unit-type-in-town c: cavalry-class > 0))
+(up-compare-goal g-attacking != YES)
+(research-completed ri-wheel-barrow)
+=>
+(research ri-town-watch)
+)
+
+
+
+;====Market
+
+;Cartography
+
+(defrule
+(can-research ri-cartography)
+(goal g-town-under-attack NO)
+(player-in-game any-ally)
+(current-age >= castle-age)
+=>
+(research ri-cartography)
+)
+
+;Coinage
+
+;(defrule
+;(can-research ri-coinage)
+;(goal g-town-under-attack NO)
+;(player-in-game any-ally)
+;(current-age >= castle-age)
+;(food-amount >= 500)
+;=>
+;(research ri-coinage)
+;)
+
+
+
+
+
+;================<<<<<<<<CASTLE AGE>>>>>>>>================
+
+;====Imperial Age
+
+(defrule
+(can-research-with-escrow imperial-age)
+(or
+	(up-object-type-count-total c: villager g:>= g-required-num-villager)
+	(and
+		(food-amount > 1200)
+		(gold-amount > 1000)))
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: imperial-age)
+(set-goal g-use-escrow without-escrow)
+)
+
+(defrule
+(can-research-with-escrow imperial-age)
+(up-object-type-count-total c: villager > 60)
+(or
+	(up-compare-goal g-military-superiority >= -10)
+	(players-current-age any-enemy == imperial-age))
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: imperial-age)
+(set-goal g-use-escrow without-escrow)
+)
+
+
+
+;====Unit Upgrades
+
+;Crossbowman
+
+(defrule
+(goal g-strategy gv-strongbow)
+(can-research-with-escrow ri-crossbow)
+(or
+	(up-compare-goal g-desired-num-archer > 5)
+	(unit-type-count-total archer-line >= 10))
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-crossbow)
+(set-goal g-use-escrow without-escrow)
+)
+
+(defrule
+(can-research ri-crossbow)
+(or
+	(up-compare-goal g-desired-num-archer > 5)
+	(unit-type-count-total archer-line >= 10))
+=>
+(research ri-crossbow)
+)
+
+;Pikeman
+
+(defrule
+(can-research ri-pikeman)
+(or
+	(up-compare-goal g-desired-num-spearman > 5)
+	(or
+		(unit-type-count-total spearman-line >= 10)
+		(and
+			(up-compare-goal g-desired-num-spearman > 0)
+			(up-compare-goal g-strategy >= gv-low-gold))))
+=>
+(research ri-pikeman)
+)
+
+;Elite Skirmisher
+
+(defrule
+(can-research ri-elite-skirmisher)
+(or
+	(up-compare-goal g-desired-num-skirmisher > 5)
+	(unit-type-count-total skirmisher-line >= 8))
+=>
+(research ri-elite-skirmisher)
+)
+
+;Light Cavalry
+
+(defrule
+(can-research ri-light-cavalry)
+(or
+	(up-compare-goal g-desired-num-scout-cavalry > 7)
+	(or
+		(unit-type-count-total scout-cavalry-line >= 10)
+		(and
+			(up-compare-goal g-desired-num-scout-cavalry > 0)
+			(up-compare-goal g-strategy >= gv-low-gold))))
+=>
+(research ri-light-cavalry)
+)
+
+;War Galley
+
+(defrule
+(can-research ri-war-galley)
+(or
+	(up-compare-goal g-desired-num-galley > 5)
+	(unit-type-count-total galley-line >= 5))
+=>
+(research ri-war-galley)
+)
+
+#load-if-defined UP-GAME-WK
+
+	;War Galley (and Fire Ship and Demolition Ship)
+
+	(defrule
+	(can-research ri-war-galley)
+	(or
+		(up-compare-goal g-desired-num-warships > 5)
+		(unit-type-count-total warship-class >= 8))
+	=>
+	(research ri-war-galley)
+	)
+
+	;Eagle Warrior
+
+	(defrule
+	(can-research ri-eagle-warrior)
+	(or
+		(up-compare-goal g-desired-num-eagle-warrior > 5)
+		(unit-type-count-total eagle-warrior-line >= 8))
+	=>
+	(research ri-eagle-warrior)
+	)
+
+	(defrule
+	(goal g-strategy gv-eagles-revenge)
+	(can-research-with-escrow ri-eagle-warrior)
+	(or
+		(up-compare-goal g-desired-num-eagle-warrior > 5)
+		(up-compare-goal g-eagle-scout-line >= 8))
+	=>
+	(set-goal g-use-escrow with-escrow)
+	(up-research g-use-escrow c: ri-eagle-warrior)
+	(set-goal g-use-escrow without-escrow)
+	)
+
+#end-if
+
+;Long Swordsman
+
+(defrule
+(can-research ri-long-swordsman)
+(or
+	(up-compare-goal g-desired-num-militia > 8)
+	(unit-type-count-total militiaman-line >= 12))
+=>
+(research ri-long-swordsman)
+)
+
+
+
+;====Building Upgrades
+
+;Guard Tower
+
+(defrule
+(can-research ri-guard-tower)
+(or
+	(up-compare-goal g-desired-num-watch-tower > 5)
+	(up-compare-goal g-watch-tower-line >= 5))
+=>
+(research ri-guard-tower)
+)
+
+;Fortified Wall
+
+;Doesn't build walls yet
+
+
+
+;====Essential Techs
+
+;Bow Saw
+
+(defrule
+(can-research-with-escrow ri-bow-saw)
+(goal g-town-under-attack NO)
+(unit-type-count villager-wood > 7)
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-bow-saw)
+(set-goal g-use-escrow without-escrow)
+)
+
+;Heavy Plow
+
+(defrule
+(up-compare-goal g-strategy != gv-krush)
+(up-compare-goal g-strategy != gv-eagles-revenge)
+(up-compare-goal g-strategy != gv-krush)
+(can-research-with-escrow ri-heavy-plow)
+(goal g-town-under-attack NO)
+(unit-type-count villager-farmer > 4)
+(up-research-status c: ri-bow-saw >= research-pending)
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-heavy-plow)
+(set-goal g-use-escrow without-escrow)
+)
+
+(defrule
+(goal g-strategy gv-krush)
+(can-research-with-escrow ri-heavy-plow)
+(goal g-town-under-attack NO)
+(unit-type-count villager-farmer > 4)
+(up-research-status c: ri-bow-saw >= research-pending)
+(or
+	(unit-type-count knight-line >= 8)
+	(up-compare-goal g-attack-status >= gv-first-attack))
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-heavy-plow)
+(set-goal g-use-escrow without-escrow)
+)
+
+(defrule
+(goal g-strategy gv-eagles-revenge)
+(can-research-with-escrow ri-heavy-plow)
+(goal g-town-under-attack NO)
+(unit-type-count villager-farmer > 4)
+(up-research-status c: ri-bow-saw >= research-pending)
+(or
+	(up-compare-goal g-eagle-scout-line >= 8)
+	(up-compare-goal g-attack-status >= gv-first-attack))
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-heavy-plow)
+(set-goal g-use-escrow without-escrow)
+)
+
+(defrule
+(goal g-strategy gv-crush)
+(can-research-with-escrow ri-heavy-plow)
+(goal g-town-under-attack NO)
+(unit-type-count villager-farmer > 4)
+(up-research-status c: ri-bow-saw >= research-pending)
+(or
+	(unit-type-count camel-line >= 8)
+	(up-compare-goal g-attack-status >= gv-first-attack))
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-heavy-plow)
+(set-goal g-use-escrow without-escrow)
+)
+
+;Bodkin Arrow
+
+(defrule
+(can-research-with-escrow ri-bodkin-arrow)
+(up-compare-goal g-desired-num-pierce-attack-units > 6)
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-bodkin-arrow)
+(set-goal g-use-escrow without-escrow)
+)
+
+;Ballistics
+
+(defrule
+(can-research-with-escrow ri-ballistics)
+(up-compare-goal g-desired-num-pierce-attack-units >= 10)
+	
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-ballistics)
+(set-goal g-use-escrow without-escrow)
+)
+
+(defrule
+(can-research-with-escrow ri-ballistics)
+(up-compare-goal g-desired-num-galley >= 6)
+		
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-ballistics)
+(set-goal g-use-escrow without-escrow)
+)
+
+
+
+;====Unique Techs
+
+#load-if-defined AZTEC-CIV
+
+	;Atlatl - skirmisher range and attack
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-skirmisher > 5)
+		(up-compare-goal g-skirmisher-line >= 8))
+	=>
+	(research ri-castle-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined BERBERS-CIV
+
+	;Kasbah - team castle work rate
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(and
+			(unit-type-count castle >= 2)
+			(up-compare-goal g-desired-num-unique-unit > 5))
+		(players-building-type-count any-ally castle >= 2))
+	=>
+	(research ri-castle-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined BRITON-CIV
+
+	;Yeomen - foot archer range and tower attack
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-archer > 10)
+		(or
+			(up-compare-goal g-desired-num-unique-unit > 10)
+			(up-compare-goal g-desired-num-watch-tower > 5)))
+	=>
+	(research ri-castle-unique-tech)
+	)
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(unit-type-count archer-line > 15)
+		(or
+			(unit-type-count my-unique-unit-line > 12)
+			(up-compare-goal g-watch-tower-line > 7)))
+	=>
+	(research ri-castle-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined BURMESE-CIV
+
+	;Howdah - battle elephant armor
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-battle-elephant > 8)
+		(up-compare-goal g-battle-elephant-line >= 12))
+	=>
+	(research ri-castle-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined BYZANTINE-CIV
+
+	;Greek Fire - fire ship range
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-fire-ship > 6)
+		(up-compare-goal g-fire-galley-line >= 9))
+	=>
+	(research ri-castle-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined CELTIC-CIV
+
+	;Stronghold - castle and tower fire rate
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(unit-type-count castle > 1)
+		(up-compare-goal g-watch-tower-line >= 5))
+	=>
+	(research ri-castle-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined CHINESE-CIV
+
+	;Great Wall - Tower/walls HP
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-watch-tower-line >= 6)
+		(unit-type-count bombard-tower > 3))
+	=>
+	(research ri-castle-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined ETHIOPIAN-CIV
+
+	;Royal Heirs - Shotel warrior training time
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(up-compare-goal g-desired-num-unique-unit > 12)
+	=>
+	(research ri-castle-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined FRANKISH-CIV
+
+	;Chivalry - stable work rate
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-scout-cavalry > 15)
+		(up-compare-goal g-desired-num-knight > 15))
+	=>
+	(research ri-castle-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined GOTHIC-CIV
+
+	;Anarchy - huskarls train at barracks
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(up-compare-goal g-desired-num-unique-unit > 12)
+	=>
+	(research ri-castle-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined HUN-CIV
+
+	;Marauders - tarkans train at stable
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(up-compare-goal g-desired-num-unique-unit > 12)
+	=>
+	(research ri-castle-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined INCAN-CIV
+
+	;Andean Sling - no min range for skirmishers or slingers
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-skirmisher > 12)
+		(or
+			(up-compare-goal g-skirmisher-line >= 16)
+			(or
+				(up-compare-goal g-desired-num-slinger > 12)
+				(unit-type-count slinger >= 16))))
+	=>
+	(research ri-castle-unique-tech)
+	)
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-skirmisher > 7)
+		(up-compare-goal g-skirmisher-line >= 9))
+	(or
+		(up-compare-goal g-desired-num-slinger > 7)
+		(unit-type-count slinger >= 9))
+	=>
+	(research ri-castle-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined INDIAN-CIV
+
+	;Sultans - all gold sources gather faster
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(goal g-town-under-attack NO)
+	(or
+		(unit-type-count villager-gold > 5)
+		(or
+			(unit-type-count trade-cart > 10)
+			(up-compare-goal g-num-relics-gathered >= 2)))
+	=>
+	(research ri-castle-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined ITALIAN-CIV
+
+	;Pavise - increases foot archer armor
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-archer > 10)
+		(or
+			(unit-type-count archer-line >= 15)
+			(or
+				(up-compare-goal g-desired-num-unique-unit > 10)
+				(up-compare-goal g-unique-unit-line >= 15))))
+	=>
+	(research ri-castle-unique-tech)
+	)
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-archer > 6)
+		(unit-type-count archer-line >= 9))
+	(or
+		(up-compare-goal g-desired-num-unique-unit > 6)
+		(up-compare-goal g-unique-unit-line >= 9))
+	=>
+	(research ri-castle-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined JAPANESE-CIV
+
+	;Yasama - towers fire extra arrows
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-watch-tower > 4)
+		(up-compare-goal g-watch-tower-line >= 6))
+	=>
+	(research ri-castle-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined KHMER-CIV
+
+	;Tusk Swords - battle elephant attack
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-battle-elephant > 8)
+		(up-compare-goal g-battle-elephant-line >= 12))
+	=>
+	(research ri-castle-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined KOREAN-CIV
+
+	;Panokseon - turtle ship speed
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-unique-ship >= 5)
+		(unit-type-count turtle-ship-line >= 6))
+	=>
+	(research ri-castle-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined MAGYAR-CIV
+
+	;Mercenaries - Magyar huszar don't cost gold
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-unique-unit > 8)
+		(up-compare-goal g-unique-unit-line >= 12))
+	=>
+	(research ri-castle-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined MALAY-CIV
+
+	;Thalassocracy - docks fire arrows
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-dock > 2)
+		(building-type-count dock >= 4))
+	=>
+	(research ri-castle-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined MALIAN-CIV
+
+	;Tigui - TCs fire arrows
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-town-center > 3)
+		(building-type-count town-center >= 4))
+	=>
+	(research ri-castle-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined MAYAN-CIV
+
+	;Obsidian Arrows - archer attack vs. buildings
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-archer >= 8)
+		(unit-type-count archer-line >= 12))
+	=>
+	(research ri-castle-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined MONGOL-CIV
+
+	;Nomads - destroyed houses still support pop
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(current-age >= imperial-age)
+	=>
+	(research ri-castle-unique-tech)
+	)
+	
+	(defrule
+	(research-completed ri-castle-unique-tech)
+	=>
+	(up-delete-objects c: house c: 32767)
+	)
+
+#end-if
+
+#load-if-defined PERSIAN-CIV
+	#load-if-not-defined DE-AVAILABLE
+
+		;Boiling Oil - castles do more damage to rams
+
+		(defrule
+		(can-research ri-castle-unique-tech)
+		(building-type-count castle >= 2)
+		(players-unit-type-count any-enemy battering-ram-line >= 5)
+		=>
+		(research ri-castle-unique-tech)
+		)
+		
+	#end-if
+	
+	#load-if-defined DE-AVAILABLE
+	
+		;Kamandaran - Archer line costs 50W
+
+		(defrule
+		(can-research ri-castle-unique-tech)
+		(or
+			(up-compare-goal g-desired-num-archer >= 6)
+			(unit-type-count archer-line >= 8))
+		=>
+		(research ri-castle-unique-tech)
+		)
+		
+	#end-if
+#end-if
+
+#load-if-defined PORTUGUESE-CIV
+
+	;Carrack - ship armor
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-warships >= 10)
+		(unit-type-count warship-class >= 15))
+	=>
+	(research ri-castle-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined SARACEN-CIV
+
+	;Masrasah - dead monks return some gold
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-monk >= 5)
+		(unit-type-count monastery-class >= 7))
+	=>
+	(research ri-castle-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined SLAVIC-CIV
+
+	;Orthodoxy - monk armor
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-monk >= 5)
+		(unit-type-count monastery-class >= 7))
+	=>
+	(research ri-castle-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined SPANISH-CIV
+
+	;Inquisition - monk/missionary convert speed
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-monks >= 5)
+		(unit-type-count monastery-class >= 7))
+	=>
+	(research ri-castle-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined TEUTONIC-CIV
+
+	;Ironclad - siege melee armor
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-siege >= 5)
+		(up-compare-goal g-siege-class >= 7))
+	=>
+	(research ri-castle-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined TURKISH-CIV
+
+	;Sipahi - cav archer HP
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-cavalry-archer >= 8)
+		(or
+			(unit-type-count cavalry-archer-line >= 12)
+			(or
+				(up-compare-goal g-desired-num-genitour >= 8)
+				(up-compare-goal g-genitour-line >= 12))))
+	=>
+	(research ri-castle-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined VIETNAMESE-CIV
+
+	;Chatras - Battle elephant HP
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-battle-elephant >= 8)
+		(up-compare-goal g-battle-elephant-line >= 12))
+	=>
+	(research ri-castle-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined VIKING-CIV
+
+	;Chieftains - infantry bonus attack vs. cavalry
+
+	(defrule
+	(can-research ri-castle-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-infantry >= 15)
+		(unit-type-count infantry-class >= 20))
+	(players-unit-type-count any-enemy cavalry-class > 10)
+	=>
+	(research ri-castle-unique-tech)
+	)
+
+#end-if
+
+
+
+;====Town Center
+
+;Hand Cart
+
+(defrule
+(can-research ri-hand-cart)
+(goal g-town-under-attack NO)
+(unit-type-count villager-farmer >= 15)
+(research-completed ri-bow-saw)
+=>
+(research ri-hand-cart)
+)
+
+;Town Patrol
+
+(defrule
+(can-research ri-town-patrol)
+(goal g-town-under-attack NO)
+(population > 125)
+(research-completed ri-hand-cart)
+=>
+(research ri-town-patrol)
+)
+
+
+
+;====Mining Camp
+
+;Gold Shaft Mining
+
+(defrule
+(can-research ri-gold-shaft-mining)
+(population > 75)
+(goal g-town-under-attack NO)
+(unit-type-count villager-gold > 5)
+(up-research-status c: ri-heavy-plow >= research-pending)
+=>
+(research ri-gold-shaft-mining)
+)
+
+;Stone Shaft Mining
+
+(defrule
+(can-research ri-stone-shaft-mining)
+(population > 125)
+(goal g-town-under-attack NO)
+(unit-type-count villager-stone > 5)
+(or
+	(up-compare-goal g-desired-num-castle >= 4)
+	(up-compare-goal g-desired-num-watch-tower >= 6))
+=>
+(research ri-stone-shaft-mining)
+)
+
+
+
+;====Dock
+
+;Gillnets
+
+(defrule
+(can-research ri-gillnets)
+(goal g-town-under-attack NO)
+(unit-type-count fishing-ship > 5)
+=>
+(research ri-gillnets)
+)
+
+;Careening
+
+(defrule
+(can-research ri-careening)
+(goal g-town-under-attack NO)
+(or
+	(unit-type-count transport-ship > 4)
+	(unit-type-count warship-class > 12))
+=>
+(research ri-careening)
+)
+
+
+
+;====Blacksmith
+
+;Chain Barding
+
+(defrule
+(can-research ri-chain-barding)
+(up-compare-goal g-desired-num-cavalry >= 8)
+=>
+(research ri-chain-barding)
+)
+
+;Leather Archer Armor
+
+(defrule
+(can-research ri-leather-archer-armor)
+(up-compare-goal g-desired-num-archer-armor-units >= 10)
+=>
+(research ri-leather-archer-armor)
+)
+
+;Chain Mail
+
+(defrule
+(can-research ri-chain-mail)
+(up-compare-goal g-desired-num-infantry >= 10)
+=>
+(research ri-chain-mail)
+)
+
+;Iron Casting
+
+(defrule
+(can-research ri-iron-casting)
+(up-compare-goal g-desired-num-melee-attack-units >= 15)
+=>
+(research ri-iron-casting)
+)
+
+
+
+;====Market
+
+;Caravan
+
+(defrule
+(can-research ri-caravan)
+;(goal g-town-under-attack NO)
+(player-in-game any-ally)
+(population > 150)
+(or	
+	(up-compare-goal g-desired-num-trade-cart >= 5)
+	(unit-type-count trade-cart >= 5))
+=>
+(research ri-caravan)
+)
+
+;Banking
+
+;(defrule
+;(can-research ri-banking)
+;(goal g-town-under-attack NO)
+;(player-in-game any-ally)
+;(population > 150)
+;=>
+;(research ri-banking)
+;)
+
+
+
+;====Barracks
+
+;Arson
+
+(defrule
+(can-research ri-arson)
+(or
+	(goal g-town-under-attack NO)
+	(enemy-buildings-in-town))
+(unit-type-count infantry-class > 15)
+=>
+(research ri-arson)
+)
+
+;Squires
+
+(defrule
+(can-research ri-squires)
+(goal g-town-under-attack NO)
+(unit-type-count infantry-class > 20)
+=>
+(research ri-squires)
+)
+
+
+
+;====Archery Range
+
+;Thumb Ring
+
+(defrule
+(can-research ri-thumb-ring)
+(or
+	(up-compare-goal g-desired-num-archer >= 10)
+	(or
+		(up-compare-goal g-desired-num-cavalry-archers >= 6)
+		(up-compare-goal g-desired-num-slinger >= 10)))
+		
+=>
+(research ri-thumb-ring)
+)
+
+
+
+;====Stable
+
+(defrule
+(can-research ri-husbandry)
+(goal g-town-under-attack NO)
+(or
+	(unit-type-count cavalry-class > 20)
+	(unit-type-count-total cavalry-archer-class > 12))
+=>
+(research ri-husbandry)
+)
+
+
+
+;====Monastery
+
+;Heresy
+
+(defrule
+(can-research ri-heresy)
+(or
+	(players-unit-type-count any-enemy monk > 7)
+	(and
+		(civ-selected aztec)
+		(up-compare-goal g-desired-num-monk > 10)))
+=>
+(research ri-heresy)
+)
+
+;Redemption
+
+(defrule
+(can-research ri-redemption)
+(up-compare-goal g-desired-num-monk > 7)
+=>
+(research ri-redemption)
+)
+
+;Sanctity
+
+(defrule
+(can-research ri-sanctity)
+(up-compare-goal g-desired-num-monk > 5)
+=>
+(research ri-sanctity)
+)
+
+#load-if-defined UP-GAME-WK
+
+	;Fervor
+
+	(defrule
+	(can-research ri-fervor)
+	(up-compare-goal g-desired-num-monk > 5)
+	=>
+	(research ri-fervor)
+	)
+
+#end-if
+
+#load-if-defined AZTEC-CIV
+
+	;Fervor
+
+	(defrule
+	(can-research ri-fervor)
+	(up-compare-goal g-desired-num-monk > 7)
+	=>
+	(research ri-fervor)
+	)
+
+#end-if
+
+;Atonement
+
+(defrule
+(can-research ri-atonement)
+(or
+	(players-unit-type-count any-enemy monk > 5)
+	(civ-selected aztec))
+(up-compare-goal g-desired-num-monk > 7)
+=>
+(research ri-atonement)
+)
+
+;Herbal Medicine
+
+(defrule
+(can-research ri-herbal-medicine)
+(civ-selected aztec)
+(up-compare-goal g-desired-num-monk > 10)
+(up-research-status c: ri-redemption >= research-pending)
+(up-research-status c: ri-atonement >= research-pending)
+(up-research-status c: ri-sanctity >= research-pending)
+=>
+(research ri-herbal-medicine)
+)
+
+
+
+;====University
+
+;Murder Holes
+
+(defrule
+(can-research ri-murder-holes)
+(or
+	(building-type-count-total castle >= 3)
+	(or
+		(up-compare-goal g-watch-tower-line >= 5)
+		(and
+			(building-type-count castle >= 1)
+			(goal g-town-under-attack YES))))
+=>
+(research ri-murder-holes)
+)
+
+;Masonry
+
+(defrule
+(can-research ri-masonry)
+(goal g-town-under-attack NO)
+(population > 100)
+(research-completed ri-murder-holes)
+(building-type-count castle >= 2)
+=>
+(research ri-masonry)
+)
+
+;Heated Shot
+
+(defrule
+(can-research ri-heated-shot)
+(or
+	(building-type-count-total castle >= 3)
+	(up-compare-goal g-watch-tower-line >= 5))
+(players-unit-type-count any-enemy warship-class > 10)
+=>
+(research ri-heated-shot)
+)
+
+;Treadmill Crane
+
+(defrule
+(can-research ri-treadmill-crane)
+;(goal g-town-under-attack NO)
+(population > 100)
+(up-compare-goal g-desired-num-castle >= 3)
+(research-completed ri-hand-cart)
+=>
+(research ri-treadmill-crane)
+)
+
+
+
+;================<<<<<<<<IMPERIAL AGE>>>>>>>>================
+
+;====Unit Upgrades
+
+;Galleon
+
+(defrule
+(can-research ri-galleon)
+(or
+	(up-compare-goal g-desired-num-galley > 4)
+	(unit-type-count-total galley-line >= 6))
+=>
+(research ri-galleon)
+)
+
+;Cavalier
+
+(defrule
+(can-research ri-cavalier)
+(or
+	(up-compare-goal g-desired-num-knight > 8)
+	(unit-type-count-total knight-line >= 10))
+=>
+(research ri-cavalier)
+)
+
+(defrule
+(goal g-initial-strategy gv-krush)
+(can-research-with-escrow ri-cavalier)
+(or
+	(up-compare-goal g-desired-num-knight > 8)
+	(unit-type-count-total knight-line >= 10))
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-cavalier)
+(set-goal g-use-escrow without-escrow)
+)
+
+;Paladin
+
+(defrule
+(can-research ri-paladin)
+(or
+	(up-compare-goal g-desired-num-knight > 10)
+	(unit-type-count-total knight-line >= 15))
+=>
+(research ri-paladin)
+)
+
+(defrule
+(goal g-initial-strategy gv-krush)
+(can-research-with-escrow ri-paladin)
+(or
+	(up-compare-goal g-desired-num-knight > 10)
+	(unit-type-count-total knight-line >= 15))
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-paladin)
+(set-goal g-use-escrow without-escrow)
+)
+
+;Arbalest
+
+(defrule
+(can-research ri-arbalest)
+(or
+	(up-compare-goal g-desired-num-archer > 8)
+	(unit-type-count-total archer-line >= 12))
+
+=>
+(research ri-arbalest)
+)
+
+;Elite Eagle Warrior
+
+(defrule
+(can-research ri-elite-eagle-warrior)
+(or
+	(up-compare-goal g-desired-num-eagle-warrior > 8)
+	(up-compare-goal g-eagle-scout-line >= 12))
+=>
+(research ri-elite-eagle-warrior)
+)
+
+(defrule
+(goal g-strategy gv-eagles-revenge)
+(can-research-with-escrow ri-elite-eagle-warrior)
+(or
+	(up-compare-goal g-desired-num-eagle-warrior > 8)
+	(up-compare-goal g-eagle-scout-line >= 12))
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-elite-eagle-warrior)
+(set-goal g-use-escrow without-escrow)
+)
+
+;Halberdier
+
+(defrule
+(can-research ri-halberdier)
+(or
+	(up-compare-goal g-desired-num-spearman > 8)
+	(or
+		(unit-type-count-total spearman-line >= 12)
+		(and
+			(up-compare-goal g-desired-num-spearman > 0)
+			(up-compare-goal g-strategy >= gv-low-gold))))
+=>
+(research ri-halberdier)
+)
+
+;Elite Unique Unit
+
+(defrule
+(can-research my-unique-unit-upgrade)
+(or
+	(up-compare-goal g-desired-num-unique-unit > 6)
+	(up-compare-goal g-unique-unit-line >= 9))
+=>
+(research my-unique-unit-upgrade)
+)
+
+;Fast Fire Ship
+
+(defrule
+(can-research ri-fast-fire-ship)
+(or
+	(up-compare-goal g-desired-num-fire-ship > 4)
+	(unit-type-count-total fire-ship-line >= 7))
+=>
+(research ri-fast-fire-ship)
+)
+
+;Heavy Camel
+
+(defrule
+(can-research ri-heavy-camel)
+(or
+	(up-compare-goal g-desired-num-camel > 8)
+	(up-compare-goal g-camel-line >= 12))
+=>
+(research ri-heavy-camel)
+)
+
+(defrule
+(goal g-initial-strategy gv-crush)
+(can-research-with-escrow ri-heavy-camel)
+(or
+	(up-compare-goal g-desired-num-camel > 8)
+	(unit-type-count-total camel-line >= 12))
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-heavy-camel)
+(set-goal g-use-escrow without-escrow)
+)
+
+;Imperial Camel
+
+(defrule
+(can-research ri-imperial-camel)
+(or
+	(up-compare-goal g-desired-num-camel > 8)
+	(up-compare-goal g-camel-line >= 12))
+=>
+(research ri-imperial-camel)
+)
+
+(defrule
+(goal g-initial-strategy gv-crush)
+(can-research-with-escrow ri-imperial-camel)
+(or
+	(up-compare-goal g-desired-num-camel > 8)
+	(unit-type-count-total camel-line >= 12))
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-imperial-camel)
+(set-goal g-use-escrow without-escrow)
+)
+
+;Capped Ram
+
+(defrule
+(can-research ri-capped-ram)
+(or
+	(up-compare-goal g-desired-num-battering-ram > 3)
+	(unit-type-count-total battering-ram-line >= 5))
+=>
+(research ri-capped-ram)
+)
+
+;Siege Ram
+
+(defrule
+(can-research ri-siege-ram)
+(or
+	(up-compare-goal g-desired-num-battering-ram > 3)
+	(unit-type-count-total battering-ram-line >= 5))
+=>
+(research ri-siege-ram)
+)
+
+;Two-Handed Swordsman
+
+(defrule
+(can-research ri-two-handed-swordsman)
+(or
+	(up-compare-goal g-desired-num-militia > 8)
+	(unit-type-count-total militiaman-line >= 12))
+=>
+(research ri-two-handed-swordsman)
+)
+
+;Champion
+
+(defrule
+(can-research ri-champion)
+(or
+	(up-compare-goal g-desired-num-militia > 8)
+	(unit-type-count-total militiaman-line >= 12))
+=>
+(research ri-champion)
+)
+
+;Onager
+
+(defrule
+(can-research ri-onager)
+(or
+	(up-compare-goal g-desired-num-mangonel > 2)
+	(up-compare-goal g-mangonel-line >= 4))
+=>
+(research ri-onager)
+)
+
+;Siege Onager
+
+(defrule
+(can-research ri-siege-onager)
+(or
+	(up-compare-goal g-desired-num-mangonel > 2)
+	(up-compare-goal g-mangonel-line >= 4))
+=>
+(research ri-siege-onager)
+)
+
+#load-if-defined VIKING-CIV
+
+	;Elite Longboat
+
+	(defrule
+	(can-research ri-elite-longboat)
+	(or
+		(up-compare-goal g-desired-num-unique-ship > 5)
+		(unit-type-count-total longboat-line >= 10))
+	=>
+	(research ri-elite-longboat)
+	)
+
+#end-if
+
+#load-if-defined KOREAN-CIV
+
+	;Elite Turtle Ship
+
+	(defrule
+	(can-research ri-elite-turtle-ship)
+	(or
+		(up-compare-goal g-desired-num-unique-ship > 5)
+		(unit-type-count-total turtle-ship-line >= 8))
+	=>
+	(research ri-elite-turtle-ship)
+	)
+
+#end-if
+
+#load-if-defined PORTUGUESE-CIV
+
+	;Elite Caravel
+
+	(defrule
+	(can-research ri-elite-caravel)
+	(or
+		(up-compare-goal g-desired-num-unique-ship > 5)
+		(unit-type-count-total caravel >= 10))
+	=>
+	(research ri-elite-caravel)
+	)
+
+#end-if
+
+;Hussar
+
+(defrule
+(can-research ri-hussar)
+(or
+	(up-compare-goal g-desired-num-scout-cavalry > 8)
+	(or
+		(unit-type-count-total scout-cavalry-line >= 12)
+		(and
+			(up-compare-goal g-desired-num-scout-cavalry > 0)
+			(up-compare-goal g-strategy >= gv-low-gold))))
+=>
+(research ri-hussar)
+)
+
+;Imperial Skirmisher
+
+(defrule
+(can-research ri-imperial-skirmisher)
+(or
+	(up-compare-goal g-desired-num-skirmisher > 8)
+	(unit-type-count-total skirmisher-line >= 12))
+=>
+(research ri-imperial-skirmisher)
+)
+
+;Heavy Cavalry Archer
+
+(defrule
+(can-research ri-heavy-cavalry-archer)
+(or
+	(up-compare-goal g-desired-num-cavalry-archer > 10)
+	(unit-type-count-total cavalry-archer-line >= 15))
+=>
+(research ri-heavy-cavalry-archer)
+)
+
+;Cannon Galleon
+
+(defrule
+(can-research ri-cannon-galleon)
+(up-compare-goal g-desired-num-cannon-galleon > 0)
+=>
+(research ri-cannon-galleon)
+)
+
+;Elite Cannon Galleon
+
+(defrule
+(can-research ri-elite-cannon-galleon)
+(or
+	(up-compare-goal g-desired-num-cannon-galleon > 2)
+	(unit-type-count-total cannon-galleon-line >= 4))
+=>
+(research ri-elite-cannon-galleon)
+)
+
+;Heavy Scorpion
+
+(defrule
+(can-research ri-heavy-scorpion)
+(or
+	(up-compare-goal g-desired-num-scorpion > 4)
+	(unit-type-count-total scorpion-line >= 6))
+=>
+(research ri-heavy-scorpion)
+)
+
+;Elite Genitour
+
+(defrule
+(can-research ri-elite-genitour)
+(or
+	(up-compare-goal g-desired-num-genitour > 8)
+	(up-compare-goal g-genitour-line >= 12))
+=>
+(research ri-elite-genitour)
+)
+
+;Elite Battle Elephant
+
+(defrule
+(can-research ri-elite-battle-elephant)
+(or
+	(up-compare-goal g-desired-num-battle-elephant > 8)
+	(unit-type-count-total battle-elephant >= 12))
+=>
+(research ri-elite-battle-elephant)
+)
+
+;Heavy Demolition Ship
+
+(defrule
+(can-research ri-heavy-demolition-ship)
+(or
+	(up-compare-goal g-desired-num-demolition-ship > 4)
+	(unit-type-count-total demolition-ship-line >= 4))
+=>
+(research ri-heavy-demolition-ship)
+)
+
+
+
+;====Building Upgrades
+
+;Bombard Tower
+
+(defrule
+(can-research ri-bombard-tower)
+(up-compare-goal g-desired-num-bombard-tower > 0)
+=>
+(research ri-bombard-tower)
+)
+
+;Keep
+
+(defrule
+(can-research ri-keep)
+(or
+	(up-compare-goal g-desired-num-watch-tower > 5)
+	(up-compare-goal g-watch-tower-line >= 5))
+=>
+(research ri-keep)
+)
+
+
+
+;====Essential Techs
+
+;Chemistry
+
+(defrule
+(can-research-with-escrow ri-chemistry)
+(or
+	(up-compare-goal g-desired-num-hand-cannoneer > 0)
+	(or
+		(up-compare-goal g-desired-num-bombard-cannon > 0)
+		(or
+			(up-compare-goal g-desired-num-bombard-tower > 0)
+			(up-compare-goal g-desired-num-cannon-galleon > 0))))
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-chemistry)
+(set-goal g-use-escrow without-escrow)
+)
+
+(defrule
+(can-research-with-escrow ri-chemistry)
+(or
+	(unit-type-count archery-class >= 15)
+	(or
+		(up-compare-goal g-desired-num-archers >= 25)
+		(or
+			(unit-type-count cavalry-archer-class >= 12)
+			(up-compare-goal g-desired-num-cavalry-archers >= 20))))
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-chemistry)
+(set-goal g-use-escrow without-escrow)
+)
+
+;Conscription
+
+(defrule
+(can-research-with-escrow ri-conscription)
+(up-modify-goal g-desired-military-pop > 15)
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-conscription)
+(set-goal g-use-escrow without-escrow)
+)
+
+;Crop Rotation
+
+(defrule
+(can-research-with-escrow ri-crop-rotation)
+(goal g-town-under-attack NO)
+(unit-type-count villager-farmer > 4)
+=>
+(set-goal g-use-escrow with-escrow)
+(up-research g-use-escrow c: ri-crop-rotation)
+(set-goal g-use-escrow without-escrow)
+)
+
+
+
+;====Unique Techs
+
+#load-if-defined AZTEC-CIV
+
+	;Garland Wars - infantry attack
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-infantry > 10)
+		(unit-type-count infantry-class >= 15))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined BERBERS-CIV
+
+	;Maghrabi Camels - camel units regenerate
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-camel > 12)
+		(or
+			(up-compare-goal g-camel-line >= 15)
+			(or
+				(up-compare-goal g-desired-num-unique-unit > 12)
+				(up-compare-goal g-unique-unit-line >= 15))))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-camel > 7)
+		(up-compare-goal g-camel-line >= 9))
+	(or
+		(up-compare-goal g-desired-num-unique-unit > 7)
+		(up-compare-goal g-unique-unit-line >= 9))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined BRITON-CIV
+
+	;Warwolf - trebuchets have blast radius
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-trebuchet > 3)
+		(up-compare-goal g-trebuchet-line > 4))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+#end-if
+
+#load-if-defined BURMESE-CIV
+
+	;Manipur Cavalry - cavalry and arambai attack vs. buildings
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-cavalry > 15)
+		(or
+			(unit-type-count cavalry-class >= 20)
+			(or
+				(up-compare-goal g-desired-num-unique-unit > 9)
+				(up-compare-goal g-unique-unit-line >= 13))))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-cavalry > 9)
+		(unit-type-count cavalry-class >= 12))
+	(or
+		(up-compare-goal g-desired-num-unique-unit > 6)
+		(up-compare-goal g-unique-unit-line >= 9))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined BYZANTINE-CIV
+
+	;Logistica - cataphract trample damage
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-unique-unit > 9)
+		(up-compare-goal g-unique-unit-line >= 12))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined CELTIC-CIV
+
+	;Furor Celtica - siege weapon HP
+	
+	;Determine desired counts and existing counts for siege workshop siege only
+	(defrule
+	(true)
+	=>
+	(up-modify-goal g-temp g:= g-desired-num-siege)
+	(up-modify-goal g-temp g:- g-desired-num-trebuchet)
+	(up-modify-goal g-temp g:- g-desired-num-petard)
+	(up-get-fact unit-type-count petard-class g-temp-2)
+	(up-modify-goal g-temp-2 c:* -1)	;alternate way of subtracting petards without using extra temp goal
+	(up-modify-goal g-temp-2 g:+ g-siege-class)
+	(up-modify-goal g-temp-2 g:- g-trebuchet-line)
+	)
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-temp > 3)		;desired num siege weapons from siege workshop
+		(up-compare-goal g-temp-2 > 4))		;num siege workshop units
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined CHINESE-CIV
+
+	;Rocketry - chu ko nu and scorpion attack
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-scorpion > 6)
+		(or
+			(unit-type-count scorpion-line >= 9)
+			(or
+				(up-compare-goal g-desired-num-unique-unit > 16)
+				(up-compare-goal g-unique-unit-line >= 22))))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-scorpion > 5)
+		(unit-type-count scorpion-line >= 7))
+	(or
+		(up-compare-goal g-desired-num-unique-unit > 10)
+		(up-compare-goal g-unique-unit-line >= 15))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined ETHIOPIAN-CIV
+
+	;Torsion Engines - siege workshop unit blast radius
+	
+	;Determine desired counts and existing counts for siege workshop siege only
+	(defrule
+	(true)
+	=>
+	(up-modify-goal g-temp g:= g-desired-num-siege)
+	(up-modify-goal g-temp g:- g-desired-num-trebuchet)
+	(up-modify-goal g-temp g:- g-desired-num-petard)
+	(up-get-fact unit-type-count petard-class g-temp-2)
+	(up-modify-goal g-temp-2 c:* -1)	;alternate way of subtracting petards without using extra temp goal
+	(up-modify-goal g-temp-2 g:+ g-siege-class)
+	(up-modify-goal g-temp-2 g:- g-trebuchet-line)
+	)
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-temp > 3)		;desired num siege weapons from siege workshop
+		(up-compare-goal g-temp-2 > 4))		;num siege workshop units
+	=>
+	(research ri-imperial-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined FRANKISH-CIV
+
+	;Bearded Axe - throwing axemen range
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-unique-unit > 9)
+		(up-compare-goal g-unique-unit-line > 15))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined GOTHIC-CIV
+
+	;Perfusion - barracks work faster
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(up-compare-goal g-desired-num-infantry > 15)
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined HUN-CIV
+
+	;Atheism - relic wonder victories longer, spies/treason cheaper
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(players-building-type-count any-enemy wonder > 0)
+		(enemy-captured-relics))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined INCAN-CIV
+
+	;Couriers - kamayuks, slingers, eagle warriors extra armor
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-slinger > 12)
+		(or
+			(unit-type-count slinger >= 16)
+			(or
+				(up-compare-goal g-desired-num-eagle-warrior > 12)
+				(or
+					(up-compare-goal g-eagle-scout-line >= 16)
+					(or
+						(up-compare-goal g-desired-num-unique-unit > 10)
+						(up-compare-goal g-unique-unit-line > 12))))))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-eagle-warrior > 10)
+		(up-compare-goal g-eagle-scout-line >= 15))
+	(or
+		(up-compare-goal g-desired-num-slinger > 7)
+		(unit-type-count slinger >= 9))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-eagle-warrior > 10)
+		(up-compare-goal g-eagle-scout-line >= 15))
+	(or
+		(up-compare-goal g-desired-num-unique-unit > 7)
+		(up-compare-goal g-unique-unit-line >= 9))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-slinger > 7)
+		(unit-type-count slinger >= 9))
+	(or
+		(up-compare-goal g-desired-num-unique-unit > 7)
+		(up-compare-goal g-unique-unit-line >= 9))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-eagle-warrior > 7)
+		(up-compare-goal g-eagle-scout-line >= 10))
+	(or
+		(up-compare-goal g-desired-num-slinger > 5)
+		(unit-type-count slinger >= 7))
+	(or
+		(up-compare-goal g-desired-num-unique-unit > 5)
+		(up-compare-goal g-unique-unit-line >= 7))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined INDIAN-CIV
+
+	;Shatagni - hand cannoneers more range
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-hand-cannoneer > 12)
+		(unit-type-count hand-cannoneer >= 15))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined ITALIAN-CIV
+
+	;Silk Road - trade carts/cogs cost less
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-trade-cart > 0)
+		(up-compare-goal g-desired-num-trade-cog > 0))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined JAPANESE-CIV
+
+	;Kataparuto - trebuchets fire/unpack faster
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-trebuchet > 3)
+		(up-compare-goal g-trebuchet-line >= 5))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined KHMER-CIV
+
+	;Double Crossbow - ballista elephants, scorpions fire 2 arrows
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-scorpion > 6)
+		(or
+			(unit-type-count scorpion-line >= 9)
+			(or
+				(up-compare-goal g-desired-num-unique-unit > 9)
+				(up-compare-goal g-unique-unit-line >= 15))))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined KOREAN-CIV
+
+	;Shinkichon - mangonel less minimum range (more range in 1.0c)
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-mangonel >= 4)
+		(unit-type-count mangonel-line >= 6))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined MAGYAR-CIV
+
+	;Recurve Bow - cavalry archer range and attack
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-cavalry-archer > 8)
+		(unit-type-count cavalry-archer-line >= 12))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined MALAY-CIV
+
+	;Forced Levy - militia line don't cost gold
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-militia > 12)
+		(unit-type-count militiaman-line >= 20))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined MALIAN-CIV
+
+	;Farimba - cavalry attack
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-cavalry > 10)
+		(unit-type-count cavalry-class >= 15))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined MAYAN-CIV
+
+	;El Dorado - eagle warrior HP
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-eagle-warrior >= 10)
+		(up-compare-goal g-eagle-scout-line >= 15))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined MONGOL-CIV
+
+	;Drill - siege workshop units move faster
+	
+	;Determine desired counts and existing counts for siege workshop siege only
+	(defrule
+	(true)
+	=>
+	(up-modify-goal g-temp g:= g-desired-num-siege)
+	(up-modify-goal g-temp g:- g-desired-num-trebuchet)
+	(up-modify-goal g-temp g:- g-desired-num-petard)
+	(up-get-fact unit-type-count petard-class g-temp-2)
+	(up-modify-goal g-temp-2 c:* -1)	;alternate way of subtracting petards without using extra temp goal
+	(up-modify-goal g-temp-2 g:+ g-siege-class)
+	(up-modify-goal g-temp-2 g:- g-trebuchet-line)
+	)
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-temp > 3)		;desired num siege weapons from siege workshop
+		(up-compare-goal g-temp-2 > 4))		;num siege workshop units
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined PERSIAN-CIV
+
+	;Mahouts - war elephant speed
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-unique-unit >= 8)
+		(up-compare-goal g-unique-unit-line >= 12))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined PORTUGUESE-CIV
+
+	;Arquebus - gunpowder unit ballistics
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-bombard-cannon > 3)
+		(or
+			(unit-type-count bombard-cannon >= 5)
+			(or
+				(up-compare-goal g-desired-num-cannon-galleon > 5)
+				(or
+					(unit-type-count cannon-galleon-line >= 8)
+					(or
+						(up-compare-goal g-desired-num-hand-cannoneer > 10)
+						(unit-type-count hand-cannoneer >= 15))))))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined SARACEN-CIV
+
+	;Zealotry - camel, mamaluke HP
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-camel > 10)
+		(or
+			(up-compare-goal g-camel-line >= 15)
+			(or
+				(up-compare-goal g-desired-num-unique-unit > 9)
+				(up-compare-goal g-unique-unit-line >= 15))))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined SLAVIC-CIV
+
+	;Druzhina - infantry blast radius
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-infantry >= 15)
+		(unit-type-count infantry-class >= 20))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined SPANISH-CIV
+
+	;Surpremacy - villager combat skills
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(unit-type-count villager >= 90)
+		(up-compare-sn sn-number-civilian-militia >= 12))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined TEUTONIC-CIV
+
+	;Crenellations - castle HP, garrisoned infantry fire arrows
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-castle >= 3)
+		(unit-type-count castle >= 3))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined TURKISH-CIV
+
+	;Artillery - bombard tower, bombard cannon, cannon galleon range
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-bombard-cannon > 3)
+		(or
+			(unit-type-count bombard-cannon >= 5)
+			(or
+				(up-compare-goal g-desired-num-cannon-galleon > 5)
+				(or
+					(unit-type-count cannon-galleon-line >= 8)
+					(or
+						(up-compare-goal g-desired-num-bombard-tower > 3)
+						(building-type-count bombard-tower >= 5))))))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+#end-if
+
+#load-if-defined VIETNAMESE-CIV
+
+	;Paper Money - team receives gold
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(player-in-game any-ally)
+		(unit-type-count villager-gold == 0))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+	
+#end-if
+
+#load-if-defined VIKING-CIV
+
+	;Berserkergang - berserk regeneration
+
+	(defrule
+	(can-research ri-imperial-unique-tech)
+	(or
+		(up-compare-goal g-desired-num-unique-unit >= 12)
+		(up-compare-goal g-unique-unit-line >= 16))
+	=>
+	(research ri-imperial-unique-tech)
+	)
+
+#end-if
+
+
+
+;====Lumber Camp
+
+;Two-Man Saw
+
+(defrule
+(can-research ri-two-man-saw)
+(goal g-town-under-attack NO)
+(unit-type-count villager-wood > 10)
+=>
+(research ri-two-man-saw)
+)
+
+
+
+;====Blacksmith
+
+;Bracer
+
+(defrule
+(can-research ri-bracer)
+(up-compare-goal g-desired-num-pierce-attack-units > 6)
+=>
+(research ri-bracer)
+)
+
+;Plate Barding
+
+(defrule
+(can-research ri-plate-barding)
+(up-compare-goal g-desired-num-cavalry >= 8)
+=>
+(research ri-plate-barding)
+)
+
+;Plate Mail
+
+(defrule
+(can-research ri-plate-mail)
+(up-compare-goal g-desired-num-infantry >= 10)
+=>
+(research ri-plate-mail)
+)
+
+;Ring Archer Armor
+
+(defrule
+(can-research ri-ring-archer-armor)
+(up-compare-goal g-desired-num-archer-armor-units >= 10)
+=>
+(research ri-ring-archer-armor)
+)
+
+;Blast Furnace
+
+(defrule
+(can-research ri-blast-furnace)
+(up-compare-goal g-desired-num-melee-attack-units >= 15)
+=>
+(research ri-blast-furnace)
+)
+
+
+
+;====Archery Range
+
+;Parthian Tactics
+
+(defrule
+(can-research ri-parthian-tactics)
+(up-compare-goal g-desired-num-cavalry-archers > 8)
+=>
+(research ri-parthian-tactics)
+)
+
+
+
+;====Dock
+
+;Shipwright
+
+(defrule
+(can-research ri-shipwright)
+(up-compare-goal g-desired-num-warships > 12)
+=>
+(research ri-shipwright)
+)
+
+;Dry Dock
+
+(defrule
+(can-research ri-dry-dock)
+(or
+	(up-compare-goal g-desired-num-transport-ship > 3)
+	(or
+		(up-compare-goal g-desired-num-warships > 8)
+		(unit-type-count warship-class >= 12)))
+=>
+(research ri-dry-dock)
+)
+
+
+
+;====Market
+
+(defrule
+(can-research ri-guilds)
+(goal g-town-under-attack NO)
+(population > 100)
+=>
+(research ri-guilds)
+)
+
+
+
+;====Castle
+
+;Hoardings
+
+(defrule
+(can-research ri-hoardings)
+(or
+	(up-compare-goal g-desired-num-castle > 3)
+	(unit-type-count castle >= 3))
+=>
+(research ri-hoardings)
+)
+
+;Sappers
+
+(defrule
+(can-research ri-sappers)
+(up-compare-sn sn-allow-civilian-offense == 1)
+(up-compare-sn sn-number-civilian-militia >= 12)
+(or
+	(not
+		(civ-selected spanish))
+	(research-completed ri-imperial-unique-tech))
+=>
+(research ri-sappers)
+)
+
+
+
+;====Monastery
+
+;Faith
+
+(defrule
+(can-research ri-faith)
+(or
+	(players-unit-type-count any-enemy monk > 7)
+	(and
+		(civ-selected aztec)
+		(up-compare-goal g-desired-num-monk > 10)))
+=>
+(research ri-faith)
+)
+
+(defrule
+(can-research ri-faith)
+(players-unit-type-count any-enemy monk > 3)
+(or
+	(unit-type-count war-elephant-line > 6)
+	(or
+		(unit-type-count elephant-archer > 8)
+		(unit-type-count battle-elephant > 6)))
+=>
+(research ri-faith)
+)
+
+;Block Printing
+
+(defrule
+(can-research ri-block-printing)
+(up-compare-goal g-desired-num-monk > 7)
+=>
+(research ri-block-printing)
+)
+
+;Illumination
+
+(defrule
+(can-research ri-illumination)
+(up-compare-goal g-desired-num-monk > 5)
+=>
+(research ri-illumination)
+)
+
+;Theocracy
+
+(defrule
+(can-research ri-theocracy)
+(up-compare-goal g-desired-num-monk > 5)
+=>
+(research ri-theocracy)
+)
+
+
+
+;====University
+
+;Siege Engineers
+
+(defrule
+(can-research ri-siege-engineers)
+(or
+	(up-compare-goal g-desired-num-siege > 3)
+	(up-compare-goal g-siege-class > 3))
+=>
+(research ri-siege-engineers)
+)
+
+;Arrowslits
+
+(defrule
+(can-research ri-arrowslits)
+(up-compare-goal g-watch-tower-line >= 5)
+=>
+(research ri-arrowslits)
+)
+
+;Architecture
+
+(defrule
+(can-research ri-architecture)
+(goal g-town-under-attack NO)
+(population > 100)
+(research-completed ri-murder-holes)
+(building-type-count castle >= 2)
+=>
+(research ri-architecture)
+)

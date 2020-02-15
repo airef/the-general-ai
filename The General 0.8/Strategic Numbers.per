@@ -1,0 +1,258 @@
+;Strategic Numbers.per
+
+;====SN-SAFE-TOWN-SIZE and SN-MAXIMUM-TOWN-SIZE
+
+(defrule
+(up-compare-sn sn-safe-town-size < 10)
+=>
+(up-modify-sn sn-safe-town-size c:= 10)
+(up-modify-sn sn-maximum-town-size s:max sn-safe-town-size)
+)
+
+(defrule
+(current-age >= feudal-age)
+(up-compare-sn sn-safe-town-size < 14)
+(not
+	(enemy-buildings-in-town))
+=>
+(up-modify-sn sn-safe-town-size c:= 14)
+(up-modify-sn sn-maximum-town-size s:max sn-safe-town-size)
+)
+
+(defrule
+(population > 40)
+(up-compare-sn sn-safe-town-size < 18)
+(not
+	(enemy-buildings-in-town))
+=>
+(up-modify-sn sn-safe-town-size c:= 18)
+(up-modify-sn sn-maximum-town-size s:max sn-safe-town-size)
+)
+
+(defrule
+(population > 50)
+(up-compare-sn sn-safe-town-size < 24)
+(not
+	(enemy-buildings-in-town))
+=>
+(up-modify-sn sn-safe-town-size c:= 24)
+(up-modify-sn sn-maximum-town-size s:max sn-safe-town-size)
+)
+
+(defrule
+(population > 100)
+(not
+	(enemy-buildings-in-town))
+(up-compare-sn sn-safe-town-size < 40)
+=>
+(up-modify-sn sn-safe-town-size c:= 40)
+(up-modify-sn sn-maximum-town-size s:max sn-safe-town-size)
+)
+
+;====SN-ENABLE-TRAINING-QUEUE
+
+(defrule
+(current-age == castle-age)
+=>
+(up-modify-sn sn-enable-training-queue c:= 0)
+)
+
+;====SN-CAMP-MAX-DISTANCE
+
+(defrule
+(building-type-count-total lumber-camp > 0)
+=>
+(up-modify-sn sn-lumber-camp-max-distance c:= 30)
+(disable-self)
+)
+
+(defrule
+(building-type-count-total mining-camp > 1)
+=>
+(up-modify-sn sn-mining-camp-max-distance c:= 30)
+(disable-self)
+)
+
+(defrule
+(up-compare-sn sn-mining-camp-max-distance == 70)
+(or
+	(population > 125)
+	(and
+		(current-age >= castle-age)
+		(dropsite-min-distance gold > 5)))
+(game-time > 1800)
+=>
+(up-modify-sn sn-lumber-camp-max-distance c:= 255)
+(up-modify-sn sn-mining-camp-max-distance c:= 255)
+(disable-self)
+)
+
+(defrule
+(or
+	(population > 100)
+	(and
+		(current-age >= castle-age)
+		(dropsite-min-distance gold > 5)))
+=>
+(up-modify-sn sn-lumber-camp-max-distance c:= 70)
+(up-modify-sn sn-mining-camp-max-distance c:= 70)
+(disable-self)
+)
+
+;(defrule
+;(up-timer-status t-10-sec == timer-triggered)
+;(goal g-check-drop-distance PENDING)
+;=>
+;(up-get-fact dropsite-min-distance wood g-temp)
+;(set-goal g-check-drop-distance wood)
+;)
+
+;(defrule
+;(military-population > 40)
+;(up-compare-goal g-temp s:> sn-lumber-camp-max-distance)
+;(up-compare-goal g-temp < 255)
+;(goal g-check-drop-distance wood)
+;=>
+;(up-modify-sn sn-lumber-camp-max-distance g:= g-temp)
+;(up-modify-sn sn-lumber-camp-max-distance c:+ 5)
+;(up-chat-data-to-self "Increase wood camp size to %d" s: sn-lumber-camp-max-distance)
+;)
+
+;(defrule
+;(up-timer-status t-10-sec == timer-triggered)
+;(goal g-check-drop-distance wood)
+;=>
+;(up-get-fact dropsite-min-distance gold g-temp)
+;(set-goal g-check-drop-distance gold)
+;)
+
+;(defrule
+;(military-population > 40)
+;(up-compare-goal g-temp s:> sn-mining-camp-max-distance)
+;(up-compare-goal g-temp < 255)
+;(goal g-check-drop-distance gold)
+;=>
+;(up-modify-sn sn-mining-camp-max-distance g:= g-temp)
+;(up-modify-sn sn-mining-camp-max-distance c:+ 5)
+;(up-chat-data-to-self "Increase gold camp size to %d" s: sn-mining-camp-max-distance)
+;)
+
+;(defrule
+;(up-timer-status t-10-sec == timer-triggered)
+;(goal g-check-drop-distance gold)
+;=>
+;(up-get-fact dropsite-min-distance stone g-temp)
+;(set-goal g-check-drop-distance stone)
+;)
+
+;(defrule
+;(military-population > 40)
+;(up-compare-goal g-temp s:> sn-mining-camp-max-distance)
+;(up-compare-goal g-temp < 255)
+;(goal g-check-drop-distance stone)
+;=>
+;(up-modify-sn sn-mining-camp-max-distance g:= g-temp)
+;(up-modify-sn sn-mining-camp-max-distance c:+ 5)
+;(up-chat-data-to-self "Increase stone camp size to %d" s: sn-mining-camp-max-distance)
+;)
+
+
+
+;====SN-RETASK-GATHER-AMOUNT
+
+;(defrule
+;(up-compare-goal g-boar-hunt-status == -1)
+;=>
+;(up-modify-sn sn-retask-gather-amount c:= 0)
+;(up-modify-sn sn-max-retask-gather-amount c:= 0)
+;)
+
+;(defrule
+;(up-compare-goal g-boar-hunt-status != -1)
+;=>
+;(up-modify-sn sn-retask-gather-amount c:= 100)
+;(up-modify-sn sn-max-retask-gather-amount c:= 100)
+;)
+
+
+
+;====EXPLORING SNS
+
+(defrule
+(game-time == 0)
+(building-type-count-total town-center > 0)
+(cc-players-unit-type-count 0 livestock-class > 0)
+(unit-type-count-total livestock-class == 0)
+(up-gaia-type-count c: forage-class == 0)
+(strategic-number sn-percent-civilian-explorers < 100)
+(unit-type-count villager-builder == 0)
+=>
+(set-strategic-number sn-percent-civilian-explorers 100)
+(set-strategic-number sn-cap-civilian-explorers 5)
+(set-strategic-number sn-total-number-explorers 6)
+(set-strategic-number sn-number-explore-groups 6)
+(chat-local-to-self "explore for livestock")
+)
+
+(defrule
+(game-time > 90)
+(building-type-count-total town-center > 0)
+(cc-players-unit-type-count 0 forage-class > 0)
+(up-gaia-type-count c: forage-class == 0)
+(building-type-count-total mill == 0)
+(strategic-number sn-percent-civilian-explorers < 50)
+=>
+(set-strategic-number sn-percent-civilian-explorers 50)
+(set-strategic-number sn-cap-civilian-explorers 5)
+(set-strategic-number sn-total-number-explorers 6)
+(set-strategic-number sn-number-explore-groups 6)
+(chat-local-to-self "explore for forage")
+)
+
+(defrule
+(game-time > 0)
+(building-type-count-total town-center > 0)
+(cc-players-unit-type-count 0 livestock-class > 0)
+(unit-type-count-total livestock-class > 0)
+(strategic-number sn-percent-civilian-explorers == 100)
+=>
+(set-strategic-number sn-percent-civilian-explorers 0)
+(set-strategic-number sn-percent-civilian-gatherers 100)
+(set-strategic-number sn-cap-civilian-explorers 0)
+(set-strategic-number sn-total-number-explorers 1)
+(set-strategic-number sn-number-explore-groups 1)
+)
+
+(defrule
+(game-time > 90)
+(building-type-count-total town-center > 0)
+(cc-players-unit-type-count 0 forage-class > 0)
+(up-gaia-type-count c: forage-class > 0)
+(strategic-number sn-percent-civilian-explorers == 50)
+=>
+(set-strategic-number sn-percent-civilian-explorers 0)
+(set-strategic-number sn-percent-civilian-gatherers 100)
+(set-strategic-number sn-cap-civilian-explorers 0)
+(set-strategic-number sn-total-number-explorers 1)
+(set-strategic-number sn-number-explore-groups 1)
+)
+
+;Don't scout when town under attack
+
+(defrule
+(goal g-town-under-attack YES)
+(strategic-number sn-number-explore-groups > 0)
+=>
+(set-strategic-number sn-number-explore-groups 0)
+(set-strategic-number sn-total-number-explorers 0)
+(set-strategic-number sn-cap-civilian-explorers 0)
+(up-reset-scouts)
+)
+
+(defrule
+(goal g-town-under-attack NO)
+(strategic-number sn-number-explore-groups == 0)
+=>
+(set-strategic-number sn-number-explore-groups 1)
+(set-strategic-number sn-total-number-explorers 1)
+)

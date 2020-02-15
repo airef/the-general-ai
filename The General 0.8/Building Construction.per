@@ -1,0 +1,695 @@
+;Building Construction.per
+
+;Wonders
+
+(defrule
+(up-object-type-count-total c: wonder g:< g-desired-num-wonder)
+(can-build-with-escrow wonder)
+(up-pending-objects c: wonder < 1)
+(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+=>
+(up-set-placement-data my-player-number -1 c: -25)
+(up-modify-sn sn-placement-zone-size c:= 15)
+(up-assign-builders c: wonder c: 45)
+(set-goal g-use-escrow with-escrow)
+(up-build place-control g-use-escrow c: wonder)
+(chat-to-player my-player-number "Build Wonder")
+)
+
+;Town Centers
+
+(defrule
+(up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+(can-build-with-escrow town-center)
+(up-pending-objects c: town-center < 2)
+(building-type-count-total town-center == 1)
+=>
+(set-strategic-number sn-allow-adjacent-dropsites 1)
+(set-strategic-number sn-dropsite-separation-distance 2)
+(set-strategic-number sn-town-center-placement mining-camp)
+(up-assign-builders c: town-center-foundation c: 4)
+(up-release-escrow)
+(set-goal g-use-escrow with-escrow)
+(up-build place-normal g-use-escrow c: town-center)
+(chat-to-player my-player-number "Build Town Center")
+)
+
+(defrule
+(up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+(can-build-with-escrow town-center)
+(up-pending-objects c: town-center < 2)
+(building-type-count-total town-center != 1)
+=>
+(set-strategic-number sn-allow-adjacent-dropsites 1)
+(set-strategic-number sn-dropsite-separation-distance 2)
+(set-strategic-number sn-town-center-placement lumber-camp)
+(up-assign-builders c: town-center-foundation c: 4)
+(up-release-escrow)
+(set-goal g-use-escrow with-escrow)
+(up-build place-normal g-use-escrow c: town-center)
+(chat-to-player my-player-number "Build Town Center")
+)
+
+;Houses
+
+;get number of additional houses needed (stored in g-temp)
+(defrule
+(true)
+=>
+(up-modify-goal g-temp g:= g-desired-num-house)
+(up-get-fact building-type-count house g-temp-2)
+(up-modify-goal g-temp g:- g-temp-2)
+(up-modify-goal g-temp c:max 0)
+;(up-chat-data-to-self "House: %d" g: g-temp)
+)
+
+#load-if-not-defined CHINESE-CIV
+	#load-if-not-defined HUN-CIV
+
+		(defrule
+		(building-type-count-total house <= 2)
+		=>
+		(up-modify-sn sn-disable-builder-assistance c:= 1)
+		(up-assign-builders c: house c: 4)
+		)
+
+		(defrule
+		(building-type-count-total house > 2)
+		=>
+		(up-modify-sn sn-disable-builder-assistance c:= 0)
+		)
+	
+	#end-if
+#end-if
+
+(defrule
+(up-compare-goal g-temp >= 2)
+=>
+(up-assign-builders c: house g: g-temp)
+)
+
+(defrule
+(up-compare-goal g-temp < 2)
+=>
+(up-assign-builders c: house c: 1)
+)
+
+(defrule
+(up-object-type-count-total c: house g:< g-desired-num-house)
+(can-build house)
+(up-pending-objects c: house g:< g-temp)
+=>
+(build house)
+(chat-to-player my-player-number "Build House")
+)
+
+;Mills
+
+(defrule
+(up-object-type-count-total c: mill g:< g-desired-num-mill)
+(up-pending-objects c: mill == 0)
+(can-build mill)
+=>
+(up-modify-sn sn-allow-adjacent-dropsites c:= 1)
+(build mill)
+)
+
+;Lumber Camps
+
+(defrule
+(up-object-type-count-total c: lumber-camp g:< g-desired-num-lumber-camp)
+(up-pending-objects c: lumber-camp == 0)
+(can-build lumber-camp)
+=>
+(up-modify-sn sn-allow-adjacent-dropsites c:= 1)
+)
+
+(defrule
+(up-object-type-count-total c: lumber-camp g:< g-desired-num-lumber-camp)
+(up-pending-objects c: lumber-camp == 0)
+(can-build lumber-camp)
+=>
+(up-modify-sn sn-allow-adjacent-dropsites c:= 1)
+(build lumber-camp)
+)
+
+(defrule
+(game-time > 300)
+(building-type-count-total lumber-camp == 1)
+(up-pending-objects c: lumber-camp == 0)
+(dropsite-min-distance wood >= 5)
+(dropsite-min-distance wood < 255)
+(can-build lumber-camp)
+=>
+(up-modify-sn sn-allow-adjacent-dropsites c:= 1)
+;(up-modify-goal g-desired-num-lumber-camp c:+ 1)
+(build lumber-camp)
+(set-strategic-number sn-dropsite-separation-distance 4)
+)
+
+(defrule
+(game-time > 300)
+(building-type-count-total lumber-camp > 1)
+(up-pending-objects c: lumber-camp == 0)
+(dropsite-min-distance wood >= 5)
+(dropsite-min-distance wood < 255)
+(can-build lumber-camp)
+=>
+(up-modify-sn sn-allow-adjacent-dropsites c:= 1)
+;(up-modify-goal g-desired-num-lumber-camp c:+ 1)
+(build lumber-camp)
+)
+
+;Mining Camps
+
+;Copied from Barbarian by II2N/The Max
+;Adapted by Leif Ericson
+
+(defrule
+(up-object-type-count-total c: mining-camp g:< g-desired-num-mining-camp)
+(up-compare-goal g-desired-num-gold-vils > 0)
+(dropsite-min-distance gold > 4)
+(dropsite-min-distance gold < 30)
+(can-build mining-camp)
+(goal g-place-point-used NO)
+=>
+(up-modify-goal g-temp s:= sn-focus-player-number)
+(set-strategic-number sn-focus-player-number 0)
+(up-full-reset-search)
+(up-set-target-point g-position-self-x)
+(up-filter-distance c: -1 c: 30)
+(up-find-remote c: gold-mine c: 1)
+(chat-to-player my-player-number "find gold camp spot")
+)
+
+(defrule
+(up-object-type-count-total c: mining-camp g:< g-desired-num-mining-camp)
+(up-compare-goal g-desired-num-gold-vils > 0)
+(dropsite-min-distance gold > 4)
+(dropsite-min-distance gold < 30)
+(can-build mining-camp)
+(goal g-place-point-used NO)
+(up-set-target-object search-remote c: 0)
+=>
+(up-get-point position-object g-point-x)
+(up-set-target-point g-point-x)
+(set-strategic-number sn-placement-zone-size 5)
+(set-strategic-number sn-placement-fail-delta 0)
+(set-strategic-number sn-allow-adjacent-dropsites 0)
+(up-build place-point 0 c: mining-camp)
+(set-goal g-place-point-used YES)
+(up-modify-sn sn-focus-player-number g:= g-temp)
+;(up-chat-data-to-self "gold x %d" g: g-point-x)
+(chat-to-player my-player-number "set gold camp spot")
+)
+
+(defrule
+(up-object-type-count-total c: mining-camp g:< g-desired-num-mining-camp)
+(up-compare-goal g-desired-num-stone-vils > 0)
+(dropsite-min-distance gold < 5)
+(dropsite-min-distance stone > 4)
+(dropsite-min-distance stone < 30)
+(can-build mining-camp)
+(goal g-place-point-used NO)
+=>
+(up-modify-goal g-temp s:= sn-focus-player-number)
+(set-strategic-number sn-focus-player-number 0)
+(up-full-reset-search)
+(up-set-target-point g-position-self-x)
+(up-filter-distance c: -1 c: 30)
+(up-find-remote c: stone-mine c: 1)
+(chat-to-player my-player-number "find stone camp spot")
+)
+
+(defrule
+(up-object-type-count-total c: mining-camp g:< g-desired-num-mining-camp)
+(up-compare-goal g-desired-num-stone-vils > 0)
+(dropsite-min-distance gold < 5)
+(dropsite-min-distance stone > 4)
+(dropsite-min-distance stone < 30)
+(can-build mining-camp)
+(goal g-place-point-used NO)
+(up-set-target-object search-remote c: 0)
+=>
+(up-get-point position-object g-point-x)
+(up-set-target-point g-point-x)
+(set-strategic-number sn-placement-zone-size 5)
+(set-strategic-number sn-placement-fail-delta 0)
+(set-strategic-number sn-allow-adjacent-dropsites 0)
+(up-build place-point 0 c: mining-camp)
+(set-goal g-place-point-used YES)
+(up-modify-sn sn-focus-player-number g:= g-temp)
+;(up-chat-data-to-self "stone x %d" g: g-point-x)
+;(chat-to-player my-player-number "set stone camp spot")
+)
+
+(defrule
+(or
+	(and
+		(dropsite-min-distance stone > 4)
+		(and
+			(dropsite-min-distance stone < 30)
+			(and
+				(dropsite-min-distance gold < 5)
+				(up-compare-goal g-desired-num-stone-vils > 0))))
+	(and
+		(dropsite-min-distance gold > 4)
+		(up-compare-goal g-desired-num-gold-vils > 0)))
+=>
+(up-modify-sn sn-focus-player-number g:= g-temp)
+)
+
+(defrule
+(game-time > 600)
+(up-pending-objects c: mining-camp == 0)
+(dropsite-min-distance stone >= 5)
+(dropsite-min-distance stone < 255)
+(or
+	(up-compare-goal g-desired-num-stone-vils > 0)
+	(up-compare-sn sn-stone-gatherer-percentage > 0))
+(can-build mining-camp)
+=>
+(up-modify-goal g-temp s:= sn-gold-dropsite-distance)
+(up-modify-sn sn-gold-dropsite-distance c:= 50)
+(up-modify-sn sn-allow-adjacent-dropsites c:= 0)
+(up-modify-sn sn-gold-dropsite-distance g:= g-temp)
+(build mining-camp)
+(chat-local-to-self "stone camp")
+)
+
+(defrule
+(game-time > 900)
+(up-pending-objects c: mining-camp == 0)
+(dropsite-min-distance gold >= 5)
+(dropsite-min-distance gold < 255)
+(or
+	(up-compare-goal g-desired-num-gold-vils > 0)
+	(up-compare-sn sn-gold-gatherer-percentage > 0))
+(can-build mining-camp)
+=>
+(up-modify-goal g-temp s:= sn-stone-dropsite-distance)
+(up-modify-sn sn-stone-dropsite-distance c:= 50)
+(up-modify-sn sn-allow-adjacent-dropsites c:= 0)
+(up-modify-sn sn-stone-dropsite-distance g:= g-temp)
+(build mining-camp)
+(chat-local-to-self "gold camp")
+)
+
+;Farms
+
+;get number of additional farms needed
+;(defrule
+;(true)
+;=>
+;(up-modify-goal g-temp g:= g-desired-num-farm)
+;(up-get-fact building-type-count-total farm g-temp-2)
+;(up-modify-goal g-temp g:- g-temp-2)
+;;(up-chat-data-to-all "Farm: %d" g: g-temp)
+;)
+
+;(defrule
+;(up-compare-goal g-temp < 0)
+;=>
+;(up-modify-goal g-temp c:= 0)
+;)
+
+;(defrule
+;(up-object-type-count-total c: farm g:< g-desired-num-farm)
+;(can-build farm)
+;(up-pending-objects c: farm g:< g-temp)
+;(or	(wood-amount > 160)
+;	(building-type-count-total lumber-camp > 0))
+;=>
+;(build farm)
+;(chat-to-player my-player-number "Build Farm")
+;)
+
+(defrule
+(true)
+=>
+(up-assign-builders c: farm c: 1)
+(set-goal g-temp 1)
+(up-modify-goal g-temp-2 s:= sn-disable-builder-assistance)
+(set-strategic-number sn-disable-builder-assistance 1)
+)
+
+	(defrule
+	(up-pending-objects c: farm g:>= g-temp)		;g-temp is number of up-assign-builders
+	(up-compare-goal g-temp < 3)					;idea is to set up-assign-builders
+	(current-age == dark-age)						;to the number of pending farms
+	(can-build farm)
+	(up-object-type-count-total c: farm g:< g-desired-num-farmers)
+	(wood-amount > 275)
+	(unit-type-count villager > 15)
+	=>
+	(up-modify-goal g-temp c:+ 1)
+	(up-jump-rule -1)
+	)
+
+(defrule
+(current-age == dark-age)
+(building-type-count-total lumber-camp > 0)
+(can-build-with-escrow farm)
+(up-object-type-count-total c: farm g:< g-desired-num-farmers)
+;(or
+;	(idle-farm-count == 0)
+;	(up-object-type-count-total c: farm g:< g-desired-num-farmers))
+(up-pending-objects c: farm < 3)
+(wood-amount > 275)
+(unit-type-count villager > 15)
+=>
+(up-assign-builders c: farm g: g-temp)
+(up-release-escrow)
+(set-goal g-use-escrow with-escrow)
+(up-build place-normal g-use-escrow c: farm)
+(up-modify-sn sn-disable-builder-assistance g:= g-temp-2)
+)
+
+(defrule
+(current-age == dark-age)
+(building-type-count-total lumber-camp > 0)
+(can-build-with-escrow farm)
+(up-object-type-count-total c: farm g:< g-desired-num-farmers)
+;(or
+;	(idle-farm-count == 0)
+;	(up-object-type-count-total c: farm g:< g-desired-num-farmers))
+(up-pending-objects c: farm < 3)
+(unit-type-count villager > 15)
+(up-object-type-count-total c: lumber-camp g:>= g-desired-num-lumber-camp)
+(up-object-type-count-total c: mining-camp g:>= g-desired-num-mining-camp)
+(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
+(up-object-type-count-total c: dock g:>= g-desired-num-dock)
+=>
+(up-assign-builders c: farm g: g-temp)
+(up-release-escrow)
+(set-goal g-use-escrow with-escrow)
+(up-build place-normal g-use-escrow c: farm)
+(up-modify-sn sn-disable-builder-assistance g:= g-temp-2)
+)
+
+(defrule
+(current-age == feudal-age)
+(building-type-count-total lumber-camp > 0)
+(can-build-with-escrow farm)
+(up-object-type-count-total c: farm g:< g-desired-num-farmers)
+(up-pending-objects c: farm < 3)
+(wood-amount > 275)
+=>
+(up-assign-builders c: farm g: g-temp)
+(up-release-escrow)
+(set-goal g-use-escrow with-escrow)
+(up-build place-normal g-use-escrow c: farm)
+(up-modify-sn sn-disable-builder-assistance g:= g-temp-2)
+)
+
+(defrule
+(up-object-type-count-total c: lumber-camp g:>= g-desired-num-lumber-camp)
+(up-object-type-count-total c: mining-camp g:>= g-desired-num-mining-camp)
+(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
+(up-object-type-count-total c: dock g:>= g-desired-num-dock)
+(up-object-type-count-total c: archery-range g:>= g-desired-num-archery-range)
+(up-object-type-count-total c: stable g:>= g-desired-num-stable)
+(up-object-type-count-total c: blacksmith g:>= g-desired-num-blacksmith)
+(up-object-type-count-total c: market g:>= g-desired-num-market)
+=>
+(set-goal g-temp-2 1234)
+)
+
+(defrule
+(goal g-temp-2 1234)
+(current-age == feudal-age)
+(building-type-count-total lumber-camp > 0)
+(can-build-with-escrow farm)
+(or
+	(up-object-type-count-total c: farm g:< g-desired-num-farmers)
+	(idle-farm-count == 0))
+(up-pending-objects c: farm < 3)
+=>
+(up-assign-builders c: farm g: g-temp)
+(up-release-escrow)
+(set-goal g-use-escrow with-escrow)
+(up-build place-normal g-use-escrow c: farm)
+(up-modify-sn sn-disable-builder-assistance g:= g-temp-2)
+)
+
+(defrule
+(current-age >= castle-age)
+(building-type-count-total lumber-camp > 0)
+(can-build-with-escrow farm)
+(up-pending-objects c: farm < 3)
+(or
+	(idle-farm-count < 2)
+	(up-object-type-count-total c: farm g:< g-desired-num-farmers))
+=>
+(up-assign-builders c: farm g: g-temp)
+(up-release-escrow)
+(set-goal g-use-escrow with-escrow)
+(up-build place-normal g-use-escrow c: farm)
+(up-modify-sn sn-disable-builder-assistance g:= g-temp-2)
+)
+
+(defrule
+(idle-farm-count > 2)
+=>
+(up-delete-distant-farms c: 10)
+)
+
+
+
+
+
+
+
+
+(defrule
+(up-object-type-count-total c: castle g:< g-desired-num-castle)
+(can-build castle)
+(up-pending-objects c: castle < 1)
+(building-type-count-total castle == 0)
+(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+=>
+(up-modify-goal g-temp s:= sn-safe-town-size)
+;(up-modify-goal g-temp c:+ 3)
+;(up-modify-goal g-temp c:max 16)
+(up-set-placement-data my-player-number -1 g: g-temp)
+(up-modify-sn sn-placement-zone-size c:= 8)
+(up-assign-builders c: castle c: 4)
+(up-build place-control 1 c: castle)
+(chat-to-player my-player-number "Build Castle")
+)
+
+(defrule
+(up-object-type-count-total c: castle g:< g-desired-num-castle)
+(can-build castle)
+(up-pending-objects c: castle < 1)
+(building-type-count-total castle > 0)
+(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+=>
+(up-modify-goal g-temp s:= sn-safe-town-size)
+;(up-modify-goal g-temp c:+ 3)
+;(up-modify-goal g-temp c:max 25)
+(up-set-placement-data my-player-number -1 g: g-temp)
+(up-modify-sn sn-placement-zone-size c:= 8)
+(up-assign-builders c: castle c: 4)
+(up-build place-control 1 c: castle)
+(chat-to-player my-player-number "Build Castle")
+)
+
+(defrule
+(up-object-type-count-total c: siege-workshop g:< g-desired-num-siege-workshop)
+(can-build-with-escrow siege-workshop)
+(up-pending-objects c: siege-workshop < 1)
+(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+=>
+(up-set-placement-data my-player-number -1 c: 3)
+(up-modify-sn sn-placement-zone-size c:= 5)
+(up-assign-builders c: siege-workshop c: 1)
+(up-release-escrow)
+(set-goal g-use-escrow with-escrow)
+(up-build place-control g-use-escrow c: siege-workshop)
+(chat-to-player my-player-number "Build Siege Workshop")
+)
+
+(defrule
+(up-object-type-count-total c: university g:< g-desired-num-university)
+(can-build university)
+(up-pending-objects c: university < 1)
+(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+=>
+(up-set-placement-data my-player-number -1 c: -5)
+(up-modify-sn sn-placement-zone-size c:= 5)
+(up-assign-builders c: university c: 1)
+(up-build place-control 0 c: university)
+(chat-to-player my-player-number "Build University")
+)
+
+(defrule
+(up-object-type-count-total c: monastery g:< g-desired-num-monastery)
+(can-build monastery)
+(up-pending-objects c: monastery < 1)
+(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+=>
+(up-set-placement-data my-player-number -1 c: -5)
+(up-modify-sn sn-placement-zone-size c:= 5)
+(up-assign-builders c: monastery c: 1)
+(up-build place-control 0 c: monastery)
+(chat-to-player my-player-number "Build Monastery")
+)
+
+(defrule
+(up-object-type-count-total c: monastery g:< g-desired-num-monastery)
+(can-build monastery)
+(up-pending-objects c: monastery < 1)
+=>
+(build monastery)
+(chat-to-player my-player-number "Build Monastery")
+)
+
+(defrule
+(up-object-type-count-total c: barracks g:< g-desired-num-barracks)
+(can-build barracks)
+(up-pending-objects c: barracks < 1)
+(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+=>
+(up-set-placement-data my-player-number -1 c: 3)
+(up-modify-sn sn-placement-zone-size c:= 5)
+(up-assign-builders c: barracks c: 1)
+(up-build place-control 0 c: barracks)
+(chat-to-player my-player-number "Build Barracks")
+)
+
+(defrule
+(up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
+(can-build archery-range)
+(up-pending-objects c: archery-range < 1)
+(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+=>
+(up-set-placement-data my-player-number -1 c: 3)
+(up-modify-sn sn-placement-zone-size c:= 5)
+(up-assign-builders c: archery-range c: 1)
+(up-build place-control 0 c: archery-range)
+(chat-to-player my-player-number "Build Archery Range")
+)
+
+(defrule
+(up-object-type-count-total c: dock g:< g-desired-num-dock)
+(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
+(can-build dock)
+(up-pending-objects c: dock < 1)
+=>
+(build dock)
+(chat-to-player my-player-number "Build Dock")
+)
+
+(defrule
+(up-object-type-count-total c: stable g:< g-desired-num-stable)
+(can-build stable)
+(up-pending-objects c: stable < 1)
+(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+=>
+(up-set-placement-data my-player-number -1 c: 3)
+(up-modify-sn sn-placement-zone-size c:= 5)
+(up-assign-builders c: stable c: 1)
+(up-build place-control 0 c: stable)
+(chat-to-player my-player-number "Build Stable")
+)
+
+;Market
+
+(defrule
+(up-object-type-count-total c: market g:< g-desired-num-market)
+(goal g-desired-num-trade-cart 0)
+(up-compare-goal g-strategy < gv-low-gold)
+(can-build market)
+(up-pending-objects c: market < 1)
+(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+=>
+(up-set-placement-data my-player-number -1 c: -5)
+(up-modify-sn sn-placement-zone-size c:= 5)
+(up-assign-builders c: market c: 1)
+(up-build place-control 0 c: market)
+(chat-to-player my-player-number "Build Market")
+)
+
+(defrule
+(up-object-type-count-total c: market g:< g-desired-num-market)
+(or
+	(up-compare-goal g-strategy >= gv-low-gold)
+	(up-compare-goal g-desired-num-trade-cart > 0))
+(can-build market)
+(up-pending-objects c: market < 1)
+(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+=>
+(set-strategic-number sn-placement-to-center 1)
+(set-strategic-number sn-placement-zone-size 50)
+(up-set-placement-data my-player-number -1 c: -120)
+(set-strategic-number sn-placement-fail-delta 0)
+(up-assign-builders c: market c: 1)
+(up-build place-control 0 c: market)
+(chat-to-player my-player-number "Build Market")
+)
+
+;Blacksmith
+
+(defrule
+(up-object-type-count-total c: blacksmith g:< g-desired-num-blacksmith)
+(can-build blacksmith)
+(up-pending-objects c: blacksmith < 1)
+(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+=>
+(up-set-placement-data my-player-number -1 c: -3)
+(up-modify-sn sn-placement-zone-size c:= 5)
+(up-assign-builders c: blacksmith c: 1)
+(up-build place-control 0 c: blacksmith)
+(chat-to-player my-player-number "Build Blacksmith")
+)
+
+(defrule
+(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
+(up-compare-goal g-watch-tower-line == 0)
+(can-build watch-tower)
+(up-pending-objects c: watch-tower < 1)
+(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+=>
+(up-set-placement-data my-player-number lumber-camp c: 2)
+(up-modify-sn sn-placement-zone-size c:= 5)
+(up-assign-builders c: watch-tower c: 1)
+(up-build place-control 0 c: watch-tower)
+(chat-to-player my-player-number "Build Watch Tower line")
+)
+
+(defrule
+(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
+(up-compare-goal g-watch-tower-line > 0)
+(can-build watch-tower)
+(up-pending-objects c: watch-tower < 2)
+(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+=>
+(up-set-placement-data my-player-number -1 c: 20)
+(up-modify-sn sn-placement-zone-size c:= 5)
+(up-assign-builders c: watch-tower c: 1)
+(up-build place-control 0 c: watch-tower)
+(chat-to-player my-player-number "Build Watch Tower line")
+)
+
+(defrule
+(up-object-type-count-total c: bombard-tower g:< g-desired-num-watch-tower)
+(can-build bombard-tower)
+(up-pending-objects c: bombard-tower < 2)
+(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+=>
+(up-set-placement-data my-player-number -1 c: 20)
+(up-modify-sn sn-placement-zone-size c:= 5)
+(up-assign-builders c: bombard-tower c: 1)
+(up-build place-control 0 c: bombard-tower)
+(chat-to-player my-player-number "Build Bombard Tower")
+)
+
+(defrule
+(up-object-type-count-total c: outpost g:< g-desired-num-outpost)
+(can-build outpost)
+(up-pending-objects c: outpost < 1)
+=>
+(build outpost)
+(chat-to-player my-player-number "Build Outpost")
+)

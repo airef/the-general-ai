@@ -1,0 +1,189 @@
+;                              - THE GENERAL V0.8 -
+;                                       
+;                                By  Leif Ericson
+;				
+;Settings:
+;
+;Game Version:	Userpatch or Wololo Kingdoms only. Not compatible with 1.0c.
+;Civilizations:	Koreans (Random civ eventually, can play any civ with knights)
+;Game Type:		Random Map
+;Map Type:		Arabia
+;Map Size:		Any (tested on Tiny)
+;Difficulty:	Hard
+;Other Teams:	Any Number (no team management yet)
+;Resources:		Standard
+;Population:	200
+;Starting Age:	Dark Age
+;Victory:		Conquest                                                       
+;All Techs:		No
+;
+;===============================================================================
+;
+;NOTES:
+;
+;The goal of this AI is to create different personalities to play with each
+;game. The personalities are meant to reflect the styles of different generals
+;or leaders of the Middle Ages, hence the name of the AI. Each civilization will
+;select from at least two generals that will have different playing styles,
+;whether that will be aggressive and dominant, or intelligent and calculating,
+;defensive and expansive, or sneaky and unpredictable. When finished, the AI will
+;hopefully provide a challenging and entertaining experience.
+;
+;
+;List of Generals per civilization (still in construction):
+;
+;Aztecs:
+;Britons: 		Edward Longshanks I, Henry V
+;Byzantines:	Belisarius, Heraclius
+;Celts:			Brian Boru, William Wallace
+;Chinese:		Chong Hong Wei (fictional)
+;Franks:		Charlemagne, Joan of Arc, La Hire
+;Goths:			Theodoric
+;Huns:			Attila
+;Japanese:
+;Koreans:		Wang Geon, Yi Sun-shin
+;Mayans:
+;Mongols:		Genghis Khan, Kublai Khan
+;Persians:	
+;Saracens:		Saladin
+;Spanish:
+;Teutons:
+;Turks:
+;Vikings:
+;
+;===============================================================================
+;
+;ACKNOWLEDGEMENTS:
+;
+;CheeseOnToast
+;Xhip
+;Offwo
+;Aleph
+;II2N
+;Milan (for always watching our games)
+;All other scripters at aiscripters and AoKHeaven who have been there over the years!
+;
+;
+;===============================================================================
+
+(load "The General 0.8/UserPatchConst")
+(load "The General 0.8/Game Stats")
+(load "The General 0.8/Initialization")
+(load "The General 0.8/Game Stats")
+(load "The General 0.8/Desired Unit Counts")
+(load "The General 0.8/Goals")
+(load "The General 0.8/Strategic Numbers")
+(load "The General 0.8/Personality")
+(load "The General 0.8/Next Items")
+;(load "The General 0.8/Needed Resources")
+(load "The General 0.8/Building Construction")
+(load "The General 0.8/Technology Research")
+(load "The General 0.8/Unit Training")
+;(load "The General 0.8/Gathering Percentages")
+(load "The General 0.8/Gathering")
+(load "The General 0.8/Attacking")
+(load "The General 0.8/Resign")
+
+(defrule
+(goal g-initial-strategy gv-eagles-revenge)
+(up-research-status c: ri-eagle-warrior == research-available)
+(escrow-amount food < 200)
+=>
+(up-modify-escrow food c:= 200)
+)
+
+(defrule
+(goal g-initial-strategy gv-eagles-revenge)
+(up-research-status c: ri-eagle-warrior == research-available)
+(escrow-amount gold < 200)
+=>
+(up-modify-escrow gold c:= 200)
+)
+
+(defrule
+(goal g-initial-strategy gv-eagles-revenge)
+(can-research-with-escrow ri-eagle-warrior)
+=>
+(up-release-escrow)
+(research ri-eagle-warrior)
+)
+
+(defrule
+(timer-triggered t-10-sec)
+=>
+(disable-timer t-10-sec)
+(enable-timer t-10-sec 10)
+)
+
+(defrule
+(timer-triggered t-30-sec)
+=>
+(disable-timer t-30-sec)
+(enable-timer t-30-sec 30)
+)
+
+#load-if-defined TESTING-ONLY
+
+(defrule
+(up-pending-objects c: building-class >= 1)
+=>
+(up-full-reset-search)
+(up-filter-status c: status-ready c: list-active)
+(up-find-status-local c: castle c: 1)
+(up-get-search-state g-local-total)
+(set-goal i 0)
+)
+
+	(defrule
+	(up-pending-objects c: building-class >= 1)
+	(up-compare-goal g-local-total g:> i)
+	(up-set-target-object search-local g: i)
+	=>
+	(up-get-object-data object-data-hitpoints g-temp)
+	(up-chat-data-to-all "HP: %d" g: g-temp)
+	(up-get-object-data object-data-attacker-count g-temp-2)
+	(up-chat-data-to-all "Attackers: %d" g: g-temp-2)
+	)
+
+	(defrule
+	(up-pending-objects c: building-class >= 1)
+	(up-compare-goal g-local-total g:> i)
+	(up-set-target-object search-local g: i)
+	;(up-compare-goal g-temp < 1500)	;less than 500 HP
+	(up-compare-goal g-temp-2 > 2)	;more than 2 attackers
+	=>
+	(up-target-objects 1 action-delete -1 -1)
+	;(chat-to-all "delete building")
+	)
+
+	(defrule
+	(up-pending-objects c: building-class >= 1)
+	(up-compare-goal g-local-total g:> i)
+	(up-set-target-object search-local g: i)
+	=>
+	(up-modify-goal i c:+ 1)
+	(up-jump-rule -3)
+	)
+
+(defrule
+(can-build town-center)
+(up-pending-objects c: town-center < 1)
+=>
+(build town-center)
+)
+
+(defrule
+(can-build castle)
+(up-pending-objects c: castle < 1)
+=>
+(build castle)
+)
+
+(defrule
+(can-build barracks)
+(up-pending-objects c: barracks < 1)
+=>
+(build barracks)
+)
+
+#end-if

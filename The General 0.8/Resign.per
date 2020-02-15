@@ -1,0 +1,198 @@
+;Resign rules
+
+#load-if-not-defined UP-ALLY-IN-GAME
+
+	;All is lost.
+	(defrule
+	(game-time > 600)
+	(population < 2)
+	(goal g-resign NO)
+	=>
+	(set-goal g-resign gv-decide-to-resign)
+	)
+	
+	(defrule
+	(game-time > 600)
+	(unit-type-count villager < 20)
+	(military-population < 12)
+	(up-compare-goal g-military-superiority <= -25)
+	(goal g-resign NO)
+	=>
+	(set-goal g-resign gv-decide-to-resign)
+	)
+
+	;Impossible to get more villagers, resign.
+	(defrule
+	(unit-type-count-total villager == 0)
+	(or
+		(not
+			(can-afford-unit villager))
+		(building-type-count-total town-center == 0))
+	;(building-type-count-total market == 0)
+	(goal g-resign NO)
+	=>
+	(set-goal g-resign gv-decide-to-resign)
+	)
+	
+	;Impossible to develop if wood can't be gathered
+	(defrule
+	(building-type-count-total lumber-camp == 0)
+	(building-type-count-total town-center == 0)
+	(not
+		(can-afford-building lumber-camp))
+	;(building-type-count-total market == 0)
+	(goal g-resign NO)
+	=>
+	(set-goal g-resign gv-decide-to-resign)
+	)
+	
+	;Ready to chat farewell
+	(defrule
+	(goal g-resign gv-decide-to-resign)
+	=>
+	(set-goal g-resign gv-chat-farewell)
+	(enable-timer t-resign 10)
+	)
+	
+#end-if
+
+#load-if-defined UP-ALLY-IN-GAME
+
+	;Ask for resources if out of villagers and don't have food to train them.
+	(defrule
+	(unit-type-count-total villager == 0)
+	(not
+		(can-afford-unit villager))
+	(building-type-count-total town-center > 0)
+	(building-type-count-total market == 0)
+	(up-compare-goal g-resign < gv-ask-for-res)
+	=>
+	(chat-to-allies "3 No villagers to gather food; no food to train them.")
+	(chat-to-allies "Catch-22. Food please? 11")
+	(set-goal g-resign gv-ask-for-res)
+	(enable-timer t-resign 30)
+	)
+	
+	(defrule
+	(up-timer-status t-resign == timer-triggered)
+	(goal g-resign gv-ask-for-res)
+	(unit-type-count-total villager == 0)
+	(not
+		(can-afford-unit villager))
+	(building-type-count-total market == 0)
+	=>
+	(set-goal g-resign gv-decide-to-resign)
+	)
+	
+	;Impossible to develop if wood can't be gathered. Ask for wood.
+	(defrule
+	(building-type-count-total lumber-camp == 0)
+	(building-type-count-total town-center == 0)
+	(building-type-count-total market == 0)
+	(not
+		(can-afford-building lumber-camp))
+	(up-compare-goal g-resign < gv-ask-for-res)
+	=>
+	(chat-to-allies "4 Can't build LC or TC. Out of wood and can't gather it.")
+	(chat-to-allies "Catch-22. Wood please? 11")
+	(set-goal g-resign gv-ask-for-res)
+	(enable-timer t-resign 30)
+	)
+	
+	(defrule
+	(up-timer-status t-resign == timer-triggered)
+	(goal g-resign gv-ask-for-res)
+	(building-type-count-total lumber-camp == 0)
+	(building-type-count-total town-center == 0)
+	;(building-type-count-total market == 0)
+	(not
+		(can-afford-building lumber-camp))
+	=>
+	(set-goal g-resign gv-decide-to-resign)
+	)
+
+	;Impossible to get more villagers, resign.
+	(defrule
+	(unit-type-count-total villager == 0)
+	(or
+		(not
+			(can-afford-unit villager))
+		(building-type-count-total town-center == 0))
+	;(building-type-count-total market == 0)
+	(up-compare-goal g-resign < gv-decide-to-resign)
+	=>
+	(set-goal g-resign gv-decide-to-resign)
+	)
+
+	;All is lost.
+	(defrule
+	(game-time > 600)
+	(population < 5)
+	;(building-type-count-total market == 0)
+	(up-compare-goal g-resign < gv-decide-to-resign)
+	=>
+	(set-goal g-resign gv-decide-to-resign)
+	)
+	
+	(defrule
+	(game-time > 600)
+	(not
+		(player-in-game any-ally))
+	(unit-type-count villager < 10)
+	(up-compare-goal g-military-superiority <= -50)
+	;(building-type-count-total market == 0)
+	(goal g-resign NO)
+	=>
+	(set-goal g-resign gv-decide-to-resign)
+	)
+	
+	;Tribute resources away before resigning.
+	(defrule
+	(goal g-resign gv-decide-to-resign)
+	=>
+	(enable-timer t-resign 10)
+	(set-goal g-resign gv-chat-farewell)
+	(tribute-to-player any-ally wood 100000)
+	(tribute-to-player any-ally food 100000)
+	(tribute-to-player any-ally gold 100000)
+	(tribute-to-player any-ally stone 100000)
+	(chat-to-allies "Farewell! Keep on without me!")
+	)
+	
+#end-if
+	
+(defrule
+(up-compare-goal g-resign >= gv-decide-to-resign)
+(or
+	(unit-type-count trade-cart > 0)
+	(unit-type-count villager > 0))
+=>
+(up-delete-objects c: villager-class c: 1000)
+(up-delete-objects c: trade-cart c: 1000)
+)
+
+(defrule
+(military-population > 0)
+(up-compare-goal g-resign >= gv-decide-to-resign)
+=>
+(up-modify-sn sn-maximum-town-size c:= 480)
+)
+
+(defrule
+(up-timer-status t-resign == timer-triggered)
+(goal g-resign gv-chat-farewell)
+=>
+(chat-to-all "Well fought. We shall do battle again another day.")
+(chat-to-all "gg")
+(set-goal g-resign gv-resign)
+(enable-timer t-resign 7)
+)
+
+(defrule
+(up-timer-status t-resign == timer-triggered)
+(goal g-resign gv-resign)
+;(unit-type-count villager == 0)
+;(unit-type-count trade-cart == 0)
+=>
+(resign)
+)
