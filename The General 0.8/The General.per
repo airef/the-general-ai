@@ -1,4 +1,4 @@
-;                              - THE GENERAL V0.8a -
+;                              - THE GENERAL V0.8 -
 ;                                       
 ;                                By  Leif Ericson
 ;				
@@ -66,23 +66,23 @@
 ;
 ;===============================================================================
 
-(load "The General 0.8/UserPatchConst")
-(load "The General 0.8/Game Stats")
-(load "The General 0.8/Initialization")
-(load "The General 0.8/Game Stats")
-(load "The General 0.8/Desired Unit Counts")
-(load "The General 0.8/Goals")
-(load "The General 0.8/Strategic Numbers")
-(load "The General 0.8/Personality")
-(load "The General 0.8/Next Items")
-;(load "The General 0.8/Needed Resources")
-(load "The General 0.8/Building Construction")
-(load "The General 0.8/Technology Research")
-(load "The General 0.8/Unit Training")
-;(load "The General 0.8/Gathering Percentages")
-(load "The General 0.8/Gathering")
-(load "The General 0.8/Attacking")
-(load "The General 0.8/Resign")
+(load "The General 2/UserPatchConst")
+(load "The General 2/Game Stats")
+(load "The General 2/Initialization")
+(load "The General 2/Game Stats")
+(load "The General 2/Desired Unit Counts")
+(load "The General 2/Goals")
+(load "The General 2/Strategic Numbers")
+(load "The General 2/Personality")
+(load "The General 2/Next Items")
+;(load "The General 2/Needed Resources")
+(load "The General 2/Building Construction")
+(load "The General 2/Technology Research")
+(load "The General 2/Unit Training")
+;(load "The General 2/Gathering Percentages")
+(load "The General 2/Gathering")
+(load "The General 2/Attacking")
+(load "The General 2/Resign")
 
 (defrule
 (goal g-initial-strategy gv-eagles-revenge)
@@ -187,6 +187,20 @@
 	)
 
 #end-if
+
+(defrule
+(up-pending-placement c: town-center)
+(building-type-count town-center == 1)
+=>
+(up-modify-sn sn-mining-camp-max-distance s:= sn-safe-town-size)
+)
+
+(defrule
+(up-pending-placement c: town-center)
+(building-type-count town-center != 1)
+=>
+(up-modify-sn sn-lumber-camp-max-distance s:= sn-safe-town-size)
+)
 
 ;Place Point Building Construction
 ;set point again in case in changed

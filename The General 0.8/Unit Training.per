@@ -10,16 +10,20 @@
 )
 
 (defrule
+(or
+	(up-compare-goal g-boar-hunting-conditions-met != gv-far-boar-vils-met)
+	(up-compare-goal g-constant-train-unit != villager))
+=>
+(set-strategic-number sn-enable-training-queue 1)
+)
+
+(defrule
 (up-object-type-count-total g: g-constant-train-unit g:< g-desired-num-constant-train-unit)
 (up-can-train g-use-escrow g: g-constant-train-unit)
 (up-compare-goal g-constant-train-unit == villager)
-(or												;rules to allow loom research
-	(dropsite-min-distance live-boar <= 18)
-	(or
-		(dropsite-min-distance live-boar >= MAX-BOAR-HUNT-DISTANCE)
-		(or
-			(up-compare-goal g-desired-num-boar-hunters == 0)
-			(unit-type-count villager < 7))))
+(or
+	(up-compare-goal g-boar-hunting-conditions-met != gv-far-boar-vils-met)	;don't train vils if loom is needed
+	(up-object-type-count-total c: villager g:>= g-required-num-villager))
 =>
 (set-goal g-use-escrow with-escrow)
 (up-train g-use-escrow g: g-constant-train-unit)
@@ -27,6 +31,7 @@
 (up-modify-goal g-villager-creation-game-time g:+ g-villager-training-time-left)
 (up-modify-goal g-villager-creation-game-time g:+ g-game-time)
 (up-modify-goal g-villager-training-time-left c:+ 1)
+(set-strategic-number sn-enable-training-queue 0)
 )
 
 (defrule
@@ -41,6 +46,7 @@
 (up-modify-goal g-villager-creation-game-time g:+ g-villager-training-time-left)
 (up-modify-goal g-villager-creation-game-time g:+ g-game-time)
 (up-modify-goal g-villager-training-time-left c:+ 1)
+(set-strategic-number sn-enable-training-queue 0)
 )
 
 (defrule
@@ -50,6 +56,7 @@
 =>
 (set-goal g-use-escrow with-escrow)
 (up-train g-use-escrow g: g-constant-train-unit)
+(set-strategic-number sn-enable-training-queue 0)
 )
 
 (defrule
@@ -64,13 +71,7 @@
 (defrule
 (up-object-type-count-total c: villager g:< g-desired-num-villager)
 (can-train villager)
-(or												;rules to allow loom research
-	(dropsite-min-distance live-boar <= 18)
-	(or
-		(dropsite-min-distance live-boar >= MAX-BOAR-HUNT-DISTANCE)
-		(or
-			(up-compare-goal g-desired-num-boar-hunters == 0)
-			(unit-type-count villager < 7))))
+(up-compare-goal g-boar-hunting-conditions-met != gv-far-boar-vils-met)	;don't train if loom is needed
 =>
 (train villager)
 (up-modify-goal g-villager-creation-game-time g:= g-villager-train-time)

@@ -118,6 +118,7 @@
 		(not
 			(can-afford-unit villager))
 		(building-type-count-total town-center == 0))
+	(military-population < 5)
 	;(building-type-count-total market == 0)
 	(up-compare-goal g-resign < gv-decide-to-resign)
 	=>
@@ -152,11 +153,17 @@
 	=>
 	(enable-timer t-resign 10)
 	(set-goal g-resign gv-chat-farewell)
-	(tribute-to-player any-ally wood 100000)
-	(tribute-to-player any-ally food 100000)
-	(tribute-to-player any-ally gold 100000)
-	(tribute-to-player any-ally stone 100000)
 	(chat-to-allies "Farewell! Keep on without me!")
+	)
+
+	(defrule
+	(goal g-resign gv-chat-farewell)
+	(player-in-game any-ally)
+	=>
+	(tribute-to-player this-any-ally wood 100000)
+	(tribute-to-player this-any-ally food 100000)
+	(tribute-to-player this-any-ally gold 100000)
+	(tribute-to-player this-any-ally stone 100000)
 	)
 	
 #end-if
@@ -175,7 +182,7 @@
 (military-population > 0)
 (up-compare-goal g-resign >= gv-decide-to-resign)
 =>
-(up-modify-sn sn-maximum-town-size c:= 480)
+(up-modify-sn sn-maximum-town-size c:= MAP-SIZE)
 )
 
 (defrule

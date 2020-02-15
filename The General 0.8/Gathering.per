@@ -25,7 +25,6 @@
 (up-modify-goal g-desired-num-gold-vils c:= 0)
 (up-modify-goal g-desired-num-stone-vils c:= 0)
 (up-modify-goal g-desired-num-shepherds c:= 6)
-(up-modify-goal g-desired-num-boar-hunters c:= 0)
 (up-modify-goal g-desired-num-foragers c:= 0)
 (up-modify-goal g-desired-num-deer-hunters c:= 0)
 (up-modify-goal g-desired-num-farmers c:= 0)
@@ -41,7 +40,6 @@
 (up-modify-goal g-desired-num-gold-vils c:= 0)
 (up-modify-goal g-desired-num-stone-vils c:= 0)
 (up-modify-goal g-desired-num-shepherds c:= 6)
-(up-modify-goal g-desired-num-boar-hunters c:= 0)
 (up-modify-goal g-desired-num-foragers c:= 0)
 (up-modify-goal g-desired-num-deer-hunters c:= 0)
 (up-modify-goal g-desired-num-farmers c:= 0)
@@ -57,7 +55,6 @@
 (up-modify-goal g-desired-num-gold-vils c:= 0)
 (up-modify-goal g-desired-num-stone-vils c:= 0)
 (up-modify-goal g-desired-num-shepherds c:= 6)
-(up-modify-goal g-desired-num-boar-hunters c:= 0)
 (up-modify-goal g-desired-num-foragers c:= 0)
 (up-modify-goal g-desired-num-deer-hunters c:= 0)
 (up-modify-goal g-desired-num-farmers c:= 0)
@@ -73,7 +70,6 @@
 (up-modify-goal g-desired-num-gold-vils c:= 0)
 (up-modify-goal g-desired-num-stone-vils c:= 0)
 (up-modify-goal g-desired-num-shepherds c:= 6)
-(up-modify-goal g-desired-num-boar-hunters c:= 0)
 (up-modify-goal g-desired-num-foragers c:= 0)
 (up-modify-goal g-desired-num-deer-hunters c:= 0)
 (up-modify-goal g-desired-num-farmers c:= 0)
@@ -223,7 +219,7 @@
 (unit-type-count villager == 23)
 (goal g-eco-balance-system gv-manual)
 =>
-(up-modify-goal g-desired-num-farmers c:+ 1)
+(up-modify-goal g-desired-num-wood-vils c:+ 1)
 (disable-self)
 )
 
@@ -373,8 +369,7 @@
 (up-compare-goal g-desired-num-boar-hunters > 0)
 (unit-type-count villager-hunter == 0)
 (dropsite-min-distance livestock-class < 10)
-(dropsite-min-distance boar-hunting > MAX-BOAR-HUNT-DISTANCE)
-(dropsite-min-distance live-boar > MAX-BOAR-HUNT-DISTANCE)
+(goal g-boar-found gv-all-boar-hunted)
 (up-compare-goal g-boar-hunt-status == -1)
 =>
 (up-modify-goal g-desired-num-shepherds g:+ g-desired-num-boar-hunters)
@@ -436,6 +431,9 @@
 (up-compare-goal g-desired-num-boar-hunters > 0)
 (up-compare-goal g-desired-num-fishermen == 0)
 (up-compare-goal g-desired-num-deer-hunters == 0)
+(or
+	(goal g-boar-found gv-all-boar-hunted)
+	(dropsite-min-distance boar-hunting > MAX-BOAR-HUNT-DISTANCE))
 =>
 (up-modify-goal g-desired-num-farmers c:+ 1)
 (up-modify-goal g-desired-num-boar-hunters c:- 1)
@@ -518,8 +516,7 @@
 (defrule
 (up-compare-goal g-age-status >= gv-advancing-to-feudal)
 (dropsite-min-distance livestock-class > 10)
-(dropsite-min-distance boar-hunting > MAX-BOAR-HUNT-DISTANCE)
-(dropsite-min-distance live-boar > MAX-BOAR-HUNT-DISTANCE)
+(goal g-boar-found gv-all-boar-hunted)
 (dropsite-min-distance food < 5)
 (unit-type-count villager-forager > 0)
 (up-compare-goal g-desired-num-foragers < 6)
@@ -533,8 +530,7 @@
 (defrule
 (up-compare-goal g-age-status >= gv-advancing-to-feudal)
 (dropsite-min-distance livestock-class > 10)
-(dropsite-min-distance boar-hunting > MAX-BOAR-HUNT-DISTANCE)
-(dropsite-min-distance live-boar > MAX-BOAR-HUNT-DISTANCE)
+(goal g-boar-found gv-all-boar-hunted)
 (dropsite-min-distance food < 5)
 (unit-type-count villager-forager > 0)
 (up-compare-goal g-desired-num-foragers < 6)
@@ -550,8 +546,7 @@
 (defrule
 (up-compare-goal g-age-status >= gv-advancing-to-feudal)
 (dropsite-min-distance livestock-class > 10)
-(dropsite-min-distance boar-hunting > MAX-BOAR-HUNT-DISTANCE)
-(dropsite-min-distance live-boar > MAX-BOAR-HUNT-DISTANCE)
+(goal g-boar-found gv-all-boar-hunted)
 (dropsite-min-distance food < 5)
 (unit-type-count villager-forager > 0)
 (up-compare-goal g-desired-num-foragers < 6)
@@ -568,8 +563,7 @@
 (defrule
 (up-compare-goal g-age-status >= gv-advancing-to-feudal)
 (dropsite-min-distance livestock-class > 10)
-(dropsite-min-distance boar-hunting > MAX-BOAR-HUNT-DISTANCE)
-(dropsite-min-distance live-boar > MAX-BOAR-HUNT-DISTANCE)
+(goal g-boar-found gv-all-boar-hunted)
 (dropsite-min-distance food < 5)
 (unit-type-count villager-forager > 0)
 (up-compare-goal g-desired-num-foragers < 6)
@@ -629,6 +623,45 @@
 (up-modify-goal g-desired-num-farmers c:+ 1)
 (up-modify-goal g-desired-num-shepherds c:- 1)
 (up-chat-data-to-self "Num farmers (from shepherd): %d" g: g-desired-num-farmers)
+)
+
+(defrule
+(nor
+	(goal g-boar-hunting-conditions-met NO)
+	(goal g-boar-hunting-conditions-met gv-far-boar-vils-met))
+(goal g-boar-hunt-status -1)
+(up-compare-goal g-desired-num-boar-hunters <= 0)
+(up-compare-goal g-desired-num-shepherds > 0)
+=>
+(up-modify-goal g-desired-num-boar-hunters c:+ 1)
+(up-modify-goal g-desired-num-shepherds c:- 1)
+(chat-local-to-self "Need boar hunters again")
+)
+
+(defrule
+(nor
+	(goal g-boar-hunting-conditions-met NO)
+	(goal g-boar-hunting-conditions-met gv-far-boar-vils-met))
+(goal g-boar-hunt-status -1)
+(up-compare-goal g-desired-num-boar-hunters <= 0)
+(up-compare-goal g-desired-num-farmers > 0)
+=>
+(up-modify-goal g-desired-num-boar-hunters c:+ 1)
+(up-modify-goal g-desired-num-farmers c:- 1)
+(chat-local-to-self "Need boar hunters again")
+)
+
+(defrule
+(nor
+	(goal g-boar-hunting-conditions-met NO)
+	(goal g-boar-hunting-conditions-met gv-far-boar-vils-met))
+(goal g-boar-hunt-status -1)
+(up-compare-goal g-desired-num-boar-hunters <= 0)
+(up-compare-goal g-desired-num-foragers > 0)
+=>
+(up-modify-goal g-desired-num-boar-hunters c:+ 1)
+(up-modify-goal g-desired-num-foragers c:- 1)
+(chat-local-to-self "Need boar hunters again")
 )
 
 
@@ -860,7 +893,7 @@
 	(stone-amount < 100)
 	(and
 		(stone-amount < 50)
-		(civ-selected bulgarian)))
+		(civ-selected bulgarians)))
 (or
 	(up-compare-goal g-attack-status >= gv-first-attack)
 	(current-age-time >= 240))
@@ -1292,21 +1325,56 @@
 (unit-type-count villager-forager > 0)
 (or
 	(unit-type-count villager-shepherd > 0)
-	(unit-type-count villager-hunter > 0))
+	(unit-type-count livestock-class > 0))
 =>
-(up-modify-goal 499 s:= sn-maximum-food-drop-distance)
-(set-goal 500 120)
-(enable-timer 50 2)
-(up-modify-sn sn-maximum-food-drop-distance c:= 0)
-(up-retask-gatherers forage-bush c: 1)
-(chat-local-to-self "retask forager to sheep or boar")
+(up-full-reset-search)
+(up-find-local c: male-forager c: 240)
+(up-find-local c: female-forager c: 240)
+(up-modify-goal g-temp s:= sn-focus-player-number)
+(set-strategic-number sn-focus-player-number my-player-number)
+(up-find-remote c: town-center c: 1)
 )
 
 (defrule
-(goal 500 120)
-(timer-triggered 50)
+(timer-triggered t-10-sec)
+(up-set-target-object search-remote c: 0)
+(up-compare-goal g-age-status <= gv-save-for-feudal)
+(unit-type-count villager < 11)
+(up-compare-goal g-desired-num-foragers == 0)
+(unit-type-count villager-forager > 0)
+(building-type-count-total mill == 0)
+(or
+	(unit-type-count villager-shepherd > 0)
+	(unit-type-count livestock-class > 0))
 =>
-(up-modify-sn sn-maximum-food-drop-distance g:= 499)
+(up-target-objects 1 action-garrison -1 -1)
+(chat-local-to-self "retask foragers to sheep")
+(set-goal g-garrison-for-retask YES)
+(up-modify-sn sn-focus-player-number g:= g-temp)
+)
+
+(defrule
+(goal g-town-under-attack NO)
+(up-compare-goal g-age-status <= gv-save-for-feudal)
+(unit-type-count villager < 11)
+(up-compare-goal g-desired-num-foragers == 0)
+(unit-type-count villager-forager > 0)
+=>
+(up-full-reset-search)
+(up-find-local c: town-center c: 1)
+(up-set-target-object search-local c: 0)
+(up-get-object-data object-data-garrison-count g-temp)
+)
+
+(defrule
+(goal g-town-under-attack NO)
+(up-compare-goal g-age-status <= gv-save-for-feudal)
+(unit-type-count villager < 11)
+(up-compare-goal g-desired-num-foragers == 0)
+(unit-type-count villager-forager > 0)
+(up-compare-goal g-temp > 0)
+=>
+(up-ungarrison c: town-center)
 )
 
 #load-if-defined FIX-BROKEN-CODE
@@ -1462,64 +1530,53 @@
 ;(up-chat-data-to-self "Farmers: %d" g: g-desired-num-farmers)
 ;)
 
-#load-if-defined FIX-BROKEN-CODE
+#load-if-defined INCAN-CIV
 
 	;Target llama
 
 	(defrule
+	(timer-triggered t-10-sec)
+	(unit-type-count llama > 0)
+	=>
+	(up-full-reset-search)
+	(up-set-target-point g-position-self-x)
+	(up-filter-distance c: 2 c: -1)
+	(up-find-local c: llama c: 20)
+	(set-strategic-number sn-target-point-adjustment 4)
+	(up-target-point g-position-self-x action-default -1 -1)
+	(set-strategic-number sn-target-point-adjustment 0)
+	)
+
+	(defrule
 	(unit-type-count llama > 0)
 	(game-time >= 30)
-	;(unit-type-count villager-shepherd == 0)
-	;(unit-type-count villager-hunter == 0)
-	;(unit-type-count villager-builder == 0)
+	(unit-type-count villager-shepherd == 0)
+	(unit-type-count villager-hunter == 0)
+	(building-type-count house >= 2)
 	=>
-	(up-set-target-point g-position-self-x)
 	(up-full-reset-search)
-	(up-filter-distance c: -1 c: 20)
-	(up-find-local c: llama c: 1)
+	(up-set-target-point g-position-self-x)
+	(up-modify-goal g-temp-2 s:= sn-focus-player-number)
+	(set-strategic-number sn-focus-player-number my-player-number)
+	(up-filter-distance c: -1 c: 2)
+	(up-find-remote c: llama c: 1)
 	(set-goal g-temp 100)
-	;(chat-local-to-self "Time to gather llama")
+	(chat-local-to-self "Time to gather llama")
 	)
 
 	(defrule
 	(goal g-temp 100)
 	(unit-type-count llama > 0)
-	(up-set-target-object search-local c: 0)
+	(up-set-target-object search-remote c: 0)
 	=>
-	(up-get-object-data object-data-id g-temp-2)
-	(set-goal g-temp 101)
-	(chat-local-to-self "Found llama")
-	(up-target-point g-position-self-x action-default -1 -1)	;send llama to TC
-	)
-
-	;(defrule
-	;(goal g-temp 101)
-	;=>
-	;(up-get-point-distance g-position-self-x 0 g-temp-2)	;llama has arrived at TC
-	;)
-
-	(defrule
-	;(goal g-temp 101)
-	;(up-compare-goal g-temp-2 < 2)
-	(true)
-	=>
-	(up-full-reset-search)
+	(up-reset-search 1 1 0 0)
 	(up-reset-filters)
 	(up-filter-distance c: -1 c: 8)
-	(up-find-local c: villager-class c: 5)
-	(up-get-search-state g-local-total)
-	(set-goal g-temp 102)
-	)
-
-	(defrule
-	(goal g-temp 102)
-	(up-set-target-object search-local c: 0)
-	(up-set-target-by-id g: g-temp-2)
-	=>
-	(up-target-objects 0 action-default -1 -1);right-click the boar with the villager
+	(up-find-local c: villager-class c: 1)
+	(up-target-objects 1 action-default -1 -1) ;kill llama
 	(chat-local-to-self "Gather llama")
 	)
-
+	
 #end-if
 
 

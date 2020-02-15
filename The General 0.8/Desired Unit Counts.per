@@ -2882,7 +2882,7 @@
 		(goal g-strategy gv-crush)))
 =>
 (up-modify-goal g-desired-num-villager c:= 29)
-(up-modify-goal g-required-num-villager c:= 29)
+(up-modify-goal g-required-num-villager c:= 27)
 ;(up-chat-data-to-all "Num villager: %d" g: g-desired-num-villager)
 )
 
@@ -2912,6 +2912,20 @@
 
 (defrule
 (up-compare-goal g-desired-num-trade-cart < 20)
+(current-age == imperial-age)
+(current-age-time > 180)
+(game-time < 3600)
+(player-in-game any-ally)
+(players-building-type-count any-ally market > 0)
+=>
+(up-modify-goal g-desired-num-trade-cart c:= 20)
+(up-get-fact population-cap 0 g-desired-num-villager)
+(up-modify-goal g-desired-num-villager g:- g-desired-military-pop)
+(up-modify-goal g-desired-num-villager g:- g-desired-num-trade-cart)
+)
+
+(defrule
+(up-compare-goal g-desired-num-trade-cart < 20)
 (or
 	(goal g-strategy gv-low-gold)
 	(or
@@ -2933,7 +2947,7 @@
 	(goal g-strategy gv-low-gold)
 	(or
 		(goal g-strategy gv-trash-war)
-		(game-time > 3600)))
+		(game-time > 3000)))
 (player-in-game any-ally)
 (players-building-type-count any-ally market > 0)
 =>
@@ -3373,7 +3387,7 @@
 
 (defrule
 (game-time > 30)
-(resource-found wood)
+(up-gaia-type-count-total c: wood > 10)
 (or
 	(and
 		(unit-type-count villager-wood > 3)
@@ -3381,6 +3395,7 @@
 	(up-compare-goal g-desired-num-wood-vils > 0))
 (building-type-count lumber-camp == 0)
 (up-pending-objects c: lumber-camp == 0)
+(up-compare-goal g-min-forest-distance > PENDING)
 =>
 (up-modify-goal g-desired-num-lumber-camp c:max 1)
 ;(up-chat-data-to-all "Num LC: %d" g: g-desired-num-lumber-camp)
@@ -3404,7 +3419,7 @@
 
 (defrule
 (building-type-count-total lumber-camp > 0)
-(resource-found food)
+(up-gaia-type-count c: forage-class > 0)
 (building-type-count-total mill == 0)
 (or
 	(up-compare-goal g-desired-num-foragers > 0)
@@ -3417,13 +3432,43 @@
 )
 
 (defrule
-(game-time > 25)
+(or
+	(wood-amount > 200)
+	(and
+		(wood-amount > 100)
+		(civ-selected japanese)))
+(up-gaia-type-count c: forage-class > 0)
+(building-type-count-total mill == 0)
+(or
+	(up-compare-goal g-desired-num-foragers > 0)
+	(and
+		(game-time > 180)
+		(unit-type-count villager-food == 0)))
+=>
+(up-modify-goal g-desired-num-mill c:max 1)
+;(up-chat-data-to-all "Num mill: %d" g: g-desired-num-mill)
+)
+
+;Get housing capacity (current population + housing headroom)
+(defrule
+(true)
+=>
+(up-get-fact population 0 g-temp)
+(up-get-fact housing-headroom 0 g-temp-2)
+(up-modify-goal g-temp g:+ g-temp-2)
+)
+
+(defrule
+(game-time > 2)
+(up-compare-goal g-temp >= 15)
 (or
 	(building-type-count-total lumber-camp > 0)
 	(or
 		(unit-type-count villager-forager > 3)
-		(unit-type-count villager-shepherd == 0)))
-(resource-found food)
+		(and
+			(unit-type-count villager-shepherd == 0)
+			(unit-type-count livestock-class == 0))))
+(up-gaia-type-count c: forage-class > 0)
 (building-type-count-total mill == 0)
 =>
 (up-modify-goal g-desired-num-mill c:max 1)
@@ -3478,31 +3523,33 @@
 (up-modify-goal g-desired-num-mill c:= 1)
 )
 
-;REMOVE THE NEXT TWO RULES LATER!!!!!!!!!!!!!!!!!!!!
+#load-if-defined REMOVE-THE-NEXT-TWO-RULES-LATER
 
-(defrule
-(game-time > 30)
-(unit-type-count villager-forager > 2)
-;(dropsite-min-distance food > 3)
-(up-compare-goal g-desired-num-mill < 1)
-=>
-(up-modify-goal g-desired-num-mill c:max 1)
-)
+	(defrule
+	(game-time > 30)
+	(unit-type-count villager-forager > 2)
+	;(dropsite-min-distance food > 3)
+	(up-compare-goal g-desired-num-mill < 1)
+	=>
+	(up-modify-goal g-desired-num-mill c:max 1)
+	)
 
-(defrule
-(game-time > 60)
-(unit-type-count villager-forager > 0)
-;(dropsite-min-distance food > 3)
-(up-compare-goal g-desired-num-mill < 1)
-=>
-(up-modify-goal g-desired-num-mill c:max 1)
-)
+	(defrule
+	(game-time > 60)
+	(unit-type-count villager-forager > 0)
+	;(dropsite-min-distance food > 3)
+	(up-compare-goal g-desired-num-mill < 1)
+	=>
+	(up-modify-goal g-desired-num-mill c:max 1)
+	)
+
+#end-if
 
 ;====Mining Camps (used for first two mining camps only)
 
 (defrule
 (game-time > 30)
-(resource-found gold)
+(up-gaia-type-count-total c: gold > 0)
 (building-type-count-total lumber-camp > 0)
 (or
 	(and
@@ -3517,7 +3564,7 @@
 
 (defrule
 (game-time > 30)
-(resource-found stone)
+(up-gaia-type-count-total c: stone > 0)
 (building-type-count-total lumber-camp > 0)
 (dropsite-min-distance gold < 5)
 (or
@@ -4019,9 +4066,27 @@
 
 (defrule
 (up-compare-goal g-age-status >= gv-advancing-to-feudal)
+=>
+(up-get-fact building-type-count-total town-center g-temp)
+(up-modify-goal g-temp-2 g:= g-desired-num-town-center)
+(up-modify-goal g-temp-2 c:max 3)
+(up-modify-goal g-temp g:- g-temp-2)
+(up-modify-goal g-temp c:* -1)
+(up-setup-cost-data 1 g-food-cost)
+(up-add-object-cost c: town-center-foundation g: g-temp)
+(up-get-cost-delta g-food-delta)
+(up-reset-cost-data g-food-cost)
+(up-add-object-cost c: market c: 1)
+(up-modify-goal g-wood-delta g:- g-wood-cost)
+)
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-feudal)
 (or
 	(building-type-count-total town-center >= 3)
-	(up-compare-goal g-desired-num-trade-cart > 0))
+	(or
+		(up-compare-goal g-wood-delta >= 0)
+		(up-compare-goal g-desired-num-trade-cart > 0)))
 =>
 (up-modify-goal g-desired-num-market c:max 1)
 )
@@ -4061,130 +4126,75 @@
 =>
 (up-modify-goal g-desired-num-monks g:= g-desired-num-monk)
 (up-modify-goal g-desired-num-monks g:+ g-desired-num-missionary)
+(up-get-fact building-type-count-total town-center g-temp)
+(up-modify-goal g-temp-2 g:= g-desired-num-town-center)
+(up-modify-goal g-temp-2 c:max 3)
+(up-modify-goal g-temp g:- g-temp-2)
+(up-modify-goal g-temp c:* -1)
+(up-setup-cost-data 1 g-food-cost)
+(up-add-object-cost c: town-center-foundation g: g-temp)
+(up-get-cost-delta g-food-delta)
+(up-reset-cost-data g-food-cost)
+(up-add-object-cost c: monastery c: 1)
+(up-modify-goal g-wood-delta g:- g-wood-cost)
 )
 
-#load-if-not-defined BRITON-CIV
+;====Monastery
 
-	;====Monastery
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-castle)
+(up-compare-goal g-desired-num-monks > 0)
+(goal g-town-under-attack NO)
+(or
+	(up-compare-goal g-wood-delta >= 0)
+	(up-object-type-count-total c: town-center g:>= g-desired-num-town-center))
+(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
+(up-object-type-count-total c: archery-range g:>= g-desired-num-archery-range)
+(up-object-type-count-total c: stable g:>= g-desired-num-stable)
+(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+(up-object-type-count-total c: blacksmith g:>= g-desired-num-blacksmith)
+(up-object-type-count-total c: market g:>= g-desired-num-market)
+=>
+(up-modify-goal g-desired-num-monastery c:max 1)
+)
 
-	(defrule
-	(up-compare-goal g-age-status >= gv-advancing-to-castle)
-	(up-compare-goal g-desired-num-monks > 0)
-	(goal g-town-under-attack NO)
-	(or
-		(wood-amount >= 450)
-		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center))
-	(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
-	(up-object-type-count-total c: archery-range g:>= g-desired-num-archery-range)
-	(up-object-type-count-total c: stable g:>= g-desired-num-stable)
-	(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
-	(up-object-type-count-total c: blacksmith g:>= g-desired-num-blacksmith)
-	(up-object-type-count-total c: market g:>= g-desired-num-market)
-	=>
-	(up-modify-goal g-desired-num-monastery c:max 1)
-	)
+(defrule
+(goal g-age-status gv-save-for-imperial)
+(up-compare-goal g-desired-num-monastery == 0)
+(up-compare-goal g-desired-num-castle == 0)
+(building-type-count-total monastery == 0)
+(building-type-count-total castle == 0)
+=>
+(up-modify-goal g-desired-num-monastery c:max 1)
+)
 
-	(defrule
-	(goal g-age-status gv-save-for-imperial)
-	(up-compare-goal g-desired-num-monastery == 0)
-	(up-compare-goal g-desired-num-castle == 0)
-	(building-type-count-total monastery == 0)
-	(building-type-count-total castle == 0)
-	=>
-	(up-modify-goal g-desired-num-monastery c:max 1)
-	)
+;====University
 
-	;====University
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-castle)
+(goal g-town-under-attack NO)
+(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
+(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
+(up-object-type-count-total c: archery-range g:>= g-desired-num-archery-range)
+(up-object-type-count-total c: stable g:>= g-desired-num-stable)
+(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+(up-object-type-count-total c: blacksmith g:>= g-desired-num-blacksmith)
+(up-object-type-count-total c: market g:>= g-desired-num-market)
+(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
+(military-population > 25)
+=>
+(up-modify-goal g-desired-num-university c:max 1)
+)
 
-	(defrule
-	(up-compare-goal g-age-status >= gv-advancing-to-castle)
-	(goal g-town-under-attack NO)
-	(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-	(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
-	(up-object-type-count-total c: archery-range g:>= g-desired-num-archery-range)
-	(up-object-type-count-total c: stable g:>= g-desired-num-stable)
-	(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
-	(up-object-type-count-total c: blacksmith g:>= g-desired-num-blacksmith)
-	(up-object-type-count-total c: market g:>= g-desired-num-market)
-	(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
-	(military-population > 25)
-	=>
-	(up-modify-goal g-desired-num-university c:max 1)
-	)
-
-	(defrule
-	(goal g-age-status gv-save-for-imperial)
-	(up-compare-goal g-desired-num-university == 0)
-	(up-compare-goal g-desired-num-castle == 0)
-	(building-type-count-total university == 0)
-	(building-type-count-total castle == 0)
-	=>
-	(up-modify-goal g-desired-num-university c:max 1)
-	)
-
-#end-if
-
-#load-if-defined BRITON-CIV
-
-	;====Monastery
-
-	(defrule
-	(up-compare-goal g-age-status >= gv-advancing-to-castle)
-	(up-compare-goal g-desired-num-monks > 0)
-	(goal g-town-under-attack NO)
-	(or
-		(wood-amount >= 313)
-		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center))
-	(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
-	(up-object-type-count-total c: archery-range g:>= g-desired-num-archery-range)
-	(up-object-type-count-total c: stable g:>= g-desired-num-stable)
-	(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
-	(up-object-type-count-total c: blacksmith g:>= g-desired-num-blacksmith)
-	(up-object-type-count-total c: market g:>= g-desired-num-market)
-	=>
-	(up-modify-goal g-desired-num-monastery c:max 1)
-	)
-
-	(defrule
-	(goal g-age-status gv-save-for-imperial)
-	(up-compare-goal g-desired-num-monastery == 0)
-	(up-compare-goal g-desired-num-castle == 0)
-	(building-type-count-total monastery == 0)
-	(building-type-count-total castle == 0)
-	=>
-	(up-modify-goal g-desired-num-monastery c:max 1)
-	)
-
-	;====University
-
-	(defrule
-	(up-compare-goal g-age-status >= gv-advancing-to-castle)
-	(goal g-town-under-attack NO)
-	(or
-		(wood-amount >= 338)
-		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center))
-	(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
-	(up-object-type-count-total c: archery-range g:>= g-desired-num-archery-range)
-	(up-object-type-count-total c: stable g:>= g-desired-num-stable)
-	(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
-	(up-object-type-count-total c: blacksmith g:>= g-desired-num-blacksmith)
-	(up-object-type-count-total c: market g:>= g-desired-num-market)
-	(up-object-type-count-total c: market g:>= g-desired-num-monastery)
-	=>
-	(up-modify-goal g-desired-num-university c:max 1)
-	)
-
-	(defrule
-	(goal g-age-status gv-save-for-imperial)
-	(up-compare-goal g-desired-num-university == 0)
-	(up-compare-goal g-desired-num-castle == 0)
-	(building-type-count-total university == 0)
-	(building-type-count-total castle == 0)
-	=>
-	(up-modify-goal g-desired-num-university c:max 1)
-	)
-
-#end-if
+(defrule
+(goal g-age-status gv-save-for-imperial)
+(up-compare-goal g-desired-num-university == 0)
+(up-compare-goal g-desired-num-castle == 0)
+(building-type-count-total university == 0)
+(building-type-count-total castle == 0)
+=>
+(up-modify-goal g-desired-num-university c:max 1)
+)
 
 ;====Wonder
 
@@ -4217,21 +4227,23 @@
 
 ;====Watch Tower
 
-(defrule
-(goal g-town-under-attack NO)
-(up-compare-goal g-desired-num-watch-tower < 1)
-=>
-(up-modify-goal g-desired-num-watch-tower c:max 1)
-)
+#load-if-not-defined UP-POCKET-POSITION
 
-(defrule
-(goal g-town-under-attack YES)
-(up-compare-goal g-desired-num-watch-tower >= 1)
-=>
-(up-modify-goal g-desired-num-watch-tower c:= 0)
-)
+	(defrule
+	(goal g-town-under-attack NO)
+	(up-compare-goal g-desired-num-watch-tower < 1)
+	=>
+	(up-modify-goal g-desired-num-watch-tower c:max 1)
+	)
 
+	(defrule
+	(goal g-town-under-attack YES)
+	(up-compare-goal g-desired-num-watch-tower >= 1)
+	=>
+	(up-modify-goal g-desired-num-watch-tower c:= 0)
+	)
 
+#end-if
 
 ;====Bombard Tower
 

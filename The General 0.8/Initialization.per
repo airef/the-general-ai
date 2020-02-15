@@ -11,6 +11,29 @@
 
 
 ;Unit Constants
+(defconst male-forager 120)
+(defconst female-forager 354)
+(defconst male-hunter 122)
+(defconst female-hunter 216)
+(defconst male-shepherd 592)
+(defconst female-shepherd 590)
+(defconst male-lumberjack 123)
+(defconst female-lumberjack 218)
+(defconst male-gold-miner 579)
+(defconst female-gold-miner 581)
+(defconst male-stone-miner 124)
+(defconst female-stone-miner 220)
+(defconst male-fisherman 56)
+(defconst female-fisherman 57)
+(defconst male-farmer 259)
+(defconst female-farmer 214)
+(defconst male-builder 118)
+(defconst female-builder 212)
+(defconst male-repairer 156)
+(defconst female-repairer 222)
+(defconst male-villager 83)	;same as villager
+(defconst female-villager 293)
+
 (defconst sheep 594)
 (defconst llama 305)
 
@@ -18,11 +41,12 @@
 (defconst wild-boar 48)
 (defconst javelina 822)
 (defconst wolf 126)
+(defconst bear 486)
 (defconst jaguar 812)
 (defconst horse 814)
 (defconst zebra 1019)
 (defconst ostrich 1026)
-(defconst elephant 936); not detected
+(defconst elephant 412); not detected
 (defconst rhino 1139)
 
 (defconst forage-bush 59)
@@ -37,6 +61,10 @@
 (defconst boar-class 910)
 (defconst tree-class 915)
 (defconst shore-fish-class 933)
+
+(defconst terrain-forest-baobab 16)
+;(defconst terrain-forest-mangrove 20)	;same as old Oak Forest
+(defconst terrain-forest-acacia 41)
 
 
 
@@ -60,10 +88,10 @@
 (defconst malay 29)
 (defconst burmese 30)
 (defconst vietnamese 31)
-(defconst bulgarian 32)
-(defconst tatar 33)
-(defconst cuman 34)
-(defconst lithuanian 35)
+(defconst bulgarians 32)
+(defconst tatars 33)
+(defconst cumans 34)
+(defconst lithuanians 35)
 
 (defconst ri-yeomen 3)
 
@@ -489,7 +517,41 @@
 
 #end-if
 
+#load-if-defined TINY-MAP
 
+	(defconst MAP-SIZE 120)
+
+#end-if
+
+#load-if-defined SMALL-MAP
+
+	(defconst MAP-SIZE 144)
+
+#end-if
+
+#load-if-defined MEDIUM-MAP
+
+	(defconst MAP-SIZE 168)
+
+#end-if
+
+#load-if-defined NORMAL-MAP
+
+	(defconst MAP-SIZE 200)
+
+#end-if
+
+#load-if-defined LARGE-MAP
+
+	(defconst MAP-SIZE 220)
+
+#end-if
+
+#load-if-defined GIANT-MAP
+
+	(defconst MAP-SIZE 240)
+
+#end-if
 
 ;========<<<<DEFINE GOALS>>>>========
 
@@ -617,7 +679,7 @@
 	(defconst gv-manual 101)
 	(defconst gv-adjusted 102)
 	(defconst gv-automatic 103)
-;(defconst g- 10)
+(defconst g-garrison-for-retask 10)
 ;(defconst g- 11)
 ;(defconst g- 12)
 ;(defconst g- 13)
@@ -737,16 +799,18 @@
 (defconst g-position-self-y 77)
 (defconst g-point-x 107)
 (defconst g-point-y 108)
-;(defconst g-point-x-2 109)
-;(defconst g-point-y-2 110)
+(defconst g-place-point-x 109)
+(defconst g-place-point-y 110)
 
 (defconst g-boar-hunt-status 111)
 	(defconst gv-ready-to-lure 1)
 	(defconst gv-select-boar 2)
 	(defconst gv-find-lurer 3)
-	(defconst gv-target-boar 4)
-	(defconst gv-assist-hunting-boar 5)
-	(defconst gv-full-assist-hunting-boar 6)
+	(defconst gv-lurer-drop-res 4)
+	(defconst gv-ready-to-target-boar 5)
+	(defconst gv-target-boar 6)
+	(defconst gv-assist-hunting-boar 7)
+	(defconst gv-full-assist-hunting-boar 8)
 	(defconst MAX-BOAR-HUNT-DISTANCE 38)
 	#load-if-not-defined MONGOL-CIV
 		(defconst NEAR-BOAR-FOOD-AMOUNT-LEFT 110)
@@ -825,8 +889,18 @@
 (defconst g-desired-num-fishermen 146)
 (defconst g-desired-num-gatherers 147)
 
-(defconst g-boar-remaining 148)
-(defconst g-current-boar 149)
+(defconst g-boar-found 148)
+	(defconst gv-all-boar-found 101)
+	(defconst gv-all-boar-hunted 102)
+(defconst g-current-boar-id 149)
+(defconst g-boar-hunting-conditions-met 275)
+	(defconst gv-far-boar-vils-met 1)
+	(defconst gv-loom-researched 2)
+	(defconst gv-near-boar-vils-met 3)
+	(defconst gv-conditions-met 4)
+	(defconst NEAR-BOAR-HUNTING-VILS-NEEDED 9)
+	(defconst FAR-BOAR-HUNTING-VILS-NEEDED 10)
+(defconst g-boar-lurer-id 276)
 
 (defconst g-sheep-count 150)
 	(defconst gv-claim-sheep 999)
@@ -1042,12 +1116,10 @@
 	(defconst gv-start 0)
 	(defconst gv-done 9)
 
-;(defconst g- 274)
-;(defconst g- 275)
-;(defconst g- 276)
-;(defconst g- 277)
-;(defconst g- 278)
-;(defconst g- 279)
+(defconst g-rule-pass-count 274)
+(defconst g-min-forest-distance 277)
+(defconst g-avg-mil-training-delay 278)
+(defconst g-allow-mil-training 279)
 ;(defconst g- 280)
 ;(defconst g- 281)
 ;(defconst g- 282)
@@ -1412,7 +1484,7 @@
 
 
 
-;====Loop Rules
+;====Loop Rules - do every rule pass
 
 (defrule
 (game-time > 0)
@@ -1421,6 +1493,8 @@
 (up-get-fact resource-amount amount-relics g-num-relics-gathered)
 (up-get-point position-self g-position-self-x)
 (set-goal g-place-point-used NO)
+(set-goal g-place-point-x -1)
+(set-goal g-place-point-y -1)
 )
 
 (defrule
@@ -1469,8 +1543,8 @@
 (true)
 =>
 (up-modify-sn sn-percent-civilian-builders c:= 100)			;0
-(up-modify-sn sn-cap-civilian-builders c:= 20)				;2
-(up-modify-sn sn-camp-max-distance c:= 20)					;25
+(up-modify-sn sn-cap-civilian-builders c:= 200)				;2
+(up-modify-sn sn-camp-max-distance c:= 0)					;25
 (up-modify-sn sn-mill-max-distance c:= 20)					;100
 (up-modify-sn sn-minimum-dropsite-buffer c:= 25)				;25
 (up-modify-sn sn-required-forest-tiles c:= 20)				;10
@@ -1490,11 +1564,11 @@
 (up-modify-sn sn-gold-gatherer-percentage c:= 0)				;0
 (up-modify-sn sn-stone-gatherer-percentage c:= 0)			;0
 (up-modify-sn sn-wood-gatherer-percentage c:= 0)				;0
-(up-modify-sn sn-maximum-wood-drop-distance c:= 30)			;-1
-(up-modify-sn sn-maximum-food-drop-distance c:= 20)			;-1
-(up-modify-sn sn-maximum-hunt-drop-distance c:= 35)			;-1
+(up-modify-sn sn-maximum-wood-drop-distance c:= 30)			;-1	
+(up-modify-sn sn-maximum-food-drop-distance c:= 20)			;-1	
+(up-modify-sn sn-maximum-hunt-drop-distance c:= 35)			;-1	
 (up-modify-sn sn-maximum-fish-boat-drop-distance c:= 30)		;-1
-(up-modify-sn sn-maximum-gold-drop-distance c:= 20)			;-1
+(up-modify-sn sn-maximum-gold-drop-distance c:= 20)			;-1			
 (up-modify-sn sn-maximum-stone-drop-distance c:= 20)			;-1
 (disable-self)
 )
@@ -1599,7 +1673,7 @@
 =>
 (up-modify-sn sn-minimum-amount-for-trading c:= 50)			;50
 (up-modify-sn sn-do-not-scale-for-difficulty-level c:= 0)	;0
-(up-modify-sn sn-zero-priority-distance c:= 255)				;50
+(up-modify-sn sn-zero-priority-distance c:= 12)				;50
 (up-modify-sn sn-consecutive-idle-unit-limit c:= 15)			;15
 (up-modify-sn sn-coop-share-information c:= 1)				;1
 (up-modify-sn sn-relic-return-distance c:= 10)				;10
@@ -1636,11 +1710,11 @@
 (up-modify-sn sn-number-civilian-militia c:= 8)				;10
 (up-modify-sn sn-allow-civilian-offense c:= 0)				;0
 (up-modify-sn sn-preferred-trade-distance c:= 200)			;100
-(up-modify-sn sn-lumber-camp-max-distance c:= 20)			;0
-(up-modify-sn sn-mining-camp-max-distance c:= 30)			;0
+(up-modify-sn sn-lumber-camp-max-distance c:= 0)			;0
+(up-modify-sn sn-mining-camp-max-distance c:= 20)			;0
 (up-modify-sn sn-wall-targeting-mode c:= 0)					;0
 (up-modify-sn sn-livestock-to-town-center c:= 1)				;0
-(up-modify-sn sn-enable-training-queue c:= 1)				;0
+(up-modify-sn sn-enable-training-queue c:= 0)				;0
 (up-modify-sn sn-ignore-tower-elevation c:= 0)				;0
 (up-modify-sn sn-town-center-placement c:= 0)				;0
 (up-modify-sn sn-disable-tower-priority c:= 0)				;0
@@ -1787,6 +1861,9 @@
 (set-goal g-closest-enemy PENDING)
 (set-goal g-get-enemy-locations PENDING)
 (set-goal g-tsa NO)
+(set-goal g-boar-hunt-status -1)
+(set-goal g-boar-hunting-conditions-met NO)
+(set-goal g-min-forest-distance PENDING)
 (disable-self)
 )
 

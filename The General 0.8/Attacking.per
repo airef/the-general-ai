@@ -32,12 +32,12 @@
 (set-goal g-required-attack-num 8)
 )
 
-(defrule
-(up-compare-goal g-attack-status <= gv-first-attack)
-(goal g-strategy-type gv-default)
-=>
-(set-goal g-required-attack-num 8)
-)
+;(defrule
+;(up-compare-goal g-attack-status <= gv-first-attack)
+;(goal g-strategy-type gv-default)
+;=>
+;(set-goal g-required-attack-num 8)
+;)
 
 ;Start First Attack
 
@@ -64,7 +64,7 @@
 (goal g-attack-status gv-first-attack-marching)
 (up-compare-goal g-attacking >= YES)
 (up-timer-status t-attack == timer-triggered)
-(military-population g:>= g-required-attack-num)
+(military-population g:>= g-full-attack-num)
 =>
 (set-goal g-attack-status gv-first-attack)
 (disable-timer t-attack)
@@ -109,16 +109,31 @@
 (defrule
 (goal g-attack-status gv-first-attack)
 (up-compare-goal g-attacking >= YES)
-(or
-	(military-population g:< g-required-attack-num)
-	(and
-		(military-population g:< g-temp)
-		(up-compare-goal g-military-superiority < -6)))
+(military-population g:< g-required-attack-num)
 =>
 (set-goal g-attacking NO)
 (set-goal g-tsa NO)
 (up-modify-goal g-attack-status c:= gv-before-later-attacks)
-(chat-to-player my-player-number "Stop first attack")
+(chat-to-player my-player-number "Stop first attack - lost too many soldiers")
+(up-modify-sn sn-maximum-town-size s:= sn-safe-town-size)
+(up-update-targets)
+(up-retreat-now)
+)
+
+(defrule
+(goal g-attack-status gv-first-attack)
+(up-compare-goal g-attacking >= YES)
+(military-population g:< g-temp)
+(or
+	(and
+		(up-compare-goal g-military-superiority < -6)
+		(players-current-age target-player >= castle-age))
+	(up-compare-goal g-military-superiority < -12))
+=>
+(set-goal g-attacking NO)
+(set-goal g-tsa NO)
+(up-modify-goal g-attack-status c:= gv-before-later-attacks)
+(chat-to-player my-player-number "Stop first attack - outnumbered")
 (up-modify-sn sn-maximum-town-size s:= sn-safe-town-size)
 (up-update-targets)
 (up-retreat-now)
@@ -531,7 +546,7 @@
 (up-compare-goal g-tsa >= YES)
 (players-building-count every-enemy == 0)
 (game-time > 600)
-(up-compare-sn sn-maximum-town-size >= 480)
+(up-compare-sn sn-maximum-town-size >= MAP-SIZE)
 (up-compare-sn sn-number-attack-groups == 0)
 =>
 (set-goal g-tsa NO)

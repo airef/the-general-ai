@@ -49,32 +49,31 @@
 (up-modify-sn sn-maximum-town-size s:max sn-safe-town-size)
 )
 
-;====SN-ENABLE-TRAINING-QUEUE
+;====SN-CAMP-MAX-DISTANCE
 
 (defrule
-(current-age == castle-age)
+(up-compare-goal g-min-forest-distance > PENDING)
+(building-type-count-total lumber-camp == 0)
 =>
-(up-modify-sn sn-enable-training-queue c:= 0)
+(up-modify-sn sn-lumber-camp-max-distance g:= g-min-forest-distance)
 )
-
-;====SN-CAMP-MAX-DISTANCE
 
 (defrule
 (building-type-count-total lumber-camp > 0)
 =>
-(up-modify-sn sn-lumber-camp-max-distance c:= 30)
+(up-modify-sn sn-lumber-camp-max-distance c:+ 12)
 (disable-self)
 )
 
 (defrule
+(strategic-number sn-mining-camp-max-distance < 30)
 (building-type-count-total mining-camp > 1)
 =>
 (up-modify-sn sn-mining-camp-max-distance c:= 30)
-(disable-self)
 )
 
 (defrule
-(up-compare-sn sn-mining-camp-max-distance == 70)
+(strategic-number sn-mining-camp-max-distance < MAP-SIZE)
 (or
 	(population > 125)
 	(and
@@ -82,12 +81,12 @@
 		(dropsite-min-distance gold > 5)))
 (game-time > 1800)
 =>
-(up-modify-sn sn-lumber-camp-max-distance c:= 255)
-(up-modify-sn sn-mining-camp-max-distance c:= 255)
-(disable-self)
+(up-modify-sn sn-lumber-camp-max-distance c:= MAP-SIZE)
+(up-modify-sn sn-mining-camp-max-distance c:= MAP-SIZE)
 )
 
 (defrule
+(strategic-number sn-mining-camp-max-distance < 70)
 (or
 	(population > 100)
 	(and
@@ -96,7 +95,6 @@
 =>
 (up-modify-sn sn-lumber-camp-max-distance c:= 70)
 (up-modify-sn sn-mining-camp-max-distance c:= 70)
-(disable-self)
 )
 
 ;(defrule
@@ -110,7 +108,7 @@
 ;(defrule
 ;(military-population > 40)
 ;(up-compare-goal g-temp s:> sn-lumber-camp-max-distance)
-;(up-compare-goal g-temp < 255)
+;(up-compare-goal g-temp < MAP-SIZE)
 ;(goal g-check-drop-distance wood)
 ;=>
 ;(up-modify-sn sn-lumber-camp-max-distance g:= g-temp)
@@ -129,7 +127,7 @@
 ;(defrule
 ;(military-population > 40)
 ;(up-compare-goal g-temp s:> sn-mining-camp-max-distance)
-;(up-compare-goal g-temp < 255)
+;(up-compare-goal g-temp < MAP-SIZE)
 ;(goal g-check-drop-distance gold)
 ;=>
 ;(up-modify-sn sn-mining-camp-max-distance g:= g-temp)
@@ -148,7 +146,7 @@
 ;(defrule
 ;(military-population > 40)
 ;(up-compare-goal g-temp s:> sn-mining-camp-max-distance)
-;(up-compare-goal g-temp < 255)
+;(up-compare-goal g-temp < MAP-SIZE)
 ;(goal g-check-drop-distance stone)
 ;=>
 ;(up-modify-sn sn-mining-camp-max-distance g:= g-temp)
@@ -181,7 +179,9 @@
 (defrule
 (game-time == 0)
 (building-type-count-total town-center > 0)
-(cc-players-unit-type-count 0 livestock-class > 0)
+(or
+	(cc-players-unit-type-count 0 livestock-class > 0)
+	(cc-players-unit-type-count 0 forage-class > 0))
 (unit-type-count-total livestock-class == 0)
 (up-gaia-type-count c: forage-class == 0)
 (strategic-number sn-percent-civilian-explorers < 100)
@@ -190,12 +190,26 @@
 (set-strategic-number sn-percent-civilian-explorers 100)
 (set-strategic-number sn-cap-civilian-explorers 5)
 (set-strategic-number sn-total-number-explorers 6)
-(set-strategic-number sn-number-explore-groups 6)
+(chat-local-to-self "explore for food")
+)
+
+(defrule
+(game-time > 90)
+(game-time < 120)
+(building-type-count-total town-center > 0)
+(cc-players-unit-type-count 0 livestock-class > 0)
+(unit-type-count-total livestock-class == 0)
+(strategic-number sn-percent-civilian-explorers < 51)
+=>
+(set-strategic-number sn-percent-civilian-explorers 51)
+(set-strategic-number sn-cap-civilian-explorers 3)
+(set-strategic-number sn-total-number-explorers 4)
 (chat-local-to-self "explore for livestock")
 )
 
 (defrule
 (game-time > 90)
+(game-time < 120)
 (building-type-count-total town-center > 0)
 (cc-players-unit-type-count 0 forage-class > 0)
 (up-gaia-type-count c: forage-class == 0)
@@ -203,17 +217,17 @@
 (strategic-number sn-percent-civilian-explorers < 50)
 =>
 (set-strategic-number sn-percent-civilian-explorers 50)
-(set-strategic-number sn-cap-civilian-explorers 5)
-(set-strategic-number sn-total-number-explorers 6)
-(set-strategic-number sn-number-explore-groups 6)
+(set-strategic-number sn-cap-civilian-explorers 3)
+(set-strategic-number sn-total-number-explorers 4)
 (chat-local-to-self "explore for forage")
 )
 
 (defrule
 (game-time > 0)
 (building-type-count-total town-center > 0)
-(cc-players-unit-type-count 0 livestock-class > 0)
-(unit-type-count-total livestock-class > 0)
+(or
+	(unit-type-count-total livestock-class > 0)
+	(up-gaia-type-count c: forage-class > 0))
 (strategic-number sn-percent-civilian-explorers == 100)
 =>
 (set-strategic-number sn-percent-civilian-explorers 0)
@@ -221,12 +235,25 @@
 (set-strategic-number sn-cap-civilian-explorers 0)
 (set-strategic-number sn-total-number-explorers 1)
 (set-strategic-number sn-number-explore-groups 1)
+(chat-local-to-self "found food")
 )
 
 (defrule
 (game-time > 90)
 (building-type-count-total town-center > 0)
-(cc-players-unit-type-count 0 forage-class > 0)
+(unit-type-count-total livestock-class > 0)
+(strategic-number sn-percent-civilian-explorers == 51)
+=>
+(set-strategic-number sn-percent-civilian-explorers 0)
+(set-strategic-number sn-percent-civilian-gatherers 100)
+(set-strategic-number sn-cap-civilian-explorers 0)
+(set-strategic-number sn-total-number-explorers 1)
+(chat-local-to-self "found livestock")
+)
+
+(defrule
+(game-time > 90)
+(building-type-count-total town-center > 0)
 (up-gaia-type-count c: forage-class > 0)
 (strategic-number sn-percent-civilian-explorers == 50)
 =>
@@ -234,7 +261,45 @@
 (set-strategic-number sn-percent-civilian-gatherers 100)
 (set-strategic-number sn-cap-civilian-explorers 0)
 (set-strategic-number sn-total-number-explorers 1)
-(set-strategic-number sn-number-explore-groups 1)
+(chat-local-to-self "found forage")
+)
+
+(defrule
+(game-time > 240)
+(game-time < 300)
+(up-compare-goal g-boar-found < gv-all-boar-found)
+(goal g-boar-hunt-status -1)
+(strategic-number sn-percent-civilian-explorers < 49)
+=>
+(set-strategic-number sn-percent-civilian-explorers 49)
+(set-strategic-number sn-cap-civilian-explorers 3)
+(set-strategic-number sn-total-number-explorers 4)
+(chat-local-to-self "search for boar")
+)
+
+(defrule
+(up-compare-goal g-boar-found >= gv-all-boar-found)
+(strategic-number sn-percent-civilian-explorers == 49)
+=>
+(set-strategic-number sn-percent-civilian-explorers 0)
+(set-strategic-number sn-percent-civilian-gatherers 100)
+(set-strategic-number sn-cap-civilian-explorers 0)
+(set-strategic-number sn-total-number-explorers 1)
+(chat-local-to-self "found boar")
+)
+
+(defrule
+(game-time > 120)
+(or
+	(up-compare-goal g-boar-found >= gv-all-boar-found)
+	(game-time > 300))
+(strategic-number sn-percent-civilian-explorers > 0)
+=>
+(set-strategic-number sn-percent-civilian-explorers 0)
+(set-strategic-number sn-percent-civilian-gatherers 100)
+(set-strategic-number sn-cap-civilian-explorers 0)
+(set-strategic-number sn-total-number-explorers 1)
+(chat-local-to-self "stop civilian explorers")
 )
 
 ;Don't scout when town under attack
@@ -255,4 +320,14 @@
 =>
 (set-strategic-number sn-number-explore-groups 1)
 (set-strategic-number sn-total-number-explorers 1)
+)
+
+;Send-Scout
+
+(defrule
+(up-research-status c: castle-age == research-pending)
+(up-compare-goal g-attack-status <= gv-first-attack-marching)
+=>
+(up-send-scout group-type-land-explore scout-flank)
+(disable-self)
 )

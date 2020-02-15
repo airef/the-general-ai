@@ -59,17 +59,37 @@
 ;Loom
 
 (defrule
+(unit-type-count villager < FAR-BOAR-HUNTING-VILS-NEEDED)
+=>
+(set-goal g-temp FAR-BOAR-HUNTING-VILS-NEEDED)
+(up-modify-goal g-temp c:- 1)
+)
+
+(defrule
 (building-type-count town-center > 0)
 (up-compare-goal g-town-center-tech-priority < gv-primary)
 (up-research-status c: ri-loom == research-available)
-(dropsite-min-distance live-boar > 18)
-(dropsite-min-distance live-boar < MAX-BOAR-HUNT-DISTANCE)
+(dropsite-min-distance live-boar <= MAX-BOAR-HUNT-DISTANCE)
+(dropsite-min-distance live-boar >= 23)
+(up-object-type-count c: villager g:>= g-temp)
 (or
 	(up-compare-goal g-desired-num-boar-hunters > 0)
-	(unit-type-count villager >= 11))
+	(unit-type-count villager >= FAR-BOAR-HUNTING-VILS-NEEDED))
 =>
 (set-goal g-next-town-center-tech ri-loom)
 (set-goal g-town-center-tech-priority gv-primary)
+)
+
+(defrule
+(goal g-next-town-center-tech ri-loom)
+(can-afford-research ri-loom)
+(up-research-status c: ri-loom < research-pending)
+(up-compare-goal g-boar-hunting-conditions-met == gv-far-boar-vils-met)
+(up-compare-goal g-villager-training-time-left >= 10)
+(up-pending-objects c: villager > 0)
+=>
+(up-reset-building 1 c: town-center)
+(chat-local-to-self "emergency cancel vil training for Loom")
 )
 
 (defrule
@@ -117,13 +137,20 @@
 (building-type-count town-center > 0)
 (up-compare-goal g-town-center-tech-priority < gv-secondary)
 (up-research-status c: feudal-age == research-available)
+(up-object-type-count c: villager g:>= g-desired-num-villager)
+=>
+(set-goal g-next-town-center-tech feudal-age)
+(set-goal g-town-center-tech-priority gv-secondary)
+)
+
+(defrule
+(building-type-count town-center > 0)
+(up-compare-goal g-town-center-tech-priority < gv-secondary)
+(up-research-status c: feudal-age == research-available)
+(up-object-type-count c: villager g:>= g-required-num-villager)
 (or
-	(up-object-type-count c: villager g:>= g-required-num-villager)
-	(and
-		(players-current-age any-enemy >= feudal-age)
-		(or
-			(food-amount >= 600)
-			(goal g-town-under-attack YES))))
+	(food-amount >= 550)
+	(goal g-town-under-attack YES))
 =>
 (set-goal g-next-town-center-tech feudal-age)
 (set-goal g-town-center-tech-priority gv-secondary)
@@ -200,6 +227,19 @@
 )
 
 ;Wheelbarrow
+
+(defrule
+(building-type-count town-center > 0)
+(up-compare-goal g-town-center-tech-priority < gv-primary)
+(up-research-status c: ri-wheel-barrow == research-available)
+(or
+	(unit-type-count-total villager >= 80)
+	(up-research-status c: imperial-age >= research-pending))
+(goal g-town-under-attack NO)
+=>
+(set-goal g-next-town-center-tech ri-wheel-barrow)
+(set-goal g-town-center-tech-priority gv-primary)
+)
 
 (defrule
 (building-type-count town-center > 0)
@@ -384,6 +424,19 @@
 
 (defrule
 (building-type-count mill > 0)
+(up-compare-goal g-mill-tech-priority < gv-primary)
+(up-research-status c: ri-heavy-plow == research-available)
+(or
+	(unit-type-count villager >= 70)
+	(current-age == imperial-age))
+(up-research-status c: ri-wheel-barrow >= research-pending)
+=>
+(set-goal g-next-mill-tech ri-heavy-plow)
+(set-goal g-mill-tech-priority gv-primary)
+)
+
+(defrule
+(building-type-count mill > 0)
 (up-compare-goal g-mill-tech-priority < gv-secondary)
 (up-research-status c: ri-heavy-plow == research-available)
 (or
@@ -416,6 +469,19 @@
 ;========Mining Camp
 
 ;Gold Mining
+
+(defrule
+(building-type-count mining-camp > 0)
+(up-compare-goal g-mining-camp-tech-priority < gv-primary)
+(up-research-status c: ri-gold-mining == research-available)
+(goal g-town-under-attack NO)
+(unit-type-count villager-gold >= 2)
+(current-age == imperial-age)
+(up-gaia-type-count c: gold > 0)
+=>
+(set-goal g-next-mining-camp-tech ri-gold-mining)
+(set-goal g-mining-camp-tech-priority gv-primary)
+)
 
 (defrule
 (building-type-count mining-camp > 0)
@@ -634,6 +700,21 @@
 
 (defrule
 (building-type-count blacksmith > 0)
+(up-compare-goal g-blacksmith-tech-priority < gv-primary)
+(up-research-status c: ri-fletching == research-available)
+(up-compare-goal g-desired-num-pierce-attack-units > 5)
+(or
+	(current-age == imperial-age)
+	(or
+		(unit-type-count archery-class > 10)
+		(unit-type-count cavalry-archer-class > 8)))
+=>
+(set-goal g-next-blacksmith-tech ri-fletching)
+(set-goal g-blacksmith-tech-priority gv-primary)
+)
+
+(defrule
+(building-type-count blacksmith > 0)
 (up-compare-goal g-blacksmith-tech-priority < gv-secondary)
 (up-research-status c: ri-fletching == research-available)
 (up-compare-goal g-desired-num-pierce-attack-units > 10)
@@ -694,6 +775,21 @@
 (or
 	(goal g-primary-unit-class gv-archer)
 	(goal g-primary-unit-class gv-cavalry-archer))
+=>
+(set-goal g-next-blacksmith-tech ri-bodkin-arrow)
+(set-goal g-blacksmith-tech-priority gv-primary)
+)
+
+(defrule
+(building-type-count blacksmith > 0)
+(up-compare-goal g-blacksmith-tech-priority < gv-primary)
+(up-research-status c: ri-bodkin-arrow == research-available)
+(up-compare-goal g-desired-num-pierce-attack-units > 0)
+(or
+	(current-age == imperial-age)
+	(or
+		(unit-type-count archery-class > 15)
+		(unit-type-count cavalry-archer-class > 12)))
 =>
 (set-goal g-next-blacksmith-tech ri-bodkin-arrow)
 (set-goal g-blacksmith-tech-priority gv-primary)
@@ -777,6 +873,19 @@
 (or
 	(up-compare-goal g-attack-status >= gv-first-attack-marching)
 	(up-compare-flag g-excess-resources-flag == gv-food))
+=>
+(set-goal g-next-blacksmith-tech ri-scale-barding)
+(set-goal g-blacksmith-tech-priority gv-primary)
+)
+
+(defrule
+(building-type-count blacksmith > 0)
+(up-compare-goal g-blacksmith-tech-priority < gv-primary)
+(up-research-status c: ri-scale-barding == research-available)
+(up-compare-goal g-desired-num-cavalry > 0)
+(or
+	(current-age == imperial-age)
+	(unit-type-count cavalry-class > 10))
 =>
 (set-goal g-next-blacksmith-tech ri-scale-barding)
 (set-goal g-blacksmith-tech-priority gv-primary)
@@ -903,6 +1012,19 @@
 
 (defrule
 (building-type-count blacksmith > 0)
+(up-compare-goal g-blacksmith-tech-priority < gv-primary)
+(up-research-status c: ri-chain-barding == research-available)
+(up-compare-goal g-desired-num-cavalry > 4)
+(or
+	(current-age == imperial-age)
+	(unit-type-count cavalry-class > 15))
+=>
+(set-goal g-next-blacksmith-tech ri-chain-barding)
+(set-goal g-blacksmith-tech-priority gv-primary)
+)
+
+(defrule
+(building-type-count blacksmith > 0)
 (up-compare-goal g-blacksmith-tech-priority < gv-secondary)
 (up-research-status c: ri-chain-barding == research-available)
 (up-compare-goal g-desired-num-cavalry > 6)
@@ -1007,6 +1129,19 @@
 
 (defrule
 (building-type-count blacksmith > 0)
+(up-compare-goal g-blacksmith-tech-priority < gv-primary)
+(up-research-status c: ri-scale-mail == research-available)
+(up-compare-goal g-desired-num-infantry > 0)
+(or
+	(current-age == imperial-age)
+	(unit-type-count infantry-class >= 12))
+=>
+(set-goal g-next-blacksmith-tech ri-scale-mail)
+(set-goal g-blacksmith-tech-priority gv-primary)
+)
+
+(defrule
+(building-type-count blacksmith > 0)
 (up-compare-goal g-blacksmith-tech-priority < gv-secondary)
 (up-research-status c: ri-scale-mail == research-available)
 (up-compare-goal g-desired-num-infantry > 6)
@@ -1078,6 +1213,18 @@
 
 (defrule
 (building-type-count blacksmith > 0)
+(up-compare-goal g-blacksmith-tech-priority < gv-primary)
+(up-research-status c: ri-chain-mail == research-available)
+(or
+	(current-age == imperial-age)
+	(unit-type-count infantry-class >= 20))
+=>
+(set-goal g-next-blacksmith-tech ri-chain-mail)
+(set-goal g-blacksmith-tech-priority gv-primary)
+)
+
+(defrule
+(building-type-count blacksmith > 0)
 (up-compare-goal g-blacksmith-tech-priority < gv-secondary)
 (up-research-status c: ri-chain-mail == research-available)
 (up-compare-goal g-desired-num-infantry > 8)
@@ -1133,6 +1280,21 @@
 )
 
 ;Padded Archer Armor
+
+(defrule
+(building-type-count blacksmith > 0)
+(up-compare-goal g-blacksmith-tech-priority < gv-primary)
+(up-research-status c: ri-padded-archer-armor == research-available)
+(up-compare-goal g-desired-num-archer-armor-units > 0)
+(or
+	(current-age == imperial-age)
+	(or
+		(unit-type-count archery-class > 12)
+		(unit-type-count cavalry-archer-class > 10)))
+=>
+(set-goal g-next-blacksmith-tech ri-padded-archer-armor)
+(set-goal g-blacksmith-tech-priority gv-primary)
+)
 
 (defrule
 (building-type-count blacksmith > 0)
@@ -1244,6 +1406,21 @@
 
 (defrule
 (building-type-count blacksmith > 0)
+(up-compare-goal g-blacksmith-tech-priority < gv-secondary)
+(up-research-status c: ri-leather-archer-armor == research-available)
+(up-compare-goal g-desired-num-archer-armor-units > 4)
+(or
+	(current-age == imperial-age)
+	(or
+		(unit-type-count archery-class > 20)
+		(unit-type-count cavalry-archer-class > 15)))
+=>
+(set-goal g-next-blacksmith-tech ri-leather-archer-armor)
+(set-goal g-blacksmith-tech-priority gv-secondary)
+)
+
+(defrule
+(building-type-count blacksmith > 0)
 (up-compare-goal g-blacksmith-tech-priority < gv-tertiary)
 (up-research-status c: ri-leather-archer-armor == research-available)
 (up-compare-goal g-desired-num-archer-armor-units > 8)
@@ -1309,6 +1486,20 @@
 )
 
 ;Forging
+
+(defrule
+(building-type-count blacksmith > 0)
+(up-compare-goal g-blacksmith-tech-priority < gv-primary)
+(up-research-status c: ri-forging == research-available)
+(or
+	(current-age == imperial-age)
+	(or
+		(unit-type-count infantry-class > 12)
+		(unit-type-count cavalry-class > 10)))
+=>
+(set-goal g-next-blacksmith-tech ri-forging)
+(set-goal g-blacksmith-tech-priority gv-primary)
+)
 
 (defrule
 (building-type-count blacksmith > 0)
@@ -1395,6 +1586,20 @@
 )
 
 ;Iron Casting
+
+(defrule
+(building-type-count blacksmith > 0)
+(up-compare-goal g-blacksmith-tech-priority < gv-primary)
+(up-research-status c: ri-iron-casting == research-available)
+(or
+	(current-age == imperial-age)
+	(or
+		(unit-type-count infantry-class > 18)
+		(unit-type-count cavalry-class > 15)))
+=>
+(set-goal g-next-blacksmith-tech ri-iron-casting)
+(set-goal g-blacksmith-tech-priority gv-primary)
+)
 
 (defrule
 (building-type-count blacksmith > 0)
@@ -1889,19 +2094,19 @@
 
 (defrule
 (building-type-count market > 0)
-(up-compare-goal g-market-tech-priority < gv-secondary)
+(up-compare-goal g-market-tech-priority < gv-primary)
 (up-research-status c: ri-caravan == research-available)
 (or
 	(up-compare-goal g-attack-status >= gv-first-attack-marching)
 	(up-compare-flag g-excess-resources-flag == gv-food-gold))
 (player-in-game any-ally)
-(population > 150)
+;(population > 150)
 (or	
 	(up-compare-goal g-desired-num-trade-cart >= 5)
 	(unit-type-count trade-cart >= 5))
 =>
 (set-goal g-next-market-tech ri-caravan)
-(set-goal g-market-tech-priority gv-secondary)
+(set-goal g-market-tech-priority gv-primary)
 )
 
 ;Guilds
@@ -3079,6 +3284,19 @@
 
 (defrule
 (building-type-count barracks > 0)
+(up-compare-goal g-barracks-tech-priority < gv-primary)
+(up-research-status c: ri-eagle-warrior == research-available)
+(up-compare-goal g-desired-num-eagle-warrior > 0)
+(or
+	(current-age == imperial-age)
+	(up-compare-goal g-eagle-scout-line > 12))
+=>
+(set-goal g-next-barracks-tech ri-eagle-warrior)
+(set-goal g-barracks-tech-priority gv-primary)
+)
+
+(defrule
+(building-type-count barracks > 0)
 (up-compare-goal g-barracks-tech-priority < gv-secondary)
 (up-research-status c: ri-eagle-warrior == research-available)
 (or
@@ -3211,6 +3429,19 @@
 		(and
 			(up-compare-goal g-desired-num-spearman > 0)
 			(up-compare-goal g-strategy >= gv-low-gold))))
+=>
+(set-goal g-next-barracks-tech ri-pikeman)
+(set-goal g-barracks-tech-priority gv-primary)
+)
+
+(defrule
+(building-type-count barracks > 0)
+(up-compare-goal g-barracks-tech-priority < gv-primary)
+(up-research-status c: ri-pikeman == research-available)
+(up-compare-goal g-desired-num-spearman > 0)
+(or
+	(current-age == imperial-age)
+	(unit-type-count spearman-line > 12))
 =>
 (set-goal g-next-barracks-tech ri-pikeman)
 (set-goal g-barracks-tech-priority gv-primary)
@@ -3392,6 +3623,19 @@
 
 (defrule
 (building-type-count barracks > 0)
+(up-compare-goal g-barracks-tech-priority < gv-primary)
+(up-research-status c: ri-man-at-arms == research-available)
+(up-compare-goal g-desired-num-militia > 0)
+(or
+	(current-age >= castle-age)
+	(unit-type-count militiaman-line > 8))
+=>
+(set-goal g-next-barracks-tech ri-man-at-arms)
+(set-goal g-barracks-tech-priority gv-primary)
+)
+
+(defrule
+(building-type-count barracks > 0)
 (up-compare-goal g-barracks-tech-priority < gv-secondary)
 (up-research-status c: ri-man-at-arms == research-available)
 (or
@@ -3442,6 +3686,19 @@
 (or
 	(up-compare-goal g-desired-num-militia > 8)
 	(unit-type-count-total militiaman-line >= 12))
+=>
+(set-goal g-next-barracks-tech ri-long-swordsman)
+(set-goal g-barracks-tech-priority gv-primary)
+)
+
+(defrule
+(building-type-count barracks > 0)
+(up-compare-goal g-barracks-tech-priority < gv-primary)
+(up-research-status c: ri-long-swordsman == research-available)
+(up-compare-goal g-desired-num-militia > 0)
+(or
+	(current-age == imperial-age)
+	(unit-type-count militiaman-line > 10))
 =>
 (set-goal g-next-barracks-tech ri-long-swordsman)
 (set-goal g-barracks-tech-priority gv-primary)
@@ -3816,6 +4073,18 @@
 
 (defrule
 (building-type-count archery-range > 0)
+(up-compare-goal g-archery-range-tech-priority < gv-primary)
+(up-research-status c: ri-crossbow == research-available)
+(or
+	(current-age >= imperial-age)
+	(unit-type-count archer-line > 8))
+=>
+(set-goal g-next-archery-range-tech ri-crossbow)
+(set-goal g-archery-range-tech-priority gv-primary)
+)
+
+(defrule
+(building-type-count archery-range > 0)
 (up-compare-goal g-archery-range-tech-priority < gv-secondary)
 (up-research-status c: ri-crossbow == research-available)
 (or
@@ -3931,6 +4200,18 @@
 (or
 	(up-compare-goal g-desired-num-skirmisher > 5)
 	(up-compare-goal g-skirmisher-line >= 8))
+=>
+(set-goal g-next-archery-range-tech ri-elite-skirmisher)
+(set-goal g-archery-range-tech-priority gv-primary)
+)
+
+(defrule
+(building-type-count archery-range > 0)
+(up-compare-goal g-archery-range-tech-priority < gv-primary)
+(up-research-status c: ri-elite-skirmisher == research-available)
+(or
+	(current-age == imperial-age)
+	(up-compare-goal g-skirmisher-line > 10))
 =>
 (set-goal g-next-archery-range-tech ri-elite-skirmisher)
 (set-goal g-archery-range-tech-priority gv-primary)
@@ -4465,6 +4746,16 @@
 
 (defrule
 (building-type-count stable > 0)
+(up-compare-goal g-stable-tech-priority < gv-secondary)
+(up-research-status c: ri-cavalier == research-available)
+(unit-type-count-total knight-line >= 14)
+=>
+(set-goal g-next-stable-tech ri-cavalier)
+(set-goal g-stable-tech-priority gv-secondary)
+)
+
+(defrule
+(building-type-count stable > 0)
 (up-compare-goal g-stable-tech-priority < gv-tertiary)
 (up-research-status c: ri-cavalier == research-available)
 (or
@@ -4582,6 +4873,18 @@
 		(and
 			(up-compare-goal g-desired-num-scout-cavalry > 0)
 			(up-compare-goal g-strategy >= gv-low-gold))))
+=>
+(set-goal g-next-stable-tech ri-light-cavalry)
+(set-goal g-stable-tech-priority gv-primary)
+)
+
+(defrule
+(building-type-count stable > 0)
+(up-compare-goal g-stable-tech-priority < gv-primary)
+(up-research-status c: ri-light-cavalry == research-available)
+(or
+	(current-age == imperial-age)
+	(unit-type-count scout-cavalry-line > 8))
 =>
 (set-goal g-next-stable-tech ri-light-cavalry)
 (set-goal g-stable-tech-priority gv-primary)
@@ -4949,6 +5252,18 @@
 #end-if
 
 ;Bloodlines
+
+(defrule
+(building-type-count stable > 0)
+(up-compare-goal g-stable-tech-priority < gv-primary)
+(up-research-status c: ri-bloodlines == research-available)
+(or
+	(current-age == imperial-age)
+	(unit-type-count cavalry-class >= 15))
+=>
+(set-goal g-next-stable-tech ri-bloodlines)
+(set-goal g-stable-tech-priority gv-primary)
+)
 
 (defrule
 (building-type-count stable > 0)

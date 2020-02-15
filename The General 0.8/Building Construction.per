@@ -24,9 +24,9 @@
 (up-pending-objects c: town-center < 2)
 (building-type-count-total town-center == 1)
 =>
-(set-strategic-number sn-allow-adjacent-dropsites 1)
 (set-strategic-number sn-dropsite-separation-distance 2)
 (set-strategic-number sn-town-center-placement mining-camp)
+(up-modify-sn sn-mining-camp-max-distance s:= sn-safe-town-size)
 (up-assign-builders c: town-center-foundation c: 4)
 (up-release-escrow)
 (set-goal g-use-escrow with-escrow)
@@ -40,9 +40,9 @@
 (up-pending-objects c: town-center < 2)
 (building-type-count-total town-center != 1)
 =>
-(set-strategic-number sn-allow-adjacent-dropsites 1)
 (set-strategic-number sn-dropsite-separation-distance 2)
 (set-strategic-number sn-town-center-placement lumber-camp)
+(up-modify-sn sn-lumber-camp-max-distance s:= sn-safe-town-size)
 (up-assign-builders c: town-center-foundation c: 4)
 (up-release-escrow)
 (set-goal g-use-escrow with-escrow)
@@ -72,6 +72,18 @@
 		(up-modify-sn sn-disable-builder-assistance c:= 1)
 		(up-assign-builders c: house c: 4)
 		)
+		
+		(defrule
+		(building-type-count-total house == 2)
+		=>
+		(set-strategic-number sn-cap-civilian-builders 1)
+		)
+		
+		(defrule
+		(building-type-count house >= 2)
+		=>
+		(set-strategic-number sn-cap-civilian-builders 200)
+		)
 
 		(defrule
 		(building-type-count-total house > 2)
@@ -94,6 +106,90 @@
 (up-assign-builders c: house c: 1)
 )
 
+;Try to build houses adjacent to two starting villagers
+
+(defrule
+(goal g-rule-pass-count 0)
+(goal g-place-point-used NO)
+(can-build house)
+(building-type-count-total house == 0)
+(up-pending-objects c: house < 2)
+(unit-type-count villager > 0)
+=>
+(up-full-reset-search)
+(up-filter-exclude -1 actionid-build -1 -1)
+(up-find-local c: villager-class c: 240)
+)
+
+(defrule
+(goal g-rule-pass-count 0)
+(goal g-place-point-used NO)
+(can-build house)
+(building-type-count-total house == 0)
+(up-pending-objects c: house < 2)
+(unit-type-count villager > 0)
+(up-set-target-object search-local c: 0)
+=>
+(up-get-point position-object g-place-point-x)
+(up-set-target-point g-place-point-x)
+)
+
+(defrule
+(goal g-rule-pass-count 0)
+(goal g-place-point-used NO)
+(can-build house)
+(building-type-count-total house == 0)
+(up-pending-objects c: house < 2)
+(unit-type-count villager > 0)
+(up-compare-goal g-place-point-x >= 0)
+(can-build house)
+=>
+(set-strategic-number sn-placement-zone-size 0)
+(up-build place-point 0 c: house)
+(set-goal g-place-point-used YES)
+)
+
+(defrule
+(goal g-rule-pass-count 1)
+(goal g-place-point-used NO)
+(can-build house)
+(building-type-count-total house == 1)
+(up-pending-objects c: house < 2)
+(unit-type-count villager > 0)
+=>
+(up-full-reset-search)
+(up-filter-exclude -1 actionid-build -1 -1)
+(up-find-local c: villager-class c: 240)
+)
+
+(defrule
+(goal g-rule-pass-count 1)
+(goal g-place-point-used NO)
+(can-build house)
+(building-type-count-total house == 1)
+(up-pending-objects c: house < 2)
+(unit-type-count villager > 0)
+(up-set-target-object search-local c: 0)
+=>
+(up-get-point position-object g-place-point-x)
+(up-set-target-point g-place-point-x)
+)
+
+(defrule
+(goal g-rule-pass-count 1)
+(goal g-place-point-used NO)
+(can-build house)
+(building-type-count-total house == 1)
+(up-pending-objects c: house < 2)
+(unit-type-count villager > 0)
+(up-compare-goal g-place-point-x >= 0)
+(can-build house)
+=>
+(set-strategic-number sn-placement-zone-size 0)
+(up-build place-point 0 c: house)
+(set-goal g-place-point-used YES)
+)
+
 (defrule
 (up-object-type-count-total c: house g:< g-desired-num-house)
 (can-build house)
@@ -110,7 +206,6 @@
 (up-pending-objects c: mill == 0)
 (can-build mill)
 =>
-(up-modify-sn sn-allow-adjacent-dropsites c:= 1)
 (build mill)
 )
 
@@ -121,15 +216,6 @@
 (up-pending-objects c: lumber-camp == 0)
 (can-build lumber-camp)
 =>
-(up-modify-sn sn-allow-adjacent-dropsites c:= 1)
-)
-
-(defrule
-(up-object-type-count-total c: lumber-camp g:< g-desired-num-lumber-camp)
-(up-pending-objects c: lumber-camp == 0)
-(can-build lumber-camp)
-=>
-(up-modify-sn sn-allow-adjacent-dropsites c:= 1)
 (build lumber-camp)
 )
 
@@ -138,10 +224,9 @@
 (building-type-count-total lumber-camp == 1)
 (up-pending-objects c: lumber-camp == 0)
 (dropsite-min-distance wood >= 5)
-(dropsite-min-distance wood < 255)
+(dropsite-min-distance wood < MAP-SIZE)
 (can-build lumber-camp)
 =>
-(up-modify-sn sn-allow-adjacent-dropsites c:= 1)
 ;(up-modify-goal g-desired-num-lumber-camp c:+ 1)
 (build lumber-camp)
 (set-strategic-number sn-dropsite-separation-distance 4)
@@ -152,10 +237,9 @@
 (building-type-count-total lumber-camp > 1)
 (up-pending-objects c: lumber-camp == 0)
 (dropsite-min-distance wood >= 5)
-(dropsite-min-distance wood < 255)
+(dropsite-min-distance wood < MAP-SIZE)
 (can-build lumber-camp)
 =>
-(up-modify-sn sn-allow-adjacent-dropsites c:= 1)
 ;(up-modify-goal g-desired-num-lumber-camp c:+ 1)
 (build lumber-camp)
 )
@@ -191,11 +275,10 @@
 (goal g-place-point-used NO)
 (up-set-target-object search-remote c: 0)
 =>
-(up-get-point position-object g-point-x)
-(up-set-target-point g-point-x)
+(up-get-point position-object g-place-point-x)
+(up-set-target-point g-place-point-x)
 (set-strategic-number sn-placement-zone-size 5)
 (set-strategic-number sn-placement-fail-delta 0)
-(set-strategic-number sn-allow-adjacent-dropsites 0)
 (up-build place-point 0 c: mining-camp)
 (set-goal g-place-point-used YES)
 (up-modify-sn sn-focus-player-number g:= g-temp)
@@ -231,11 +314,10 @@
 (goal g-place-point-used NO)
 (up-set-target-object search-remote c: 0)
 =>
-(up-get-point position-object g-point-x)
-(up-set-target-point g-point-x)
+(up-get-point position-object g-place-point-x)
+(up-set-target-point g-place-point-x)
 (set-strategic-number sn-placement-zone-size 5)
 (set-strategic-number sn-placement-fail-delta 0)
-(set-strategic-number sn-allow-adjacent-dropsites 0)
 (up-build place-point 0 c: mining-camp)
 (set-goal g-place-point-used YES)
 (up-modify-sn sn-focus-player-number g:= g-temp)
@@ -263,7 +345,7 @@
 (game-time > 600)
 (up-pending-objects c: mining-camp == 0)
 (dropsite-min-distance stone >= 5)
-(dropsite-min-distance stone < 255)
+(dropsite-min-distance stone < MAP-SIZE)
 (or
 	(up-compare-goal g-desired-num-stone-vils > 0)
 	(up-compare-sn sn-stone-gatherer-percentage > 0))
@@ -271,7 +353,6 @@
 =>
 (up-modify-goal g-temp s:= sn-gold-dropsite-distance)
 (up-modify-sn sn-gold-dropsite-distance c:= 50)
-(up-modify-sn sn-allow-adjacent-dropsites c:= 0)
 (up-modify-sn sn-gold-dropsite-distance g:= g-temp)
 (build mining-camp)
 (chat-local-to-self "stone camp")
@@ -281,7 +362,7 @@
 (game-time > 900)
 (up-pending-objects c: mining-camp == 0)
 (dropsite-min-distance gold >= 5)
-(dropsite-min-distance gold < 255)
+(dropsite-min-distance gold < MAP-SIZE)
 (or
 	(up-compare-goal g-desired-num-gold-vils > 0)
 	(up-compare-sn sn-gold-gatherer-percentage > 0))
@@ -289,7 +370,6 @@
 =>
 (up-modify-goal g-temp s:= sn-stone-dropsite-distance)
 (up-modify-sn sn-stone-dropsite-distance c:= 50)
-(up-modify-sn sn-allow-adjacent-dropsites c:= 0)
 (up-modify-sn sn-stone-dropsite-distance g:= g-temp)
 (build mining-camp)
 (chat-local-to-self "gold camp")
@@ -622,7 +702,7 @@
 =>
 (set-strategic-number sn-placement-to-center 1)
 (set-strategic-number sn-placement-zone-size 50)
-(up-set-placement-data my-player-number -1 c: -120)
+(up-set-placement-data my-player-number -1 c: -128)
 (set-strategic-number sn-placement-fail-delta 0)
 (up-assign-builders c: market c: 1)
 (up-build place-control 0 c: market)
