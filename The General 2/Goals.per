@@ -568,6 +568,7 @@
 (up-compare-goal g-boar-hunting-conditions-met >= gv-far-boar-vils-met)
 (up-compare-goal g-boar-hunt-status < gv-ready-to-lure)
 (goal g-current-boar-id -1)
+(dropsite-min-distance boar-hunting <= MAX-BOAR-HUNT-DISTANCE)
 =>
 (set-goal g-boar-hunt-status gv-ready-to-lure)
 (chat-local-to-self "ready to lure")
@@ -2296,153 +2297,155 @@
 
 ;====GOAL: g-gathering-inside
 
-(defrule
-(true)
-=>
-(up-get-fact enemy-units-in-town 0 g-temp)
-(up-get-fact unit-type-in-town knight-line g-temp-2)
-(up-modify-goal g-temp-2 c:/ 2)
-(up-modify-goal g-temp g:+ g-temp-2)			;treat enemy knights as 1.5 soldiers
-(up-get-fact soldier-count 0 g-temp-3)
-(up-get-fact unit-type-count knight-line g-temp-2)
-(up-modify-goal g-temp-2 c:/ 2)
-(up-modify-goal g-temp-3 g:+ g-temp-2)			;treat own knights as 1.5 soldiers
-)
+#load-if-defined OPTIMIZE-LATER
 
-(defrule
-(goal g-town-under-attack YES)
-(goal g-gathering-inside NO)
-(up-enemy-units-in-town >= 6)
-(soldier-count < 40)
-(or
-	(up-enemy-units-in-town >= 25)
-	(soldier-count < 20))
-(up-compare-goal g-temp g:> g-temp-3)	;Enemy outnumbers us
-=>
-(set-goal g-gathering-inside gv-military-buildings)
-(chat-local-to-self "outnumbered - garrison in mil bldgs")
-(up-chat-data-to-self "Enemy count: %d" g: g-temp)
-(up-chat-data-to-self "Soldier count: %d" g: g-temp-3)
-)
+	(defrule
+	(true)
+	=>
+	(up-get-fact enemy-units-in-town 0 g-temp)
+	(up-get-fact unit-type-in-town knight-line g-temp-2)
+	(up-modify-goal g-temp-2 c:/ 2)
+	(up-modify-goal g-temp g:+ g-temp-2)			;treat enemy knights as 1.5 soldiers
+	(up-get-fact soldier-count 0 g-temp-3)
+	(up-get-fact unit-type-count knight-line g-temp-2)
+	(up-modify-goal g-temp-2 c:/ 2)
+	(up-modify-goal g-temp-3 g:+ g-temp-2)			;treat own knights as 1.5 soldiers
+	)
 
-(defrule
-(up-compare-goal g-gathering-inside >= gv-military-buildings)
-=>
-(up-gather-inside c: barracks c: 1)
-(up-gather-inside c: archery-range c: 1)
-(up-gather-inside c: stable c: 1)
-(up-gather-inside c: siege-workshop c: 1)
-(up-gather-inside c: castle c: 1)
-(up-gather-inside c: monastery c: 1)
-)
-
-(defrule
-(up-compare-goal g-gathering-inside == gv-all-buildings)
-=>
-(up-gather-inside c: town-center c: 1)
-(up-gather-inside c: dock c: 1)
-(up-gather-inside c: market c: 1)
-(chat-local-to-self "Garrison inside all bldgs")
-)
-
-(defrule
-(up-compare-goal g-gathering-inside > NO)
-(or
-	(goal g-town-under-attack NO)
+	(defrule
+	(goal g-town-under-attack YES)
+	(goal g-gathering-inside NO)
+	(up-enemy-units-in-town >= 6)
+	(soldier-count < 40)
 	(or
-		(up-enemy-units-in-town < 6)
-		(up-compare-goal g-temp g:<= g-temp-3)))	;Enemy no longer outnumbers us
-=>
-(set-goal g-gathering-inside gv-reset)
-(chat-local-to-self "Ungarrison - not outnumbered")
-(up-chat-data-to-self "Enemy count: %d" g: g-temp)
-(up-chat-data-to-self "Soldier count: %d" g: g-temp-3)
-)
+		(up-enemy-units-in-town >= 25)
+		(soldier-count < 20))
+	(up-compare-goal g-temp g:> g-temp-3)	;Enemy outnumbers us
+	=>
+	(set-goal g-gathering-inside gv-military-buildings)
+	(chat-local-to-self "outnumbered - garrison in mil bldgs")
+	(up-chat-data-to-self "Enemy count: %d" g: g-temp)
+	(up-chat-data-to-self "Soldier count: %d" g: g-temp-3)
+	)
 
-(defrule
-(up-compare-goal g-gathering-inside > NO)
-(or
-	(soldier-count >= 40)
-	(and
-		(up-enemy-units-in-town < 25)
-		(soldier-count >= 20)))
-=>
-(set-goal g-gathering-inside gv-reset)
-(chat-local-to-self "have enough soldiers - ungarrison")
-)
+	(defrule
+	(up-compare-goal g-gathering-inside >= gv-military-buildings)
+	=>
+	(up-gather-inside c: barracks c: 1)
+	(up-gather-inside c: archery-range c: 1)
+	(up-gather-inside c: stable c: 1)
+	(up-gather-inside c: siege-workshop c: 1)
+	(up-gather-inside c: castle c: 1)
+	(up-gather-inside c: monastery c: 1)
+	)
 
-(defrule
-(up-compare-goal g-gathering-inside > NO)
-(up-unit-type-in-town c: knight-line > 3)
-(up-unit-type-in-town c: knight-line < 12)
-(or
-	(unit-type-count spearman-line >= 6)
-	(and
-		(up-unit-type-in-town c: knight-line < 7)
-		(unit-type-count spearman-line >= 4)))
-=>
-(up-ungarrison c: spearman-line)
-)
+	(defrule
+	(up-compare-goal g-gathering-inside == gv-all-buildings)
+	=>
+	(up-gather-inside c: town-center c: 1)
+	(up-gather-inside c: dock c: 1)
+	(up-gather-inside c: market c: 1)
+	(chat-local-to-self "Garrison inside all bldgs")
+	)
 
-(defrule
-(up-compare-goal g-gathering-inside > NO)
-(up-unit-type-in-town c: knight-line > 3)
-(up-unit-type-in-town c: knight-line < 12)
-(or
-	(up-compare-goal g-camel-line >= 5)
-	(and
-		(up-unit-type-in-town c: knight-line < 7)
-		(up-compare-goal g-camel-line >= 3)))
-=>
-(up-ungarrison c: camel)
-)
+	(defrule
+	(up-compare-goal g-gathering-inside > NO)
+	(or
+		(goal g-town-under-attack NO)
+		(or
+			(up-enemy-units-in-town < 6)
+			(up-compare-goal g-temp g:<= g-temp-3)))	;Enemy no longer outnumbers us
+	=>
+	(set-goal g-gathering-inside gv-reset)
+	(chat-local-to-self "Ungarrison - not outnumbered")
+	(up-chat-data-to-self "Enemy count: %d" g: g-temp)
+	(up-chat-data-to-self "Soldier count: %d" g: g-temp-3)
+	)
 
-#load-if-defined SARACEN-CIV
+	(defrule
+	(up-compare-goal g-gathering-inside > NO)
+	(or
+		(soldier-count >= 40)
+		(and
+			(up-enemy-units-in-town < 25)
+			(soldier-count >= 20)))
+	=>
+	(set-goal g-gathering-inside gv-reset)
+	(chat-local-to-self "have enough soldiers - ungarrison")
+	)
 
 	(defrule
 	(up-compare-goal g-gathering-inside > NO)
 	(up-unit-type-in-town c: knight-line > 3)
 	(up-unit-type-in-town c: knight-line < 12)
 	(or
-		(up-compare-goal g-unique-unit-line >= 5)
+		(unit-type-count spearman-line >= 6)
 		(and
 			(up-unit-type-in-town c: knight-line < 7)
-			(up-compare-goal g-unique-unit-line >= 3)))
+			(unit-type-count spearman-line >= 4)))
 	=>
-	(up-ungarrison c: my-unique-unit)
+	(up-ungarrison c: spearman-line)
 	)
-	
-#end-if
 
-(defrule
-(goal g-gathering-inside gv-reset)
-=>
-(up-gather-inside c: barracks c: 0)
-(up-gather-inside c: archery-range c: 0)
-(up-gather-inside c: stable c: 0)
-(up-gather-inside c: siege-workshop c: 0)
-(up-gather-inside c: castle c: 0)
-(up-gather-inside c: monastery c: 0)
-(up-gather-inside c: town-center c: 0)
-(up-gather-inside c: dock c: 0)
-(up-gather-inside c: market c: 0)
-)
+	(defrule
+	(up-compare-goal g-gathering-inside > NO)
+	(up-unit-type-in-town c: knight-line > 3)
+	(up-unit-type-in-town c: knight-line < 12)
+	(or
+		(up-compare-goal g-camel-line >= 5)
+		(and
+			(up-unit-type-in-town c: knight-line < 7)
+			(up-compare-goal g-camel-line >= 3)))
+	=>
+	(up-ungarrison c: camel)
+	)
 
-(defrule
-(goal g-gathering-inside gv-reset)
-=>
-(up-ungarrison c: barracks)
-(up-ungarrison c: archery-range)
-(up-ungarrison c: stable)
-(up-ungarrison c: siege-workshop)
-(up-ungarrison c: castle)
-(up-ungarrison c: monk)
-(up-ungarrison c: missionary)
-(up-ungarrison c: town-center)
-(up-ungarrison c: dock)
-(up-ungarrison c: market)
-(set-goal g-gathering-inside NO)
-)
+	#load-if-defined SARACEN-CIV
+
+		(defrule
+		(up-compare-goal g-gathering-inside > NO)
+		(up-unit-type-in-town c: knight-line > 3)
+		(up-unit-type-in-town c: knight-line < 12)
+		(or
+			(up-compare-goal g-unique-unit-line >= 5)
+			(and
+				(up-unit-type-in-town c: knight-line < 7)
+				(up-compare-goal g-unique-unit-line >= 3)))
+		=>
+		(up-ungarrison c: my-unique-unit)
+		)
+		
+	#end-if
+
+	(defrule
+	(goal g-gathering-inside gv-reset)
+	=>
+	(up-gather-inside c: barracks c: 0)
+	(up-gather-inside c: archery-range c: 0)
+	(up-gather-inside c: stable c: 0)
+	(up-gather-inside c: siege-workshop c: 0)
+	(up-gather-inside c: castle c: 0)
+	(up-gather-inside c: monastery c: 0)
+	(up-gather-inside c: town-center c: 0)
+	(up-gather-inside c: dock c: 0)
+	(up-gather-inside c: market c: 0)
+	)
+
+	(defrule
+	(goal g-gathering-inside gv-reset)
+	=>
+	(up-ungarrison c: barracks)
+	(up-ungarrison c: archery-range)
+	(up-ungarrison c: stable)
+	(up-ungarrison c: siege-workshop)
+	(up-ungarrison c: castle)
+	(up-ungarrison c: monk)
+	(up-ungarrison c: missionary)
+	(up-ungarrison c: town-center)
+	(up-ungarrison c: dock)
+	(up-ungarrison c: market)
+	(set-goal g-gathering-inside NO)
+	)
 
 ;Ungarrison full buildings
 
@@ -2486,6 +2489,8 @@
 	(up-jump-rule -3)
 	)
 
+#end-if
+
 
 
 ;====GOAL: g-starting-scout-alive and g-starting-scout-id
@@ -2522,15 +2527,15 @@
 
 
 
-;====GOAL: g-closest-enemy
+;====GOAL: g-closest-enemy-by-tc
 
 (defrule
 (players-building-type-count any-enemy town-center > 0)
 =>
 (up-modify-goal g-temp s:= sn-focus-player-number)
 (set-strategic-number sn-focus-player-number 1)
-(set-goal g-closest-enemy-building-distance MAP-SIZE)
-(set-goal g-closest-enemy 0)
+(up-modify-goal g-closest-enemy-building-distance g:= g-map-size-ts)
+(set-goal g-closest-enemy-by-tc 0)
 )
 
 (defrule
@@ -2541,12 +2546,14 @@
 (up-set-target-point g-position-self-x)
 (up-find-local c: villager-class c: 240)
 (up-clean-search search-local object-data-distance search-order-asc)
+(up-get-search-state g-local-total)
 )
 
-;Store distance of nearest villager to TC
+;Store distance of nearest villager to own TC
 (defrule
 (players-building-type-count any-enemy town-center > 0)
 (unit-type-count villager > 0)
+(up-compare-goal g-local-total > 0)
 (up-set-target-object search-local c: 0)
 =>
 (up-get-object-data object-data-distance g-temp-3)
@@ -2576,6 +2583,7 @@
 	(up-full-reset-search)
 	(up-find-remote c: town-center c: 40)
 	(up-clean-search search-remote object-data-id search-order-asc)
+	(up-get-search-state g-local-total)
 	)
 	
 	(defrule
@@ -2583,6 +2591,7 @@
 	(player-in-game focus-player)
 	(stance-toward focus-player enemy)
 	(players-building-type-count focus-player town-center > 0)
+	(up-compare-goal g-remote-total > 0)
 	(up-set-target-object search-remote c: 0)
 	=>
 	(up-get-point position-object g-point-x)
@@ -2600,11 +2609,12 @@
 	(player-in-game focus-player)
 	(stance-toward focus-player enemy)
 	(players-building-type-count focus-player town-center > 0)
+	(up-compare-goal g-remote-total > 0)
 	(up-set-target-object search-remote c: 0)
 	(up-compare-goal g-temp-2 g:< g-closest-enemy-building-distance)
 	=>
 	(up-modify-goal g-closest-enemy-building-distance g:min g-temp-2)
-	(up-modify-goal g-closest-enemy s:= sn-focus-player-number)
+	(up-modify-goal g-closest-enemy-by-tc s:= sn-focus-player-number)
 	;(up-chat-data-to-self "Closest: %d" s: sn-focus-player-number)
 	)
 	
@@ -2617,9 +2627,134 @@
 	)
 	
 (defrule
-(true)
+(players-building-type-count any-enemy town-center > 0)
 =>
 (up-modify-sn sn-focus-player-number g:= g-temp)
+)
+
+(defrule
+(players-building-type-count any-enemy town-center > 0)
+(goal g-closest-enemy-by-tc 0)
+=>
+(chat-to-player my-player-number "Closest enemy by TC not set")
+)
+
+
+
+;====GOAL: g-closest-enemy-by-buildings
+
+(defrule
+(players-building-count any-enemy > 0)
+=>
+(up-modify-goal g-temp s:= sn-focus-player-number)
+(set-strategic-number sn-focus-player-number 1)
+(up-modify-goal g-closest-enemy-building-distance g:= g-map-size-ts)
+(set-goal g-closest-enemy-by-buildings 0)
+;(chat-local-to-self "Enemy buildings found")
+)
+
+(defrule
+(players-building-count any-enemy > 0)
+(unit-type-count villager > 0)
+=>
+(up-full-reset-search)
+(up-set-target-point g-position-self-x)
+(up-find-local c: villager-class c: 240)
+(up-clean-search search-local object-data-distance search-order-asc)
+(up-get-search-state g-local-total)
+;(chat-local-to-self "Find close vil")
+)
+
+;Store distance of nearest villager to own TC
+(defrule
+(players-building-count any-enemy > 0)
+(unit-type-count villager > 0)
+(up-compare-goal g-local-total > 0)
+(up-set-target-object search-local c: 0)
+=>
+(up-get-object-data object-data-distance g-temp-3)
+(up-modify-goal g-temp-3 c:+ 3)	;add a little breathing room for the distance filter
+;(chat-local-to-self "Get vil distance")
+)
+
+	(defrule
+	(players-building-count any-enemy > 0)
+	(not
+		(and
+			(player-in-game focus-player)
+			(and
+				(stance-toward focus-player enemy)
+				(players-building-count focus-player > 0))))
+	=>
+	(up-jump-rule 3)
+	;(up-chat-data-to-self "skip p%d" s: sn-focus-player-number)
+	)
+	
+	(defrule
+	(players-building-count any-enemy > 0)
+	(player-in-game focus-player)
+	(stance-toward focus-player enemy)
+	(players-building-count focus-player > 0)
+	=>
+	;(up-chat-data-to-all "P%d" s: sn-focus-player-number)
+	(up-full-reset-search)
+	(up-find-remote c: tower-class c: 40)
+	(up-find-remote c: building-class c: 40)
+	(up-clean-search search-remote object-data-distance search-order-asc)
+	(up-get-search-state g-local-total)
+	)
+	
+	(defrule
+	(players-building-count any-enemy > 0)
+	(player-in-game focus-player)
+	(stance-toward focus-player enemy)
+	(players-building-count focus-player > 0)
+	(up-compare-goal g-remote-total > 0)
+	(up-set-target-object search-remote c: 0)
+	=>
+	(up-get-point position-object g-point-x)
+	(up-reset-search 1 1 0 0)
+	(up-reset-filters)
+	(up-set-target-point g-position-self-x)
+	(up-filter-distance c: -1 g: g-temp-3)
+	(up-find-local c: villager-class c: 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-path-distance g-point-x 0 g-temp-2)
+	)
+	
+	(defrule
+	(players-building-count any-enemy > 0)
+	(player-in-game focus-player)
+	(stance-toward focus-player enemy)
+	(players-building-count focus-player > 0)
+	(up-compare-goal g-remote-total > 0)
+	(up-set-target-object search-remote c: 0)
+	(up-compare-goal g-temp-2 g:< g-closest-enemy-building-distance)
+	=>
+	(up-modify-goal g-closest-enemy-building-distance g:min g-temp-2)
+	(up-modify-goal g-closest-enemy-by-buildings s:= sn-focus-player-number)
+	;(up-chat-data-to-self "Closest: %d" s: sn-focus-player-number)
+	)
+	
+	(defrule
+	(players-building-count any-enemy > 0)
+	(strategic-number sn-focus-player-number < 8)
+	=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -5)
+	)
+	
+(defrule
+(players-building-count any-enemy > 0)
+=>
+(up-modify-sn sn-focus-player-number g:= g-temp)
+)
+
+(defrule
+(players-building-count any-enemy > 0)
+(goal g-closest-enemy-by-buildings 0)
+=>
+(chat-to-player my-player-number "Closest enemy by buildings not set")
 )
 
 
@@ -2628,25 +2763,64 @@
 
 (defrule
 (players-building-count any-enemy > 0)
-(up-compare-goal g-closest-enemy > 0)
+(up-compare-goal g-closest-enemy-by-tc > 0)
 =>
 (up-modify-goal g-temp s:= sn-focus-player-number)
-(up-modify-sn sn-focus-player-number g:= g-closest-enemy)
+(up-modify-sn sn-focus-player-number g:= g-closest-enemy-by-tc)
 )
 
 (defrule
+(players-building-count any-enemy > 0)
 (players-building-count focus-player > 0)
-(up-compare-goal g-closest-enemy > 0)
+(up-compare-goal g-closest-enemy-by-tc > 0)
 =>
 (up-full-reset-search)
 (up-set-target-point g-position-self-x)
 (up-find-remote c: building-class c: 40)
 (up-clean-search search-remote object-data-distance search-order-asc)
+(up-get-search-state g-local-total)
 )
 
 (defrule
+(players-building-count any-enemy > 0)
 (players-building-count focus-player > 0)
-(up-compare-goal g-closest-enemy > 0)
+(up-compare-goal g-closest-enemy-by-tc > 0)
+(up-compare-goal g-remote-total > 0)
+(up-set-target-object search-remote c: 0)
+=>
+(up-get-object-data object-data-distance g-closest-enemy-building-distance)
+;(up-chat-data-to-self "Enemy dist: %d" g: g-closest-enemy-building-distance)
+(up-modify-sn sn-focus-player-number g:= g-temp)
+)
+
+(defrule
+(players-building-count any-enemy > 0)
+(up-compare-goal g-closest-enemy-by-tc == 0)
+(up-compare-goal g-closest-enemy-by-buildings > 0)
+=>
+(up-modify-goal g-temp s:= sn-focus-player-number)
+(up-modify-sn sn-focus-player-number g:= g-closest-enemy-by-buildings)
+)
+
+(defrule
+(players-building-count any-enemy > 0)
+(players-building-count focus-player > 0)
+(up-compare-goal g-closest-enemy-by-tc == 0)
+(up-compare-goal g-closest-enemy-by-buildings > 0)
+=>
+(up-full-reset-search)
+(up-set-target-point g-position-self-x)
+(up-find-remote c: building-class c: 40)
+(up-clean-search search-remote object-data-distance search-order-asc)
+(up-get-search-state g-local-total)
+)
+
+(defrule
+(players-building-count any-enemy > 0)
+(players-building-count focus-player > 0)
+(up-compare-goal g-closest-enemy-by-tc == 0)
+(up-compare-goal g-closest-enemy-by-buildings > 0)
+(up-compare-goal g-remote-total > 0)
 (up-set-target-object search-remote c: 0)
 =>
 (up-get-object-data object-data-distance g-closest-enemy-building-distance)
@@ -2663,7 +2837,7 @@
 =>
 (up-modify-goal g-temp s:= sn-focus-player-number)
 (set-strategic-number sn-focus-player-number 1)
-(set-goal g-nearest-enemy-defenses-distance MAP-SIZE)
+(up-modify-goal g-nearest-enemy-defenses-distance g:= g-map-size-ts)
 )
 
 	(defrule
@@ -2754,7 +2928,7 @@
 (up-compare-goal g-remote-total >= 40)
 =>
 (set-goal i 0)
-(set-goal g-min-forest-distance MAP-SIZE)
+(up-modify-goal g-min-forest-distance g:= g-map-size-ts)
 )
 
 	(defrule
@@ -2819,5 +2993,96 @@
 (up-compare-goal g-min-forest-distance > 0)
 =>
 (up-chat-data-to-self "Forest distance: %d" g: g-min-forest-distance)
+(disable-self)
+)
+
+
+
+;====GOAL: g-avg-mil-training-delay
+
+(defrule
+(true)
+=>
+(set-goal g-avg-mil-training-delay 0)
+)
+
+; (defrule
+; (goal g-town-under-attack NO)
+; (up-compare-goal g-attack-status >= gv-first-attack-marching)
+; (goal g-highest-tech-priority gv-emergency)
+; =>
+; (set-goal g-avg-mil-training-delay 30)
+; )
+
+; (defrule
+; (goal g-town-under-attack NO)
+; (up-compare-goal g-attack-status >= gv-first-attack-marching)
+; (goal g-highest-tech-priority gv-primary)
+; =>
+; (set-goal g-avg-mil-training-delay 8)
+; )
+
+; (defrule
+; (goal g-town-under-attack NO)
+; (up-compare-goal g-attack-status >= gv-first-attack-marching)
+; (goal g-highest-tech-priority gv-secondary)
+; =>
+; (set-goal g-avg-mil-training-delay 3)
+; )
+
+; (defrule
+; (goal g-town-under-attack NO)
+; (up-compare-goal g-attack-status >= gv-first-attack-marching)
+; (unit-type-count-total villager <= 50)
+; (military-population < 20)
+; =>
+; (up-modify-goal g-avg-mil-training-delay c:max 5)
+; )
+
+; (defrule
+; (goal g-town-under-attack NO)
+; (up-compare-goal g-attack-status >= gv-first-attack-marching)
+; (unit-type-count-total villager <= 50)
+; (military-population >= 20)
+; =>
+; (up-modify-goal g-avg-mil-training-delay c:max 15)
+; )
+
+
+
+;====GOAL: g-allow-military-training
+
+; (defrule
+; (up-compare-goal g-avg-mil-training-delay > 0)
+; =>
+; (set-goal g-allow-military-training NO)
+; (up-modify-goal g-temp g:= g-rule-pass-count)
+; (up-modify-goal g-temp-2 g:= g-avg-mil-training-delay)
+; (up-modify-goal g-temp-2 c:* 2)
+; (up-modify-goal g-temp g:mod g-temp-2)
+; )
+
+(defrule
+(or
+	(and
+		(up-compare-goal g-avg-mil-training-delay > 0)
+		(goal g-temp 0)
+	)
+	(goal g-avg-mil-training-delay 0))
+=>
+(set-goal g-allow-military-training YES)
+)
+
+
+
+;====GOAL: g-map-size and g-map-size-ts
+
+(defrule
+(true)
+=>
+(up-get-point position-map-size g-point-x)
+(up-modify-goal g-map-size g:= g-point-x)
+(up-modify-goal g-map-size-ts g:= g-map-size)
+(up-modify-goal g-map-size-ts c:%* 150)
 (disable-self)
 )

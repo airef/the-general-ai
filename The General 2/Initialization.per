@@ -555,7 +555,7 @@
 
 ;========<<<<DEFINE GOALS>>>>========
 
-(defconst g-general 501)
+(defconst g-general 1)
 
 	(defconst gv-cuauhtemoc 101)		;Aztec General #1
 	(defconst gv-montezuma 102)			;Aztec General #2
@@ -667,7 +667,7 @@
 	;(defconst ??? 431)					;Vietnamese General #1
 	;(defconst ??? 432)					;Vietnamese General #2
 	
-	
+
 (defconst g-boar-type 2)
 (defconst g-threat-time 3)
 (defconst g-threat-player 4)
@@ -680,9 +680,8 @@
 	(defconst gv-adjusted 102)
 	(defconst gv-automatic 103)
 (defconst g-garrison-for-retask 10)
-;(defconst g- 11)
-;(defconst g- 12)
-;(defconst g- 13)
+(defconst g-map-size 11)
+(defconst g-map-size-ts 12)
 ;(defconst g- 14)
 ;(defconst g- 15)
 ;(defconst g- 16)
@@ -845,7 +844,7 @@
 	(defconst gv-advancing-to-imperial 9)
 	(defconst gv-imperial 10)
 	(defconst gv-post-imperial 11)
-(defconst g-save-for-next-age 1)
+(defconst g-save-for-next-age 13)
 	
 (defconst g-unique-unit-class 117)
 	(defconst gv-infantry 1)
@@ -1056,7 +1055,8 @@
 (defconst g-desired-num-loop-diff 222)
 
 (defconst i 221)
-(defconst g-closest-enemy 223)
+(defconst g-closest-enemy-by-tc 223)
+(defconst g-closest-enemy-by-buildings 280)
 (defconst g-closest-enemy-building-distance 234)
 (defconst g-nearest-enemy-defenses-distance 273)
 
@@ -1119,8 +1119,7 @@
 (defconst g-rule-pass-count 274)
 (defconst g-min-forest-distance 277)
 (defconst g-avg-mil-training-delay 278)
-(defconst g-allow-mil-training 279)
-;(defconst g- 280)
+(defconst g-allow-military-training 279)
 ;(defconst g- 281)
 ;(defconst g- 282)
 ;(defconst g- 283)
@@ -1499,13 +1498,33 @@
 
 (defrule
 (players-building-count any-enemy > 0)
+(up-compare-goal g-closest-enemy-by-tc > 0)
 =>
-;(up-find-player enemy find-closest g-closest-enemy)
-(up-modify-sn sn-target-player-number g:= g-closest-enemy)
-(up-modify-sn sn-focus-player-number g:= g-closest-enemy)
-;(up-chat-data-to-self "Closest enemy: %d" g: g-closest-enemy)
-;(up-get-fact-sum any-enemy building-count 0 g-temp)
-;(up-chat-data-to-self "Enemy bldgs: %d" g: g-temp)
+(up-modify-sn sn-target-player-number g:= g-closest-enemy-by-tc)
+)
+
+(defrule
+(players-building-count any-enemy > 0)
+(up-compare-goal g-closest-enemy-by-tc == 0)
+(up-compare-goal g-closest-enemy-by-buildings > 0)
+=>
+(up-modify-sn sn-target-player-number g:= g-closest-enemy-by-buildings)
+)
+
+(defrule
+(players-building-count any-enemy > 0)
+(strategic-number sn-target-player-number != 0)
+=>
+(up-modify-goal g-temp g:= g-rule-pass-count)
+(up-modify-goal g-temp c:mod 300)
+)
+
+(defrule
+(players-building-count any-enemy > 0)
+(strategic-number sn-target-player-number != 0)
+(goal g-temp 0)
+=>
+(up-chat-data-to-player every-ally "Target is player %d" s: sn-target-player-number)
 )
 
 
@@ -1694,7 +1713,8 @@
 (up-modify-sn sn-object-repair-level c:= 3)					;16387		;3 = castles, monasteries, town centers
 (up-modify-sn sn-enable-patrol-attack c:= 1)					;0
 (up-modify-sn sn-dropsite-separation-distance c:= 12)			;10
-(up-modify-sn sn-target-player-number c:= 0)					;0
+(up-find-player enemy find-ordered g-temp)
+(up-modify-sn sn-target-player-number g:= g-temp)					;0
 (up-modify-sn sn-focus-player-number c:= 0)					;0
 (up-modify-sn sn-minimum-boar-lure-group-size c:= 0)			;0
 (up-modify-sn sn-preferred-mill-placement c:= 0)				;0
@@ -1858,12 +1878,21 @@
 (set-goal g-place-point-used NO)
 (set-goal g-starting-scout-id PENDING)
 (set-goal g-starting-scout-alive YES)
-(set-goal g-closest-enemy PENDING)
+(set-goal g-closest-enemy-by-tc PENDING)
+(set-goal g-closest-enemy-by-buildings PENDING)
 (set-goal g-get-enemy-locations PENDING)
 (set-goal g-tsa NO)
 (set-goal g-boar-hunt-status -1)
 (set-goal g-boar-hunting-conditions-met NO)
 (set-goal g-min-forest-distance PENDING)
+(disable-self)
+)
+
+(defrule
+(true)
+=>
+(set-goal g-avg-mil-training-delay 0)
+(set-goal g-allow-military-training YES)
 (disable-self)
 )
 

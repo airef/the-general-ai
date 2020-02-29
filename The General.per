@@ -1,4 +1,4 @@
-;                              - THE GENERAL V0.8 -
+;                              - THE GENERAL V0.8a -
 ;                                       
 ;                                By  Leif Ericson
 ;				
@@ -109,6 +109,15 @@
 )
 
 (defrule
+(players-building-count any-enemy > 0)
+(strategic-number sn-target-player-number == 0)
+=>
+(up-get-fact game-time 0 g-temp)
+(up-log-data 1 "The General - time = %d" g: g-temp)
+(up-log-data 1 "Target Player error (set to Gaia)" c: 0)
+)
+
+(defrule
 (timer-triggered t-10-sec)
 =>
 (disable-timer t-10-sec)
@@ -187,20 +196,6 @@
 	)
 
 #end-if
-
-(defrule
-(up-pending-placement c: town-center)
-(building-type-count town-center == 1)
-=>
-(up-modify-sn sn-mining-camp-max-distance s:= sn-safe-town-size)
-)
-
-(defrule
-(up-pending-placement c: town-center)
-(building-type-count town-center != 1)
-=>
-(up-modify-sn sn-lumber-camp-max-distance s:= sn-safe-town-size)
-)
 
 ;Place Point Building Construction
 ;set point again in case in changed

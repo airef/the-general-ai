@@ -1620,19 +1620,19 @@
 ;(up-chat-data-to-self "Recent gold: %d" g: g-recent-gold-gathered)
 )
 
-(defrule
-(game-time >= T-GATHER-AMOUNT-LENGTH)	;120 seconds
-(up-timer-status t-res-gather-amount != timer-running)
-(not
-	(player-in-game any-human))
-=>
-(up-log-data 0 "Recent food: %d" g: g-recent-food-gathered)
-(up-log-data 0 "Recent wood: %d" g: g-recent-wood-gathered)
-(up-log-data 0 "Recent gold: %d" g: g-recent-gold-gathered)
-(up-log-data 0 "Recent stone: %d" g: g-recent-stone-gathered)
-(up-get-fact unit-type-count villager g-temp)
-(up-log-data 0 "Vils: %d" g: g-temp)
-)
+; (defrule
+; (game-time >= T-GATHER-AMOUNT-LENGTH)	;120 seconds
+; (up-timer-status t-res-gather-amount != timer-running)
+; (not
+; 	(player-in-game any-human))
+; =>
+; (up-log-data 0 "Recent food: %d" g: g-recent-food-gathered)
+; (up-log-data 0 "Recent wood: %d" g: g-recent-wood-gathered)
+; (up-log-data 0 "Recent gold: %d" g: g-recent-gold-gathered)
+; (up-log-data 0 "Recent stone: %d" g: g-recent-stone-gathered)
+; (up-get-fact unit-type-count villager g-temp)
+; (up-log-data 0 "Vils: %d" g: g-temp)
+; )
 
 (defrule
 (game-time >= T-GATHER-AMOUNT-LENGTH)	;120 seconds
@@ -1770,6 +1770,8 @@
 
 ;Trade Resources
 
+#load-if-defined FIX-TRADE-RULES
+
 (defrule
 (current-age == imperial-age)
 (up-timer-status t-10-sec == timer-triggered)
@@ -1903,3 +1905,5 @@
 (sell-commodity food)
 (chat-local-to-self "need gold, sell food")
 )
+
+#end-if
