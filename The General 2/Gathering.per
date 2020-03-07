@@ -782,7 +782,7 @@
 (up-compare-goal g-initial-strategy == gv-krush)
 (or
 	(unit-type-count knight-line >= 8)
-	(up-compare-goal g-attack-status >= gv-first-attack))
+	(up-compare-goal g-attack-status >= gv-before-later-attacks))
 (goal g-eco-balance-system gv-manual)
 =>
 (up-modify-sn sn-food-gatherer-percentage c:= 46)
@@ -795,7 +795,7 @@
 (up-compare-goal g-initial-strategy == gv-crush)
 (or
 	(unit-type-count camel-line >= 8)
-	(up-compare-goal g-attack-status >= gv-first-attack))
+	(up-compare-goal g-attack-status >= gv-before-later-attacks))
 (goal g-eco-balance-system gv-manual)
 =>
 (up-modify-sn sn-food-gatherer-percentage c:= 46)
@@ -808,7 +808,7 @@
 (up-compare-goal g-initial-strategy == gv-eagles-revenge)
 (or
 	(up-compare-goal g-eagle-scout-line >= 12)
-	(up-compare-goal g-attack-status >= gv-first-attack))
+	(up-compare-goal g-attack-status >= gv-before-later-attacks))
 (goal g-eco-balance-system gv-manual)
 =>
 (up-modify-sn sn-food-gatherer-percentage c:= 46)
@@ -825,7 +825,7 @@
 (up-object-type-count c: university g:>= g-desired-num-university)
 (or
 	(unit-type-count knight-line >= 8)
-	(up-compare-goal g-attack-status >= gv-first-attack))
+	(up-compare-goal g-attack-status >= gv-before-later-attacks))
 (goal g-eco-balance-system gv-manual)
 =>
 (up-modify-sn sn-food-gatherer-percentage c:= 46)
@@ -842,7 +842,7 @@
 (up-object-type-count c: university g:>= g-desired-num-university)
 (or
 	(unit-type-count camel-line >= 8)
-	(up-compare-goal g-attack-status >= gv-first-attack))
+	(up-compare-goal g-attack-status >= gv-before-later-attacks))
 (goal g-eco-balance-system gv-manual)
 =>
 (up-modify-sn sn-food-gatherer-percentage c:= 46)
@@ -859,7 +859,7 @@
 (up-object-type-count c: university g:>= g-desired-num-university)
 (or
 	(up-compare-goal g-eagle-scout-line >= 12)
-	(up-compare-goal g-attack-status >= gv-first-attack))
+	(up-compare-goal g-attack-status >= gv-before-later-attacks))
 (goal g-eco-balance-system gv-manual)
 =>
 (up-modify-sn sn-food-gatherer-percentage c:= 46)
@@ -875,13 +875,13 @@
 (not
 	(can-afford-building castle))
 (or
-	(up-compare-goal g-attack-status >= gv-first-attack)
+	(up-compare-goal g-attack-status >= gv-before-later-attacks)
 	(current-age-time >= 240))
 (up-compare-sn sn-stone-gatherer-percentage == 0)
 (goal g-eco-balance-system gv-manual)
 =>
-(up-modify-sn sn-stone-gatherer-percentage c:+ 6)
-(up-modify-sn sn-food-gatherer-percentage c:- 2)
+(up-modify-sn sn-stone-gatherer-percentage c:+ 7)
+(up-modify-sn sn-food-gatherer-percentage c:- 3)
 (up-modify-sn sn-wood-gatherer-percentage c:- 2)
 (up-modify-sn sn-gold-gatherer-percentage c:- 2)
 )
@@ -895,15 +895,15 @@
 		(stone-amount < 50)
 		(civ-selected bulgarians)))
 (or
-	(up-compare-goal g-attack-status >= gv-first-attack)
+	(up-compare-goal g-attack-status >= gv-before-later-attacks)
 	(current-age-time >= 240))
 (up-compare-sn sn-stone-gatherer-percentage == 0)
 (goal g-eco-balance-system gv-manual)
 =>
-(up-modify-sn sn-stone-gatherer-percentage c:= 4)
+(up-modify-sn sn-stone-gatherer-percentage c:= 6)
 (up-modify-sn sn-food-gatherer-percentage c:- 2)
-(up-modify-sn sn-wood-gatherer-percentage c:- 1)
-(up-modify-sn sn-gold-gatherer-percentage c:- 1)
+(up-modify-sn sn-wood-gatherer-percentage c:- 2)
+(up-modify-sn sn-gold-gatherer-percentage c:- 2)
 )
 
 (defrule
@@ -913,7 +913,7 @@
 (not
 	(can-afford-building watch-tower))
 (or
-	(up-compare-goal g-attack-status >= gv-first-attack)
+	(up-compare-goal g-attack-status >= gv-before-later-attacks)
 	(current-age-time >= 240))
 (up-compare-sn sn-stone-gatherer-percentage == 0)
 (goal g-eco-balance-system gv-manual)
@@ -930,7 +930,7 @@
 ;(up-compare-goal g-initial-strategy == gv-krush)
 ;(or
 ;	(unit-type-count knight-line >= 8)
-;	(up-compare-goal g-attack-status >= gv-first-attack))
+;	(up-compare-goal g-attack-status >= gv-before-later-attacks))
 (up-object-type-count c: castle g:>= g-desired-num-castle)
 (up-object-type-count c: town-center g:>= g-desired-num-town-center)
 (up-compare-goal g-watch-tower-line g:>= g-desired-num-watch-tower)
@@ -1235,36 +1235,56 @@
 
 ;If sheep visible but unclaimed, claim sheep
 
-(defrule
-(game-time < 240)
-(unit-type-count livestock-class == 0)
-(up-gaia-type-count c: livestock-class > 0)
-=>
-(set-goal g-sheep-count gv-claim-sheep)
-)
+#load-if-defined SEEMS-TO-CAUSE-BUGS
 
-(defrule
-(goal g-sheep-count gv-claim-sheep)
-=>
-(up-set-target-point g-position-self-x)
-(up-reset-search 1 1 1 1)
-(up-reset-filters)
-(set-strategic-number sn-focus-player-number 0)
-(up-filter-range -1 -1 -1 40)
-(up-find-local c: scout-unit c: 1)
-(up-find-remote c: livestock-class c: 1)
-(up-target-objects 0 action-move -1 -1)
-)
+	(defrule
+	(up-gaia-type-count c: livestock-class > 0)
+	;(up-compare-goal g-sheep-count != gv-claim-sheep)
+	=>
+	(up-set-target-point g-position-self-x)
+	(up-full-reset-search)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-find-remote c: livestock-class c: 1)
+	(up-get-search-state g-local-total)
+	)
 
-(defrule
-(goal g-sheep-count gv-claim-sheep)
-(unit-type-count livestock-class > 0)
-=>
-(set-goal g-sheep-count 0)
-(up-reset-scouts)
-)
+	(defrule
+	(up-gaia-type-count c: livestock-class > 0)
+	;(up-compare-goal g-sheep-count != gv-claim-sheep)
+	(up-compare-goal g-remote-total > 0)
+	(up-set-target-object search-remote c: 0)
+	=>
+	(up-reset-search 1 1 0 0)
+	(up-filter-distance c: -1 c: 10)
+	(up-find-local c: scout-unit c: 1)
+	;(up-find-local c: villager-class c: 239)
+	(up-clean-search search-local object-data-distance search-order-asc)
+	(up-get-search-state g-local-total)
+	)
 
+	(defrule
+	(up-gaia-type-count c: livestock-class > 0)
+	;(up-compare-goal g-sheep-count != gv-claim-sheep)
+	(up-compare-goal g-local-total > 0)
+	(up-set-target-object search-local c: 0)
+	=>
+	(up-target-objects 0 action-move -1 -1)
+	(set-goal g-sheep-count gv-claim-sheep)
+	(chat-local-to-self "claim sheep")
+	)
 
+	(defrule
+	(or
+		(up-gaia-type-count c: livestock-class == 0)
+		(timer-triggered t-10-sec))
+	(goal g-sheep-count gv-claim-sheep)
+	=>
+	(set-goal g-sheep-count 0)
+	(up-reset-scouts)
+	(chat-local-to-self "ready to claim sheep again")
+	)
+
+#end-if
 
 
 
@@ -1323,9 +1343,8 @@
 (unit-type-count villager < 11)
 (up-compare-goal g-desired-num-foragers == 0)
 (unit-type-count villager-forager > 0)
-(or
-	(unit-type-count villager-shepherd > 0)
-	(unit-type-count livestock-class > 0))
+(building-type-count-total mill == 0)
+(unit-type-count livestock-class > 0)
 =>
 (up-full-reset-search)
 (up-find-local c: male-forager c: 240)
@@ -1343,9 +1362,7 @@
 (up-compare-goal g-desired-num-foragers == 0)
 (unit-type-count villager-forager > 0)
 (building-type-count-total mill == 0)
-(or
-	(unit-type-count villager-shepherd > 0)
-	(unit-type-count livestock-class > 0))
+(unit-type-count livestock-class > 0)
 =>
 (up-target-objects 1 action-garrison -1 -1)
 (chat-local-to-self "retask foragers to sheep")
@@ -1770,8 +1787,6 @@
 
 ;Trade Resources
 
-#load-if-defined FIX-TRADE-RULES
-
 (defrule
 (current-age == imperial-age)
 (up-timer-status t-10-sec == timer-triggered)
@@ -1905,5 +1920,3 @@
 (sell-commodity food)
 (chat-local-to-self "need gold, sell food")
 )
-
-#end-if

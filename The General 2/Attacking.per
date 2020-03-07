@@ -1,6 +1,6 @@
 ;====First Attack
 
-;====GOAL: g-required-attack-num and g-full-attack-num
+;====GOAL: g-required-attack-num and g-stop-attack-num
 
 (defrule
 (up-compare-goal g-attack-status <= gv-first-attack)
@@ -9,6 +9,8 @@
 	(goal g-initial-strategy gv-crush))
 =>
 (set-goal g-required-attack-num 6)
+(set-goal g-stop-attack-num 3)
+(disable-self)
 )
 
 (defrule
@@ -16,6 +18,8 @@
 (goal g-initial-strategy gv-eagles-revenge)
 =>
 (set-goal g-required-attack-num 8)
+(set-goal g-stop-attack-num 5)
+(disable-self)
 )
 
 (defrule
@@ -23,13 +27,56 @@
 (goal g-strategy-type gv-drush)
 =>
 (set-goal g-required-attack-num 3)
+(set-goal g-stop-attack-num 1)
+(disable-self)
 )
 
 (defrule
 (up-compare-goal g-attack-status <= gv-first-attack)
 (goal g-strategy-type gv-flush)
 =>
-(set-goal g-required-attack-num 8)
+(set-goal g-required-attack-num 5)
+(set-goal g-stop-attack-num 3)
+(disable-self)
+)
+
+(defrule
+(goal g-attack-status gv-first-attack)
+; (or
+; 	(up-compare-goal g-strategy-type < gv-fc)
+; 	(players-current-age target-player >= castle-age))
+=>
+(enable-timer t-attack-size-increase INCREASE-TIME)
+(disable-self)
+)
+
+(defrule
+(up-compare-goal g-strategy-type >= gv-fc)
+(players-current-age target-player >= castle-age)
+=>
+(up-modify-goal g-stop-attack-num c:+ 2)
+(disable-self)
+)
+
+(defrule
+(up-compare-goal g-strategy-type >= gv-fc)
+(up-compare-goal g-team-position >= gv-pocket)
+=>
+(up-modify-goal g-stop-attack-num c:- 2)
+(disable-self)
+)
+
+(defrule
+(goal g-attack-status gv-first-attack)
+(timer-triggered t-attack-size-increase)
+(or
+	(up-compare-goal g-strategy != gv-krush)
+	(up-compare-goal g-stop-attack-num < 8))
+=>
+(disable-timer t-attack-size-increase)
+(up-modify-goal g-stop-attack-num c:+ 1)
+(up-chat-data-to-self "Increase stop attack number to %d" g: g-stop-attack-num)
+(enable-timer t-attack-size-increase INCREASE-TIME)
 )
 
 ;(defrule
@@ -42,56 +89,30 @@
 ;Start First Attack
 
 (defrule
-(up-compare-goal g-attack-status < gv-first-attack-marching)
+(goal g-attack-status gv-before-first-attack)
 (goal g-attacking NO)
-;(goal g-town-under-attack NO)
-;(or
-	(military-population g:>= g-required-attack-num)
-;	(up-compare-goal g-military-superiority > 4))
-(players-building-count any-enemy > 0)
-(goal g-save-for-next-age NO)
+(military-population g:>= g-required-attack-num)
+(players-building-count target-player > 0)
+;(goal g-save-for-next-age NO)
 =>
-(up-modify-goal g-attacking c:= YES)
+(set-goal g-attacking YES)
 (set-goal g-tsa YES)
-(up-modify-goal g-attack-status c:= gv-first-attack-marching)
-(up-modify-goal g-temp g:= g-closest-enemy-building-distance)
-(up-modify-goal g-temp c:/ 2)
-(up-set-timer c: t-attack g: g-temp)
-(chat-to-player my-player-number "Start first attack - marching")
-)
-
-(defrule
-(goal g-attack-status gv-first-attack-marching)
-(up-compare-goal g-attacking >= YES)
-(up-timer-status t-attack == timer-triggered)
-(military-population g:>= g-full-attack-num)
-=>
 (set-goal g-attack-status gv-first-attack)
-(disable-timer t-attack)
-(enable-timer t-attack 300)
+(chat-to-player my-player-number "Start first attack")
+(enable-timer t-attack 500)
 )
-
-(defrule
-(up-compare-goal g-attack-status >= gv-first-attack-marching)
-=>
-(up-get-fact military-population 0 g-temp)
-;(up-chat-data-to-self "Military: %d" g: g-temp)
-;(up-chat-data-to-self "Req: %d" g: g-required-attack-num)
-;(up-chat-data-to-self "Full: %d" g: g-full-attack-num)
-)
-
 
 ;Stop attacking after first attack
 
 (defrule
-(up-compare-goal g-attack-status == gv-first-attack-marching)
-(up-compare-goal g-attacking >= YES)
-(military-population g:< g-required-attack-num)
+(goal g-attack-status gv-first-attack)
+(goal g-attacking YES)
+(military-population g:< g-stop-attack-num)
 =>
 (set-goal g-attacking NO)
 (set-goal g-tsa NO)
 (set-goal g-attack-status gv-before-later-attacks)
-(chat-to-player my-player-number "Stop first attack - lost soldiers before reaching enemy")
+(chat-to-player my-player-number "Stop first attack - too few soldiers")
 (up-modify-sn sn-maximum-town-size s:= sn-safe-town-size)
 (up-update-targets)
 (up-retreat-now)
@@ -99,84 +120,35 @@
 
 ; (defrule
 ; (goal g-attack-status gv-first-attack)
-; (up-compare-goal g-attacking >= YES)
-; (up-compare-goal g-required-attack-num > 0)
-; =>
-; (up-modify-goal g-temp g:= g-required-attack-num)
-; (up-modify-goal g-temp c:%* 125)
-; )
-
-(defrule
-(goal g-attack-status gv-first-attack)
-(up-compare-goal g-attacking >= YES)
-(military-population g:< g-required-attack-num)
-=>
-(set-goal g-attacking NO)
-(set-goal g-tsa NO)
-(up-modify-goal g-attack-status c:= gv-before-later-attacks)
-(chat-to-player my-player-number "Stop first attack - lost too many soldiers")
-(up-modify-sn sn-maximum-town-size s:= sn-safe-town-size)
-(up-update-targets)
-(up-retreat-now)
-)
-
-; (defrule
-; (goal g-attack-status gv-first-attack)
-; (up-compare-goal g-attacking >= YES)
-; (military-population g:< g-temp)
-; (or
-; 	(and
-; 		(up-compare-goal g-military-superiority < -6)
-; 		(players-current-age target-player >= castle-age))
-; 	(up-compare-goal g-military-superiority < -12))
+; (goal g-attacking YES)
+; (goal g-save-for-next-age YES)
 ; =>
 ; (set-goal g-attacking NO)
 ; (set-goal g-tsa NO)
-; (up-modify-goal g-attack-status c:= gv-before-later-attacks)
-; (chat-to-player my-player-number "Stop first attack - outnumbered")
+; (set-goal g-attack-status gv-before-later-attacks)
+; (chat-to-player my-player-number "Stop first attack - save for next age")
 ; (up-modify-sn sn-maximum-town-size s:= sn-safe-town-size)
 ; (up-update-targets)
 ; (up-retreat-now)
 ; )
 
 (defrule
-(up-compare-goal g-attack-status == gv-first-attack)
-(up-compare-goal g-attacking >= YES)
-(goal g-save-for-next-age YES)
+(goal g-attack-status gv-first-attack)
+(goal g-attacking YES)
+(timer-triggered t-attack)
 =>
-(set-goal g-attacking NO)
-(set-goal g-tsa NO)
-(up-modify-goal g-attack-status c:= gv-before-later-attacks)
-(chat-to-player my-player-number "Stop first attack - save for next age")
-(up-modify-sn sn-maximum-town-size s:= sn-safe-town-size)
-(up-update-targets)
-(up-retreat-now)
-)
-
-(defrule
-(up-compare-goal g-attack-status == gv-first-attack)
-(up-compare-goal g-attacking >= YES)
-(or
-	(game-time >= 1800)
-	(timer-triggered t-attack))
-=>
-(up-modify-goal g-attacking c:= NO)
-(set-goal g-tsa NO)
-(up-modify-goal g-attack-status c:= gv-before-later-attacks)
+(set-goal g-attack-status gv-later-attacks)
 (chat-to-player my-player-number "Move on to later attacks")
-(up-modify-sn sn-maximum-town-size s:= sn-safe-town-size)
-(up-update-targets)
-(up-retreat-now)
 )
 
 #load-if-defined ADD-BACK-IN-WHEN-G-TOWN-UNDER-ATTACK-ONLY-APPLIES-TO-SAFE-TOWN-SIZE
 
 	(defrule
-	(up-compare-goal g-attack-status == gv-first-attack)
-	(up-compare-goal g-attacking >= YES)
+	(goal g-attack-status gv-first-attack)
+	(goal g-attacking YES)
 	(goal g-town-under-attack YES)
 	=>
-	(up-modify-goal g-attacking c:= NO)
+	(set-goal g-attacking NO)
 	(set-goal g-tsa NO)
 	(up-modify-goal g-attack-status c:= gv-before-later-attacks)
 	(chat-to-player my-player-number "stop first attack to defend town")
@@ -187,23 +159,6 @@
 	
 #end-if
 
-;Adjust Required Attack Num amount if first attack once full-attack-num is reached
-
-(defrule
-(up-compare-goal g-attacking >= YES)
-(up-compare-goal g-attack-status < gv-before-later-attacks)
-(up-compare-goal g-required-attack-num < 15)
-=>
-(up-modify-goal g-full-attack-num g:= g-closest-enemy-building-distance)
-(up-modify-goal g-full-attack-num c:/ 40)
-(up-modify-goal g-full-attack-num g:+ g-required-attack-num)
-(up-modify-goal g-required-attack-num g:= g-full-attack-num)
-(up-modify-goal g-required-attack-num c:%* 80)
-(up-modify-goal g-temp g:= g-full-attack-num)
-(up-modify-goal g-temp c:- 3)
-(up-modify-goal g-required-attack-num g:min g-temp)
-)
-
 ;====Later Attacks
 
 ;Set desired attack numbers
@@ -212,137 +167,133 @@
 (up-compare-goal g-attack-status > gv-first-attack)
 (goal g-strategy-type gv-drush)
 =>
-(set-goal g-full-attack-num 15)
 (set-goal g-required-attack-num 10)
+(set-goal g-stop-attack-num 8)
 )
 
 (defrule
 (up-compare-goal g-attack-status > gv-first-attack)
 (goal g-strategy-type gv-flush)
 =>
-(set-goal g-full-attack-num 25)
 (set-goal g-required-attack-num 14)
+(set-goal g-stop-attack-num 10)
 )
 
 (defrule
 (up-compare-goal g-attack-status > gv-first-attack)
 (up-compare-goal g-strategy-type >= gv-fc)
-(current-age == castle-age)
+(players-current-age target-player < castle-age)
 =>
-(set-goal g-full-attack-num 30)
+(set-goal g-required-attack-num 12)
+(set-goal g-stop-attack-num 10)
+)
+
+(defrule
+(up-compare-goal g-attack-status > gv-first-attack)
+(up-compare-goal g-strategy-type >= gv-fc)
+(players-current-age target-player == castle-age)
+(up-compare-goal g-age-status == gv-save-for-imperial)
+=>
+(set-goal g-required-attack-num 50)
+(set-goal g-stop-attack-num 35)
+)
+
+(defrule
+(up-compare-goal g-attack-status > gv-first-attack)
+(up-compare-goal g-strategy-type >= gv-fc)
+(players-current-age target-player == castle-age)
+(up-compare-goal g-age-status != gv-save-for-imperial)
+=>
+(set-goal g-required-attack-num 30)
+(set-goal g-stop-attack-num 20)
+)
+
+(defrule
+(up-compare-goal g-attack-status > gv-first-attack)
+(up-compare-goal g-strategy-type >= gv-fc)
+(players-current-age target-player == castle-age)
+(up-compare-goal g-total-superiority > 15)
+=>
 (set-goal g-required-attack-num 20)
+(set-goal g-stop-attack-num 15)
 )
 
 (defrule
 (up-compare-goal g-attack-status > gv-first-attack)
 (up-compare-goal g-strategy-type >= gv-fc)
-(current-age == imperial-age)
+(players-current-age target-player == castle-age)
+(up-compare-goal g-total-superiority > 10)
+(up-compare-goal g-military-superiority > 0)
+(up-compare-goal g-age-status != gv-save-for-imperial)
 =>
-(set-goal g-full-attack-num 50)
+(set-goal g-required-attack-num 15)
+(set-goal g-stop-attack-num 10)
+)
+
+(defrule
+(up-compare-goal g-attack-status > gv-first-attack)
+(up-compare-goal g-strategy-type >= gv-fc)
+(players-current-age target-player == imperial-age)
+(up-compare-goal g-age-status == gv-save-for-imperial)
+=>
+(set-goal g-required-attack-num 75)
+(set-goal g-stop-attack-num 40)
+)
+
+(defrule
+(up-compare-goal g-attack-status > gv-first-attack)
+(up-compare-goal g-strategy-type >= gv-fc)
+(players-current-age target-player == imperial-age)
+(up-compare-goal g-age-status != gv-save-for-imperial)
+=>
+(set-goal g-required-attack-num 50)
+(set-goal g-stop-attack-num 35)
+)
+
+(defrule
+(up-compare-goal g-attack-status > gv-first-attack)
+(up-compare-goal g-strategy-type >= gv-fc)
+(players-current-age target-player == imperial-age)
+(up-compare-goal g-total-superiority > 15)
+=>
+(set-goal g-required-attack-num 40)
+(set-goal g-stop-attack-num 25)
+)
+
+(defrule
+(up-compare-goal g-attack-status > gv-first-attack)
+(up-compare-goal g-strategy-type >= gv-fc)
+(players-current-age target-player == imperial-age)
+(up-compare-goal g-total-superiority > 0)
+(up-compare-goal g-military-superiority > -10)
+(up-compare-goal g-age-status != gv-save-for-imperial)
+=>
 (set-goal g-required-attack-num 35)
+(set-goal g-stop-attack-num 22)
 )
 
 ;Start attacking for later attacks
 
 (defrule
-(up-compare-goal g-attack-status >= gv-before-later-attacks)
-(up-compare-goal g-attacking >= YES)
-(up-compare-goal g-required-attack-num > 0)
-=>
-(up-modify-goal g-temp g:= g-required-attack-num)
-(up-modify-goal g-temp c:%* 125)
-)
-
-(defrule
-(up-compare-goal g-attack-status >= gv-before-later-attacks)
+(goal g-attack-status gv-before-later-attacks)
 (goal g-attacking NO)
-;(goal g-town-under-attack NO)
-(military-population g:>= g-full-attack-num)
 (military-population g:>= g-required-attack-num)
-(or
-	(military-population g:>= g-temp-2)
-	(up-compare-goal g-military-superiority g:>= -13))
-(goal g-save-for-next-age NO)
+;(goal g-save-for-next-age NO)
 =>
 (set-goal g-attacking YES)
 (set-goal g-tsa YES)
-(set-goal g-attack-status gv-later-attacks-marching)
-(up-modify-goal g-temp g:= g-closest-enemy-building-distance)
-(up-modify-goal g-temp c:/ 2)
-(up-set-timer c: t-attack g: g-temp)
-(chat-to-player my-player-number "Start later attacks, high mil pop")
-)
-
-(defrule
-(up-compare-goal g-attack-status >= gv-before-later-attacks)
-(goal g-attacking NO)
-;(goal g-town-under-attack NO)
-=>
-(up-modify-goal g-temp g:= g-full-attack-num)
-(up-modify-goal g-temp c:%* 30)
-(up-modify-goal g-temp c:max 12)
-)
-
-(defrule
-(up-compare-goal g-attack-status >= gv-before-later-attacks)
-(goal g-attacking NO)
-;(goal g-town-under-attack NO)
-(up-compare-goal g-military-superiority g:>= g-temp)
-(goal g-save-for-next-age NO)
-=>
-(up-modify-goal g-attacking c:= YES)
-(set-goal g-tsa YES)
-(set-goal g-attack-status gv-later-attacks-marching)
-(up-modify-goal g-temp g:= g-closest-enemy-building-distance)
-(up-modify-goal g-temp c:/ 2)
-(up-set-timer c: t-attack g: g-temp)
-(chat-to-player my-player-number "Start later attacks, sup numbers")
-)
-
-(defrule
-(goal g-attack-status gv-later-attacks-marching)
-(up-compare-goal g-attacking >= YES)
-(up-timer-status t-attack == timer-triggered)
-(military-population g:>= g-full-attack-num)
-=>
 (set-goal g-attack-status gv-later-attacks)
+(chat-to-player my-player-number "Start later attacks")
 )
 
 ;Stop attacking after later attacks
 
-;(defrule
-;(up-compare-goal g-attack-status == gv-later-attacks-marching)
-;(up-compare-goal g-attacking >= YES)
-;(military-population g:< g-required-attack-num)
-;=>
-;(set-goal g-attacking NO)
-;(set-goal g-tsa NO)
-;(set-goal g-attack-status gv-before-later-attacks)
-;(chat-to-player my-player-number "Stop later attack - lost soldiers before reaching enemy")
-;(up-modify-sn sn-maximum-town-size s:= sn-safe-town-size)
-;(up-update-targets)
-;(up-retreat-now)
-;)
-
 (defrule
-(up-compare-goal g-attack-status >= gv-later-attacks-marching)
-(up-compare-goal g-attacking >= YES)
-(up-compare-goal g-required-attack-num > 0)
+(goal g-attacking YES)
+(goal g-attack-status gv-later-attacks)
+(military-population g:< g-stop-attack-num)
 =>
-(up-modify-goal g-temp g:= g-required-attack-num)
-(up-modify-goal g-temp c:%* 125)
-)
-
-(defrule
-(up-compare-goal g-attacking >= YES)
-(up-compare-goal g-attack-status >= gv-later-attacks-marching)
-(or
-	(military-population g:< g-required-attack-num)
-	(and
-		(military-population g:< g-temp)
-		(up-compare-goal g-military-superiority < -5)))
-=>
-(up-modify-goal g-attacking c:= NO)
+(set-goal g-attacking NO)
 (set-goal g-tsa NO)
 (set-goal g-attack-status gv-before-later-attacks)
 (chat-to-player my-player-number "Stop attacking")
@@ -351,25 +302,25 @@
 (up-retreat-now)
 )
 
-(defrule
-(up-compare-goal g-attack-status >= gv-later-attacks-marching)
-(up-compare-goal g-attacking >= YES)
-(goal g-save-for-next-age YES)
-=>
-(up-modify-goal g-attacking c:= NO)
-(set-goal g-tsa NO)
-(set-goal g-attack-status gv-before-later-attacks)
-(chat-to-player my-player-number "Stop attacking for next age")
-(up-modify-sn sn-maximum-town-size s:= sn-safe-town-size)
-(up-update-targets)
-(up-retreat-now)
-)
+; (defrule
+; (up-compare-goal g-attack-status >= gv-later-attacks)
+; (goal g-attacking YES)
+; (goal g-save-for-next-age YES)
+; =>
+; (up-modify-goal g-attacking c:= NO)
+; (set-goal g-tsa NO)
+; (set-goal g-attack-status gv-before-later-attacks)
+; (chat-to-player my-player-number "Stop attacking for next age")
+; (up-modify-sn sn-maximum-town-size s:= sn-safe-town-size)
+; (up-update-targets)
+; (up-retreat-now)
+; )
 
 #load-if-defined ADD-BACK-IN-WHEN-G-TOWN-UNDER-ATTACK-ONLY-APPLIES-TO-SAFE-TOWN-SIZE
 
 	(defrule
-	(up-compare-goal g-attacking >= YES)
-	(up-compare-goal g-attack-status >= gv-later-attacks-marching)
+	(goal g-attacking YES)
+	(up-compare-goal g-attack-status >= gv-later-attacks)
 	(goal g-town-under-attack YES)
 	=>
 	(up-modify-goal g-attacking c:= NO)
@@ -385,60 +336,20 @@
 
 ;Projectile Retreat
 
-(defrule
-(goal g-projectile-retreat NO)
-(up-compare-goal g-attacking >= YES)
-(or
-	(up-projectile-detected projectile-town-center < 5000)
-	(or
-		(up-projectile-detected projectile-castle < 5000)
-		(up-projectile-detected projectile-bombard-tower < 5000)))
-(military-population < 20)
-(up-compare-goal g-siege-class < 2)
-=>
-(up-modify-sn sn-maximum-town-size c:- 4)
-(chat-local-to-self "retreat from projectiles")
-(up-update-targets)
-(up-retreat-now)
-(enable-timer t-projectile-retreat PROJECTILE-RETREAT-TIME)
-(set-goal g-projectile-retreat YES)
-)
-
-(defrule
-(goal g-projectile-retreat NO)
-(up-compare-goal g-attacking >= YES)
-(or
-	(up-projectile-detected projectile-town-center < 5000)
-	(or
-		(up-projectile-detected projectile-castle < 5000)
-		(up-projectile-detected projectile-bombard-tower < 5000)))
-(military-population < 35)
-(up-compare-goal g-military-superiority < 0)
-(up-compare-goal g-siege-class < 2)
-=>
-(up-modify-sn sn-maximum-town-size c:- 4)
-(chat-local-to-self "retreat from projectiles")
-(up-update-targets)
-(up-retreat-now)
-(enable-timer t-projectile-retreat PROJECTILE-RETREAT-TIME)
-(set-goal g-projectile-retreat YES)
-)
-
-#load-if-defined FIX
+#load-if-defined OLD-CODE
 
 	(defrule
 	(goal g-projectile-retreat NO)
-	(goal g-attacking NO)
+	(goal g-attacking YES)
 	(or
 		(up-projectile-detected projectile-town-center < 5000)
 		(or
 			(up-projectile-detected projectile-castle < 5000)
-			(or
-				(up-projectile-detected projectile-bombard-tower < 5000)
-				(up-projectile-detected projectile-watch-tower < 5000))))
-	(up-enemy-buildings-in-town == 0)
-	(up-compare-goal g-town-under-attack != YES)
+			(up-projectile-detected projectile-bombard-tower < 5000)))
+	(military-population < 20)
+	(up-compare-goal g-siege-class < 2)
 	=>
+	(up-modify-sn sn-maximum-town-size c:- 4)
 	(chat-local-to-self "retreat from projectiles")
 	(up-update-targets)
 	(up-retreat-now)
@@ -446,36 +357,167 @@
 	(set-goal g-projectile-retreat YES)
 	)
 
+	(defrule
+	(goal g-projectile-retreat NO)
+	(goal g-attacking YES)
+	(or
+		(up-projectile-detected projectile-town-center < 5000)
+		(or
+			(up-projectile-detected projectile-castle < 5000)
+			(up-projectile-detected projectile-bombard-tower < 5000)))
+	(military-population < 35)
+	(up-compare-goal g-military-superiority < 0)
+	(up-compare-goal g-siege-class < 2)
+	=>
+	(up-modify-sn sn-maximum-town-size c:- 4)
+	(chat-local-to-self "retreat from projectiles")
+	(up-update-targets)
+	(up-retreat-now)
+	(enable-timer t-projectile-retreat PROJECTILE-RETREAT-TIME)
+	(set-goal g-projectile-retreat YES)
+	)
+
+	#load-if-defined FIX
+
+		(defrule
+		(goal g-projectile-retreat NO)
+		(goal g-attacking NO)
+		(or
+			(up-projectile-detected projectile-town-center < 5000)
+			(or
+				(up-projectile-detected projectile-castle < 5000)
+				(or
+					(up-projectile-detected projectile-bombard-tower < 5000)
+					(up-projectile-detected projectile-watch-tower < 5000))))
+		(goal g-enemy-buildings-in-town 0)
+		(up-compare-goal g-town-under-attack != YES)
+		=>
+		(chat-local-to-self "retreat from projectiles")
+		(up-update-targets)
+		(up-retreat-now)
+		(enable-timer t-projectile-retreat PROJECTILE-RETREAT-TIME)
+		(set-goal g-projectile-retreat YES)
+		)
+
+	#end-if
+
+	(defrule
+	(timer-triggered t-projectile-retreat)
+	(goal g-projectile-retreat YES)
+	(goal g-attacking YES)
+	(not
+		(up-projectile-detected projectile-town-center < 5000))
+	(not
+		(up-projectile-detected projectile-castle < 5000))
+	(not
+		(up-projectile-detected projectile-bombard-tower < 5000))
+	=>
+	(up-update-targets)
+	(set-goal g-projectile-retreat NO)
+	)
+
+	(defrule
+	(timer-triggered t-projectile-retreat)
+	(goal g-projectile-retreat YES)
+	(goal g-attacking NO)
+	=>
+	(up-update-targets)
+	(set-goal g-projectile-retreat NO)
+	)
+
 #end-if
 
 (defrule
-(timer-triggered t-projectile-retreat)
-(goal g-projectile-retreat YES)
-(up-compare-goal g-attacking >= YES)
-(not
-	(up-projectile-detected projectile-town-center < 5000))
-(not
-	(up-projectile-detected projectile-castle < 5000))
-(not
-	(up-projectile-detected projectile-bombard-tower < 5000))
+(true)
 =>
-(up-update-targets)
-(set-goal g-projectile-retreat NO)
+(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+(up-full-reset-search)
+(up-find-remote c: town-center c: 1)
+(up-get-fact unit-type-count cavalry-class g-temp)
+(up-get-fact unit-type-count infantry-class g-temp-2)
+(up-modify-goal g-temp-2 g:+ g-temp)
+(up-get-fact unit-type-count siege-weapon-class g-temp)
+(up-modify-goal g-temp c:* 3)
+(up-modify-goal g-temp-2 g:+ g-temp)
+(up-get-fact unit-type-count trebuchet-set g-temp)
+(up-modify-goal g-temp c:* 5)
+(up-modify-goal g-temp-2 g:+ g-temp)
+(up-modify-goal g-temp g:= g-rule-pass-count)
+(up-modify-goal g-temp c:mod 2)
 )
 
 (defrule
-(timer-triggered t-projectile-retreat)
-(goal g-projectile-retreat YES)
-(goal g-attacking NO)
+(goal g-temp 0)
+(up-set-target-object search-remote c: 0)
+(up-compare-goal g-temp-2 < 20)
+(up-compare-goal g-total-superiority < 15)
 =>
-(up-update-targets)
-(set-goal g-projectile-retreat NO)
+(set-goal g-projectile-retreat YES)
+(up-get-point position-object g-point-x)
+(up-set-target-point g-point-x)
+(up-filter-distance c: -1 c: 6)
+(up-find-local c: battering-ram c: 1)
+(up-get-search-state g-local-total)
+(up-filter-distance c: -1 c: 10)
+(up-filter-exclude -1 -1 -1 siege-weapon-class)
+(up-reset-search 1 1 0 0)
+;(generate-random-number 4)
+;(up-get-fact random-number 0 g-temp)
+;(up-modify-goal g-temp c:+ 1)
+(set-goal g-temp -5)
 )
+
+(defrule
+(goal g-local-last 0)
+(goal g-projectile-retreat YES)
+(up-find-local c: -1 c: 1)
+(up-set-target-object search-local c: 0)
+(up-object-data object-data-hitpoints < 40)
+=>
+(up-set-target-object search-local c: 0)
+(up-get-point position-object g-point-x2)
+(up-lerp-tiles g-point-x2 g-point-x g: g-temp)
+(up-set-target-point g-point-x2)
+(up-target-point 0 action-move -1 stance-defensive)
+)
+
+(defrule
+(goal g-local-last 0)
+(goal g-projectile-retreat YES)
+(up-find-local c: -1 c: 1)
+(up-set-target-object search-local c: 0)
+(up-object-data object-data-hitpoints >= 40)
+(or
+	(up-object-data object-data-garrison-count > 1)
+	(up-projectile-detected projectile-town-center < 4000))
+=>
+(up-set-target-object search-local c: 0)
+(up-get-point position-object g-point-x2)
+(up-lerp-tiles g-point-x2 g-point-x g: g-temp)
+(up-set-target-point g-point-x2)
+(up-target-point 0 action-move -1 stance-defensive)
+)
+
+(defrule
+(goal g-projectile-retreat YES)
+(up-set-target-object search-local c: 0)
+=>
+(up-set-target-point g-point-x)
+(up-reset-search 0 1 0 0)
+(up-jump-rule -3)
+)
+
+(defrule
+(timer-triggered t-30-sec)
+=>
+(up-set-attack-stance all-units-class c: stance-aggressive)
+)
+
 
 ;Increase Town Size for TSA
 
 (defrule
-(up-compare-goal g-attacking >= YES)
+(goal g-attacking YES)
 (up-compare-goal g-tsa >= YES)
 =>
 (up-modify-goal g-temp g:= g-closest-enemy-building-distance)	;set to nearest building of target enemy player
@@ -484,7 +526,7 @@
 )
 
 (defrule
-(up-compare-goal g-attacking >= YES)
+(goal g-attacking YES)
 (goal g-tsa YES)
 (up-compare-goal g-temp s:> sn-maximum-town-size)
 =>
@@ -494,10 +536,10 @@
 )
 
 (defrule
-(up-compare-goal g-attacking >= YES)
+(goal g-attacking YES)
 (goal g-tsa YES)
 (up-compare-goal g-temp s:< sn-maximum-town-size)
-(up-enemy-buildings-in-town > 0)
+(up-compare-goal g-enemy-buildings-in-town > 0)
 ;(timer-triggered t-tsa)
 =>
 ;(disable-timer t-tsa)
@@ -508,7 +550,7 @@
 )
 
 ; (defrule
-; (up-compare-goal g-attacking >= YES)
+; (goal g-attacking YES)
 ; (goal g-tsa YES)
 ; (up-compare-goal g-temp s:<= sn-maximum-town-size)
 ; (up-enemy-buildings-in-town == 0)
@@ -519,7 +561,7 @@
 ; )
 
 ;(defrule
-;(up-compare-goal g-attacking >= YES)
+;(goal g-attacking YES)
 ;(nor
 ;	(goal g-tsa NO)
 ;	(goal g-tsa gv-holding-tsa))
@@ -532,7 +574,7 @@
 ;)
 
 ;(defrule
-;(up-compare-goal g-attacking == YES)
+;(goal g-attacking YES)
 ;(or
 ;	(goal g-tsa gv-starting-tsa)
 ;	(goal g-tsa gv-decreasing-tsa))
@@ -555,19 +597,19 @@
 ;)
 
 (defrule
-(up-compare-goal g-attacking >= YES)
+(goal g-attacking YES)
 =>
 (up-chat-data-to-self "Closest enemy dist: %d" g: g-closest-enemy-building-distance)
 (up-chat-data-to-self "Nearest enemy defense: %d" g: g-nearest-enemy-defenses-distance)
 (up-chat-data-to-self "Required: %d" g: g-required-attack-num)
-(up-chat-data-to-self "Full: %d" g: g-full-attack-num)
+(up-chat-data-to-self "Stop: %d" g: g-stop-attack-num)
 (up-chat-data-to-self "Max TS: %d" s: sn-maximum-town-size)
 )
 
 ;If enemies have no buildings left, switch to attack groups
 
 (defrule
-(up-compare-goal g-attacking == YES)
+(goal g-attacking YES)
 (up-compare-goal g-tsa >= YES)
 (players-building-count every-enemy == 0)
 (game-time > 600)
@@ -584,7 +626,7 @@
 )
 
 (defrule
-(up-compare-goal g-attacking == YES)
+(goal g-attacking YES)
 (up-compare-sn sn-number-attack-groups != 0)
 (players-building-count every-enemy != 0)
 (game-time > 600)

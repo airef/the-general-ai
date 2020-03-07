@@ -2855,6 +2855,33 @@
 
 #end-if
 
+(defrule
+(or
+	(players-civ target-player aztec)
+	(or
+		(players-civ target-player mayan)
+		(players-civ target-player incan)))
+(up-compare-goal g-strategy < gv-low-gold)
+(up-compare-goal g-desired-num-spearman > 0)
+(up-compare-goal g-desired-num-genitour > 0)
+=>
+(up-modify-goal g-desired-num-genitour g:+ g-desired-num-spearman)
+(set-goal g-desired-num-spearman 0)
+)
+
+(defrule
+(or
+	(players-civ target-player aztec)
+	(or
+		(players-civ target-player mayan)
+		(players-civ target-player incan)))
+(up-compare-goal g-strategy < gv-low-gold)
+(up-compare-goal g-desired-num-spearman > 0)
+(goal g-desired-num-genitour 0)
+=>
+(up-modify-goal g-desired-num-skirmisher g:+ g-desired-num-spearman)
+(set-goal g-desired-num-spearman 0)
+)
 
 
 
@@ -2914,7 +2941,6 @@
 (up-compare-goal g-desired-num-trade-cart < 20)
 (current-age == imperial-age)
 (current-age-time > 180)
-(game-time < 3600)
 (player-in-game any-ally)
 (players-building-type-count any-ally market > 0)
 =>
@@ -2930,8 +2956,8 @@
 	(goal g-strategy gv-low-gold)
 	(or
 		(goal g-strategy gv-trash-war)
-		(game-time >= 2700)))
-(game-time < 3600)
+		(game-time >= 2400)))
+(game-time < 3000)
 (player-in-game any-ally)
 (players-building-type-count any-ally market > 0)
 =>
@@ -2942,7 +2968,7 @@
 )
 
 (defrule
-(up-compare-goal g-desired-num-trade-cart < 40)
+(up-compare-goal g-desired-num-trade-cart < 45)
 (or
 	(goal g-strategy gv-low-gold)
 	(or
@@ -2951,7 +2977,7 @@
 (player-in-game any-ally)
 (players-building-type-count any-ally market > 0)
 =>
-(up-modify-goal g-desired-num-trade-cart c:= 40)
+(up-modify-goal g-desired-num-trade-cart c:= 45)
 (up-get-fact population-cap 0 g-desired-num-villager)
 (up-modify-goal g-desired-num-villager g:- g-desired-military-pop)
 (up-modify-goal g-desired-num-villager g:- g-desired-num-trade-cart)
@@ -3221,7 +3247,7 @@
 (defrule
 (up-compare-goal g-age-status >= gv-advancing-to-castle)
 (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
-(up-compare-goal g-attack-status >= gv-first-attack-marching)
+(up-compare-goal g-attack-status >= gv-first-attack)
 (goal g-town-under-attack NO)
 =>
 (up-setup-cost-data 1 g-food-cost)
@@ -3232,7 +3258,7 @@
 (defrule
 (up-compare-goal g-age-status >= gv-advancing-to-castle)
 (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
-(up-compare-goal g-attack-status >= gv-first-attack-marching)
+(up-compare-goal g-attack-status >= gv-first-attack)
 (goal g-town-under-attack NO)
 (up-compare-goal g-wood-delta < 0)
 =>
@@ -3242,7 +3268,7 @@
 (defrule
 (up-compare-goal g-age-status >= gv-advancing-to-castle)
 (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
-(up-compare-goal g-attack-status >= gv-first-attack-marching)
+(up-compare-goal g-attack-status >= gv-first-attack)
 (goal g-town-under-attack NO)
 (up-compare-goal g-stone-delta < 0)
 =>
@@ -3465,9 +3491,7 @@
 	(building-type-count-total lumber-camp > 0)
 	(or
 		(unit-type-count villager-forager > 3)
-		(and
-			(unit-type-count villager-shepherd == 0)
-			(unit-type-count livestock-class == 0))))
+		(unit-type-count livestock-class == 0)))
 (up-gaia-type-count c: forage-class > 0)
 (building-type-count-total mill == 0)
 =>
@@ -4227,23 +4251,21 @@
 
 ;====Watch Tower
 
-#load-if-not-defined UP-POCKET-POSITION
+(defrule
+(goal g-town-under-attack NO)
+(up-compare-goal g-team-position < gv-pocket)
+(up-compare-goal g-desired-num-watch-tower < 1)
+=>
+(up-modify-goal g-desired-num-watch-tower c:max 1)
+)
 
-	(defrule
-	(goal g-town-under-attack NO)
-	(up-compare-goal g-desired-num-watch-tower < 1)
-	=>
-	(up-modify-goal g-desired-num-watch-tower c:max 1)
-	)
-
-	(defrule
-	(goal g-town-under-attack YES)
-	(up-compare-goal g-desired-num-watch-tower >= 1)
-	=>
-	(up-modify-goal g-desired-num-watch-tower c:= 0)
-	)
-
-#end-if
+(defrule
+(goal g-town-under-attack YES)
+(up-compare-goal g-team-position < gv-pocket)
+(up-compare-goal g-desired-num-watch-tower >= 1)
+=>
+(up-modify-goal g-desired-num-watch-tower c:= 0)
+)
 
 ;====Bombard Tower
 

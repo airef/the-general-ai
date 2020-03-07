@@ -682,7 +682,12 @@
 (defconst g-garrison-for-retask 10)
 (defconst g-map-size 11)
 (defconst g-map-size-ts 12)
-;(defconst g- 14)
+(defconst g-team-position 14)
+	(defconst gv-solo 1)
+	(defconst gv-flank-no-pocket 2)
+	(defconst gv-flank 3)
+	(defconst gv-pocket 4)
+	(defconst gv-super-pocket 5)
 ;(defconst g- 15)
 ;(defconst g- 16)
 ;(defconst g- 17)
@@ -798,6 +803,8 @@
 (defconst g-position-self-y 77)
 (defconst g-point-x 107)
 (defconst g-point-y 108)
+(defconst g-point-x2 281)
+(defconst g-point-y2 282)
 (defconst g-place-point-x 109)
 (defconst g-place-point-y 110)
 
@@ -874,6 +881,7 @@
 
 (defconst g-enemy-military-pop 134)
 (defconst g-military-superiority 135)
+(defconst g-total-superiority 233)
 (defconst g-check-drop-distance 136)
 
 (defconst g-desired-num-wood-vils 137)
@@ -913,9 +921,23 @@
 	(defconst gv-crush 4)			;2 stable camel rush
 	
 	(defconst gv-castle-military 101)
-	(defconst gv-imperial-military 102)
-	(defconst gv-low-gold 103)
-	(defconst gv-trash-war 104)
+	(defconst gv-castle-eagles 102)
+	(defconst gv-castle-knights 103)
+	(defconst gv-castle-camels 104)
+	(defconst gv-castle-archers 105)
+	(defconst gv-castle-cav-archers 106)
+	(defconst gv-castle-circus 107)
+	(defconst gv-castle-meso-archers 108)
+	(defconst gv-imperial-military 201)
+	(defconst gv-imperial-eagles 202)
+	(defconst gv-imperial-knights 203)
+	(defconst gv-imperial-camels 204)
+	(defconst gv-imperial-archers 205)
+	(defconst gv-imperial-cav-archers 206)
+	(defconst gv-imperial-circus 207)
+	(defconst gv-imperial-meso-archers 208)
+	(defconst gv-low-gold 301)
+	(defconst gv-trash-war 302)
 (defconst g-initial-strategy 211)	;uses same goal values as g-strategy
 (defconst g-strategy-type 271)
 	(defconst gv-drush 1)
@@ -934,13 +956,13 @@
 
 (defconst g-attack-status 162)
 	(defconst gv-before-first-attack 0)
-	(defconst gv-first-attack-marching 1)
+	;(defconst gv-first-attack-marching 1)
 	(defconst gv-first-attack 2)
 	(defconst gv-before-later-attacks 3)
-	(defconst gv-later-attacks-marching 4)
+	;(defconst gv-later-attacks-marching 4)
 	(defconst gv-later-attacks 5)
-(defconst g-required-attack-num 167)	;usually lower than g-full-attack-num
-(defconst g-full-attack-num 233)
+(defconst g-required-attack-num 167)
+(defconst g-stop-attack-num 283)
 (defconst g-tsa 272)
 	;0 = NO
 	;1 = YES
@@ -1067,9 +1089,9 @@
 (defconst g-current-stone-rate 242)
 
 (defconst g-local-total 243)
-(defconst g-local-prev-total 244)
+(defconst g-local-last 244)
 (defconst g-remote-total 245)
-(defconst g-remote-prev-total 246)
+(defconst g-remote-last 246)
 
 (defconst g-town-center-tech-priority 247)
 (defconst g-mill-tech-priority 248)
@@ -1120,11 +1142,9 @@
 (defconst g-min-forest-distance 277)
 (defconst g-avg-mil-training-delay 278)
 (defconst g-allow-military-training 279)
-;(defconst g- 281)
-;(defconst g- 282)
-;(defconst g- 283)
-;(defconst g- 284)
-;(defconst g- 285)
+
+(defconst g-enemy-buildings-in-town 284)
+(defconst g-enemy-units-in-town 285)
 ;(defconst g- 286)
 ;(defconst g- 287)
 ;(defconst g- 288)
@@ -1140,20 +1160,21 @@
 ;(defconst g- 298)
 ;(defconst g- 299)
 ;(defconst g- 300)
-;(defconst g- 301)
-;(defconst g- 302)
-;(defconst g- 303)
-;(defconst g- 304)
-;(defconst g- 305)
-;(defconst g- 306)
-;(defconst g- 307)
-;(defconst g- 308)
-;(defconst g- 309)
-;(defconst g- 310)
-;(defconst g- 311)
-;(defconst g- 312)
-;(defconst g- 313)
-;(defconst g- 314)
+
+(defconst g-enemy-swordsmen-count 301)			;militia, woad raider, berserk, shotel warrior, karambit warrior, teutonic knight
+(defconst g-enemy-spearmen-count 302)			;spearman, kamayuk
+(defconst g-enemy-eagle-warrior-count 303)
+(defconst g-enemy-condottiero-count 304)
+(defconst g-enemy-foot-archers-count 305)		;archer, longbowman, chu-ko-nu, plumed archer, janissary, rattan archer
+(defconst g-enemy-skirmishers-count 306)		;skirmisher, genitour
+(defconst g-enemy-cavalry-archers-count 307)	;cavalry archer, camel archer, arambai, war wagon, mangudai, conquistador
+(defconst g-enemy-hand-cannoneer-slinger-count 308)	;hand cannoneer, slinger
+(defconst g-enemy-cavalry-count 309)			;scout cavalry, knight, tarkan, magyar huszar, boyar
+(defconst g-enemy-camel-count 310)				;camel
+(defconst g-enemy-elephants-count 311)			;battle elephant, elephant archer, ballista elephant, war elephant
+(defconst g-enemy-field-siege-count 312)		;mangonel, scorpion, organ gun
+(defconst g-enemy-unique-count 313)
+(defconst g-enemy-visible-military-count 314)
 ;(defconst g- 315)
 ;(defconst g- 316)
 ;(defconst g- 317)
@@ -1428,7 +1449,8 @@
 ;(defconst sn- 241)	;use if transports aren't needed
 
 (defconst t-resign 1)
-;(defconst t- 2)
+(defconst t-attack-size-increase 2)
+	(defconst INCREASE-TIME 90)
 ;(defconst t- 3)
 ;(defconst t- 4)
 ;(defconst t- 5)
@@ -1448,6 +1470,7 @@
 	(defconst T-GATHER-AMOUNT-LENGTH 120)
 (defconst t-projectile-retreat 18)
 	(defconst PROJECTILE-RETREAT-TIME 5)
+	(defconst gv-running-away 2)
 (defconst t-attack 19)
 ;(defconst t- 20)
 ;(defconst t- 21)
@@ -1519,13 +1542,13 @@
 (up-modify-goal g-temp c:mod 300)
 )
 
-(defrule
-(players-building-count any-enemy > 0)
-(strategic-number sn-target-player-number != 0)
-(goal g-temp 0)
-=>
-(up-chat-data-to-player every-ally "Target is player %d" s: sn-target-player-number)
-)
+; (defrule
+; (players-building-count any-enemy > 0)
+; (strategic-number sn-target-player-number != 0)
+; (goal g-temp 0)
+; =>
+; (up-chat-data-to-player every-ally "Target is player %d" s: sn-target-player-number)
+; )
 
 
 
@@ -1596,8 +1619,8 @@
 (true)
 =>
 (up-modify-sn sn-intelligent-gathering c:= 0)				;0
-(up-modify-sn sn-retask-gather-amount c:= 0)					;20
-(up-modify-sn sn-max-retask-gather-amount c:= 100)				;40
+(up-modify-sn sn-retask-gather-amount c:= 10)					;20
+(up-modify-sn sn-max-retask-gather-amount c:= -1)				;40
 (up-modify-sn sn-use-by-type-max-gathering c:= 0)			;0
 (up-modify-sn sn-minimum-boar-hunt-group-size c:= 5)			;5
 (up-modify-sn sn-food-dropsite-distance c:= 2)				;3
@@ -1696,6 +1719,8 @@
 (up-modify-sn sn-consecutive-idle-unit-limit c:= 15)			;15
 (up-modify-sn sn-coop-share-information c:= 1)				;1
 (up-modify-sn sn-relic-return-distance c:= 10)				;10
+(set-strategic-number sn-sentry-distance 0)
+(set-strategic-number sn-sentry-distance-variation 0)
 (set-difficulty-parameter ability-to-maintain-distance 0)
 (set-difficulty-parameter ability-to-dodge-missiles 0)
 (disable-self)
@@ -1726,7 +1751,7 @@
 (defrule
 (true)
 =>
-(up-modify-sn sn-home-exploration-time c:= 240)				;300
+(up-modify-sn sn-home-exploration-time c:= 600)				;300
 (up-modify-sn sn-number-civilian-militia c:= 8)				;10
 (up-modify-sn sn-allow-civilian-offense c:= 0)				;0
 (up-modify-sn sn-preferred-trade-distance c:= 200)			;100

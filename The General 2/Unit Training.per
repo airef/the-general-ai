@@ -13,6 +13,7 @@
 (or
 	(up-compare-goal g-boar-hunting-conditions-met != gv-far-boar-vils-met)
 	(up-compare-goal g-constant-train-unit != villager))
+(up-compare-goal g-attack-status < gv-first-attack)
 =>
 (set-strategic-number sn-enable-training-queue 1)
 )
@@ -63,6 +64,7 @@
 (true)
 =>
 (set-goal g-use-escrow without-escrow)
+(set-strategic-number sn-enable-training-queue 0)
 )
 
 
@@ -129,7 +131,9 @@
 (defrule
 (goal g-allow-military-training YES)
 (or
-	(goal g-town-under-attack NO)
+	(or
+		(goal g-attacking YES)
+		(up-compare-goal g-enemy-units-in-town < 15))
 	(players-unit-type-count any-enemy unpacked-trebuchet-class >= 2))
 (up-object-type-count-total c: battering-ram-line g:< g-desired-num-battering-ram)
 (can-train battering-ram-line)
