@@ -771,54 +771,54 @@
 (up-compare-goal g-attack-status < gv-first-attack)
 (goal g-eco-balance-system gv-manual)
 =>
-(up-modify-sn sn-food-gatherer-percentage c:= 40)
-(up-modify-sn sn-wood-gatherer-percentage c:= 35)
+(up-modify-sn sn-food-gatherer-percentage c:= 35)
+(up-modify-sn sn-wood-gatherer-percentage c:= 30)
 (up-modify-sn sn-stone-gatherer-percentage c:= 0)
+(up-modify-sn sn-gold-gatherer-percentage c:= 35)
+)
+
+(defrule
+(current-age >= castle-age)
+(up-compare-goal g-initial-strategy == gv-krush)
+(or
+	(unit-type-count knight-line >= 8)
+	(up-compare-goal g-attack-status >= gv-before-later-attacks))
+(goal g-eco-balance-system gv-manual)
+=>
+(up-modify-sn sn-food-gatherer-percentage c:= 46)
+(up-modify-sn sn-wood-gatherer-percentage c:= 39)
+(up-modify-sn sn-gold-gatherer-percentage c:= 15)
+)
+
+(defrule
+(current-age >= castle-age)
+(up-compare-goal g-initial-strategy == gv-crush)
+(or
+	(unit-type-count camel-line >= 8)
+	(up-compare-goal g-attack-status >= gv-before-later-attacks))
+(goal g-eco-balance-system gv-manual)
+=>
+(up-modify-sn sn-food-gatherer-percentage c:= 46)
+(up-modify-sn sn-wood-gatherer-percentage c:= 39)
+(up-modify-sn sn-gold-gatherer-percentage c:= 15)
+)
+
+(defrule
+(current-age >= castle-age)
+(up-compare-goal g-initial-strategy == gv-eagles-revenge)
+(or
+	(up-compare-goal g-eagle-scout-line >= 12)
+	(up-compare-goal g-attack-status >= gv-before-later-attacks))
+(goal g-eco-balance-system gv-manual)
+=>
+(up-modify-sn sn-food-gatherer-percentage c:= 41)
+(up-modify-sn sn-wood-gatherer-percentage c:= 34)
 (up-modify-sn sn-gold-gatherer-percentage c:= 25)
 )
 
 (defrule
 (current-age >= castle-age)
 (up-compare-goal g-initial-strategy == gv-krush)
-(or
-	(unit-type-count knight-line >= 8)
-	(up-compare-goal g-attack-status >= gv-before-later-attacks))
-(goal g-eco-balance-system gv-manual)
-=>
-(up-modify-sn sn-food-gatherer-percentage c:= 46)
-(up-modify-sn sn-wood-gatherer-percentage c:= 39)
-(up-modify-sn sn-gold-gatherer-percentage c:= 15)
-)
-
-(defrule
-(current-age >= castle-age)
-(up-compare-goal g-initial-strategy == gv-crush)
-(or
-	(unit-type-count camel-line >= 8)
-	(up-compare-goal g-attack-status >= gv-before-later-attacks))
-(goal g-eco-balance-system gv-manual)
-=>
-(up-modify-sn sn-food-gatherer-percentage c:= 46)
-(up-modify-sn sn-wood-gatherer-percentage c:= 39)
-(up-modify-sn sn-gold-gatherer-percentage c:= 15)
-)
-
-(defrule
-(current-age >= castle-age)
-(up-compare-goal g-initial-strategy == gv-eagles-revenge)
-(or
-	(up-compare-goal g-eagle-scout-line >= 12)
-	(up-compare-goal g-attack-status >= gv-before-later-attacks))
-(goal g-eco-balance-system gv-manual)
-=>
-(up-modify-sn sn-food-gatherer-percentage c:= 46)
-(up-modify-sn sn-wood-gatherer-percentage c:= 39)
-(up-modify-sn sn-gold-gatherer-percentage c:= 15)
-)
-
-(defrule
-(current-age >= castle-age)
-(up-compare-goal g-initial-strategy == gv-krush)
 (up-object-type-count c: town-center g:>= g-desired-num-town-center)
 (up-object-type-count c: siege-workshop g:>= g-desired-num-siege-workshop)
 (up-object-type-count c: monastery g:>= g-desired-num-monastery)
@@ -862,9 +862,9 @@
 	(up-compare-goal g-attack-status >= gv-before-later-attacks))
 (goal g-eco-balance-system gv-manual)
 =>
-(up-modify-sn sn-food-gatherer-percentage c:= 46)
-(up-modify-sn sn-wood-gatherer-percentage c:= 34)
-(up-modify-sn sn-gold-gatherer-percentage c:= 20)
+(up-modify-sn sn-food-gatherer-percentage c:= 41)
+(up-modify-sn sn-wood-gatherer-percentage c:= 29)
+(up-modify-sn sn-gold-gatherer-percentage c:= 30)
 )
 
 ;Need castles, TCs, or towers. Gather stone.
@@ -951,6 +951,64 @@
 =>
 (enable-timer t-adjust-gathering ADJUST-GATHERING-TIMER-LENGTH)
 (disable-self)
+);Decrease gathering percentages if there are excess resources
+
+(defrule
+(timer-triggered t-10-sec)
+(up-compare-goal g-attack-status >= gv-castle-military)
+=>
+(up-get-fact food-amount 0 g-temp)
+(up-modify-goal g-temp g:- g-max-food-needed)
+(up-modify-goal g-temp c:max 0)
+(up-modify-goal g-temp c:/ 75)
+(up-modify-sn sn-food-gatherer-percentage g:- g-temp)
+)
+
+(defrule
+(timer-triggered t-10-sec)
+(up-compare-goal g-attack-status >= gv-castle-military)
+=>
+(up-get-fact wood-amount 0 g-temp)
+(up-modify-goal g-temp g:- g-max-wood-needed)
+(up-modify-goal g-temp c:max 0)
+(up-modify-goal g-temp c:/ 75)
+(up-modify-sn sn-wood-gatherer-percentage g:- g-temp)
+)
+
+(defrule
+(timer-triggered t-10-sec)
+(up-compare-goal g-attack-status >= gv-castle-military)
+=>
+(up-get-fact gold-amount 0 g-temp)
+(up-modify-goal g-temp g:- g-max-gold-needed)
+(up-modify-goal g-temp c:max 0)
+(up-modify-goal g-temp c:/ 75)
+(up-modify-sn sn-gold-gatherer-percentage g:- g-temp)
+)
+
+;Adjust gathering percentages so they add up to 100
+;Stone is not adjusted
+
+(defrule
+(up-compare-goal g-attack-status >= gv-castle-military)
+=>
+(set-goal g-temp 100)
+(up-modify-goal g-temp s:- sn-stone-gatherer-percentage)
+(up-modify-goal g-temp-2 s:= sn-food-gatherer-percentage)
+(up-modify-goal g-temp-2 s:+ sn-wood-gatherer-percentage)
+(up-modify-goal g-temp-2 s:+ sn-gold-gatherer-percentage)
+(up-modify-goal g-temp g:%/ g-temp-2)
+;(up-modify-sn sn-food-gatherer-percentage g:%* g-temp)
+;(up-modify-sn sn-wood-gatherer-percentage g:%* g-temp)
+;(up-modify-sn sn-gold-gatherer-percentage g:%* g-temp)
+)
+
+(defrule
+(timer-triggered t-30-sec)
+=>
+(up-chat-data-to-player my-player-number "W %: %d" s: sn-wood-gatherer-percentage)
+(up-chat-data-to-player my-player-number "F %: %d" s: sn-food-gatherer-percentage)
+(up-chat-data-to-player my-player-number "G %: %d" s: sn-gold-gatherer-percentage)
 )
 
 #load-if-defined REPLACE-WITH-FUNCTIONAL-RULES
@@ -1705,13 +1763,25 @@
 (up-compare-goal g-age-status == gv-save-for-castle)
 (food-amount >= 800)
 (gold-amount < 200)
-(stone-amount >= 100)
+(or
+	(stone-amount >= 100)
+	(goal g-strategy gv-eagles-revenge))
 (can-sell-commodity stone)
 (up-compare-goal g-desired-num-watch-tower == 0)
 (up-compare-goal g-desired-num-castle == 0)
 =>
 (sell-commodity stone)
 (chat-local-to-self "sell stone for castle age")
+)
+
+(defrule
+(up-timer-status t-10-sec == timer-triggered)
+(up-compare-goal g-age-status == gv-advancing-to-castle)
+(can-sell-commodity stone)
+(goal g-strategy gv-eagles-revenge)
+=>
+(sell-commodity stone)
+(chat-local-to-self "sell stone for eagle warriors")
 )
 
 (defrule

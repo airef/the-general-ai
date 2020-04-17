@@ -3719,7 +3719,7 @@
 (up-compare-goal g-age-status >= gv-advancing-to-castle)
 (goal g-strategy gv-eagles-revenge)
 =>
-(up-modify-goal g-desired-num-barracks c:max 2)
+(up-modify-goal g-desired-num-barracks c:max 3)
 )
 
 (defrule
@@ -3799,15 +3799,6 @@
 (building-type-count-total blacksmith > 0)
 =>
 (up-modify-goal g-desired-num-archery-range c:max 2)
-)
-
-(defrule
-(current-age == feudal-age)
-(goal g-strategy gv-eagles-revenge)
-(building-type-count-total archery-range == 0)
-(up-compare-goal g-desired-num-archery-range == 0)
-=>
-(up-modify-goal g-desired-num-archery-range c:max 1)
 )
 
 (defrule
@@ -4089,6 +4080,13 @@
 ;)
 
 (defrule
+(goal g-strategy gv-eagles-revenge)
+(current-age >= feudal-age)
+=>
+(up-modify-goal g-desired-num-market c:max 1)
+)
+
+(defrule
 (up-compare-goal g-age-status >= gv-advancing-to-feudal)
 =>
 (up-get-fact building-type-count-total town-center g-temp)
@@ -4255,6 +4253,7 @@
 (goal g-town-under-attack NO)
 (up-compare-goal g-team-position < gv-pocket)
 (up-compare-goal g-desired-num-watch-tower < 1)
+(up-compare-goal g-enemy-strategy < gv-fc)
 =>
 (up-modify-goal g-desired-num-watch-tower c:max 1)
 )

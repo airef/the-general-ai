@@ -56,25 +56,11 @@
 
 ;========Town Center
 
-;Loom
-
-(defrule
-(unit-type-count villager < FAR-BOAR-HUNTING-VILS-NEEDED)
-=>
-(set-goal g-temp FAR-BOAR-HUNTING-VILS-NEEDED)
-(up-modify-goal g-temp c:- 1)
-)
-
 (defrule
 (building-type-count town-center > 0)
 (up-compare-goal g-town-center-tech-priority < gv-primary)
 (up-research-status c: ri-loom == research-available)
-(dropsite-min-distance live-boar < 255)
-(dropsite-min-distance live-boar >= 23)
-(up-object-type-count c: villager g:>= g-temp)
-(or
-	(up-compare-goal g-desired-num-boar-hunters > 0)
-	(unit-type-count villager >= FAR-BOAR-HUNTING-VILS-NEEDED))
+(goal g-loom-progress gv-have-enough-vils)	;for when boar is far away
 =>
 (set-goal g-next-town-center-tech ri-loom)
 (set-goal g-town-center-tech-priority gv-primary)

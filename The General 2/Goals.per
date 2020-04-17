@@ -802,6 +802,43 @@
 
 
 
+;====GOAL: g-loom-progress
+
+(defrule
+(up-research-status c: ri-loom < research-pending)
+(dropsite-min-distance live-boar < MAX-BOAR-HUNT-DISTANCE)
+(dropsite-min-distance live-boar >= 23)
+(up-compare-goal g-loom-progress < gv-need-for-far-boar)
+=>
+(set-goal g-loom-progress gv-need-for-far-boar)
+)
+
+(defrule
+(goal g-loom-progress gv-need-for-far-boar)
+(up-research-status c: ri-loom < research-pending)
+=>
+(set-goal g-temp FAR-BOAR-HUNTING-VILS-NEEDED)
+(up-modify-goal g-temp c:- 1)
+)
+
+(defrule
+(goal g-loom-progress gv-need-for-far-boar)
+(up-research-status c: ri-loom < research-pending)
+(up-object-type-count c: villager g:>= g-temp)
+(can-research ri-loom)
+=>
+(set-goal g-loom-progress gv-have-enough-vils)
+)
+
+(defrule
+(up-compare-goal g-loom-progress < gv-pending)
+(up-research-status c: ri-loom >= research-pending)
+=>
+(set-goal g-loom-progress gv-pending)
+)
+
+
+
 ;====GOAL: g-boar-hunting-conditions-met
 
 (defrule
@@ -3637,3 +3674,26 @@
 	; (up-get-search-state g-local-total)
 	; (up-jump-rule -1)
 	)
+
+#load-if-defined UP-MULTIPLE-ENEMIES
+
+	(defrule
+	(strategic-number sn-target-player-number > 0)
+	(players-current-age target-player == dark-age)
+	(players-civilian-population target-player >= 27)
+	=>
+	(set-goal g-enemy-strategy gv-fc)
+	(disable-self)
+	)
+
+#else
+
+	(defrule
+	(players-current-age any-enemy == dark-age)
+	(players-civilian-population any-enemy >= 27)
+	=>
+	(set-goal g-enemy-strategy gv-fc)
+	(disable-self)
+	)
+
+#end-if
