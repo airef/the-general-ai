@@ -802,6 +802,51 @@
 
 
 
+;====GOAL: g-gather-point
+
+(defrule
+(strategic-number sn-target-player-number > 0)
+(players-building-type-count target-player town-center > 0)
+=>
+(up-full-reset-search)
+(set-strategic-number sn-focus-player-number target-player)
+(up-find-remote c: town-center c: 1)
+)
+
+(defrule
+(strategic-number sn-target-player-number > 0)
+(players-building-type-count target-player town-center > 0)
+(up-set-target-object search-remote c: 0)
+=>
+(up-copy-point g-point-x g-position-self-x) ;point-x == TC location
+(up-get-point position-object g-point-x2) ;point-x2 == enemy TC location
+(up-lerp-tiles g-point-x g-point-x2 s: sn-safe-town-size)
+(up-copy-point g-gather-point-x g-point-x)
+)
+
+#load-if-defined FIX-LATER
+
+	(defrule
+	(timer-triggered t-30-sec)
+	(goal g-attacking NO)
+	(goal g-town-under-attack NO)
+	(goal g-enemy-units-in-town 0)
+	(goal g-enemy-buildings-in-town 0)
+	=>
+	(up-full-reset-search)
+	(up-filter-exclude cmdid-villager actionid-explore orderid-relic -1)
+	(up-find-local c: -1 c: 240)
+	(up-remove-objects search-local object-data-train-site == dock)
+	(up-remove-objects search-local object-data-class == trade-cart-class)
+	(up-remove-objects search-local object-data-class == monk-with-relic-class)
+	(up-remove-objects search-local object-data-class == king-class)
+	(up-target-point g-gather-point-x action-default -1 -1)
+	)
+
+#end-if
+
+
+
 ;====GOAL: g-loom-progress
 
 (defrule
@@ -1413,7 +1458,8 @@
 				(defrule
 				(true)
 				=>
-				(up-get-fact building-type-count-total town-center g-temp)
+				;(up-get-fact building-type-count-total town-center g-temp)	;using total causes AI to get housed
+				(up-get-fact building-type-count town-center g-temp)
 				(up-modify-goal g-temp c:* 5)
 				(up-modify-goal g-true-housing-headroom g:= g-temp)
 				(up-get-fact building-type-count-total house g-temp)
@@ -1438,7 +1484,8 @@
 	(defrule
 	(true)
 	=>
-	(up-get-fact building-type-count-total town-center g-temp)
+	;(up-get-fact building-type-count-total town-center g-temp)	;using total causes AI to get housed
+	(up-get-fact building-type-count town-center g-temp)
 	(up-modify-goal g-temp c:* 10)
 	(up-modify-goal g-true-housing-headroom g:= g-temp)
 	(up-get-fact building-type-count-total house g-temp)
@@ -1460,7 +1507,8 @@
 	(defrule
 	(true)
 	=>
-	(up-get-fact building-type-count-total town-center g-temp)
+	;(up-get-fact building-type-count-total town-center g-temp)	;using total causes AI to get housed
+	(up-get-fact building-type-count town-center g-temp)
 	(up-modify-goal g-temp c:* 5)
 	(up-modify-goal g-true-housing-headroom g:= g-temp)
 	(up-get-fact building-type-count-total house g-temp)
@@ -1483,7 +1531,8 @@
 	(defrule
 	(true)
 	=>
-	(up-get-fact building-type-count-total town-center g-temp)
+	;(up-get-fact building-type-count-total town-center g-temp)	;using total causes AI to get housed
+	(up-get-fact building-type-count town-center g-temp)
 	(up-modify-goal g-temp c:* 5)
 	(up-modify-goal g-true-housing-headroom g:= g-temp)
 	(up-get-fact building-type-count-total house g-temp)
@@ -1856,6 +1905,7 @@
 (current-age == castle-age)
 (unit-type-count knight-line < 8)
 (up-compare-goal g-attack-status <= gv-first-attack)
+(up-compare-goal g-team-position < gv-pocket)
 =>
 (up-modify-goal g-constant-train-unit c:= knight)
 (up-modify-goal g-constant-unit-desired-num-goal c:= g-desired-num-knight)
@@ -1866,6 +1916,7 @@
 (current-age == castle-age)
 (up-compare-goal g-camel-line < 8)
 (up-compare-goal g-attack-status <= gv-first-attack)
+(up-compare-goal g-team-position < gv-pocket)
 =>
 (up-modify-goal g-constant-train-unit c:= camel)
 (up-modify-goal g-constant-unit-desired-num-goal c:= g-desired-num-camel)
@@ -1877,6 +1928,7 @@
 (up-compare-goal g-eagle-scout-line < 12)
 (up-compare-goal g-attack-status <= gv-first-attack)
 (up-research-status c: ri-eagle-warrior >= research-pending)
+(up-compare-goal g-team-position < gv-pocket)
 =>
 (up-modify-goal g-constant-train-unit c:= eagle-warrior)
 (up-modify-goal g-constant-unit-desired-num-goal c:= g-desired-num-eagle-warrior)
@@ -3276,6 +3328,7 @@
 (up-full-reset-search)
 (up-set-target-point g-position-self-x)
 (up-find-remote c: building-class c: 40)
+(up-find-remote c: tower-class c: 40)
 (up-clean-search search-remote object-data-distance search-order-asc)
 (up-get-search-state g-local-total)
 )
@@ -3310,6 +3363,7 @@
 (up-full-reset-search)
 (up-set-target-point g-position-self-x)
 (up-find-remote c: building-class c: 40)
+(up-find-remote c: tower-class c: 40)
 (up-clean-search search-remote object-data-distance search-order-asc)
 (up-get-search-state g-local-total)
 )
@@ -3691,9 +3745,106 @@
 	(defrule
 	(players-current-age any-enemy == dark-age)
 	(players-civilian-population any-enemy >= 27)
+	(players-military-population any-enemy <= 1)
 	=>
 	(set-goal g-enemy-strategy gv-fc)
 	(disable-self)
 	)
 
 #end-if
+
+
+
+;----------------------
+;   GATHERING INSIDE
+;----------------------
+
+(defrule
+(true)
+=>
+(up-get-fact military-population 0 g-temp)
+(up-modify-goal g-temp g:- g-enemy-units-in-town)
+)
+
+(defrule
+(true)
+=>
+(up-gather-inside c: barracks c: 1)
+(up-gather-inside c: archery-range c: 1)
+(up-gather-inside c: stable c: 1)
+(up-gather-inside c: siege-workshop c: 1)
+(up-gather-inside c: castle c: 1)
+(up-gather-inside c: monastery c: 1)
+)
+
+(defrule
+(military-population >= 4)
+;(up-compare-goal g-military-superiority > -10)
+(or
+	(up-compare-goal g-temp > -8) ;enemy units in town outnumber our military pop by less than 6
+	(military-population >= 6))
+(players-current-age every-enemy < castle-age)
+(current-age >= castle-age)
+=>
+(up-full-reset-search)
+(up-find-local c: barracks c: 40)
+(up-find-local c: archery-range c: 40)
+(up-find-local c: stable c: 40)
+(up-find-local c: siege-workshop c: 40)
+(up-find-local c: castle c: 40)
+(up-find-local c: monastery c: 40)
+(up-remove-objects search-local object-data-attacker-count >= 3)
+(up-set-target-point g-position-self-x)
+(up-target-point g-position-self-x action-unload -1 -1)
+)
+
+(defrule
+(military-population >= 6)
+;(up-compare-goal g-military-superiority > -10)
+(or
+	(up-compare-goal g-temp > -5) ;enemy units in town outnumber our military pop by less than 6
+	(military-population >= 10))
+(or
+	(players-current-age every-enemy >= castle-age)
+	(current-age < castle-age))
+=>
+(up-full-reset-search)
+(up-find-local c: barracks c: 40)
+(up-find-local c: archery-range c: 40)
+(up-find-local c: stable c: 40)
+(up-find-local c: siege-workshop c: 40)
+(up-find-local c: castle c: 40)
+(up-remove-objects search-local object-data-attacker-count >= 3)
+(up-set-target-point g-position-self-x)
+(up-target-point g-position-self-x action-unload -1 -1)
+)
+
+(defrule
+(military-population >= 6)
+;(up-compare-goal g-military-superiority > -10)
+(or
+	(up-compare-goal g-temp > -5) ;enemy units in town outnumber our military pop by less than 6
+	(military-population >= 10))
+(or
+	(players-current-age every-enemy >= castle-age)
+	(current-age < castle-age))
+=>
+(up-full-reset-search)
+(up-find-local c: monastery c: 40)
+(up-remove-objects search-local object-data-attacker-count < 3)
+(up-get-search-state g-local-total)
+)
+
+(defrule
+(military-population >= 6)
+;(up-compare-goal g-military-superiority > -10)
+(or
+	(up-compare-goal g-temp > -5) ;enemy units in town outnumber our military pop by less than 6
+	(military-population >= 10))
+(or
+	(players-current-age every-enemy >= castle-age)
+	(current-age < castle-age))
+(goal g-local-total 0) ;no monasteries under attack
+=>
+(up-ungarrison c: monastery)
+)

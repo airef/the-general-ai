@@ -66,17 +66,17 @@
 (set-goal g-town-center-tech-priority gv-primary)
 )
 
-(defrule
-(goal g-next-town-center-tech ri-loom)
-(can-afford-research ri-loom)
-(up-research-status c: ri-loom < research-pending)
-(up-compare-goal g-boar-hunting-conditions-met == gv-far-boar-vils-met)
-(up-compare-goal g-villager-training-time-left >= 10)
-(up-pending-objects c: villager > 0)
-=>
-(up-reset-building 1 c: town-center)
-(chat-local-to-self "emergency cancel vil training for Loom")
-)
+; (defrule
+; (goal g-next-town-center-tech ri-loom)
+; (can-afford-research ri-loom)
+; (up-research-status c: ri-loom < research-pending)
+; (up-compare-goal g-boar-hunting-conditions-met == gv-far-boar-vils-met)
+; (up-compare-goal g-villager-training-time-left >= 10)
+; (up-pending-objects c: villager > 0)
+; =>
+; (up-reset-building 1 c: town-center)
+; (chat-local-to-self "emergency cancel vil training for Loom")
+; )
 
 (defrule
 (building-type-count town-center > 0)
@@ -84,7 +84,9 @@
 (up-research-status c: ri-loom == research-available)
 (or
 	(up-object-type-count c: villager g:>= g-desired-num-villager)
-	(goal g-town-under-attack YES))
+	(or
+		(goal g-town-under-attack YES)
+		(players-military-population any-enemy > 1)))
 =>
 (set-goal g-next-town-center-tech ri-loom)
 (set-goal g-town-center-tech-priority gv-primary)
@@ -3435,7 +3437,7 @@
 
 (defrule
 (building-type-count barracks > 0)
-(up-compare-goal g-barracks-tech-priority < gv-secondary)
+(up-compare-goal g-barracks-tech-priority < gv-primary)
 (up-research-status c: ri-pikeman == research-available)
 (or
 	(up-compare-goal g-attack-status >= gv-first-attack)
@@ -3449,12 +3451,12 @@
 			(up-compare-goal g-strategy >= gv-low-gold))))
 =>
 (set-goal g-next-barracks-tech ri-pikeman)
-(set-goal g-barracks-tech-priority gv-secondary)
+(set-goal g-barracks-tech-priority gv-primary)
 )
 
 (defrule
 (building-type-count barracks > 0)
-(up-compare-goal g-barracks-tech-priority < gv-tertiary)
+(up-compare-goal g-barracks-tech-priority < gv-secondary)
 (up-research-status c: ri-pikeman == research-available)
 (or
 	(up-compare-goal g-attack-status >= gv-first-attack)
@@ -3466,7 +3468,7 @@
 		(up-compare-goal g-strategy >= gv-low-gold)))
 =>
 (set-goal g-next-barracks-tech ri-pikeman)
-(set-goal g-barracks-tech-priority gv-tertiary)
+(set-goal g-barracks-tech-priority gv-secondary)
 )
 
 (defrule
@@ -3515,7 +3517,7 @@
 
 (defrule
 (building-type-count barracks > 0)
-(up-compare-goal g-barracks-tech-priority < gv-secondary)
+(up-compare-goal g-barracks-tech-priority < gv-primary)
 (up-research-status c: ri-halberdier == research-available)
 (or
 	(up-compare-goal g-attack-status >= gv-first-attack)
@@ -3530,12 +3532,12 @@
 			(up-compare-goal g-strategy >= gv-low-gold))))
 =>
 (set-goal g-next-barracks-tech ri-halberdier)
-(set-goal g-barracks-tech-priority gv-secondary)
+(set-goal g-barracks-tech-priority gv-primary)
 )
 
 (defrule
 (building-type-count barracks > 0)
-(up-compare-goal g-barracks-tech-priority < gv-secondary)
+(up-compare-goal g-barracks-tech-priority < gv-primary)
 (up-research-status c: ri-halberdier == research-available)
 (or
 	(up-compare-goal g-attack-status >= gv-first-attack)
@@ -3550,12 +3552,12 @@
 			(up-compare-goal g-strategy >= gv-low-gold))))
 =>
 (set-goal g-next-barracks-tech ri-halberdier)
-(set-goal g-barracks-tech-priority gv-secondary)
+(set-goal g-barracks-tech-priority gv-primary)
 )
 
 (defrule
 (building-type-count barracks > 0)
-(up-compare-goal g-barracks-tech-priority < gv-tertiary)
+(up-compare-goal g-barracks-tech-priority < gv-primary)
 (up-research-status c: ri-halberdier == research-available)
 (or
 	(up-compare-goal g-attack-status >= gv-first-attack)
@@ -3567,7 +3569,7 @@
 		(up-compare-goal g-strategy >= gv-low-gold)))
 =>
 (set-goal g-next-barracks-tech ri-halberdier)
-(set-goal g-barracks-tech-priority gv-tertiary)
+(set-goal g-barracks-tech-priority gv-primary)
 )
 
 (defrule

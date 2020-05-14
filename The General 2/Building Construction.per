@@ -116,101 +116,106 @@
 (up-assign-builders c: house c: 1)
 )
 
-;Try to build houses adjacent to two starting villagers
+#load-if-defined NOT-USED-ANYMORE
 
-(defrule
-(goal g-rule-pass-count 0)
-(goal g-place-point-used NO)
-(can-build house)
-(building-type-count-total house == 0)
-(up-pending-objects c: house < 2)
-(unit-type-count villager > 0)
-=>
-(up-full-reset-search)
-(up-filter-exclude -1 actionid-build -1 -1)
-(up-find-local c: villager-class c: 240)
-)
+	;Try to build houses adjacent to two starting villagers
 
-(defrule
-(goal g-rule-pass-count 0)
-(goal g-place-point-used NO)
-(can-build house)
-(building-type-count-total house == 0)
-(up-pending-objects c: house < 2)
-(unit-type-count villager > 0)
-(up-set-target-object search-local c: 0)
-=>
-(up-get-point position-object g-place-point-x)
-(up-set-target-point g-place-point-x)
-)
+	(defrule
+	(goal g-rule-pass-count 0)
+	(goal g-place-point-used NO)
+	(can-build house)
+	(building-type-count-total house == 0)
+	(up-pending-objects c: house < 2)
+	(unit-type-count villager > 0)
+	=>
+	(up-full-reset-search)
+	(up-filter-exclude -1 actionid-build -1 -1)
+	(up-find-local c: villager-class c: 240)
+	)
 
-(defrule
-(goal g-rule-pass-count 0)
-(goal g-place-point-used NO)
-(can-build house)
-(building-type-count-total house == 0)
-(up-pending-objects c: house < 2)
-(unit-type-count villager > 0)
-(up-compare-goal g-place-point-x >= 0)
-(can-build house)
-=>
-(set-strategic-number sn-placement-zone-size 0)
-(set-strategic-number sn-placement-fail-delta 0)
-(up-build place-point 0 c: house)
-(set-goal g-place-point-used YES)
-)
+	(defrule
+	(goal g-rule-pass-count 0)
+	(goal g-place-point-used NO)
+	(can-build house)
+	(building-type-count-total house == 0)
+	(up-pending-objects c: house < 2)
+	(unit-type-count villager > 0)
+	(up-set-target-object search-local c: 0)
+	=>
+	(up-get-point position-object g-place-point-x)
+	(up-set-target-point g-place-point-x)
+	)
 
-(defrule
-(goal g-rule-pass-count 1)
-(goal g-place-point-used NO)
-(can-build house)
-(building-type-count-total house == 1)
-(up-pending-objects c: house < 2)
-(unit-type-count villager > 0)
-=>
-(up-full-reset-search)
-(up-filter-exclude -1 actionid-build -1 -1)
-(up-find-local c: villager-class c: 240)
-)
+	(defrule
+	(goal g-rule-pass-count 0)
+	(goal g-place-point-used NO)
+	(can-build house)
+	(building-type-count-total house == 0)
+	(up-pending-objects c: house < 2)
+	(unit-type-count villager > 0)
+	(up-compare-goal g-place-point-x >= 0)
+	(can-build house)
+	=>
+	(set-strategic-number sn-placement-zone-size 0)
+	(set-strategic-number sn-placement-fail-delta 0)
+	(up-build place-point 0 c: house)
+	(set-goal g-place-point-used YES)
+	)
 
-(defrule
-(goal g-rule-pass-count 1)
-(goal g-place-point-used NO)
-(can-build house)
-(building-type-count-total house == 1)
-(up-pending-objects c: house < 2)
-(unit-type-count villager > 0)
-(up-set-target-object search-local c: 0)
-=>
-(up-get-point position-object g-place-point-x)
-(up-set-target-point g-place-point-x)
-)
+	(defrule
+	(goal g-rule-pass-count 1)
+	(goal g-place-point-used NO)
+	(can-build house)
+	(building-type-count-total house == 1)
+	(up-pending-objects c: house < 2)
+	(unit-type-count villager > 0)
+	=>
+	(up-full-reset-search)
+	(up-filter-exclude -1 actionid-build -1 -1)
+	(up-find-local c: villager-class c: 240)
+	)
 
-(defrule
-(goal g-rule-pass-count 1)
-(goal g-place-point-used NO)
-(can-build house)
-(building-type-count-total house == 1)
-(up-pending-objects c: house < 2)
-(unit-type-count villager > 0)
-(up-compare-goal g-place-point-x >= 0)
-(can-build house)
-=>
-(set-strategic-number sn-placement-zone-size 0)
-(set-strategic-number sn-placement-fail-delta 0)
-(up-build place-point 0 c: house)
-(set-goal g-place-point-used YES)
-)
+	(defrule
+	(goal g-rule-pass-count 1)
+	(goal g-place-point-used NO)
+	(can-build house)
+	(building-type-count-total house == 1)
+	(up-pending-objects c: house < 2)
+	(unit-type-count villager > 0)
+	(up-set-target-object search-local c: 0)
+	=>
+	(up-get-point position-object g-place-point-x)
+	(up-set-target-point g-place-point-x)
+	)
+
+	(defrule
+	(goal g-rule-pass-count 1)
+	(goal g-place-point-used NO)
+	(can-build house)
+	(building-type-count-total house == 1)
+	(up-pending-objects c: house < 2)
+	(unit-type-count villager > 0)
+	(up-compare-goal g-place-point-x >= 0)
+	(can-build house)
+	=>
+	(set-strategic-number sn-placement-zone-size 0)
+	(set-strategic-number sn-placement-fail-delta 0)
+	(up-build place-point 0 c: house)
+	(set-goal g-place-point-used YES)
+	)
+
+#end-if
 
 (defrule
 (up-object-type-count-total c: house g:< g-desired-num-house)
-(can-build house)
+(can-build-with-escrow house)
 (up-pending-objects c: house g:< g-temp)
 =>
-(up-set-placement-data my-player-number -1 c: 3)
-(set-strategic-number sn-placement-fail-delta -1)
-(set-strategic-number sn-placement-zone-size 1)
-(up-build place-control 0 c: house)
+(up-set-placement-data my-player-number -1 c: 5)
+(set-strategic-number sn-placement-fail-delta 0)
+(set-strategic-number sn-placement-zone-size 5)
+(set-goal g-use-escrow with-escrow)
+(up-build place-control g-use-escrow c: house)
 (chat-to-player my-player-number "Build House")
 )
 
@@ -222,6 +227,7 @@
 (unit-type-count villager-forager >= 2)
 (can-build mill)
 =>
+(set-strategic-number sn-preferred-mill-placement 0)
 (up-assign-builders c: mill c: 2)
 (build mill)
 )
@@ -232,6 +238,7 @@
 (unit-type-count villager-forager < 2)
 (can-build mill)
 =>
+(set-strategic-number sn-preferred-mill-placement 0)
 (up-assign-builders c: mill c: 1)
 (build mill)
 )
@@ -241,8 +248,9 @@
 (defrule
 (up-object-type-count-total c: lumber-camp g:< g-desired-num-lumber-camp)
 (up-pending-objects c: lumber-camp == 0)
-(can-build lumber-camp)
+(can-build-with-escrow lumber-camp)
 =>
+(up-modify-escrow wood c: -100)
 (build lumber-camp)
 )
 
@@ -252,9 +260,10 @@
 (up-pending-objects c: lumber-camp == 0)
 (dropsite-min-distance wood >= 5)
 (dropsite-min-distance wood < 255)
-(can-build lumber-camp)
+(can-build-with-escrow lumber-camp)
 =>
 ;(up-modify-goal g-desired-num-lumber-camp c:+ 1)
+(up-modify-escrow wood c: -100)
 (build lumber-camp)
 (set-strategic-number sn-dropsite-separation-distance 4)
 )
@@ -265,9 +274,10 @@
 (up-pending-objects c: lumber-camp == 0)
 (dropsite-min-distance wood >= 5)
 (dropsite-min-distance wood < 255)
-(can-build lumber-camp)
+(can-build-with-escrow lumber-camp)
 =>
 (up-modify-goal g-desired-num-lumber-camp c:+ 1)
+(up-modify-escrow wood c: -100)
 (build lumber-camp)
 )
 
@@ -288,8 +298,9 @@
 (up-object-type-count c: lumber-camp g:< g-temp)
 (not
 	(up-pending-placement c: lumber-camp))
-(can-build lumber-camp)
+(can-build-with-escrow lumber-camp)
 =>
+(up-modify-escrow wood c: -100)
 (build lumber-camp)
 (chat-local-to-self "relocate lumber camp")
 )
@@ -401,9 +412,10 @@
 (or
 	(up-compare-goal g-desired-num-gold-vils > 0)
 	(up-compare-sn sn-gold-gatherer-percentage > 0))
-(can-build mining-camp)
+(can-build-with-escrow mining-camp)
 =>
 (up-modify-sn sn-stone-dropsite-distance c:= 50)
+(up-modify-escrow wood c: -100)
 (build mining-camp)
 (up-modify-goal g-desired-num-mining-camp c:+ 1)
 (chat-local-to-self "gold camp")
@@ -419,9 +431,10 @@
 (or
 	(up-compare-goal g-desired-num-stone-vils > 0)
 	(up-compare-sn sn-stone-gatherer-percentage > 0))
-(can-build mining-camp)
+(can-build-with-escrow mining-camp)
 =>
 (up-modify-sn sn-gold-dropsite-distance c:= 50)
+(up-modify-escrow wood c: -100)
 (build mining-camp)
 (up-modify-goal g-desired-num-mining-camp c:+ 1)
 (chat-local-to-self "stone camp")
@@ -447,11 +460,12 @@
 (or
 	(up-compare-goal g-desired-num-gold-vils > 0)
 	(up-compare-sn sn-gold-gatherer-percentage > 0))
-(can-build mining-camp)
+(can-build-with-escrow mining-camp)
 =>
 (up-modify-sn sn-stone-dropsite-distance c:= 50)
+(up-modify-escrow wood c: -100)
 (build mining-camp)
-(chat-local-to-self "relocate gold camp")
+;(chat-local-to-self "relocate gold camp")
 )
 
 ;Farms
@@ -665,7 +679,7 @@
 (up-pending-objects c: siege-workshop < 1)
 (building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 =>
-(up-set-placement-data my-player-number -1 c: 3)
+(up-set-placement-data my-player-number -1 c: -8)
 (up-modify-sn sn-placement-zone-size c:= 5)
 (set-strategic-number sn-placement-fail-delta 0)
 (up-assign-builders c: siege-workshop c: 1)
@@ -681,7 +695,7 @@
 (up-pending-objects c: university < 1)
 (building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 =>
-(up-set-placement-data my-player-number -1 c: -5)
+(up-set-placement-data my-player-number -1 c: -8)
 (up-modify-sn sn-placement-zone-size c:= 5)
 (set-strategic-number sn-placement-fail-delta 0)
 (up-assign-builders c: university c: 1)
@@ -695,20 +709,11 @@
 (up-pending-objects c: monastery < 1)
 (building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 =>
-(up-set-placement-data my-player-number -1 c: -5)
+(up-set-placement-data my-player-number -1 c: -8)
 (up-modify-sn sn-placement-zone-size c:= 5)
 (set-strategic-number sn-placement-fail-delta 0)
 (up-assign-builders c: monastery c: 1)
 (up-build place-control 0 c: monastery)
-(chat-to-player my-player-number "Build Monastery")
-)
-
-(defrule
-(up-object-type-count-total c: monastery g:< g-desired-num-monastery)
-(can-build monastery)
-(up-pending-objects c: monastery < 1)
-=>
-(build monastery)
 (chat-to-player my-player-number "Build Monastery")
 )
 
@@ -718,7 +723,7 @@
 (up-pending-objects c: barracks < 1)
 (building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 =>
-(up-set-placement-data my-player-number -1 c: 3)
+(up-set-placement-data my-player-number -1 c: -5)
 (up-modify-sn sn-placement-zone-size c:= 5)
 (set-strategic-number sn-placement-fail-delta 0)
 (up-assign-builders c: barracks c: 1)
@@ -732,7 +737,7 @@
 (up-pending-objects c: archery-range < 1)
 (building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 =>
-(up-set-placement-data my-player-number -1 c: 3)
+(up-set-placement-data my-player-number -1 c: -5)
 (up-modify-sn sn-placement-zone-size c:= 5)
 (set-strategic-number sn-placement-fail-delta 0)
 (up-assign-builders c: archery-range c: 1)
@@ -756,7 +761,7 @@
 (up-pending-objects c: stable < 1)
 (building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 =>
-(up-set-placement-data my-player-number -1 c: 3)
+(up-set-placement-data my-player-number -1 c: -5)
 (up-modify-sn sn-placement-zone-size c:= 5)
 (set-strategic-number sn-placement-fail-delta 0)
 (up-assign-builders c: stable c: 1)
@@ -808,7 +813,7 @@
 (up-pending-objects c: blacksmith < 1)
 (building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 =>
-(up-set-placement-data my-player-number -1 c: -3)
+(up-set-placement-data my-player-number -1 c: -5)
 (up-modify-sn sn-placement-zone-size c:= 5)
 (set-strategic-number sn-placement-fail-delta 0)
 (up-assign-builders c: blacksmith c: 1)
@@ -816,19 +821,101 @@
 (chat-to-player my-player-number "Build Blacksmith")
 )
 
+;Watch Tower
+
 (defrule
 (up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
 (up-compare-goal g-watch-tower-line == 0)
 (can-build watch-tower)
 (up-pending-objects c: watch-tower < 1)
-(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+(goal g-place-point-used NO)
 =>
-(up-set-placement-data my-player-number lumber-camp c: 2)
-(up-modify-sn sn-placement-zone-size c:= 5)
+(up-get-point position-flank g-point-x)
+(up-set-target-point g-point-x)
+(up-full-reset-search)
+(up-find-local c: mining-camp c: 40)
+(up-filter-status c: status-pending c: list-active)
+(up-find-status-local c: mining-camp c: 40)
+(up-clean-search search-local object-data-distance search-order-asc)
+)
+
+(defrule
+(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
+(up-compare-goal g-watch-tower-line == 0)
+(can-build watch-tower)
+(up-pending-objects c: watch-tower < 1)
+(goal g-place-point-used NO)
+(up-set-target-object search-local c: 0)
+=>
+(up-get-point position-object g-point-x2)
+(up-get-point position-flank g-point-x)
+(up-set-target-point g-point-x)
+(up-get-point-distance g-point-x2 g-point-x g-temp) ;distance from mining camp to position-flank
+(up-get-point-distance g-position-self-x g-point-x g-temp-2) ;distance from TC to position-flank
+)
+
+(defrule
+(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
+(up-compare-goal g-watch-tower-line == 0)
+(can-build watch-tower)
+(up-pending-objects c: watch-tower < 1)
+(goal g-place-point-used NO)
+(up-set-target-object search-local c: 0)
+(up-compare-goal g-temp g:<= g-temp-2) ;mining camp is closer to enemy than TC
+=>
+(up-get-point position-object g-place-point-x)
+(up-lerp-tiles g-place-point-x g-point-x c: 4) ;place 4 tiles closer to enemy
+(up-set-target-point g-place-point-x)
+(set-goal g-place-point-used YES)
 (set-strategic-number sn-placement-fail-delta 1)
+(up-assign-builders c: watch-tower c: 2)
+(up-build place-point 0 c: watch-tower)
+)
+
+(defrule
+(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
+(up-compare-goal g-watch-tower-line == 0)
+(can-build watch-tower)
+(up-pending-objects c: watch-tower < 1)
+(goal g-place-point-used NO)
+(or
+	(up-compare-goal g-temp g:> g-temp-2)
+	(building-type-count mining-camp == 0))
+=>
+(up-get-point position-flank g-point-x)
+(up-set-target-point g-point-x)
+(up-full-reset-search)
+(up-find-local c: lumber-camp c: 40)
+(up-filter-status c: status-pending c: list-active)
+(up-find-status-local c: lumber-camp c: 40)
+(up-clean-search search-local object-data-distance search-order-asc)
+)
+
+(defrule
+(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
+(up-compare-goal g-watch-tower-line == 0)
+(can-build watch-tower)
+(up-pending-objects c: watch-tower < 1)
+(goal g-place-point-used NO)
+(or
+	(up-compare-goal g-temp g:> g-temp-2)
+	(building-type-count mining-camp == 0))
+(up-set-target-object search-local c: 0)
+=>
+(up-get-point position-object g-place-point-x)
+;(up-get-point position-flank g-point-x)
+(up-lerp-tiles g-place-point-x g-point-x c: 4) ;place 4 tiles closer to enemy
+(up-set-target-point g-place-point-x)
+(set-goal g-place-point-used YES)
+(set-strategic-number sn-placement-fail-delta 1)
+(up-assign-builders c: watch-tower c: 2)
+(up-build place-point 0 c: watch-tower)
+)
+
+(defrule
+(goal g-town-under-attack YES)
+=>
 (up-assign-builders c: watch-tower c: 1)
-(up-build place-control 0 c: watch-tower)
-(chat-to-player my-player-number "Build Watch Tower line")
 )
 
 (defrule
@@ -868,3 +955,57 @@
 (build outpost)
 (chat-to-player my-player-number "Build Outpost")
 )
+
+;--------------------
+;   Palisade Walls
+;--------------------
+
+#load-if-defined NOT-HELPFUL
+
+	(defrule
+	(building-type-count watch-tower == 1)
+	(goal g-town-under-attack NO)
+	(up-compare-goal g-attack-status <= gv-first-attack)
+	=>
+	(up-full-reset-search)
+	(up-find-local c: watch-tower c: 1)
+	(up-get-search-state g-local-total)
+	)
+
+	(defrule
+	(up-object-type-count-total c: palisade-wall == 0)
+	(building-type-count watch-tower > 0)
+	(goal g-town-under-attack NO)
+	(up-compare-goal g-local-total > 0)
+	(up-set-target-object search-local c: 0)
+	=>
+	(up-get-point position-object g-point-x)
+	(up-copy-point g-point-x2 g-point-x)
+	(up-modify-goal g-point-x c:- 1)
+	(up-modify-goal g-point-x2 c:+ 1)
+	(up-build-line g-point-x g-point-x2 c: palisade-wall)
+	(up-get-point position-object g-point-x)
+	(up-copy-point g-point-x2 g-point-x)
+	(up-modify-goal g-point-y c:- 1)
+	(up-modify-goal g-point-y2 c:+ 1)
+	(up-build-line g-point-x g-point-x2 c: palisade-wall)
+	)
+
+	(defrule
+	(up-object-type-count-total c: palisade-wall >= 4)
+	=>
+	(up-full-reset-search)
+	(up-find-local c: palisade-wall c: 4)
+	(up-filter-status c: status-pending c: list-active)
+	(up-find-status-local c: palisade-wall c: 4)
+	(up-get-point position-flank g-point-x)
+	(up-set-target-point g-point-x)
+	(up-clean-search search-local object-data-distance search-order-desc)
+	(up-remove-objects search-local object-data-index > 0)
+	(up-get-search-state g-local-total)
+	(up-chat-data-to-self "Palisade left in search: %d" g: g-local-total)
+	(up-set-target-object search-local c: 0)
+	(up-target-objects 1 action-delete -1 -1)
+	)
+
+#end-if

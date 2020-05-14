@@ -877,13 +877,9 @@
 (or
 	(up-compare-goal g-attack-status >= gv-before-later-attacks)
 	(current-age-time >= 240))
-(up-compare-sn sn-stone-gatherer-percentage == 0)
 (goal g-eco-balance-system gv-manual)
 =>
-(up-modify-sn sn-stone-gatherer-percentage c:+ 7)
-(up-modify-sn sn-food-gatherer-percentage c:- 3)
-(up-modify-sn sn-wood-gatherer-percentage c:- 2)
-(up-modify-sn sn-gold-gatherer-percentage c:- 2)
+(up-modify-sn sn-stone-gatherer-percentage c:max 10)
 )
 
 (defrule
@@ -897,13 +893,9 @@
 (or
 	(up-compare-goal g-attack-status >= gv-before-later-attacks)
 	(current-age-time >= 240))
-(up-compare-sn sn-stone-gatherer-percentage == 0)
 (goal g-eco-balance-system gv-manual)
 =>
-(up-modify-sn sn-stone-gatherer-percentage c:= 6)
-(up-modify-sn sn-food-gatherer-percentage c:- 2)
-(up-modify-sn sn-wood-gatherer-percentage c:- 2)
-(up-modify-sn sn-gold-gatherer-percentage c:- 2)
+(up-modify-sn sn-stone-gatherer-percentage c:max 10)
 )
 
 (defrule
@@ -915,13 +907,9 @@
 (or
 	(up-compare-goal g-attack-status >= gv-before-later-attacks)
 	(current-age-time >= 240))
-(up-compare-sn sn-stone-gatherer-percentage == 0)
 (goal g-eco-balance-system gv-manual)
 =>
-(up-modify-sn sn-stone-gatherer-percentage c:= 4)
-(up-modify-sn sn-food-gatherer-percentage c:- 2)
-(up-modify-sn sn-wood-gatherer-percentage c:- 1)
-(up-modify-sn sn-gold-gatherer-percentage c:- 1)
+(up-modify-sn sn-stone-gatherer-percentage c:max 4)
 )
 
 ;Castles, towers, and TCs complete. Set stone % to 0. Split prior stone gathering between food and gold.
@@ -937,13 +925,7 @@
 (up-compare-sn sn-stone-gatherer-percentage > 0)
 (goal g-eco-balance-system gv-manual)
 =>
-(up-modify-goal g-temp s:= sn-stone-gatherer-percentage)
-(up-modify-goal g-temp-2 g:= g-temp)
-(up-modify-goal g-temp-2 c:/ 2)
-(up-modify-goal g-temp g:- g-temp-2)
 (up-modify-sn sn-stone-gatherer-percentage c:= 0)
-(up-modify-sn sn-gold-gatherer-percentage g:+ g-temp)
-(up-modify-sn sn-food-gatherer-percentage g:+ g-temp-2)
 )
 
 (defrule
@@ -990,17 +972,13 @@
 ;Stone is not adjusted
 
 (defrule
-(up-compare-goal g-attack-status >= gv-castle-military)
+(up-compare-goal g-strategy >= gv-castle-military)
 =>
 (set-goal g-temp 100)
 (up-modify-goal g-temp s:- sn-stone-gatherer-percentage)
-(up-modify-goal g-temp-2 s:= sn-food-gatherer-percentage)
-(up-modify-goal g-temp-2 s:+ sn-wood-gatherer-percentage)
-(up-modify-goal g-temp-2 s:+ sn-gold-gatherer-percentage)
-(up-modify-goal g-temp g:%/ g-temp-2)
-;(up-modify-sn sn-food-gatherer-percentage g:%* g-temp)
-;(up-modify-sn sn-wood-gatherer-percentage g:%* g-temp)
-;(up-modify-sn sn-gold-gatherer-percentage g:%* g-temp)
+(up-modify-sn sn-food-gatherer-percentage g:%* g-temp)
+(up-modify-sn sn-wood-gatherer-percentage g:%* g-temp)
+(up-modify-sn sn-gold-gatherer-percentage g:%* g-temp)
 )
 
 (defrule
@@ -1293,56 +1271,73 @@
 
 ;If sheep visible but unclaimed, claim sheep
 
-#load-if-defined SEEMS-TO-CAUSE-BUGS
+(defrule
+(up-gaia-type-count c: livestock-class > 0)
+;(up-compare-goal g-sheep-count != gv-claim-sheep)
+;(game-time < 300)
+=>
+(up-set-target-point g-position-self-x)
+(up-full-reset-search)
+(set-strategic-number sn-focus-player-number 0)
+(up-filter-distance c: -1 c: 30)
+(up-find-remote c: livestock-class c: 1)
+(up-filter-distance c: -1 c: 30)
+(up-find-local c: scout-unit c: 1)
+(up-get-search-state g-local-total)
+)
 
-	(defrule
-	(up-gaia-type-count c: livestock-class > 0)
-	;(up-compare-goal g-sheep-count != gv-claim-sheep)
-	=>
-	(up-set-target-point g-position-self-x)
-	(up-full-reset-search)
-	(set-strategic-number sn-focus-player-number 0)
-	(up-find-remote c: livestock-class c: 1)
-	(up-get-search-state g-local-total)
-	)
+(defrule
+(up-gaia-type-count c: livestock-class > 0)
+;(game-time < 300)
+(up-compare-goal g-local-total > 0) ;scout is near town
+(up-compare-goal g-remote-total > 0) ;unclaimed sheep found
+(up-set-target-object search-remote c: 0)
+=>
+(set-strategic-number sn-number-explore-groups 0)
+(up-modify-sn sn-total-number-explorers s:= sn-cap-civilian-explorers)
+(up-reset-scouts)
+(up-target-objects 0 action-move -1 -1)
+(set-goal g-claim-sheep YES)
+(chat-local-to-self "claim sheep")
+)
 
-	(defrule
-	(up-gaia-type-count c: livestock-class > 0)
-	;(up-compare-goal g-sheep-count != gv-claim-sheep)
-	(up-compare-goal g-remote-total > 0)
-	(up-set-target-object search-remote c: 0)
-	=>
-	(up-reset-search 1 1 0 0)
-	(up-filter-distance c: -1 c: 10)
-	(up-find-local c: scout-unit c: 1)
-	;(up-find-local c: villager-class c: 239)
-	(up-clean-search search-local object-data-distance search-order-asc)
-	(up-get-search-state g-local-total)
-	)
-
-	(defrule
-	(up-gaia-type-count c: livestock-class > 0)
-	;(up-compare-goal g-sheep-count != gv-claim-sheep)
-	(up-compare-goal g-local-total > 0)
-	(up-set-target-object search-local c: 0)
-	=>
-	(up-target-objects 0 action-move -1 -1)
-	(set-goal g-sheep-count gv-claim-sheep)
-	(chat-local-to-self "claim sheep")
-	)
-
-	(defrule
+(defrule
+(or
+	(up-gaia-type-count c: livestock-class == 0)
 	(or
-		(up-gaia-type-count c: livestock-class == 0)
-		(timer-triggered t-10-sec))
-	(goal g-sheep-count gv-claim-sheep)
-	=>
-	(set-goal g-sheep-count 0)
-	(up-reset-scouts)
-	(chat-local-to-self "ready to claim sheep again")
-	)
+		(timer-triggered t-10-sec)
+		(goal g-starting-scout-alive NO)))
+(goal g-claim-sheep YES)
+=>
+(set-goal g-claim-sheep NO)
+(set-strategic-number sn-number-explore-groups 1)
+(set-goal g-temp 1)
+(up-modify-sn g-temp s:+ sn-cap-civilian-explorers)
+(up-modify-sn sn-total-number-explorers g:= g-temp)
+(up-reset-scouts)
+(chat-local-to-self "ready to claim sheep again")
+)
 
-#end-if
+;Retask sheep to town center if they stopped away from TC
+
+(defrule
+(unit-type-count livestock-class > 0)
+=>
+(up-full-reset-search)
+(up-filter-distance c: 4 c: -1)
+(up-find-local c: livestock-class c: 240)
+(up-remove-objects search-local object-data-move-x != -2) ;remove sheep that are moving to TC
+(up-get-search-state g-local-total)
+)
+
+(defrule
+(unit-type-count livestock-class > 0)
+(up-compare-goal g-local-total > 0)
+(up-set-target-object search-local c: 0)
+=>
+(up-target-point g-position-self-x action-default -1 -1) ;move sheep to TC
+(chat-to-player my-player-number "Move idle sheep to TC")
+)
 
 
 
@@ -1737,6 +1732,17 @@
 
 (defrule
 (up-timer-status t-10-sec == timer-triggered)
+(or
+	(goal g-age-status gv-save-for-castle)
+	(goal g-age-status gv-save-for-imperial))
+=>
+(up-get-fact commodity-buying-price food g-food-cost)
+(up-get-fact commodity-buying-price wood g-wood-cost)
+(up-get-fact commodity-buying-price stone g-stone-cost)
+)
+
+(defrule
+(up-timer-status t-10-sec == timer-triggered)
 (up-compare-goal g-age-status == gv-save-for-castle)
 (food-amount >= 900)
 (gold-amount < 200)
@@ -1751,7 +1757,11 @@
 (up-compare-goal g-age-status == gv-save-for-castle)
 (food-amount < 900)
 (gold-amount < 200)
-(wood-amount > 400)
+(or
+	(wood-amount > 400)
+	(and
+		(wood-amount > 200)
+		(goal g-town-under-attack YES)))
 (can-sell-commodity wood)
 =>
 (sell-commodity wood)
@@ -1764,8 +1774,10 @@
 (food-amount >= 800)
 (gold-amount < 200)
 (or
-	(stone-amount >= 100)
-	(goal g-strategy gv-eagles-revenge))
+	(stone-amount > 200)
+	(or
+		(goal g-strategy gv-eagles-revenge)
+		(goal g-town-under-attack YES)))
 (can-sell-commodity stone)
 (up-compare-goal g-desired-num-watch-tower == 0)
 (up-compare-goal g-desired-num-castle == 0)
@@ -1786,9 +1798,17 @@
 
 (defrule
 (up-timer-status t-10-sec == timer-triggered)
+(goal g-age-status gv-save-for-castle)
+=>
+(set-goal g-gold-cost 200)
+(up-modify-goal g-gold-cost g:+ g-food-cost)
+)
+
+(defrule
+(up-timer-status t-10-sec == timer-triggered)
 (up-compare-goal g-age-status == gv-save-for-castle)
 (food-amount < 800)
-(gold-amount >= 330)
+(up-resource-amount gold g:>= g-gold-cost)
 (can-buy-commodity food)
 =>
 (buy-commodity food)
@@ -1797,8 +1817,16 @@
 
 (defrule
 (up-timer-status t-10-sec == timer-triggered)
+(goal g-age-status gv-save-for-castle)
+=>
+(set-goal g-gold-cost 200)
+(up-modify-goal g-gold-cost g:+ g-wood-cost)
+)
+
+(defrule
+(up-timer-status t-10-sec == timer-triggered)
 (up-compare-goal g-age-status == gv-advancing-to-castle)
-(gold-amount >= 330)
+(up-resource-amount gold g:>= g-gold-cost)
 (wood-amount < 100)
 (can-buy-commodity wood)
 =>
@@ -1846,9 +1874,17 @@
 
 (defrule
 (up-timer-status t-10-sec == timer-triggered)
+(goal g-age-status gv-save-for-imperial)
+=>
+(set-goal g-gold-cost 800)
+(up-modify-goal g-gold-cost g:+ g-food-cost)
+)
+
+(defrule
+(up-timer-status t-10-sec == timer-triggered)
 (up-compare-goal g-age-status == gv-save-for-imperial)
 (food-amount < 1000)
-(gold-amount >= 930)
+(up-resource-amount gold g:>= g-gold-cost)
 (can-buy-commodity food)
 =>
 (buy-commodity food)

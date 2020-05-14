@@ -25,6 +25,9 @@
 (or
 	(up-compare-goal g-loom-progress != gv-have-enough-vils)	;don't train vils if loom is needed
 	(gold-amount < 50))	;can't afford loom
+(or
+	(goal g-next-town-center-tech -1)
+	(current-age >= castle-age))
 =>
 (set-goal g-use-escrow with-escrow)
 (up-train g-use-escrow g: g-constant-train-unit)
@@ -52,15 +55,18 @@
 (set-strategic-number sn-enable-training-queue 0)
 )
 
-
 ;========<<<<CIVILIANS>>>>========
 
 (defrule
 (up-object-type-count-total c: villager g:< g-desired-num-villager)
-(can-train villager)
+(can-train-with-escrow villager)
 (up-compare-goal g-loom-progress != gv-have-enough-vils)	;don't train if loom is needed
+(or
+	(goal g-next-town-center-tech -1)
+	(current-age >= castle-age))
 =>
-(train villager)
+(set-goal g-use-escrow with-escrow)
+(up-train g-use-escrow c: villager)
 (up-modify-goal g-villager-creation-game-time g:= g-villager-train-time)
 (up-modify-goal g-villager-creation-game-time g:+ g-villager-training-time-left)
 (up-modify-goal g-villager-creation-game-time g:+ g-game-time)
@@ -429,6 +435,9 @@
 (defrule
 (goal g-allow-military-training YES)
 (up-object-type-count-total c: militiaman-line g:< g-desired-num-militia)
+(or
+	(current-age < castle-age)
+	(research-completed ri-two-handed-swordsman))
 (can-train militiaman-line)
 =>
 (train militiaman-line)

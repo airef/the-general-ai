@@ -278,6 +278,27 @@
 (goal g-attack-status gv-before-later-attacks)
 (goal g-attacking NO)
 (military-population g:>= g-required-attack-num)
+(up-compare-goal g-age-status < gv-save-for-imperial)
+;(goal g-save-for-next-age NO)
+=>
+(set-goal g-attacking YES)
+(set-goal g-tsa YES)
+(set-goal g-attack-status gv-later-attacks)
+(chat-to-player my-player-number "Start later attacks")
+)
+
+(defrule
+(goal g-attack-status gv-before-later-attacks)
+(goal g-attacking NO)
+(military-population g:>= g-required-attack-num)
+(current-age == imperial-age)
+(or
+	(up-research-status c: ri-cavalier != research-available)
+	(up-compare-goal g-primary-unit != knight))
+(or
+	(up-research-status c: ri-elite-eagle-warrior != research-available)
+	(up-compare-goal g-primary-unit != eagle-warrior))
+;(up-research-status c: ri-halberdier != research-available)
 ;(goal g-save-for-next-age NO)
 =>
 (set-goal g-attacking YES)
@@ -532,8 +553,21 @@
 =>
 ;(set-goal g-tsa gv-increasing-tsa)
 (up-modify-sn sn-maximum-town-size g:= g-temp)	;nearest enemy building distance + 5
+(up-update-targets)
 (up-chat-data-to-self "Increase TSA: %d" s: sn-maximum-town-size)
 )
+
+	(defrule
+	(goal g-attacking YES)
+	(goal g-tsa YES)
+	(up-compare-goal g-temp s:<= sn-maximum-town-size)
+	(up-enemy-buildings-in-town == 0)
+	=>
+	(up-modify-sn sn-maximum-town-size c:+ 10)
+	(up-chat-data-to-self "Increase TSA more: %d" s: sn-maximum-town-size)
+	(up-update-targets)
+	(up-jump-rule -1)
+	)
 
 (defrule
 (goal g-attacking YES)
