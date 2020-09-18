@@ -1,0 +1,445 @@
+;Krush Techs
+
+(defrule
+(true)
+=>
+(set-goal g-highest-tech-priority 0)
+)
+
+;=========================<>=========================
+;				      PRIORITY 10
+;=========================<>=========================
+
+    ;-------------
+    ;   Bow Saw
+    ;-------------
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-research-status c: ri-bow-saw != research-available)
+        =>
+        (up-jump-rule 2)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-compare-goal g-highest-tech-priority < 11)
+        (can-research-with-escrow ri-bow-saw)
+        (goal g-town-under-attack NO)
+        =>
+        (set-goal g-escrow with-escrow)
+        (up-research g-escrow c: ri-bow-saw)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-compare-goal g-highest-tech-priority < 11)
+        (can-research ri-bow-saw)
+        (goal g-town-under-attack NO)
+        =>
+        (research ri-bow-saw)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-research-status c: ri-bow-saw == research-available)
+        (goal g-town-under-attack NO)
+        (building-type-count lumber-camp > 0)
+        =>
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-research-cost c: ri-bow-saw c: 1)
+        (up-setup-cost-data 0 g-total-food-needed)
+        (up-add-cost-data g-food-cost c: 1)
+        (up-modify-goal g-max-food-needed g:max g-food-cost)
+        (up-modify-goal g-max-wood-needed g:max g-wood-cost)
+        (up-modify-goal g-highest-tech-priority c:max 10)
+        (up-modify-escrow food g:= g-total-food-needed)
+        (up-modify-escrow wood g:= g-total-wood-needed)
+        (up-modify-escrow stone g:= g-total-stone-needed)
+        (up-modify-escrow gold g:= g-total-gold-needed)
+        )
+
+;=========================<>=========================
+;				      PRIORITY 9
+;=========================<>=========================
+
+    ;-------------------------
+    ;   Scale Barding Armor
+    ;-------------------------
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-research-status c: ri-scale-barding != research-available)
+        =>
+        (up-jump-rule 3)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-compare-goal g-highest-tech-priority <= 9)
+        (can-research-with-escrow ri-scale-barding)
+        (up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+        =>
+        (set-goal g-escrow with-escrow)
+        (up-research g-escrow c: ri-scale-barding)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (can-research ri-scale-barding)
+        (up-compare-goal g-highest-tech-priority < 10)
+        (up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+        =>
+        (research ri-scale-barding)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-research-status c: ri-scale-barding == research-available)
+        (up-compare-goal g-highest-tech-priority < 10)
+        (up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+        (building-type-count blacksmith > 0)
+        =>
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-research-cost c: ri-scale-barding c: 1)
+        (up-setup-cost-data 0 g-total-food-needed)
+        (up-add-cost-data g-food-cost c: 1)
+        (up-modify-goal g-max-food-needed g:max g-food-cost)
+        (up-modify-goal g-highest-tech-priority c:max 9)
+        (up-modify-escrow food g:= g-max-food-needed)
+        (up-modify-escrow wood g:= g-max-wood-needed)
+        (up-modify-escrow stone g:= g-max-stone-needed)
+        (up-modify-escrow gold g:= g-max-gold-needed)
+        )
+
+    ;-------------------------
+    ;   Chain Barding Armor
+    ;-------------------------
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-research-status c: ri-chain-barding != research-available)
+        =>
+        (up-jump-rule 3)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-compare-goal g-highest-tech-priority <= 9)
+        (can-research-with-escrow ri-chain-barding)
+        (up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+        =>
+        (set-goal g-escrow with-escrow)
+        (up-research g-escrow c: ri-chain-barding)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (can-research ri-chain-barding)
+        (up-compare-goal g-highest-tech-priority < 10)
+        (up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+        =>
+        (research ri-chain-barding)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-research-status c: ri-chain-barding == research-available)
+        (up-compare-goal g-highest-tech-priority < 10)
+        (up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+        (building-type-count blacksmith > 0)
+        =>
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-research-cost c: ri-chain-barding c: 1)
+        (up-setup-cost-data 0 g-total-food-needed)
+        (up-add-cost-data g-food-cost c: 1)
+        (up-modify-goal g-max-food-needed g:max g-food-cost)
+        (up-modify-goal g-max-gold-needed g:max g-gold-cost)
+        (up-modify-goal g-highest-tech-priority c:max 9)
+        (up-modify-escrow food g:= g-max-food-needed)
+        (up-modify-escrow wood g:= g-max-wood-needed)
+        (up-modify-escrow stone g:= g-max-stone-needed)
+        (up-modify-escrow gold g:= g-max-gold-needed)
+        )
+
+;=========================<>=========================
+;				      PRIORITY 8
+;=========================<>=========================
+
+    ;----------------
+    ;   Bloodlines
+    ;----------------
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-research-status c: ri-bloodlines != research-available)
+        =>
+        (up-jump-rule 3)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-compare-goal g-highest-tech-priority <= 8)
+        (can-research-with-escrow ri-bloodlines)
+        (up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+        =>
+        (set-goal g-escrow with-escrow)
+        (up-research g-escrow c: ri-bloodlines)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (can-research ri-bloodlines)
+        (up-compare-goal g-highest-tech-priority < 10)
+        (up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+        =>
+        (research ri-bloodlines)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-research-status c: ri-bloodlines == research-available)
+        (up-compare-goal g-highest-tech-priority < 10)
+        (up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+        (building-type-count stable > 0)
+        =>
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-research-cost c: ri-bloodlines c: 1)
+        (up-setup-cost-data 0 g-total-food-needed)
+        (up-add-cost-data g-food-cost c: 1)
+        (up-modify-goal g-max-food-needed g:max g-food-cost)
+        (up-modify-goal g-max-gold-needed g:max g-gold-cost)
+        (up-modify-goal g-highest-tech-priority c:max 8)
+        (up-modify-escrow food g:= g-max-food-needed)
+        (up-modify-escrow wood g:= g-max-wood-needed)
+        (up-modify-escrow stone g:= g-max-stone-needed)
+        (up-modify-escrow gold g:= g-max-gold-needed)
+        )
+
+;=========================<>=========================
+;				      PRIORITY 7
+;=========================<>=========================
+
+    ;--------------
+    ;   Forging
+    ;--------------
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-research-status c: ri-forging != research-available)
+        =>
+        (up-jump-rule 3)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-compare-goal g-highest-tech-priority <= 7)
+        (can-research-with-escrow ri-forging)
+        (up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+        =>
+        (set-goal g-escrow with-escrow)
+        (up-research g-escrow c: ri-forging)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (can-research ri-forging)
+        (up-compare-goal g-highest-tech-priority < 10)
+        (up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+        =>
+        (research ri-forging)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-research-status c: ri-forging == research-available)
+        (up-compare-goal g-highest-tech-priority < 10)
+        (up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+        (building-type-count blacksmith > 0)
+        =>
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-research-cost c: ri-forging c: 1)
+        (up-modify-goal g-max-food-needed g:max g-food-cost)
+        (up-modify-goal g-highest-tech-priority c:max 7)
+        )
+
+    ;----------------
+    ;   Heavy Plow
+    ;----------------
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-research-status c: ri-heavy-plow != research-available)
+        =>
+        (up-jump-rule 3)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (can-research-with-escrow ri-heavy-plow)
+        (up-compare-goal g-highest-tech-priority <= 7)
+        (up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+        =>
+        (set-goal g-escrow with-escrow)
+        (up-research g-escrow c: ri-heavy-plow)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (can-research ri-heavy-plow)
+        (up-compare-goal g-highest-tech-priority < 10)
+        (up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+        =>
+        (research ri-heavy-plow)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (can-research ri-heavy-plow)
+        (up-compare-goal g-highest-tech-priority < 10)
+        (up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+        =>
+        (research ri-heavy-plow)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-research-status c: ri-heavy-plow == research-available)
+        (up-compare-goal g-highest-tech-priority < 10)
+        (up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+        (building-type-count mill > 0)
+        =>
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-research-cost c: ri-heavy-plow c: 1)
+        (up-modify-goal g-max-food-needed g:max g-food-cost)
+        (up-modify-goal g-max-wood-needed g:max g-wood-cost)
+        (up-modify-goal g-highest-tech-priority c:max 7)
+        )
+
+;=========================<>=========================
+;				      PRIORITY 6
+;=========================<>=========================
+
+    ;-----------------
+    ;   Gold Mining
+    ;-----------------
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-research-status c: ri-gold-mining != research-available)
+        =>
+        (up-jump-rule 3)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (can-research-with-escrow ri-gold-mining)
+        (up-compare-goal g-highest-tech-priority <= 6)
+        (up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+        =>
+        (set-goal g-escrow with-escrow)
+        (up-research g-escrow c: ri-gold-mining)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (can-research ri-gold-mining)
+        (up-compare-goal g-highest-tech-priority < 9)
+        (up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+        =>
+        (research ri-gold-mining)
+        )
+
+        (defrule
+        (goal g-current-strategy KRUSH)
+        (up-research-status c: ri-gold-mining == research-available)
+        (up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+        (up-compare-goal g-highest-tech-priority < 9)
+        (building-type-count mining-camp > 0)
+        =>
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-research-cost c: ri-gold-mining c: 1)
+        (up-modify-goal g-max-food-needed g:max g-food-cost)
+        (up-modify-goal g-max-wood-needed g:max g-wood-cost)
+        (up-modify-goal g-highest-tech-priority c:max 6)
+        )
+
+;=========================<>=========================
+;				        ESCROW
+;=========================<>=========================
+
+    (load "The General 2/Reset")
+
+    ;Priority 7
+    (defrule
+    (goal g-current-strategy KRUSH)
+    (up-get-fact escrow-amount food g-temp)
+    (up-resource-amount food g:< g-temp)    ;Need to escrow food
+    (goal g-highest-tech-priority 7)
+    =>
+    (set-escrow-percentage food 60)
+    )
+
+    (defrule
+    (goal g-current-strategy KRUSH)
+    (up-get-fact escrow-amount wood g-temp)
+    (up-resource-amount wood g:< g-temp)    ;Need to escrow wood
+    (goal g-highest-tech-priority 7)
+    =>
+    (set-escrow-percentage wood 48)
+    )
+
+    (defrule
+    (goal g-current-strategy KRUSH)
+    (up-get-fact escrow-amount gold g-temp)
+    (up-resource-amount gold g:< g-temp)    ;Need to escrow gold
+    (goal g-highest-tech-priority 7)
+    =>
+    (set-escrow-percentage gold 48)
+    )
+
+    (defrule
+    (goal g-current-strategy KRUSH)
+    (up-get-fact escrow-amount stone g-temp)
+    (up-resource-amount stone g:< g-temp)    ;Need to escrow stone
+    (goal g-highest-tech-priority 7)
+    =>
+    (set-escrow-percentage stone 48)
+    )
+
+    ;Priority 6
+    (defrule
+    (goal g-current-strategy KRUSH)
+    (up-get-fact escrow-amount food g-temp)
+    (up-resource-amount food g:< g-temp)    ;Need to escrow food
+    (goal g-highest-tech-priority 6)
+    =>
+    (set-escrow-percentage food 36)
+    )
+
+    (defrule
+    (goal g-current-strategy KRUSH)
+    (up-get-fact escrow-amount wood g-temp)
+    (up-resource-amount wood g:< g-temp)    ;Need to escrow wood
+    (goal g-highest-tech-priority 6)
+    =>
+    (set-escrow-percentage wood 36)
+    )
+
+    (defrule
+    (goal g-current-strategy KRUSH)
+    (up-get-fact escrow-amount gold g-temp)
+    (up-resource-amount gold g:< g-temp)    ;Need to escrow gold
+    (goal g-highest-tech-priority 6)
+    =>
+    (set-escrow-percentage gold 36)
+    )
+
+    (defrule
+    (goal g-current-strategy KRUSH)
+    (up-get-fact escrow-amount stone g-temp)
+    (up-resource-amount stone g:< g-temp)    ;Need to escrow stone
+    (goal g-highest-tech-priority 6)
+    =>
+    (set-escrow-percentage stone 36)
+    )

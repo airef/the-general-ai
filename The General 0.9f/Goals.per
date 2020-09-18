@@ -1047,8 +1047,8 @@
 =>
 (up-set-target-point g-position-self-x)
 (up-full-reset-search)
+(up-filter-distance c: -1 c: MAX-BOAR-HUNT-DISTANCE)
 (set-strategic-number sn-focus-player-number 0)
-(up-filter-distance c: 6 c: MAX-BOAR-HUNT-DISTANCE)
 (up-find-remote g: g-boar-type c: 3)
 (up-clean-search search-remote object-data-distance search-order-asc)
 (chat-local-to-self "set boar search filter distance")
@@ -1312,7 +1312,7 @@
 	(up-reset-search 1 1 1 1)
 	(up-reset-filters)
 	(set-strategic-number sn-focus-player-number 0)
-	(up-filter-distance c: 6 c: 38)
+	(up-filter-distance c: -1 c: 38)
 	)
 
 	(defrule
@@ -3048,17 +3048,20 @@
 
 (defrule
 (goal g-starting-scout-id PENDING)
-(unit-type-count scout-unit > 0)
+(military-population > 0)
 (goal g-boar-hunt-status -1)
 =>
 (up-full-reset-search)
 (up-find-local c: scout-unit c: 1)
+(up-filter-include cmdid-military -1 -1 -1)
+(up-find-local c: all-units-class c: 1)
 )
 
 (defrule
 (goal g-starting-scout-id PENDING)
+(military-population > 0)
 (up-set-target-object search-local c: 0)
-(up-object-data object-data-type g:== scout-unit)
+;(up-object-data object-data-type g:== scout-unit)
 (goal g-boar-hunt-status -1)
 =>
 (up-get-object-data object-data-id g-starting-scout-id)
@@ -3767,14 +3770,14 @@
 )
 
 (defrule
-(true)
+(timer-triggered t-30-sec)
 =>
 (up-gather-inside c: barracks c: 1)
 (up-gather-inside c: archery-range c: 1)
 (up-gather-inside c: stable c: 1)
 (up-gather-inside c: siege-workshop c: 1)
 (up-gather-inside c: castle c: 1)
-(up-gather-inside c: monastery c: 1)
+;(up-gather-inside c: monastery c: 1)
 )
 
 (defrule
@@ -3792,8 +3795,8 @@
 (up-find-local c: stable c: 40)
 (up-find-local c: siege-workshop c: 40)
 (up-find-local c: castle c: 40)
-(up-find-local c: monastery c: 40)
-(up-remove-objects search-local object-data-attacker-count >= 3)
+;(up-find-local c: monastery c: 40)
+;(up-remove-objects search-local object-data-attacker-count >= 3)
 (up-set-target-point g-position-self-x)
 (up-target-point g-position-self-x action-unload -1 -1)
 )
@@ -3805,7 +3808,7 @@
 	(up-compare-goal g-temp > -5) ;enemy units in town outnumber our military pop by less than 6
 	(military-population >= 10))
 (or
-	(players-current-age every-enemy >= castle-age)
+	(players-current-age any-enemy >= castle-age)
 	(current-age < castle-age))
 =>
 (up-full-reset-search)
@@ -3814,37 +3817,84 @@
 (up-find-local c: stable c: 40)
 (up-find-local c: siege-workshop c: 40)
 (up-find-local c: castle c: 40)
-(up-remove-objects search-local object-data-attacker-count >= 3)
+;(up-remove-objects search-local object-data-attacker-count >= 3)
 (up-set-target-point g-position-self-x)
 (up-target-point g-position-self-x action-unload -1 -1)
 )
 
-(defrule
-(military-population >= 6)
-;(up-compare-goal g-military-superiority > -10)
-(or
-	(up-compare-goal g-temp > -5) ;enemy units in town outnumber our military pop by less than 6
-	(military-population >= 10))
-(or
-	(players-current-age every-enemy >= castle-age)
-	(current-age < castle-age))
-=>
-(up-full-reset-search)
-(up-find-local c: monastery c: 40)
-(up-remove-objects search-local object-data-attacker-count < 3)
-(up-get-search-state g-local-total)
-)
+; (defrule
+; (military-population >= 6)
+; ;(up-compare-goal g-military-superiority > -10)
+; (or
+; 	(up-compare-goal g-temp > -5) ;enemy units in town outnumber our military pop by less than 6
+; 	(military-population >= 10))
+; (or
+; 	(players-current-age every-enemy >= castle-age)
+; 	(current-age < castle-age))
+; =>
+; (up-full-reset-search)
+; (up-find-local c: monastery c: 40)
+; ;(up-remove-objects search-local object-data-attacker-count < 3)
+; (up-get-search-state g-local-total)
+; )
+
+; (defrule
+; (military-population >= 6)
+; ;(up-compare-goal g-military-superiority > -10)
+; (or
+; 	(up-compare-goal g-temp > -5) ;enemy units in town outnumber our military pop by less than 6
+; 	(military-population >= 10))
+; (or
+; 	(players-current-age every-enemy >= castle-age)
+; 	(current-age < castle-age))
+; (goal g-local-total 0) ;no monasteries under attack
+; =>
+; (up-ungarrison c: monastery)
+; )
+
+;-----------------
+;	g-nomad-map
+;-----------------
 
 (defrule
-(military-population >= 6)
-;(up-compare-goal g-military-superiority > -10)
-(or
-	(up-compare-goal g-temp > -5) ;enemy units in town outnumber our military pop by less than 6
-	(military-population >= 10))
-(or
-	(players-current-age every-enemy >= castle-age)
-	(current-age < castle-age))
-(goal g-local-total 0) ;no monasteries under attack
+(true)
 =>
-(up-ungarrison c: monastery)
+(set-goal g-nomad-map NO)
+(disable-self)
+)
+
+#load-if-defined NOMAD-MAP
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-nomad-map YES)
+	(disable-self)
+	)
+	
+#end-if
+
+#load-if-defined CUSTOM-MAP
+
+	(defrule
+	(game-time < 5)
+	(building-type-count town-center == 0)
+	=>
+	(set-goal g-nomad-map YES)
+	(chat-to-player my-player-number "Nomad map detected")
+	(disable-self)
+	)
+	
+#end-if
+
+;Switch defensive units
+
+(defrule
+(military-population > 0)
+(game-time < 10)
+=>
+(up-full-reset-search)
+(up-find-local c: all-units-class c: 20)
+(up-remove-objects search-local object-data-attack-stance != stance-defensive)
+(up-target-point 0 action-none -1 stance-aggressive)
 )

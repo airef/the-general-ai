@@ -221,7 +221,7 @@
 (up-compare-goal g-town-center-tech-priority < gv-primary)
 (up-research-status c: ri-wheel-barrow == research-available)
 (or
-	(unit-type-count-total villager >= 80)
+	(unit-type-count-total villager >= 50)
 	(up-research-status c: imperial-age >= research-pending))
 (goal g-town-under-attack NO)
 =>
@@ -249,6 +249,21 @@
 )
 
 ;Hand Cart
+
+(defrule
+(building-type-count town-center > 0)
+(up-compare-goal g-town-center-tech-priority < gv-low)
+(up-research-status c: ri-hand-cart == research-available)
+(or
+	(up-compare-goal g-attack-status > gv-first-attack)
+	(up-compare-flag g-excess-resources-flag == gv-food-wood))
+(goal g-town-under-attack NO)
+(unit-type-count villager >= 80)
+(research-completed ri-bow-saw)
+=>
+(set-goal g-next-town-center-tech ri-hand-cart)
+(set-goal g-town-center-tech-priority gv-secondary)
+)
 
 (defrule
 (building-type-count town-center > 0)

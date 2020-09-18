@@ -18,10 +18,80 @@
 
 ;Town Centers
 
+;Have no TCs
+
+(defrule
+(game-time > 600)
+(can-build-with-escrow town-center)
+(up-pending-objects c: town-center < 1)
+(building-type-count-total town-center == 0)
+(player-in-game any-ally)
+=>
+(set-strategic-number sn-town-center-placement lumber-camp)
+(set-strategic-number sn-maximum-town-size 255)
+(set-strategic-number sn-lumber-camp-max-distance 255)
+(up-assign-builders c: town-center-foundation c: 4)
+(set-goal g-use-escrow with-escrow)
+(up-find-player ally find-closest g-temp)
+(up-modify-sn sn-focus-player-number g:= g-temp)
+(up-set-placement-data focus-player -1 c: 25)
+(up-modify-sn sn-placement-zone-size c:= 10)
+(set-strategic-number sn-placement-fail-delta 0)
+(up-build place-control g-use-escrow c: town-center)
+;(chat-to-player my-player-number "Build Town Center")
+)
+
+(defrule
+(game-time > 600)
+(can-build-with-escrow town-center)
+(up-pending-objects c: town-center < 1)
+(building-type-count-total town-center == 0)
+(not
+	(player-in-game any-ally))
+=>
+(set-strategic-number sn-town-center-placement lumber-camp)
+(set-strategic-number sn-maximum-town-size 255)
+(set-strategic-number sn-lumber-camp-max-distance 255)
+(up-assign-builders c: town-center-foundation c: 4)
+(set-goal g-use-escrow with-escrow)
+(up-build place-normal g-use-escrow c: town-center)
+;(chat-to-player my-player-number "Build Town Center")
+)
+
+;Nomad
+
+(defrule
+(building-type-count-total town-center == 0)
+=>
+(set-strategic-number sn-allow-adjacent-dropsites YES)
+(set-strategic-number sn-town-center-placement lumber-camp)
+(up-full-reset-search)
+)
+
+(defrule
+(game-time <= 600)
+(game-time > 35)
+(up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+(can-build town-center)
+(up-pending-objects c: town-center < 1)
+(building-type-count-total town-center == 0)
+;(not
+;	(up-set-target-object search-remote c: 0))
+=>
+(set-strategic-number sn-town-center-placement lumber-camp)
+(set-strategic-number sn-maximum-town-size 255)
+(set-strategic-number sn-lumber-camp-max-distance 255)
+(up-assign-builders c: town-center-foundation c: 8)
+(up-build place-normal 0 c: town-center)
+(chat-to-player my-player-number "Build Nomad Town Center")
+)
+
+;Build second TC
+
 (defrule
 (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
 (can-build-with-escrow town-center)
-(up-pending-objects c: town-center < 2)
+(up-pending-objects c: town-center < 1)
 (building-type-count-total town-center == 1)
 (unit-type-count 225 == 0)	;dead male builder
 (unit-type-count 215 == 0)	;dead female builder
@@ -36,11 +106,13 @@
 (chat-to-player my-player-number "Build Town Center")
 )
 
+;Build later TCs
+
 (defrule
 (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
 (can-build-with-escrow town-center)
-(up-pending-objects c: town-center < 2)
-(building-type-count-total town-center != 1)
+(up-pending-objects c: town-center < 1)
+(building-type-count-total town-center > 1)
 (unit-type-count 225 == 0)	;dead male builder
 (unit-type-count 215 == 0)	;dead female builder
 =>
@@ -210,6 +282,7 @@
 (up-object-type-count-total c: house g:< g-desired-num-house)
 (can-build-with-escrow house)
 (up-pending-objects c: house g:< g-temp)
+(building-type-count town-center > 0)
 =>
 (up-set-placement-data my-player-number -1 c: 5)
 (set-strategic-number sn-placement-fail-delta 0)
@@ -249,9 +322,22 @@
 (up-object-type-count-total c: lumber-camp g:< g-desired-num-lumber-camp)
 (up-pending-objects c: lumber-camp == 0)
 (can-build-with-escrow lumber-camp)
+(goal g-nomad-map NO)
 =>
-(up-modify-escrow wood c: -100)
-(build lumber-camp)
+(set-goal g-use-escrow with-escrow)
+(up-build place-normal g-use-escrow c: lumber-camp)
+)
+
+(defrule
+(up-object-type-count-total c: lumber-camp g:< g-desired-num-lumber-camp)
+(up-pending-objects c: lumber-camp == 0)
+(can-build-with-escrow lumber-camp)
+(goal g-nomad-map YES)
+=>
+(set-strategic-number sn-lumber-camp-max-distance 255)
+(up-assign-builders c: lumber-camp c: 6)
+(set-goal g-use-escrow with-escrow)
+(up-build place-normal g-use-escrow c: lumber-camp)
 )
 
 (defrule
@@ -263,8 +349,8 @@
 (can-build-with-escrow lumber-camp)
 =>
 ;(up-modify-goal g-desired-num-lumber-camp c:+ 1)
-(up-modify-escrow wood c: -100)
-(build lumber-camp)
+(set-goal g-use-escrow with-escrow)
+(up-build place-normal g-use-escrow c: lumber-camp)
 (set-strategic-number sn-dropsite-separation-distance 4)
 )
 
@@ -277,8 +363,8 @@
 (can-build-with-escrow lumber-camp)
 =>
 (up-modify-goal g-desired-num-lumber-camp c:+ 1)
-(up-modify-escrow wood c: -100)
-(build lumber-camp)
+(set-goal g-use-escrow with-escrow)
+(up-build place-normal g-use-escrow c: lumber-camp)
 )
 
 (defrule
@@ -300,9 +386,37 @@
 	(up-pending-placement c: lumber-camp))
 (can-build-with-escrow lumber-camp)
 =>
-(up-modify-escrow wood c: -100)
-(build lumber-camp)
+(set-goal g-use-escrow with-escrow)
+(up-build place-normal g-use-escrow c: lumber-camp)
 (chat-local-to-self "relocate lumber camp")
+)
+
+(defrule
+(goal g-nomad-map YES)
+(building-type-count town-center > 0)
+(building-type-count lumber-camp > 0)
+(unit-type-count villager < 10)
+=>
+(up-full-reset-search)
+(up-set-target-point g-position-self-x)
+(up-filter-distance c: 20 c: -1)
+(up-find-local c: lumber-camp c: 1)
+(up-filter-distance c: -1 c: 5)
+(up-find-resource c: wood c: 10)
+(up-get-search-state g-local-total)
+)
+
+(defrule
+(goal g-nomad-map YES)
+(building-type-count town-center > 0)
+(building-type-count lumber-camp > 0)
+(unit-type-count villager < 10)
+(up-set-target-object search-local c: 0)
+(up-compare-goal g-remote-total > 4)		;found wood near TC
+=>
+(up-target-point 0 action-delete -1 -1)
+(up-garrison town-center c: villager-class)
+(disable-self)
 )
 
 ;Mining Camps
@@ -415,8 +529,8 @@
 (can-build-with-escrow mining-camp)
 =>
 (up-modify-sn sn-stone-dropsite-distance c:= 50)
-(up-modify-escrow wood c: -100)
-(build mining-camp)
+(set-goal g-use-escrow with-escrow)
+(up-build place-normal g-use-escrow c: mining-camp)
 (up-modify-goal g-desired-num-mining-camp c:+ 1)
 (chat-local-to-self "gold camp")
 )
@@ -434,8 +548,8 @@
 (can-build-with-escrow mining-camp)
 =>
 (up-modify-sn sn-gold-dropsite-distance c:= 50)
-(up-modify-escrow wood c: -100)
-(build mining-camp)
+(set-goal g-use-escrow with-escrow)
+(up-build place-normal g-use-escrow c: mining-camp)
 (up-modify-goal g-desired-num-mining-camp c:+ 1)
 (chat-local-to-self "stone camp")
 )
@@ -457,14 +571,12 @@
 (up-pending-objects c: mining-camp == 0)
 (not
 	(up-pending-placement c: mining-camp))
-(or
-	(up-compare-goal g-desired-num-gold-vils > 0)
-	(up-compare-sn sn-gold-gatherer-percentage > 0))
+(up-compare-sn sn-gold-gatherer-percentage > 0)
 (can-build-with-escrow mining-camp)
 =>
 (up-modify-sn sn-stone-dropsite-distance c:= 50)
-(up-modify-escrow wood c: -100)
-(build mining-camp)
+(set-goal g-use-escrow with-escrow)
+(up-build place-normal g-use-escrow c: mining-camp)
 ;(chat-local-to-self "relocate gold camp")
 )
 
@@ -521,7 +633,11 @@
 
 (defrule
 (current-age == dark-age)
-(building-type-count-total lumber-camp > 0)
+(or
+	(building-type-count-total lumber-camp > 0)
+	(and
+		(goal g-nomad-map YES)
+		(dropsite-min-distance wood < 4)))
 (can-build-with-escrow farm)
 (up-object-type-count-total c: farm g:< g-desired-num-farmers)
 ;(or
@@ -552,6 +668,24 @@
 (up-object-type-count-total c: mining-camp g:>= g-desired-num-mining-camp)
 (up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
 (up-object-type-count-total c: dock g:>= g-desired-num-dock)
+=>
+(up-assign-builders c: farm g: g-temp)
+(up-release-escrow)
+(set-goal g-use-escrow with-escrow)
+(up-build place-normal g-use-escrow c: farm)
+(up-modify-sn sn-disable-builder-assistance g:= g-temp-2)
+)
+
+(defrule
+(current-age == dark-age)
+(goal g-nomad-map YES)
+(dropsite-min-distance wood < 4)
+(can-build-with-escrow farm)
+(up-object-type-count-total c: farm g:< g-desired-num-farmers)
+;(or
+;	(idle-farm-count == 0)
+;	(up-object-type-count-total c: farm g:< g-desired-num-farmers))
+(up-pending-objects c: farm < 3)
 =>
 (up-assign-builders c: farm g: g-temp)
 (up-release-escrow)
@@ -666,7 +800,7 @@
 ;(up-modify-goal g-temp c:+ 3)
 ;(up-modify-goal g-temp c:max 25)
 (up-set-placement-data my-player-number -1 g: g-temp)
-(up-modify-sn sn-placement-zone-size c:= 8)
+(up-modify-sn sn-placement-zone-size c:= 15)
 (set-strategic-number sn-placement-fail-delta 1)
 (up-assign-builders c: castle c: 4)
 (up-build place-control 1 c: castle)

@@ -1,0 +1,223 @@
+;MC Camels.per
+;Mid Castle Age army with camels
+
+(defrule
+(goal g-current-strategy  MIDC-CAMELS)
+(up-compare-goal g-age-status >= MID-CASTLE)
+=>
+(set-goal g-desired-num-military 55)
+(set-goal g-primary-unit camel)
+(set-goal g-support-unit skirmisher)
+(set-goal g-desired-num-camel 27)
+(set-goal g-desired-num-skirmisher 18)
+(set-goal g-desired-num-archer 10)
+(set-goal g-desired-num-battering-ram 3)
+(set-goal g-desired-num-monk 2)
+)
+
+#load-if-defined ADD-COUNTERS-LATER
+    ;----------------------
+    ;   Counter Spearmen
+    ;----------------------
+
+        (defrule
+        (goal g-current-strategy  MIDC-CAMELS)
+        (up-compare-goal g-age-status >= MID-CASTLE)
+        (up-compare-goal g-enemy-spearmen-count >= 12)
+        ;(up-compare-goal g-team-position < POCKET)  ;Flank
+        =>
+        (up-modify-goal g-desired-num-camel c:%* 50)
+        (up-modify-goal g-desired-num-archer c:+ 30)
+        (set-goal g-support-unit archer)
+        )
+
+        (defrule
+        (goal g-current-strategy  MIDC-CAMELS)
+        (up-compare-goal g-age-status >= MID-CASTLE)
+        (up-compare-goal g-enemy-spearmen-count >= 6)
+        ;(up-compare-goal g-team-position < POCKET)  ;Flank
+        =>
+        (up-modify-goal g-desired-num-camel c:%* 67)
+        (up-modify-goal g-desired-num-archer c:+ 20)
+        (set-goal g-support-unit archer)
+        )
+
+    ;------------------------------
+    ;   Counter Teutonic Knights
+    ;------------------------------
+
+        (defrule
+        (goal g-current-strategy  MIDC-CAMELS)
+        (up-compare-goal g-age-status >= MID-CASTLE)
+        (up-compare-goal g-enemy-special-unique-unit-count >= 10)
+        (players-civ target-player teutonic)
+        ;(up-compare-goal g-team-position < POCKET)  ;Flank
+        =>
+        (up-modify-goal g-desired-num-camel c:%* 60)
+        (up-modify-goal g-desired-num-archer c:+ 24)
+        (set-goal g-support-unit archer)
+        )
+
+        (defrule
+        (goal g-current-strategy  MIDC-CAMELS)
+        (up-compare-goal g-age-status >= MID-CASTLE)
+        (up-compare-goal g-enemy-special-unique-unit-count >= 5)
+        (players-civ target-player teutonic)
+        ;(up-compare-goal g-team-position < POCKET)  ;Flank
+        =>
+        (up-modify-goal g-desired-num-camel c:%* 75)
+        (up-modify-goal g-desired-num-archer c:+ 15)
+        (set-goal g-support-unit archer)
+        )
+
+    ;---------------------
+    ;   Counter Archers
+    ;---------------------
+
+        #load-if-not-defined TURKISH-CIV
+
+            (defrule
+            (goal g-current-strategy  MIDC-CAMELS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-foot-archers-count >= 12)
+            ;(up-compare-goal g-team-position < POCKET)  ;Flank
+            =>
+            (up-modify-goal g-desired-num-camel c:%* 40)
+            (up-modify-goal g-desired-num-skirmisher c:+ 36)
+            (set-goal g-support-unit skirmisher)
+            )
+
+            (defrule
+            (goal g-current-strategy  MIDC-CAMELS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-foot-archers-count >= 6)
+            ;(up-compare-goal g-team-position < POCKET)  ;Flank
+            =>
+            (up-modify-goal g-desired-num-camel c:%* 60)
+            (up-modify-goal g-desired-num-skirmisher c:+ 24)
+            (set-goal g-support-unit skirmisher)
+            )
+
+        #else
+
+            (defrule
+            (goal g-current-strategy  MIDC-CAMELS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-foot-archers-count >= 12)
+            (or
+                (unit-available genitour)
+                (unit-available elite-genitour))
+            ;(up-compare-goal g-team-position < POCKET)  ;Flank
+            =>
+            (up-modify-goal g-desired-num-camel c:%* 40)
+            (up-modify-goal g-desired-num-genitour c:+ 36)
+            (set-goal g-support-unit genitour)
+            )
+
+            (defrule
+            (goal g-current-strategy  MIDC-CAMELS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-foot-archers-count >= 6)
+            (or
+                (unit-available genitour)
+                (unit-available elite-genitour))
+            ;(up-compare-goal g-team-position < POCKET)  ;Flank
+            =>
+            (up-modify-goal g-desired-num-camel c:%* 60)
+            (up-modify-goal g-desired-num-genitour c:+ 24)
+            (set-goal g-support-unit genitour)
+            )
+
+            (defrule
+            (goal g-current-strategy  MIDC-CAMELS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-foot-archers-count >= 12)
+            (nor
+                (unit-available genitour)
+                (unit-available elite-genitour))
+            ;(up-compare-goal g-team-position < POCKET)  ;Flank
+            =>
+            (up-modify-goal g-desired-num-camel c:%* 40)
+            (up-modify-goal g-desired-num-scout-cavalry c:+ 36)
+            (set-goal g-support-unit scout-cavalry)
+            )
+
+            (defrule
+            (goal g-current-strategy  MIDC-CAMELS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-foot-archers-count >= 6)
+            (nor
+                (unit-available genitour)
+                (unit-available elite-genitour))
+            ;(up-compare-goal g-team-position < POCKET)  ;Flank
+            =>
+            (up-modify-goal g-desired-num-camel c:%* 60)
+            (up-modify-goal g-desired-num-scout-cavalry c:+ 24)
+            (set-goal g-support-unit scout-cavalry)
+            )
+        #end-if
+
+    ;---------------------------------
+    ;   Counter Genoese Crossbowmen
+    ;---------------------------------
+
+        #load-if-not-defined TURKISH-CIV
+
+            (defrule
+            (goal g-current-strategy  MIDC-CAMELS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-special-unique-unit-count >= 12)
+            (players-civ target-player italian)
+            ;(up-compare-goal g-team-position < POCKET)  ;Flank
+            =>
+            (up-modify-goal g-desired-num-camel c:%* 50)
+            (up-modify-goal g-desired-num-skirmisher c:+ 30)
+            (set-goal g-support-unit skirmisher)
+            )
+
+            (defrule
+            (goal g-current-strategy  MIDC-CAMELS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-special-unique-unit-count >= 6)
+            (players-civ target-player italian)
+            ;(up-compare-goal g-team-position < POCKET)  ;Flank
+            =>
+            (up-modify-goal g-desired-num-camel c:%* 67)
+            (up-modify-goal g-desired-num-skirmisher c:+ 20)
+            (set-goal g-support-unit skirmisher)
+            )
+
+        #else
+
+            (defrule
+            (goal g-current-strategy  MIDC-CAMELS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-special-unique-unit-count >= 12)
+            (players-civ target-player italian)
+            (or
+                (unit-available genitour)
+                (unit-available elite-genitour))
+            ;(up-compare-goal g-team-position < POCKET)  ;Flank
+            =>
+            (up-modify-goal g-desired-num-camel c:%* 50)
+            (up-modify-goal g-desired-num-genitour c:+ 30)
+            (set-goal g-support-unit genitour)
+            )
+
+            (defrule
+            (goal g-current-strategy  MIDC-CAMELS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-special-unique-unit-count >= 6)
+            (players-civ target-player italian)
+            (or
+                (unit-available genitour)
+                (unit-available elite-genitour))
+            ;(up-compare-goal g-team-position < POCKET)  ;Flank
+            =>
+            (up-modify-goal g-desired-num-camel c:%* 67)
+            (up-modify-goal g-desired-num-genitour c:+ 20)
+            (set-goal g-support-unit genitour)
+            )
+
+        #end-if
+#end-if

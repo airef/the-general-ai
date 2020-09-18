@@ -2540,10 +2540,9 @@
 	(defrule
 	(up-compare-goal g-strategy == gv-imperial-military)
 	=>
-	(up-modify-goal g-desired-num-skirmisher c:= 15)
+	(up-modify-goal g-desired-num-skirmisher c:= 20)
 	(up-modify-goal g-desired-num-spearman c:= 15)
-	(up-modify-goal g-desired-num-knight c:= 19)
-	(up-modify-goal g-desired-num-scout-cavalry c:= 10)
+	(up-modify-goal g-desired-num-knight c:= 24)
 	(up-modify-goal g-desired-num-unique-unit c:= 12)
 	(up-modify-goal g-desired-num-battering-ram c:= 3)
 	(up-modify-goal g-desired-num-trebuchet c:= 5)
@@ -2559,10 +2558,9 @@
 	(defrule
 	(up-compare-goal g-strategy == gv-low-gold)
 	=>
-	(up-modify-goal g-desired-num-skirmisher c:= 21)
-	(up-modify-goal g-desired-num-spearman c:= 18)
-	(up-modify-goal g-desired-num-militia c:= 12)
-	(up-modify-goal g-desired-num-scout-cavalry c:= 20)
+	(up-modify-goal g-desired-num-skirmisher c:= 29)
+	(up-modify-goal g-desired-num-spearman c:= 22)
+	(up-modify-goal g-desired-num-militia c:= 22)
 	(up-modify-goal g-desired-num-unique-unit c:= 5)
 	(up-modify-goal g-desired-num-battering-ram c:= 4)
 	(up-modify-goal g-desired-num-monk c:= 0)
@@ -2577,15 +2575,14 @@
 	(defrule
 	(up-compare-goal g-strategy == gv-trash-war)
 	=>
-	(up-modify-goal g-desired-num-skirmisher c:= 31)
-	(up-modify-goal g-desired-num-spearman c:= 25)
-	(up-modify-goal g-desired-num-militia c:= 7)
-	(up-modify-goal g-desired-num-scout-cavalry c:= 15)
+	(up-modify-goal g-desired-num-skirmisher c:= 38)
+	(up-modify-goal g-desired-num-spearman c:= 32)
+	(up-modify-goal g-desired-num-militia c:= 8)
 	(up-modify-goal g-desired-num-battering-ram c:= 2)
 	(up-modify-goal g-desired-military-pop c:= 60)
 	(set-goal g-primary-unit skirmisher)
 	(set-goal g-secondary-unit spearman)
-	(set-goal g-tertiary-unit scout-cavalry)
+	(set-goal g-tertiary-unit militiaman)
 	)
 	
 #end-if
@@ -2994,8 +2991,8 @@
 		(goal g-strategy gv-crush)))
 (up-compare-goal g-team-position < gv-pocket)
 =>
-(up-modify-goal g-desired-num-villager c:= 27)
-(up-modify-goal g-required-num-villager c:= 27)
+(up-modify-goal g-desired-num-villager c:= 28)
+(up-modify-goal g-required-num-villager c:= 28)
 ;(up-chat-data-to-all "Num villager: %d" g: g-desired-num-villager)
 )
 
@@ -3009,7 +3006,7 @@
 (up-compare-goal g-team-position >= gv-pocket)
 =>
 (up-modify-goal g-desired-num-villager c:= 29)
-(up-modify-goal g-required-num-villager c:= 27)
+(up-modify-goal g-required-num-villager c:= 28)
 ;(up-chat-data-to-all "Num villager: %d" g: g-desired-num-villager)
 )
 
@@ -3031,9 +3028,19 @@
 (up-compare-goal g-age-status >= gv-advancing-to-castle)
 =>
 (up-modify-goal g-desired-num-villager c:= 140)
-(up-modify-goal g-required-num-villager c:= 75)
+(up-modify-goal g-required-num-villager c:= 100)
 ;(up-chat-data-to-all "Num villager: %d" g: g-desired-num-villager)
 )
+
+(defrule
+(up-compare-goal g-age-status >= gv-advancing-to-castle)
+(or
+	(up-compare-goal g-team-position >= gv-pocket)
+	(up-compare-goal g-total-superiority <= 10))
+=>
+(set-goal g-required-num-villager 75)
+)
+
 
 ;Trade Carts
 
@@ -3522,6 +3529,22 @@
 ;====Lumber Camps (used for first two lumber camps only)
 
 (defrule
+(goal g-nomad-map YES)
+(up-gaia-type-count-total c: wood > 20)
+(or
+	(not
+		(can-build town-center))
+	(building-type-count town-center > 0))
+(not
+	(up-pending-objects c: town-center > 0))
+(building-type-count lumber-camp == 0)
+(up-pending-objects c: lumber-camp == 0)
+=>
+(up-modify-goal g-desired-num-lumber-camp c:max 1)
+)
+
+(defrule
+(goal g-nomad-map NO)
 (game-time > 30)
 (up-gaia-type-count-total c: wood > 10)
 (or
@@ -3562,6 +3585,7 @@
 	(and
 		(game-time > 180)
 		(unit-type-count villager-food == 0)))
+(building-type-count-total town-center > 0)
 =>
 (up-modify-goal g-desired-num-mill c:max 1)
 ;(up-chat-data-to-all "Num mill: %d" g: g-desired-num-mill)
@@ -3580,6 +3604,7 @@
 	(and
 		(game-time > 180)
 		(unit-type-count villager-food == 0)))
+(building-type-count-total town-center > 0)
 =>
 (up-modify-goal g-desired-num-mill c:max 1)
 ;(up-chat-data-to-all "Num mill: %d" g: g-desired-num-mill)
@@ -3604,6 +3629,7 @@
 		(unit-type-count livestock-class == 0)))
 (up-gaia-type-count c: forage-class > 0)
 (building-type-count-total mill == 0)
+(building-type-count-total town-center > 0)
 =>
 (up-modify-goal g-desired-num-mill c:max 1)
 ;(up-chat-data-to-all "Num mill: %d" g: g-desired-num-mill)
@@ -3614,6 +3640,7 @@
 (unit-type-count villager >= 22)
 (building-type-count-total mill == 1)
 (up-compare-goal g-desired-num-mill < 2)
+(building-type-count-total town-center > 0)
 =>
 (up-modify-goal g-temp s:= sn-focus-player-number)
 (set-strategic-number sn-focus-player-number 0)
@@ -3629,6 +3656,7 @@
 (unit-type-count villager >= 22)
 (building-type-count-total mill == 1)
 (up-compare-goal g-desired-num-mill < 2)
+(building-type-count-total town-center > 0)
 =>
 (set-strategic-number sn-focus-player-number 0)
 (up-full-reset-search)
@@ -3644,15 +3672,19 @@
 (building-type-count-total mill == 1)
 (up-compare-goal g-desired-num-mill < 2)
 (up-compare-goal g-remote-total > 6)	;more than standard berries
+(building-type-count-total town-center > 0)
 =>
 (set-goal g-desired-num-mill 2)
 (up-modify-sn sn-focus-player-number g:= g-temp)
 )
 
 (defrule
-(game-time >= 300)
+(or
+	(game-time >= 300)
+	(up-compare-goal g-desired-num-farm > 0))
 (building-type-count-total mill == 0)
 (up-compare-goal g-desired-num-mill < 1)
+(building-type-count town-center > 0)
 =>
 (up-modify-goal g-desired-num-mill c:= 1)
 )
@@ -4370,9 +4402,32 @@
 (up-modify-goal g-desired-num-watch-tower c:max 1)
 )
 
+#load-if-defined UP-3-PLAYER-TEAM
+
+	(defrule
+	(goal g-town-under-attack NO)
+	(up-compare-goal g-team-position < gv-pocket)
+	(up-compare-goal g-desired-num-watch-tower < 1)
+	=>
+	(up-modify-goal g-desired-num-watch-tower c:max 1)
+	)
+
+#end-if
+
+#load-if-defined UP-4-PLAYER-TEAM
+
+	(defrule
+	(goal g-town-under-attack NO)
+	(up-compare-goal g-team-position < gv-pocket)
+	(up-compare-goal g-desired-num-watch-tower < 1)
+	=>
+	(up-modify-goal g-desired-num-watch-tower c:max 1)
+	)
+
+#end-if
+
 (defrule
 (goal g-town-under-attack YES)
-(up-compare-goal g-team-position < gv-pocket)
 (up-compare-goal g-desired-num-watch-tower >= 1)
 =>
 (up-modify-goal g-desired-num-watch-tower c:= 0)

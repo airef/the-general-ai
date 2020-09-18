@@ -1,0 +1,287 @@
+;MC Xbows.per
+;Mid Castle Age army with Crossbowmen
+
+(defrule
+(goal g-current-strategy  MIDC-XBOWS)
+(up-compare-goal g-age-status >= MID-CASTLE)
+=>
+(set-goal g-desired-num-military 55)
+(set-goal g-primary-unit archer)
+(set-goal g-support-unit spearman)
+(set-goal g-desired-num-archer 25)
+(set-goal g-desired-num-spearman 11)
+(set-goal g-desired-num-skirmisher 11)
+(set-goal g-desired-num-mangonel 2)
+(set-goal g-desired-num-battering-ram 1)
+(set-goal g-desired-num-monk 2)
+)
+
+#load-if-defined ADD-COUNTERING-LATER
+    #load-if-defined AZTEC-CIV
+
+        (defrule
+        (goal g-current-strategy  MIDC-XBOWS)
+        (up-compare-goal g-age-status >= MID-CASTLE)
+        (up-compare-goal g-enemy-field-siege-count >= 4)
+        =>
+        (up-modify-goal g-desired-num-archer c:%* 75)
+        (up-modify-goal g-desired-num-eagle-warrior c:+ 15)
+        (set-goal g-support-unit eagle-warrior)
+        )
+
+        (defrule
+        (goal g-current-strategy  MIDC-XBOWS)
+        (up-compare-goal g-age-status >= MID-CASTLE)
+        (up-compare-goal g-enemy-field-siege-count >= 2)
+        =>
+        (up-modify-goal g-desired-num-archer c:%* 83)
+        (up-modify-goal g-desired-num-eagle-warrior c:+ 10)
+        (set-goal g-support-unit eagle-warrior)
+        )
+
+        (defrule
+        (goal g-current-strategy  MIDC-XBOWS)
+        (up-compare-goal g-age-status >= MID-CASTLE)
+        (up-compare-goal g-enemy-special-unique-unit-count >= 12)
+        (players-civ target-player gothic)
+        =>
+        (up-modify-goal g-desired-num-archer c:%* 67)
+        (up-modify-goal g-desired-num-unique-unit c:+ 20)
+        (set-goal g-support-unit my-unique-unit)
+        )
+
+        (defrule
+        (goal g-current-strategy  MIDC-XBOWS)
+        (up-compare-goal g-age-status >= MID-CASTLE)
+        (up-compare-goal g-enemy-special-unique-unit-count >= 6)
+        =>
+        (up-modify-goal g-desired-num-archer c:%* 80)
+        (up-modify-goal g-desired-num-unique-unit c:+ 12)
+        (set-goal g-support-unit my-unique-unit)
+        )
+
+    #else
+        #load-if-defined INCAN-CIV
+
+            (defrule
+            (goal g-current-strategy  MIDC-XBOWS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-field-siege-count >= 4)
+            =>
+            (up-modify-goal g-desired-num-archer c:%* 75)
+            (up-modify-goal g-desired-num-eagle-warrior c:+ 15)
+            (set-goal g-support-unit eagle-warrior)
+            )
+
+            (defrule
+            (goal g-current-strategy  MIDC-XBOWS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-field-siege-count >= 2)
+            =>
+            (up-modify-goal g-desired-num-archer c:%* 83)
+            (up-modify-goal g-desired-num-eagle-warrior c:+ 10)
+            (set-goal g-support-unit eagle-warrior)
+            )
+
+            (defrule
+            (goal g-current-strategy  MIDC-XBOWS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-special-unique-unit-count >= 12)
+            (players-civ target-player gothic)
+            =>
+            (up-modify-goal g-desired-num-archer c:%* 67)
+            (up-modify-goal g-desired-num-militia c:+ 20)
+            (set-goal g-support-unit militiaman)
+            )
+
+            (defrule
+            (goal g-current-strategy  MIDC-XBOWS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-special-unique-unit-count >= 6)
+            =>
+            (up-modify-goal g-desired-num-archer c:%* 75)
+            (up-modify-goal g-desired-num-militia c:+ 15)
+            (set-goal g-support-unit militiaman)
+            )
+
+        #else
+            #load-if-defined MAYAN-CIV
+
+            (defrule
+            (goal g-current-strategy  MIDC-XBOWS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-field-siege-count >= 4)
+            =>
+            (up-modify-goal g-desired-num-archer c:%* 75)
+            (up-modify-goal g-desired-num-eagle-warrior c:+ 15)
+            (set-goal g-support-unit eagle-warrior)
+            )
+
+            (defrule
+            (goal g-current-strategy  MIDC-XBOWS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-field-siege-count >= 2)
+            =>
+            (up-modify-goal g-desired-num-archer c:%* 83)
+            (up-modify-goal g-desired-num-eagle-warrior c:+ 10)
+            (set-goal g-support-unit eagle-warrior)
+            )
+
+            (defrule
+            (goal g-current-strategy  MIDC-XBOWS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-special-unique-unit-count >= 12)
+            (players-civ target-player gothic)
+            =>
+            (up-modify-goal g-desired-num-archer c:%* 67)
+            (up-modify-goal g-desired-num-militia c:+ 20)
+            (set-goal g-support-unit militiaman)
+            )
+
+            (defrule
+            (goal g-current-strategy  MIDC-XBOWS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-special-unique-unit-count >= 6)
+            =>
+            (up-modify-goal g-desired-num-archer c:%* 75)
+            (up-modify-goal g-desired-num-militia c:+ 15)
+            (set-goal g-support-unit militiaman)
+            )
+
+            #end-if
+        #end-if
+    #end-if
+
+    #load-if-not-defined AZTEC-CIV
+    #load-if-not-defined INCAN-CIV
+    #load-if-not-defined MAYAN-CIV
+
+        ;-------------------------
+        ;   Counter Field Siege
+        ;-------------------------
+
+        #load-if-not-defined TEUTONIC-CIV
+
+            (defrule
+            (goal g-current-strategy  MIDC-XBOWS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-field-siege-count >= 4)
+            =>
+            (up-modify-goal g-desired-num-archer c:%* 70)
+            (up-modify-goal g-desired-num-scout-cavalry c:+ 18)
+            (set-goal g-support-unit scout-cavalry)
+            )
+
+            (defrule
+            (goal g-current-strategy  MIDC-XBOWS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-field-siege-count >= 2)
+            =>
+            (up-modify-goal g-desired-num-archer c:%* 83)
+            (up-modify-goal g-desired-num-scout-cavalry c:+ 10)
+            (set-goal g-support-unit scout-cavalry)
+            )
+
+        #else
+
+            (defrule
+            (goal g-current-strategy  MIDC-XBOWS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-field-siege-count >= 4)
+            =>
+            (up-modify-goal g-desired-num-archer c:%* 70)
+            (up-modify-goal g-desired-num-knight c:+ 18)
+            (set-goal g-support-unit knight)
+            )
+
+            (defrule
+            (goal g-current-strategy  MIDC-XBOWS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-field-siege-count >= 2)
+            =>
+            (up-modify-goal g-desired-num-archer c:%* 83)
+            (up-modify-goal g-desired-num-knight c:+ 10)
+            (set-goal g-support-unit knight)
+            )
+
+        #end-if
+
+        ;----------------------
+        ;   Counter Huskarls
+        ;----------------------
+
+            (defrule
+            (goal g-current-strategy  MIDC-XBOWS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-special-unique-unit-count >= 12)
+            (players-civ target-player gothic)
+            =>
+            (up-modify-goal g-desired-num-archer c:%* 50)
+            (up-modify-goal g-desired-num-knight c:+ 30)
+            (set-goal g-support-unit knight)
+            )
+
+            (defrule
+            (goal g-current-strategy  MIDC-XBOWS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-special-unique-unit-count >= 6)
+            =>
+            (up-modify-goal g-desired-num-archer c:%* 67)
+            (up-modify-goal g-desired-num-knight c:+ 20)
+            (set-goal g-support-unit knight)
+            )
+
+    #end-if
+    #end-if
+    #end-if
+
+    ;-------------------------
+    ;   Counter Skirmishers
+    ;-------------------------
+
+        #load-if-not-defined TURKISH-CIV
+
+            (defrule
+            (goal g-current-strategy  MIDC-XBOWS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-skirmishers-count >= 12)
+            =>
+            (up-modify-goal g-desired-num-archer c:%* 50)
+            (up-modify-goal g-desired-num-skirmisher c:+ 60)
+            (set-goal g-support-unit skirmisher)
+            )
+
+            (defrule
+            (goal g-current-strategy  MIDC-XBOWS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-skirmishers-count >= 6)
+            =>
+            (up-modify-goal g-desired-num-archer c:%* 67)
+            (up-modify-goal g-desired-num-skirmisher c:+ 20)
+            (set-goal g-support-unit skirmisher)
+            )
+
+        #else
+
+            (defrule
+            (goal g-current-strategy  MIDC-XBOWS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-skirmishers-count >= 12)
+            =>
+            (up-modify-goal g-desired-num-archer c:%* 50)
+            (up-modify-goal g-desired-num-scout-cavalry c:+ 30)
+            (set-goal g-support-unit scout-cavalry)
+            )
+
+            (defrule
+            (goal g-current-strategy  MIDC-XBOWS)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (up-compare-goal g-enemy-skirmishers-count >= 6)
+            =>
+            (up-modify-goal g-desired-num-archer c:%* 67)
+            (up-modify-goal g-desired-num-scout-cavalry c:+ 20)
+            (set-goal g-support-unit scout-cavalry)
+            )
+
+        #end-if
+#end-if

@@ -156,7 +156,7 @@
 (unit-type-count villager == 16)
 (goal g-eco-balance-system gv-manual)
 =>
-(up-modify-goal g-desired-num-farmers c:+ 1)
+(up-modify-goal g-desired-num-wood-vils c:+ 1)
 (disable-self)
 )
 
@@ -228,7 +228,7 @@
 (unit-type-count villager == 24)
 (goal g-eco-balance-system gv-manual)
 =>
-(up-modify-goal g-desired-num-farmers c:+ 1)
+(up-modify-goal g-desired-num-wood-vils c:+ 1)
 (disable-self)
 )
 
@@ -504,6 +504,47 @@
 (up-modify-goal g-desired-num-shepherds c:- 1)
 (up-chat-data-to-self "Num farmers (from shepherd): %d" g: g-desired-num-farmers)
 )
+
+(defrule
+(up-compare-goal g-desired-num-shepherds > 0)
+(unit-type-count villager-shepherd == 0)
+=>
+(up-modify-goal g-desired-num-farmers g:+ g-desired-num-shepherds)
+(set-goal g-desired-num-shepherds 0)
+)
+
+(defrule
+(up-compare-goal g-desired-num-boar-hunters > 0)
+(unit-type-count villager-hunter == 0)
+=>
+(up-modify-goal g-desired-num-farmers g:+ g-desired-num-boar-hunters)
+(set-goal g-desired-num-boar-hunters 0)
+)
+
+(defrule
+(up-compare-goal g-desired-num-foragers > 0)
+(or
+	(unit-type-count villager-forager == 0)
+	(up-gaia-type-count c: forage-class == 0))
+=>
+(up-modify-goal g-desired-num-farmers g:+ g-desired-num-foragers)
+(set-goal g-desired-num-foragers 0)
+)
+
+#load-if-not-defined HUN-CIV
+
+	(defrule
+	(housing-headroom == 0)
+	(goal g-desired-num-wood-vils 0)
+	(not
+		(can-build house))
+	=>
+	(up-modify-goal g-desired-num-wood-vils c:+ 3)
+	(up-modify-goal g-desired-num-farmers c:- 3)
+	)
+
+#end-if
+
 
 (defrule
 (timer-triggered t-10-sec)
@@ -1280,8 +1321,8 @@
 (up-full-reset-search)
 (set-strategic-number sn-focus-player-number 0)
 (up-filter-distance c: -1 c: 30)
-(up-find-remote c: livestock-class c: 1)
-(up-filter-distance c: -1 c: 30)
+(up-find-remote c: livestock-class c: 40)
+(up-remove-objects search-remote object-data-player != 0)   ;seems like up-find-remote considers all livestock owned by gaia
 (up-find-local c: scout-unit c: 1)
 (up-get-search-state g-local-total)
 )
@@ -1318,26 +1359,30 @@
 (chat-local-to-self "ready to claim sheep again")
 )
 
-;Retask sheep to town center if they stopped away from TC
+#load-if-defined SHOULDNT-BE-NEEDED
 
-(defrule
-(unit-type-count livestock-class > 0)
-=>
-(up-full-reset-search)
-(up-filter-distance c: 4 c: -1)
-(up-find-local c: livestock-class c: 240)
-(up-remove-objects search-local object-data-move-x != -2) ;remove sheep that are moving to TC
-(up-get-search-state g-local-total)
-)
+	;Retask sheep to town center if they stopped away from TC
 
-(defrule
-(unit-type-count livestock-class > 0)
-(up-compare-goal g-local-total > 0)
-(up-set-target-object search-local c: 0)
-=>
-(up-target-point g-position-self-x action-default -1 -1) ;move sheep to TC
-(chat-to-player my-player-number "Move idle sheep to TC")
-)
+	(defrule
+	(unit-type-count livestock-class > 0)
+	=>
+	(up-full-reset-search)
+	(up-filter-distance c: 4 c: -1)
+	(up-find-local c: livestock-class c: 240)
+	(up-remove-objects search-local object-data-move-x != -2) ;remove sheep that are moving to TC
+	(up-get-search-state g-local-total)
+	)
+
+	(defrule
+	(unit-type-count livestock-class > 0)
+	(up-compare-goal g-local-total > 0)
+	(up-set-target-object search-local c: 0)
+	=>
+	(up-target-point g-position-self-x action-default -1 -1) ;move sheep to TC
+	(chat-to-player my-player-number "Move idle sheep to TC")
+	)
+
+#end-if
 
 
 
