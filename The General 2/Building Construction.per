@@ -633,11 +633,28 @@
 
 (defrule
 (current-age == dark-age)
-(or
-	(building-type-count-total lumber-camp > 0)
-	(and
-		(goal g-nomad-map YES)
-		(dropsite-min-distance wood < 4)))
+(building-type-count-total lumber-camp > 0)
+(can-build-with-escrow farm)
+(up-object-type-count-total c: farm g:< g-desired-num-farmers)
+;(or
+;	(idle-farm-count == 0)
+;	(up-object-type-count-total c: farm g:< g-desired-num-farmers))
+(up-pending-objects c: farm < 3)
+(wood-amount > 275)
+(unit-type-count villager > 15)
+=>
+(up-assign-builders c: farm g: g-temp)
+(up-release-escrow)
+(set-goal g-use-escrow with-escrow)
+(up-build place-normal g-use-escrow c: farm)
+(up-modify-sn sn-disable-builder-assistance g:= g-temp-2)
+)
+
+(defrule
+(current-age == dark-age)
+(goal g-nomad-map YES)
+(dropsite-min-distance wood < 4)
+(building-type-count mill > 0)
 (can-build-with-escrow farm)
 (up-object-type-count-total c: farm g:< g-desired-num-farmers)
 ;(or
@@ -657,6 +674,7 @@
 (defrule
 (current-age == dark-age)
 (building-type-count-total lumber-camp > 0)
+(building-type-count mill > 0)
 (can-build-with-escrow farm)
 (up-object-type-count-total c: farm g:< g-desired-num-farmers)
 ;(or
@@ -680,6 +698,7 @@
 (current-age == dark-age)
 (goal g-nomad-map YES)
 (dropsite-min-distance wood < 4)
+(building-type-count mill > 0)
 (can-build-with-escrow farm)
 (up-object-type-count-total c: farm g:< g-desired-num-farmers)
 ;(or
