@@ -224,21 +224,10 @@
 (players-current-age target-player == castle-age)
 (up-compare-goal g-total-superiority > 10)
 (up-compare-goal g-military-superiority > 0)
-;(up-compare-goal g-age-status != gv-save-for-imperial)
+(up-compare-goal g-age-status != gv-save-for-imperial)
 =>
 (set-goal g-required-attack-num 15)
 (set-goal g-stop-attack-num 10)
-)
-
-(defrule
-(up-compare-goal g-attack-status > gv-first-attack)
-(up-compare-goal g-strategy-type >= gv-fc)
-(players-current-age target-player <= castle-age)
-(up-compare-goal g-total-superiority > 20)
-(up-compare-goal g-military-superiority > 10)
-=>
-(set-goal g-required-attack-num 12)
-(set-goal g-stop-attack-num 8)
 )
 
 (defrule
@@ -304,56 +293,13 @@
 (military-population g:>= g-required-attack-num)
 (current-age == imperial-age)
 (or
-	(up-research-status c: ri-cavalier == research-unavailable)
-	(up-research-status c: ri-cavalier == research-complete))
-(goal g-primary-unit knight)
-=>
-(set-goal g-attacking YES)
-(set-goal g-tsa YES)
-(set-goal g-attack-status gv-later-attacks)
-(chat-to-player my-player-number "Start later attacks")
-)
-
-(defrule
-(goal g-attack-status gv-before-later-attacks)
-(goal g-attacking NO)
-(military-population g:>= g-required-attack-num)
-(current-age == imperial-age)
+	(research-completed ri-cavalier)
+	(up-compare-goal g-primary-unit != knight))
 (or
-	(up-research-status c: ri-heavy-camel == research-unavailable)
-	(up-research-status c: ri-heavy-camel == research-complete))
-(goal g-primary-unit camel)
-=>
-(set-goal g-attacking YES)
-(set-goal g-tsa YES)
-(set-goal g-attack-status gv-later-attacks)
-(chat-to-player my-player-number "Start later attacks")
-)
-
-(defrule
-(goal g-attack-status gv-before-later-attacks)
-(goal g-attacking NO)
-(military-population g:>= g-required-attack-num)
-(current-age == imperial-age)
-(or
-	(up-research-status c: ri-elite-eagle-warrior == research-unavailable)
-	(up-research-status c: ri-elite-eagle-warrior == research-complete))
-(goal g-primary-unit eagle-warrior)
-=>
-(set-goal g-attacking YES)
-(set-goal g-tsa YES)
-(set-goal g-attack-status gv-later-attacks)
-(chat-to-player my-player-number "Start later attacks")
-)
-
-(defrule
-(goal g-attack-status gv-before-later-attacks)
-(goal g-attacking NO)
-(military-population g:>= g-required-attack-num)
-(current-age == imperial-age)
-(up-compare-goal g-primary-unit != eagle-warrior)
-(up-compare-goal g-primary-unit != knight)
-(up-compare-goal g-primary-unit != camel)
+	(research-completed ri-elite-eagle-warrior)
+	(up-compare-goal g-primary-unit != eagle-warrior))
+;(up-research-status c: ri-halberdier != research-available)
+;(goal g-save-for-next-age NO)
 =>
 (set-goal g-attacking YES)
 (set-goal g-tsa YES)
@@ -487,8 +433,8 @@
 	(up-set-target-object search-local c: 0)	;find a unit close to the enemy TC
 	=>
 	(up-copy-point g-point-x3 g-point-x)		;store enemy TC location in g-point-x3
-	(up-get-point position-object g-point-x2)
-	(up-lerp-tiles g-point-x3 g-point-x2 c: 10)	;find point 10 tiles away from enemy TC toward home TC
+	(up-get-point position-self g-point-x2)
+	(up-lerp-tiles g-point-x3 g-point-x2 c: 14)	;find point 14 tiles away from enemy TC toward home TC
 	(up-cross-tiles g-point-x3 g-point-x2 c: 2)	;so that units don't always retreat to the same spot
 	(up-bound-point g-point-x3 g-point-x3)
 	(up-set-target-point g-point-x3)
@@ -514,8 +460,8 @@
 	(up-set-target-object search-local c: 0)	;found a unit close to the enemy TC with <= 40 HP
 	=>
 	(up-copy-point g-point-x3 g-point-x)		;store enemy TC location in g-point-x3
-	(up-get-point position-object g-point-x2)
-	(up-lerp-tiles g-point-x3 g-point-x2 c: 10)	;find point 10 tiles away from enemy TC toward home TC
+	(up-get-point position-self g-point-x2)
+	(up-lerp-tiles g-point-x3 g-point-x2 c: 14)	;find point 14 tiles away from enemy TC toward home TC
 	(up-cross-tiles g-point-x3 g-point-x2 c: 2);so that units don't always retreat to the same spot
 	(up-bound-point g-point-x3 g-point-x3)
 	(up-set-target-point g-point-x3)
@@ -601,7 +547,7 @@
 =>
 (up-modify-goal g-temp g:= g-closest-enemy-building-distance)	;set to nearest building of target enemy player
 ;(up-modify-goal g-temp g:min g-nearest-enemy-defenses-distance)	;or nearest castle/tower of all enemies
-(up-modify-goal g-temp c:+ 15)	;give some wiggle room to TSA and allow for multiple building target options
+(up-modify-goal g-temp c:+ 12)	;give some wiggle room to TSA and allow for multiple building target options
 )
 
 (defrule
@@ -622,7 +568,7 @@
 	(up-enemy-buildings-in-town == 0)
 	(strategic-number sn-maximum-town-size < 255)
 	=>
-	(up-modify-sn sn-maximum-town-size c:+ 15)
+	(up-modify-sn sn-maximum-town-size c:+ 12)
 	(up-chat-data-to-self "Increase TSA more: %d" s: sn-maximum-town-size)
 	(up-update-targets)
 	(up-jump-rule -1)

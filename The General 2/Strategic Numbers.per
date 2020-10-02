@@ -3,27 +3,14 @@
 ;====SN-SAFE-TOWN-SIZE and SN-MAXIMUM-TOWN-SIZE
 
 (defrule
-(current-age == dark-age)
-(up-compare-sn sn-safe-town-size != 10)
-(unit-type-count villager < 10)
+(up-compare-sn sn-safe-town-size < 10)
 =>
 (up-modify-sn sn-safe-town-size c:= 10)
 (up-modify-sn sn-maximum-town-size s:max sn-safe-town-size)
 )
 
 (defrule
-(current-age == dark-age)
-(up-compare-sn sn-safe-town-size != 12)
-(unit-type-count villager >= 10)
-=>
-(up-modify-sn sn-safe-town-size c:= 10)
-(up-modify-sn sn-maximum-town-size s:max sn-safe-town-size)
-)
-
-(defrule
-(or
-	(current-age >= feudal-age)
-	(goal g-nomad-map YES))
+(current-age >= feudal-age)
 (up-compare-sn sn-safe-town-size < 14)
 (goal g-enemy-buildings-in-town 0)
 =>
@@ -206,7 +193,6 @@
 (up-gaia-type-count c: forage-class == 0)
 (strategic-number sn-percent-civilian-explorers < 100)
 (unit-type-count villager-builder == 0)
-(goal g-nomad-map NO)
 =>
 (set-strategic-number sn-percent-civilian-explorers 100)
 (set-strategic-number sn-cap-civilian-explorers 5)
@@ -221,7 +207,6 @@
 (cc-players-unit-type-count 0 livestock-class > 0)
 (unit-type-count-total livestock-class == 0)
 (strategic-number sn-percent-civilian-explorers < 51)
-(goal g-nomad-map NO)
 =>
 (set-strategic-number sn-percent-civilian-explorers 51)
 (set-strategic-number sn-cap-civilian-explorers 2)
@@ -237,7 +222,6 @@
 (up-gaia-type-count c: forage-class == 0)
 (building-type-count-total mill == 0)
 (strategic-number sn-percent-civilian-explorers < 50)
-(goal g-nomad-map NO)
 =>
 (set-strategic-number sn-percent-civilian-explorers 50)
 (set-strategic-number sn-cap-civilian-explorers 2)
@@ -252,7 +236,6 @@
 	(unit-type-count-total livestock-class > 0)
 	(up-gaia-type-count c: forage-class > 0))
 (strategic-number sn-percent-civilian-explorers == 100)
-(goal g-nomad-map NO)
 =>
 (set-strategic-number sn-percent-civilian-explorers 0)
 (set-strategic-number sn-percent-civilian-gatherers 100)
@@ -267,7 +250,6 @@
 (building-type-count-total town-center > 0)
 (unit-type-count-total livestock-class > 0)
 (strategic-number sn-percent-civilian-explorers == 51)
-(goal g-nomad-map NO)
 =>
 (set-strategic-number sn-percent-civilian-explorers 0)
 (set-strategic-number sn-percent-civilian-gatherers 100)
@@ -281,7 +263,6 @@
 (building-type-count-total town-center > 0)
 (up-gaia-type-count c: forage-class > 0)
 (strategic-number sn-percent-civilian-explorers == 50)
-(goal g-nomad-map NO)
 =>
 (set-strategic-number sn-percent-civilian-explorers 0)
 (set-strategic-number sn-percent-civilian-gatherers 100)
@@ -317,10 +298,6 @@
 (defrule
 (game-time > 100)
 (strategic-number sn-percent-civilian-explorers > 0)
-(or
-	(unit-type-count scout-unit > 0)
-	(game-time > 1200))
-(goal g-nomad-map NO)
 =>
 (set-strategic-number sn-percent-civilian-explorers 0)
 (set-strategic-number sn-percent-civilian-gatherers 100)
@@ -329,111 +306,25 @@
 (chat-local-to-self "stop civilian explorers")
 )
 
-;Nomad
-
-(defrule
-(game-time < 45)
-(goal g-nomad-map YES)
-;(or
-;	(cc-players-unit-type-count 0 boar-class > 0)
-;	(cc-players-unit-type-count 0 forage-class > 0))
-;(up-gaia-type-count g: g-boar-type == 0)
-;(up-gaia-type-count c: forage-class == 0)
-(strategic-number sn-percent-civilian-explorers < 100)
-(building-type-count-total town-center == 0)
-(building-type-count-total lumber-camp == 0)
-=>
-(set-strategic-number sn-percent-civilian-explorers 100)
-(set-strategic-number sn-cap-civilian-explorers 7)
-(set-strategic-number sn-total-number-explorers 8)
-(chat-local-to-self "nomad explore for food")
-)
-
-(defrule
-(goal g-nomad-map YES)
-(or
-	(up-gaia-type-count g: g-boar-type > 0)
-	(or
-		(up-gaia-type-count c: forage-class > 0)
-		(up-gaia-type-count c: deer-class > 0)))
-(strategic-number sn-percent-civilian-explorers == 100)
-(up-gaia-type-count c: wood > 20)
-(or
-	(building-type-count-total town-center > 0)
-	(building-type-count-total lumber-camp > 0))
-=>
-(set-strategic-number sn-percent-civilian-explorers 0)
-(set-strategic-number sn-cap-civilian-explorers 0)
-(set-strategic-number sn-total-number-explorers 3)
-(chat-local-to-self "nomad food food, stop exploring")
-)
-
-(defrule
-(goal g-nomad-map YES)
-(game-time >= 45)
-(strategic-number sn-percent-civilian-explorers == 100)
-(up-gaia-type-count c: wood > 20)
-(or
-	(building-type-count-total town-center > 0)
-	(building-type-count-total lumber-camp > 0))
-=>
-(set-strategic-number sn-percent-civilian-explorers 0)
-(set-strategic-number sn-cap-civilian-explorers 0)
-(set-strategic-number sn-total-number-explorers 3)
-(chat-local-to-self "nomad time's up, stop exploring for food")
-)
-
-(defrule
-(or
-	(goal g-nomad-map YES)
-	(military-population == 0))
-(game-time < 1200)
-(unit-type-count villager > 6)
-(unit-type-count villager < 30)
-(strategic-number sn-cap-civilian-explorers < 1)
-=>
-(set-strategic-number sn-percent-civilian-explorers 99)
-(set-strategic-number sn-cap-civilian-explorers 1)
-(set-strategic-number sn-total-number-explorers 2)
-(chat-local-to-self "nomad start 1 villager explore")
-)
-
-(defrule
-(or
-	(goal g-nomad-map YES)
-	(military-population == 0))
-(or
-	(game-time >= 1200)
-	(or
-		(unit-type-count villager <= 6)
-		(unit-type-count villager >= 30)))
-(strategic-number sn-cap-civilian-explorers == 1)
-=>
-(set-strategic-number sn-percent-civilian-explorers 0)
-(set-strategic-number sn-cap-civilian-explorers 0)
-(set-strategic-number sn-total-number-explorers 1)
-(chat-local-to-self "nomad stop 1 villager explore")
-)
-
 ;Don't scout when town under attack
 
-; (defrule
-; (goal g-town-under-attack YES)
-; (strategic-number sn-number-explore-groups > 0)
-; =>
-; (set-strategic-number sn-number-explore-groups 0)
-; (set-strategic-number sn-total-number-explorers 0)
-; (set-strategic-number sn-cap-civilian-explorers 0)
-; (up-reset-scouts)
-; )
+(defrule
+(goal g-town-under-attack YES)
+(strategic-number sn-number-explore-groups > 0)
+=>
+(set-strategic-number sn-number-explore-groups 0)
+(set-strategic-number sn-total-number-explorers 0)
+(set-strategic-number sn-cap-civilian-explorers 0)
+(up-reset-scouts)
+)
 
-; (defrule
-; (goal g-town-under-attack NO)
-; (strategic-number sn-number-explore-groups == 0)
-; =>
-; (set-strategic-number sn-number-explore-groups 1)
-; (set-strategic-number sn-total-number-explorers 1)
-; )
+(defrule
+(goal g-town-under-attack NO)
+(strategic-number sn-number-explore-groups == 0)
+=>
+(set-strategic-number sn-number-explore-groups 1)
+(set-strategic-number sn-total-number-explorers 1)
+)
 
 ;Send-Scout
 
@@ -538,42 +429,6 @@
 (up-gaia-type-count c: forage-class > 0)
 (up-gaia-type-count c: gold > 0)
 (up-gaia-type-count c: stone > 0)
-(goal g-nomad-map NO)
 =>
 (set-strategic-number sn-home-exploration-time 240)
-)
-
-(defrule
-(goal g-nomad-map YES)
-=>
-(set-strategic-number sn-home-exploration-time 600)
-)
-
-;====SN-ENABLE-BOAR-HUNTING
-
-(defrule
-(or
-	(goal g-boar-found gv-all-boar-found)
-	(cc-players-unit-type-count 0 boar-class == 0))
-(not
-	(up-set-target-by-id g: g-current-boar-id))
-(or
-	(strategic-number sn-enable-boar-hunting != 1)
-	(strategic-number sn-maximum-hunt-drop-distance < 10))
-(goal g-nomad-map NO)
-=>
-(set-strategic-number sn-enable-boar-hunting 1)
-(set-strategic-number sn-maximum-hunt-drop-distance 10)
-(chat-local-to-self "enable deer hunting")
-)
-
-(defrule
-(or
-	(strategic-number sn-enable-boar-hunting != 1)
-	(strategic-number sn-maximum-hunt-drop-distance < 15))
-(goal g-nomad-map YES)
-=>
-(set-strategic-number sn-enable-boar-hunting 1)
-(set-strategic-number sn-maximum-hunt-drop-distance 15)
-(chat-local-to-self "enable deer hunting")
 )
