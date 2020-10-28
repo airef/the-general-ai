@@ -31,6 +31,27 @@
 (up-modify-goal g-desired-num-fishermen c:= 0)
 )
 
+#load-if-not-defined HUN-CIV
+
+	(defrule
+	;(current-age == dark-age)
+	(unit-type-count villager <= 6)
+	(building-type-count-total house == 0)
+	(wood-amount < 30)
+	(goal g-eco-balance-system gv-manual)
+	=>
+	(up-modify-goal g-desired-num-wood-vils c:= 6)
+	(up-modify-goal g-desired-num-gold-vils c:= 0)
+	(up-modify-goal g-desired-num-stone-vils c:= 0)
+	(up-modify-goal g-desired-num-shepherds c:= 0)
+	(up-modify-goal g-desired-num-foragers c:= 0)
+	(up-modify-goal g-desired-num-deer-hunters c:= 0)
+	(up-modify-goal g-desired-num-farmers c:= 0)
+	(up-modify-goal g-desired-num-fishermen c:= 0)
+	)
+
+#end-if
+
 (defrule
 ;(current-age == dark-age)
 (unit-type-count villager == 7)
@@ -156,7 +177,7 @@
 (unit-type-count villager == 16)
 (goal g-eco-balance-system gv-manual)
 =>
-(up-modify-goal g-desired-num-farmers c:+ 1)
+(up-modify-goal g-desired-num-wood-vils c:+ 1)
 (disable-self)
 )
 
@@ -228,7 +249,7 @@
 (unit-type-count villager == 24)
 (goal g-eco-balance-system gv-manual)
 =>
-(up-modify-goal g-desired-num-farmers c:+ 1)
+(up-modify-goal g-desired-num-wood-vils c:+ 1)
 (disable-self)
 )
 
@@ -504,6 +525,47 @@
 (up-modify-goal g-desired-num-shepherds c:- 1)
 (up-chat-data-to-self "Num farmers (from shepherd): %d" g: g-desired-num-farmers)
 )
+
+(defrule
+(up-compare-goal g-desired-num-shepherds > 0)
+(unit-type-count villager-shepherd == 0)
+=>
+(up-modify-goal g-desired-num-farmers g:+ g-desired-num-shepherds)
+(set-goal g-desired-num-shepherds 0)
+)
+
+(defrule
+(up-compare-goal g-desired-num-boar-hunters > 0)
+(unit-type-count villager-hunter == 0)
+=>
+(up-modify-goal g-desired-num-farmers g:+ g-desired-num-boar-hunters)
+(set-goal g-desired-num-boar-hunters 0)
+)
+
+(defrule
+(up-compare-goal g-desired-num-foragers > 0)
+(or
+	(unit-type-count villager-forager == 0)
+	(up-gaia-type-count c: forage-class == 0))
+=>
+(up-modify-goal g-desired-num-farmers g:+ g-desired-num-foragers)
+(set-goal g-desired-num-foragers 0)
+)
+
+#load-if-not-defined HUN-CIV
+
+	(defrule
+	(housing-headroom == 0)
+	(goal g-desired-num-wood-vils 0)
+	(not
+		(can-build house))
+	=>
+	(up-modify-goal g-desired-num-wood-vils c:+ 3)
+	(up-modify-goal g-desired-num-farmers c:- 3)
+	)
+
+#end-if
+
 
 (defrule
 (timer-triggered t-10-sec)
@@ -981,13 +1043,13 @@
 (up-modify-sn sn-gold-gatherer-percentage g:%* g-temp)
 )
 
-(defrule
-(timer-triggered t-30-sec)
-=>
-(up-chat-data-to-self "W %: %d" s: sn-wood-gatherer-percentage)
-(up-chat-data-to-self "F %: %d" s: sn-food-gatherer-percentage)
-(up-chat-data-to-self "G %: %d" s: sn-gold-gatherer-percentage)
-)
+; (defrule
+; (timer-triggered t-30-sec)
+; =>
+; (up-chat-data-to-player my-player-number "W %: %d" s: sn-wood-gatherer-percentage)
+; (up-chat-data-to-player my-player-number "F %: %d" s: sn-food-gatherer-percentage)
+; (up-chat-data-to-player my-player-number "G %: %d" s: sn-gold-gatherer-percentage)
+; )
 
 #load-if-defined REPLACE-WITH-FUNCTIONAL-RULES
 
