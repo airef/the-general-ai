@@ -74,12 +74,26 @@
 (defrule
 (up-compare-goal g-min-forest-distance > PENDING)
 (building-type-count-total lumber-camp == 0)
+;(goal g-nomad-map NO)
 =>
 (up-modify-sn sn-lumber-camp-max-distance g:= g-min-forest-distance)
+(up-modify-sn sn-lumber-camp-max-distance s:max sn-dropsite-separation-distance)
+(up-modify-sn sn-lumber-camp-max-distance c:+ 2)
 )
+
+; (defrule
+; (building-type-count town-center > 0)
+; (goal g-nomad-map YES)
+; =>
+; (set-strategic-number sn-lumber-camp-max-distance 30)
+; (set-strategic-number sn-mining-camp-max-distance 30)
+; (set-strategic-number sn-mill-max-distance 20)
+; (disable-self)
+; )
 
 (defrule
 (building-type-count-total lumber-camp > 0)
+(goal g-nomad-map NO)
 =>
 (up-modify-sn sn-lumber-camp-max-distance c:+ 12)
 (disable-self)
@@ -88,6 +102,7 @@
 (defrule
 (strategic-number sn-mining-camp-max-distance < 30)
 (building-type-count-total mining-camp > 1)
+(goal g-nomad-map NO)
 =>
 (up-modify-sn sn-mining-camp-max-distance c:= 30)
 )
@@ -357,14 +372,16 @@
 		(up-gaia-type-count c: forage-class > 0)
 		(up-gaia-type-count c: deer-class > 0)))
 (strategic-number sn-percent-civilian-explorers == 100)
-(up-gaia-type-count c: wood > 20)
+; (up-gaia-type-count c: wood > 20)
 (or
 	(building-type-count-total town-center > 0)
 	(building-type-count-total lumber-camp > 0))
 =>
 (set-strategic-number sn-percent-civilian-explorers 0)
 (set-strategic-number sn-cap-civilian-explorers 0)
-(set-strategic-number sn-total-number-explorers 3)
+(set-strategic-number sn-number-explore-groups 0)
+(up-get-fact military-population 0 g-temp)
+(up-modify-sn sn-total-number-explorers g:= g-temp)
 (chat-local-to-self "nomad food food, stop exploring")
 )
 
@@ -379,7 +396,9 @@
 =>
 (set-strategic-number sn-percent-civilian-explorers 0)
 (set-strategic-number sn-cap-civilian-explorers 0)
-(set-strategic-number sn-total-number-explorers 3)
+(set-strategic-number sn-number-explore-groups 0)
+(up-get-fact military-population 0 g-temp)
+(up-modify-sn sn-total-number-explorers g:= g-temp)
 (chat-local-to-self "nomad time's up, stop exploring for food")
 )
 
@@ -394,7 +413,8 @@
 =>
 (set-strategic-number sn-percent-civilian-explorers 99)
 (set-strategic-number sn-cap-civilian-explorers 1)
-(set-strategic-number sn-total-number-explorers 2)
+(set-strategic-number sn-number-explore-groups 0)
+(set-strategic-number sn-total-number-explorers 1)
 (chat-local-to-self "nomad start 1 villager explore")
 )
 
@@ -412,7 +432,28 @@
 (set-strategic-number sn-percent-civilian-explorers 0)
 (set-strategic-number sn-cap-civilian-explorers 0)
 (set-strategic-number sn-total-number-explorers 1)
+(set-strategic-number sn-number-explore-groups 0)
 (chat-local-to-self "nomad stop 1 villager explore")
+)
+
+(defrule
+(strategic-number sn-cap-civilian-explorers == 0)
+(strategic-number sn-percent-civilian-explorers == 0)
+(strategic-number sn-total-number-explorers == 0)
+=>
+(up-full-reset-search)
+(up-find-local c: villager-class c: 6)
+(up-remove-objects search-local object-data-action != actionid-explore)
+(up-get-search-state g-local-total)
+)
+
+(defrule
+(strategic-number sn-cap-civilian-explorers == 0)
+(strategic-number sn-percent-civilian-explorers == 0)
+(strategic-number sn-total-number-explorers == 0)
+(up-compare-goal g-local-total > 0)
+=>
+(up-target-point 0 action-stop -1 -1)
 )
 
 ;Don't scout when town under attack
@@ -450,6 +491,16 @@
 ;Defensive Priorities
 
 (defrule
+(true)
+=>
+(up-set-defense-priority c: palisade-wall c: 1000)
+(up-set-defense-priority c: stone-wall c: 1000)
+(up-set-defense-priority c: fortified-wall c: 1000)
+(up-set-defense-priority c: gate c: 2000)
+(disable-self)
+)
+
+(defrule
 (goal g-attacking YES)
 (or
 	(military-population < 12)
@@ -458,7 +509,7 @@
 (up-set-defense-priority c: lumber-camp c: 3000)
 (up-set-defense-priority c: mining-camp c: 3000)
 (up-set-defense-priority c: mill c: 2000)
-(up-set-defense-priority c: town-center c: 1000)
+(up-set-defense-priority c: town-center c: 500)
 (up-set-defense-priority c: watch-tower c: 50)
 (up-set-defense-priority c: guard-tower c: 20)
 (up-set-defense-priority c: keep c: 20)
@@ -528,6 +579,84 @@
 	)
 
 #end-if
+
+(defrule
+(up-projectile-detected projectile-watch-tower <= 5000)
+(timer-triggered t-5-sec)
+=>
+(up-get-projectile-player projectile-watch-tower g-temp)
+(up-modify-sn sn-focus-player-number g:= g-temp)
+(up-full-reset-search)
+(up-find-remote c: watch-tower c: 40)
+(up-remove-objects search-remote object-data-next-attack <= 0)
+)
+
+(defrule
+(up-projectile-detected projectile-watch-tower <= 5000)
+(up-set-target-object search-remote c: 0)
+(timer-triggered t-5-sec)
+=>
+(up-get-point position-object g-point-x)
+(up-set-target-point g-point-x)
+(up-get-object-data object-data-id g-temp-2)
+(up-full-reset-search)
+(up-filter-distance c: -1 c: 2)
+(up-find-remote c: palisade-wall c: 20)
+(up-find-remote c: stone-wall c: 20)
+(up-find-remote c: fortified-wall c: 20)
+(up-get-search-state g-local-total)
+)
+
+(defrule
+(up-projectile-detected projectile-watch-tower <= 5000)
+(up-compare-goal g-remote-total > 3)
+(timer-triggered t-5-sec)
+=>
+(up-reset-search 1 1 0 0)
+(up-reset-filters)
+(up-filter-include cmdid-military -1 -1 -1)
+(up-filter-exclude -1 actionid-explore orderid-explore -1)
+(up-find-local c: all-units-class c: 240)
+(up-remove-objects search-local object-data-attack-stance == stance-stand-ground)
+(up-remove-objects search-local object-data-range > 0)
+(up-get-search-state g-local-total)
+(up-remove-objects search-local object-data-target-id g:!= g-temp-2)	;remove soldiers targeting tower with walls around it
+(up-get-search-state g-local-total)
+)
+
+(defrule
+(up-projectile-detected projectile-watch-tower <= 5000)
+(up-compare-goal g-remote-total > 3)
+(up-compare-goal g-local-total > 0)
+(timer-triggered t-5-sec)
+=>
+(up-chat-data-to-all "num targeting tower %d" g: g-local-total)
+(up-target-objects 0 action-default -1 stance-stand-ground)	;attack walls
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-filter-include cmdid-military -1 -1 -1)
+(up-filter-exclude -1 actionid-explore orderid-explore -1)
+(up-find-local c: all-units-class c: 240)
+(up-remove-objects search-local object-data-attack-stance != stance-stand-ground)
+(up-remove-objects search-local object-data-target == wall-class)
+(up-target-point 0 action-none -1 stance-aggressive)
+)
+
+(defrule
+(true)
+=>
+(up-full-reset-search)
+(up-filter-include cmdid-military -1 -1 -1)
+(up-filter-exclude -1 actionid-explore orderid-explore -1)
+(up-find-local c: all-units-class c: 240)
+(up-remove-objects search-local object-data-attack-stance != stance-stand-ground)
+(up-remove-objects search-local object-data-action == actionid-attack)
+(up-target-point 0 action-none -1 stance-aggressive)
+)
 
 ;====SN-HOME-EXPLORATION-TIME
 

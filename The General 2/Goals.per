@@ -1189,7 +1189,7 @@
 	(goal g-general 4)
 	=>
 	(set-goal g-general KHOSRAU)
-	(up-change-name "General KHOSRAU I")
+	(up-change-name "General Khosrau I")
 	(disable-self)
 	)
 
@@ -1899,7 +1899,7 @@
 (set-goal g-current-boar-id -1)
 (set-goal g-boar-hunt-status -1)
 (set-goal g-boar-lurer-id -1)
-(chat-local-to-self "reset boar-hunting")
+;(chat-local-to-self "reset boar-hunting")
 )
 
 (defrule
@@ -1910,7 +1910,7 @@
 =>
 (set-goal g-current-boar-id -1)
 (set-goal g-boar-lurer-id -1)
-(chat-local-to-self "boar gathered")
+;(chat-local-to-self "boar gathered")
 )
 
 (defrule
@@ -1928,7 +1928,7 @@
 (dropsite-min-distance boar-hunting <= MAX-BOAR-HUNT-DISTANCE)
 =>
 (set-goal g-boar-hunt-status gv-ready-to-lure)
-(chat-local-to-self "ready to lure")
+;(chat-local-to-self "ready to lure")
 )
 
 (defrule
@@ -1943,7 +1943,7 @@
 (set-goal g-boar-hunt-status gv-ready-to-lure)
 (set-strategic-number sn-minimum-boar-hunt-group-size 0)
 (set-strategic-number sn-minimum-number-hunters 0)
-(chat-local-to-self "ready to lure again")
+;(chat-local-to-self "ready to lure again")
 )
 
 (defrule
@@ -1955,7 +1955,7 @@
 (set-strategic-number sn-focus-player-number 0)
 (up-find-remote g: g-boar-type c: 3)
 (up-clean-search search-remote object-data-distance search-order-asc)
-(chat-local-to-self "set boar search filter distance")
+;(chat-local-to-self "set boar search filter distance")
 )
 
 (defrule
@@ -1964,7 +1964,7 @@
 =>
 (up-get-object-data object-data-id g-current-boar-id)	
 (set-goal g-boar-hunt-status gv-select-boar)
-(chat-local-to-self "set boar to hunt")
+;(chat-local-to-self "set boar to hunt")
 )
 
 (defrule
@@ -1978,7 +1978,7 @@
 (up-find-local c: villager-class c: 20)
 (up-clean-search search-local object-data-distance search-order-asc)
 (set-goal g-boar-hunt-status gv-find-lurer)
-(chat-local-to-self "find boar lurer")
+;(chat-local-to-self "find boar lurer")
 )
 
 	(defrule
@@ -2007,7 +2007,7 @@
 =>
 (up-get-object-data object-data-id g-boar-lurer-id)
 (up-get-object-data object-data-carry g-temp)
-(up-chat-data-to-self "Lurer is carrying %d res" g: g-temp)
+;(up-chat-data-to-self "Lurer is carrying %d res" g: g-temp)
 (set-goal g-boar-hunt-status gv-lurer-drop-res)
 )
 
@@ -2025,7 +2025,7 @@
 (up-set-target-object search-remote c: 0)
 (up-target-objects 1 action-default -1 -1)
 (up-modify-sn sn-focus-player-number g:= g-temp-2)
-(chat-local-to-self "drop resources before luring")
+;(chat-local-to-self "drop resources before luring")
 )
 
 (defrule
@@ -2040,7 +2040,7 @@
 (up-set-target-by-id g: g-boar-lurer-id)
 (up-compare-goal g-temp <= 5)
 =>
-(chat-local-to-self "lurer has dropped resources")
+;(chat-local-to-self "lurer has dropped resources")
 (set-goal g-boar-hunt-status gv-ready-to-target-boar)
 )
 
@@ -2071,7 +2071,7 @@
 (up-set-target-by-id g: g-current-boar-id)
 (up-target-objects 1 action-default -1 -1)
 (set-goal g-boar-hunt-status gv-assist-hunting-boar)
-(chat-local-to-self "find second boar hunt assistant")
+;(chat-local-to-self "find second boar hunt assistant")
 )
 
 (defrule
@@ -2087,7 +2087,7 @@
 (up-set-target-by-id g: g-current-boar-id)
 (up-target-objects 1 action-default -1 -1)
 (set-goal g-boar-hunt-status gv-full-assist-hunting-boar)
-(chat-local-to-self "get other assistant boar hunters")
+;(chat-local-to-self "get other assistant boar hunters")
 )
 
 (defrule
@@ -2103,7 +2103,7 @@
 (up-find-local c: villager-class c: 6)
 (up-set-target-by-id g: g-current-boar-id)
 (up-target-objects 1 action-default -1 -1)
-(chat-local-to-self "retarget boar")
+;(chat-local-to-self "retarget boar")
 )
 
 (defrule
@@ -2112,7 +2112,7 @@
 =>
 (set-goal g-boar-hunt-status -1)
 (set-strategic-number sn-minimum-number-hunters 0)
-(chat-local-to-self "boar is hunted")
+;(chat-local-to-self "boar is hunted")
 )
 
 	
@@ -2809,7 +2809,7 @@
 (current-age == castle-age)
 (unit-type-count knight-line < 8)
 (up-compare-goal g-attack-status <= gv-first-attack)
-(up-compare-goal g-team-position < gv-pocket)
+;(up-compare-goal g-team-position < gv-pocket)
 =>
 (up-modify-goal g-constant-train-unit c:= knight)
 (up-modify-goal g-constant-unit-desired-num-goal c:= g-desired-num-knight)
@@ -2820,7 +2820,7 @@
 (current-age == castle-age)
 (up-compare-goal g-camel-line < 8)
 (up-compare-goal g-attack-status <= gv-first-attack)
-(up-compare-goal g-team-position < gv-pocket)
+;(up-compare-goal g-team-position < gv-pocket)
 =>
 (up-modify-goal g-constant-train-unit c:= camel)
 (up-modify-goal g-constant-unit-desired-num-goal c:= g-desired-num-camel)
@@ -2832,7 +2832,7 @@
 (up-compare-goal g-eagle-scout-line < 12)
 (up-compare-goal g-attack-status <= gv-first-attack)
 (up-research-status c: ri-eagle-warrior >= research-pending)
-(up-compare-goal g-team-position < gv-pocket)
+;(up-compare-goal g-team-position < gv-pocket)
 =>
 (up-modify-goal g-constant-train-unit c:= eagle-warrior)
 (up-modify-goal g-constant-unit-desired-num-goal c:= g-desired-num-eagle-warrior)
@@ -3032,6 +3032,7 @@
 	(up-filter-distance c: -1 s: sn-safe-town-size)
 	(up-find-remote c: building-class c: 40)
 	(up-find-remote c: tower-class c: 40)
+	(up-find-remote c: wall-class c: 40)
 	(up-get-search-state g-local-total)
 	(up-modify-goal g-enemy-buildings-in-town g:+ g-remote-total)
 	(up-reset-search 1 1 1 1)
@@ -4158,6 +4159,7 @@
 	(up-full-reset-search)
 	(up-find-remote c: tower-class c: 40)
 	(up-find-remote c: building-class c: 40)
+	(up-find-remote c: wall-class c: 40)
 	(up-clean-search search-remote object-data-distance search-order-asc)
 	(up-get-search-state g-local-total)
 	)
@@ -4236,6 +4238,7 @@
 (up-set-target-point g-position-self-x)
 (up-find-remote c: building-class c: 40)
 (up-find-remote c: tower-class c: 40)
+(up-find-remote c: wall-class c: 40)
 (up-clean-search search-remote object-data-distance search-order-asc)
 (up-get-search-state g-local-total)
 )
@@ -4271,6 +4274,7 @@
 (up-set-target-point g-position-self-x)
 (up-find-remote c: building-class c: 40)
 (up-find-remote c: tower-class c: 40)
+(up-find-remote c: wall-class c: 40)
 (up-clean-search search-remote object-data-distance search-order-asc)
 (up-get-search-state g-local-total)
 )
@@ -4369,11 +4373,12 @@
 (defrule
 (or
 	(resource-found wood)
-	(up-gaia-type-count-total c: wood >= 40))
+	(up-gaia-type-count-total c: wood >= 20))
 (up-compare-goal g-desired-num-wood-vils > 0)
 (building-type-count town-center > 0)
 (building-type-count-total lumber-camp == 0)
 (goal g-min-forest-distance PENDING)
+(up-compare-goal g-position-self-x != PENDING)
 =>
 (up-full-reset-search)
 (up-set-target-point g-position-self-x)
@@ -4381,11 +4386,11 @@
 (up-find-resource c: wood c: 240)
 (up-clean-search search-remote object-data-distance search-order-asc)
 (up-get-search-state g-local-total)
-(up-chat-data-to-self "Trees found: %d" g: g-remote-total)
+;(up-chat-data-to-self "Trees found: %d" g: g-remote-total)
 )
 
 (defrule
-(up-compare-goal g-remote-total >= 40)
+(up-compare-goal g-remote-total >= 20)
 =>
 (set-goal i 0)
 (up-modify-goal g-min-forest-distance g:= g-map-size-ts)
@@ -4395,7 +4400,7 @@
 	(up-compare-goal g-desired-num-wood-vils > 0)
 	(building-type-count town-center > 0)
 	(building-type-count-total lumber-camp == 0)
-	(up-compare-goal g-remote-total >= 40)
+	(up-compare-goal g-remote-total >= 20)
 	(up-set-target-object search-remote g: i)
 	=>
 	(up-get-point position-object g-point-x)
@@ -4449,7 +4454,7 @@
 	)
 	
 (defrule
-(building-type-count-total lumber-camp > 0)
+;(building-type-count-total lumber-camp > 0)
 (up-compare-goal g-min-forest-distance > 0)
 =>
 (up-chat-data-to-self "Forest distance: %d" g: g-min-forest-distance)

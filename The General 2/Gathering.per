@@ -298,6 +298,24 @@
 (disable-self)
 )
 
+(defrule
+;(up-compare-goal g-age-status == gv-feudal)
+(unit-type-count villager == 30)
+(goal g-eco-balance-system gv-manual)
+=>
+(up-modify-goal g-desired-num-food-vils c:+ 1)
+(disable-self)
+)
+
+(defrule
+;(up-compare-goal g-age-status == gv-feudal)
+(unit-type-count villager == 31)
+(goal g-eco-balance-system gv-manual)
+=>
+(up-modify-goal g-desired-num-food-vils c:+ 1)
+(disable-self)
+)
+
 #load-if-not-defined ITALIAN-CIV
 
 	(defrule
@@ -725,8 +743,6 @@
 (up-modify-goal g-desired-num-foragers c:- 1)
 (chat-local-to-self "Need boar hunters again")
 )
-
-
 
 (defrule
 (goal g-eco-balance-system gv-manual)
@@ -1164,6 +1180,19 @@
 (enable-timer t-adjust-gathering ADJUST-GATHERING-TIMER-LENGTH)
 )
 
+(defrule
+(goal g-nomad-map YES)
+(building-type-count mill == 0)
+(up-object-type-count c: mill g:< g-desired-num-mill)
+(not
+	(can-afford-building mill))
+(unit-type-count villager < 12)
+(dropsite-min-distance food > 3)
+=>
+(set-strategic-number sn-wood-gatherer-percentage 100)
+(set-strategic-number sn-food-gatherer-percentage 0)
+)
+
 
 
 ;====Automatic Gathering Percentages
@@ -1360,7 +1389,7 @@
 (up-reset-scouts)
 (up-target-objects 0 action-move -1 -1)
 (set-goal g-claim-sheep YES)
-(chat-local-to-self "claim sheep")
+;(chat-local-to-self "claim sheep")
 )
 
 (defrule
@@ -1482,6 +1511,7 @@
 (unit-type-count villager-forager > 0)
 (building-type-count-total mill == 0)
 (unit-type-count livestock-class > 0)
+(goal g-nomad-map NO)
 =>
 (up-target-objects 1 action-garrison -1 -1)
 (chat-local-to-self "retask foragers to sheep")

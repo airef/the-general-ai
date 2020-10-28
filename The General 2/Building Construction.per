@@ -21,7 +21,7 @@
 ;Have no TCs
 
 (defrule
-(game-time > 600)
+(game-time > 900)
 (can-build-with-escrow town-center)
 (up-pending-objects c: town-center < 1)
 (building-type-count-total town-center == 0)
@@ -42,7 +42,7 @@
 )
 
 (defrule
-(game-time > 600)
+(game-time > 900)
 (can-build-with-escrow town-center)
 (up-pending-objects c: town-center < 1)
 (building-type-count-total town-center == 0)
@@ -68,13 +68,192 @@
 (up-full-reset-search)
 )
 
+;Get lumber camp position for LN
 (defrule
-(game-time <= 600)
-(game-time > 35)
+(building-type-count lumber-camp > 0)
+(building-type-count-total town-center == 0)
+(goal g-nomad-map YES)
+(game-time <= 900)
+(goal g-nomad-lc-x PENDING)
+=>
+(up-full-reset-search)
+(up-find-local c: lumber-camp c: 1)
+)
+
+(defrule
+(building-type-count lumber-camp > 0)
+(building-type-count-total town-center == 0)
+(goal g-nomad-map YES)
+(game-time <= 900)
+(up-set-target-object search-local c: 0)
+(up-object-data object-data-type == lumber-camp)
+(goal g-nomad-lc-x PENDING)
+=>
+(up-get-point position-object g-nomad-lc-x)
+(chat-local-to-self "get nomad lc position")
+)
+
+;Get location of a tree as a placeholder for g-nomad-lc-x for standard Nomad
+(defrule
+(building-type-count lumber-camp == 0)
+(building-type-count-total town-center == 0)
+(can-afford-building town-center)
+(goal g-nomad-map YES)
+(game-time <= 900)
+(goal g-nomad-lc-x PENDING)
+(or
+	(up-gaia-type-count-total c: wood > 40)
+	(game-time > 20))
+=>
+(up-full-reset-search)
+(up-find-resource c: wood c: 40)
+(up-remove-objects search-remote object-data-point-x < 10)	;Avoid selecting trees close to edge of the map
+(up-remove-objects search-remote object-data-point-y < 10)
+(up-remove-objects search-remote object-data-point-x > NINETY-PERCENT-MAP-SIZE)
+(up-remove-objects search-remote object-data-point-y > NINETY-PERCENT-MAP-SIZE)
+)
+
+;Get new g-nomad-lc-x location if TC placement is delayed
+(defrule
+(building-type-count lumber-camp == 0)
+(building-type-count-total town-center == 0)
+(can-afford-building town-center)
+(goal g-nomad-map YES)
+(game-time <= 900)
+(timer-triggered t-nomad-tc)
+(up-compare-goal g-nomad-lc-x != PENDING)
+=>
+(up-full-reset-search)
+(up-find-resource c: wood c: 40)
+(up-set-target-point g-nomad-lc-x)
+(up-remove-objects search-remote object-data-point-x < 10)	;Avoid selecting trees close to edge of the map
+(up-remove-objects search-remote object-data-point-y < 10)
+(up-remove-objects search-remote object-data-point-x > NINETY-PERCENT-MAP-SIZE)
+(up-remove-objects search-remote object-data-point-y > NINETY-PERCENT-MAP-SIZE)
+(up-remove-objects search-remote object-data-distance <= 10)	;pick tree far away
+)
+
+(defrule
+(building-type-count lumber-camp == 0)
+(building-type-count-total town-center == 0)
+(can-afford-building town-center)
+(goal g-nomad-map YES)
+(game-time <= 900)
+(or
+	(goal g-nomad-lc-x PENDING)
+	(timer-triggered t-nomad-tc))
+(up-gaia-type-count-total c: wood > 20)
+(up-set-target-object search-remote c: 0)
+(up-object-data object-data-class == tree-class)
+=>
+(up-get-point position-object g-nomad-lc-x)
+; (chat-local-to-self "set tree as nomad lc position placeholder")
+)
+
+;Get location of food sources
+(defrule
+(game-time <= 900)
+(can-build town-center)
+(up-pending-objects c: town-center < 1)
+(building-type-count-total town-center == 0)
+(up-compare-goal g-nomad-lc-x > 0)
+=>
+(up-full-reset-search)
+(up-filter-status c: status-ready c: list-active)
+(up-set-target-point g-nomad-lc-x)
+(set-goal g-temp HUNDRED-PERCENT-MAP-SIZE)
+(up-modify-goal g-temp c:- 5)
+)
+
+(defrule
+(game-time <= 900)
+(can-build town-center)
+(up-pending-objects c: town-center < 1)
+(building-type-count-total town-center == 0)
+(up-compare-goal g-nomad-lc-x > 0)
+=>
+(up-find-resource c: deer-class c: 40)		;Prioritize TC next to deer
+(up-filter-status c: status-resource c: list-active)
+(up-find-resource c: forage-class c: 40)	;Then prioritize bushes
+(up-filter-status c: status-ready c: list-active)
+(up-find-resource c: boar-class c: 40)
+(up-remove-objects search-remote object-data-point-x < 5)	;Avoid selecting food sources close to edge of the map
+(up-remove-objects search-remote object-data-point-y < 5)
+(up-remove-objects search-remote object-data-point-x g:> g-temp)	;less than 5 tiles from edge of the map
+(up-remove-objects search-remote object-data-point-y g:> g-temp)	
+(up-remove-objects search-remote object-data-carry < 50)	;Avoid wolves and bad fencrazy food sources
+(up-remove-objects search-remote object-data-distance > 20)
+)
+
+;Don't set TC placement within 10 tiles of allies
+(defrule
+(game-time <= 900)
+(can-build town-center)
+(up-pending-objects c: town-center < 1)
+(building-type-count-total town-center == 0)
+(up-compare-goal g-nomad-lc-x > 0)
+=>
+(set-goal i 1)
+(set-strategic-number sn-focus-player-number 1)
+)
+	
+	(defrule
+	(game-time <= 900)
+	(can-build town-center)
+	(up-pending-objects c: town-center < 1)
+	(building-type-count-total town-center == 0)
+	(up-compare-goal g-nomad-lc-x > 0)
+	(stance-toward focus-player ally)
+	(up-allied-goal focus-player g-identity == THE-GENERAL)
+	(up-allied-goal focus-player g-nomad-food-x != PENDING)
+	=>
+	(up-get-player-fact focus-player allied-goal g-nomad-food-x g-point-x)
+	(up-get-player-fact focus-player allied-goal g-nomad-food-y g-point-y)
+	(up-set-target-point g-point-x)
+	(up-remove-objects search-remote object-data-distance < 10)
+	)
+
+	(defrule
+	(game-time <= 900)
+	(game-time > 20)
+	(can-build town-center)
+	(up-pending-objects c: town-center < 1)
+	(building-type-count-total town-center == 0)
+	(up-compare-goal g-nomad-lc-x > 0)
+	(up-compare-goal i < 8)
+	=>
+	(up-modify-goal i c:+ 1)
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -2)
+	)
+
+;Get food position
+(defrule
+(game-time <= 900)
+(can-build town-center)
+(up-pending-objects c: town-center < 1)
+(building-type-count-total town-center == 0)
+(up-compare-goal g-nomad-lc-x > 0)
+(up-set-target-object search-remote c: 0)
+(up-timer-status t-nomad-tc != timer-running)
+=>
+(up-get-point position-object g-nomad-food-x)
+(up-set-target-point g-nomad-lc-x)
+(up-get-object-data object-data-distance g-temp)
+; (up-chat-data-to-all "Dist %d" g: g-temp)
+)
+
+;Fallback build nomad TC if failed to build TC by food resources
+(defrule
+(game-time <= 900)
+(game-time > 45)
 (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
 (can-build town-center)
 (up-pending-objects c: town-center < 1)
 (building-type-count-total town-center == 0)
+(or
+	(timer-triggered t-nomad-tc)
+	(goal g-nomad-map NO))
 ;(not
 ;	(up-set-target-object search-remote c: 0))
 =>
@@ -83,7 +262,48 @@
 (set-strategic-number sn-lumber-camp-max-distance 255)
 (up-assign-builders c: town-center-foundation c: 8)
 (up-build place-normal 0 c: town-center)
-(chat-to-player my-player-number "Build Nomad Town Center")
+(chat-to-player my-player-number "Build Nomad Town Center, food TC failed")
+)
+
+;Fallback build nomad TC if failed to find food resources
+(defrule
+(game-time <= 900)
+(game-time > 45)
+(up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+(can-build town-center)
+(up-pending-objects c: town-center < 1)
+(building-type-count-total town-center == 0)
+(or
+	(goal g-nomad-food-x -1)
+	(goal g-nomad-map NO))
+;(not
+;	(up-set-target-object search-remote c: 0))
+=>
+(set-strategic-number sn-town-center-placement lumber-camp)
+(set-strategic-number sn-maximum-town-size 255)
+(set-strategic-number sn-lumber-camp-max-distance 255)
+(up-assign-builders c: town-center-foundation c: 8)
+(up-build place-normal 0 c: town-center)
+(chat-to-player my-player-number "Build Nomad Town Center, no food found")
+)
+
+;Found food, build nomad TC by food
+(defrule
+(game-time <= 900)
+(can-build town-center)
+(up-pending-objects c: town-center < 1)
+(building-type-count-total town-center == 0)
+(up-compare-goal g-nomad-lc-x > 0)
+(up-set-target-object search-remote c: 0)
+(up-timer-status t-nomad-tc != timer-running)
+=>
+(up-assign-builders c: town-center-foundation c: 8)
+(up-get-point position-object g-nomad-food-x)
+(up-copy-point g-point-x g-nomad-food-x)
+(up-lerp-tiles g-point-x g-nomad-lc-x c: 10)	;get point 10 tiles away from g-nomad-food-x toward g-nomad-lc-x
+(up-build-line g-nomad-food-x g-point-x c: town-center-foundation)	;only build TC a max of 10 tiles from g-nomad-food-x
+(enable-timer t-nomad-tc 5)
+(chat-to-player my-player-number "Build Nomad Town Center by food")
 )
 
 ;Build second TC
@@ -297,6 +517,17 @@
 (defrule
 (up-object-type-count-total c: mill g:< g-desired-num-mill)
 (up-pending-objects c: mill == 0)
+(strategic-number sn-preferred-mill-placement == 1)
+(unit-type-count villager-hunter > 0)
+(can-build mill)
+=>
+(up-assign-builders c: mill c: 1)
+(build mill)
+)
+
+(defrule
+(up-object-type-count-total c: mill g:< g-desired-num-mill)
+(up-pending-objects c: mill == 0)
 (unit-type-count villager-forager >= 2)
 (can-build mill)
 =>
@@ -322,7 +553,9 @@
 (up-object-type-count-total c: lumber-camp g:< g-desired-num-lumber-camp)
 (up-pending-objects c: lumber-camp == 0)
 (can-build-with-escrow lumber-camp)
-(goal g-nomad-map NO)
+(or
+	(goal g-nomad-map NO)
+	(building-type-count town-center > 0))
 =>
 (set-goal g-use-escrow with-escrow)
 (up-build place-normal g-use-escrow c: lumber-camp)
@@ -333,6 +566,7 @@
 (up-pending-objects c: lumber-camp == 0)
 (can-build-with-escrow lumber-camp)
 (goal g-nomad-map YES)
+(building-type-count town-center == 0)
 =>
 (set-strategic-number sn-lumber-camp-max-distance 255)
 (up-assign-builders c: lumber-camp c: 6)
@@ -391,33 +625,35 @@
 (chat-local-to-self "relocate lumber camp")
 )
 
-(defrule
-(goal g-nomad-map YES)
-(building-type-count town-center > 0)
-(building-type-count lumber-camp > 0)
-(unit-type-count villager < 10)
-=>
-(up-full-reset-search)
-(up-set-target-point g-position-self-x)
-(up-filter-distance c: 20 c: -1)
-(up-find-local c: lumber-camp c: 1)
-(up-filter-distance c: -1 c: 5)
-(up-find-resource c: wood c: 10)
-(up-get-search-state g-local-total)
-)
+; (defrule
+; (goal g-nomad-map YES)
+; (building-type-count town-center > 0)
+; (building-type-count lumber-camp > 0)
+; (unit-type-count villager < 10)
+; (game-time < 240)
+; =>
+; (up-full-reset-search)
+; (up-set-target-point g-position-self-x)
+; (up-filter-distance c: 20 c: -1)
+; (up-find-local c: lumber-camp c: 1)
+; (up-filter-distance c: -1 c: 5)
+; (up-find-resource c: wood c: 10)
+; (up-get-search-state g-local-total)
+; )
 
-(defrule
-(goal g-nomad-map YES)
-(building-type-count town-center > 0)
-(building-type-count lumber-camp > 0)
-(unit-type-count villager < 10)
-(up-set-target-object search-local c: 0)
-(up-compare-goal g-remote-total > 4)		;found wood near TC
-=>
-(up-target-point 0 action-delete -1 -1)
-(up-garrison town-center c: villager-class)
-(disable-self)
-)
+; (defrule
+; (goal g-nomad-map YES)
+; (building-type-count town-center > 0)
+; (building-type-count lumber-camp > 0)
+; (unit-type-count villager < 10)
+; (game-time < 240)
+; (up-set-target-object search-local c: 0)
+; (up-compare-goal g-remote-total > 4)		;found wood near TC
+; =>
+; (up-target-point 0 action-delete -1 -1)
+; (up-garrison town-center c: villager-class)
+; (disable-self)
+; )
 
 ;Mining Camps
 
@@ -517,7 +753,7 @@
 )
 
 (defrule
-(game-time > 900)
+(game-time > 600)
 (up-pending-objects c: mining-camp == 0)
 (not
 	(up-pending-placement c: mining-camp))
@@ -776,6 +1012,7 @@
 
 (defrule
 (idle-farm-count > 2)
+(goal g-nomad-map NO)
 =>
 (up-delete-distant-farms c: 10)
 )
@@ -893,7 +1130,7 @@
 (up-set-placement-data my-player-number -1 c: -5)
 (up-modify-sn sn-placement-zone-size c:= 5)
 (set-strategic-number sn-placement-fail-delta 0)
-(up-assign-builders c: archery-range c: 1)
+(up-assign-builders c: archery-range c: 2)
 (up-build place-control 0 c: archery-range)
 (chat-to-player my-player-number "Build Archery Range")
 )
@@ -917,7 +1154,7 @@
 (up-set-placement-data my-player-number -1 c: -5)
 (up-modify-sn sn-placement-zone-size c:= 5)
 (set-strategic-number sn-placement-fail-delta 0)
-(up-assign-builders c: stable c: 1)
+(up-assign-builders c: stable c: 2)
 (up-build place-control 0 c: stable)
 (chat-to-player my-player-number "Build Stable")
 )
@@ -969,7 +1206,7 @@
 (up-set-placement-data my-player-number -1 c: -5)
 (up-modify-sn sn-placement-zone-size c:= 5)
 (set-strategic-number sn-placement-fail-delta 0)
-(up-assign-builders c: blacksmith c: 1)
+(up-assign-builders c: blacksmith c: 2)
 (up-build place-control 0 c: blacksmith)
 (chat-to-player my-player-number "Build Blacksmith")
 )
@@ -1162,3 +1399,23 @@
 	)
 
 #end-if
+
+;------------------------
+;	Delete Arena Walls
+;------------------------
+
+	#load-if-defined ARENA-MAP
+
+		(defrule
+		(current-age == imperial-age)
+		(population >= SEVENTY-PERCENT-POP)
+		(military-population >= TEN-PERCENT-POP)
+		(building-type-count stone-wall-line > 0)
+		=>
+		(chat-local-to-self "wall")
+		(up-delete-objects c: wall-class c: 32767)
+		(up-delete-objects c: gate-class c: 32767)
+		(disable-self)
+		)
+
+	#end-if

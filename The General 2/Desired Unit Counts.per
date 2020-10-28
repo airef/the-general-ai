@@ -3091,15 +3091,23 @@
 )
 
 (defrule
-(up-object-type-count c: villager g:> g-desired-num-villager)
-(population-headroom == 0)
+(up-object-type-count c: villager-class g:> g-desired-num-villager)
+(or
+	(and
+		(military-population <= 15)
+		(population > EIGHTY-PERCENT-POP))
+	(population > NINETY-FIVE-PERCENT-POP))
 =>
 (delete-unit villager)
 )
 
 (defrule
 (up-object-type-count c: trade-cart g:> g-desired-num-trade-cart)
-(population-headroom == 0)
+(or
+	(and
+		(military-population <= 15)
+		(population > EIGHTY-PERCENT-POP))
+	(population > NINETY-FIVE-PERCENT-POP))
 =>
 (delete-unit trade-cart)
 )
@@ -3530,7 +3538,7 @@
 
 (defrule
 (goal g-nomad-map YES)
-(up-gaia-type-count-total c: wood > 20)
+(up-gaia-type-count-total c: wood > 10)
 (or
 	(not
 		(can-build town-center))
@@ -3541,6 +3549,13 @@
 (up-pending-objects c: lumber-camp == 0)
 =>
 (up-modify-goal g-desired-num-lumber-camp c:max 1)
+)
+
+(defrule
+(unit-type-count villager > 15)
+(up-compare-goal g-desired-num-lumber-camp < 1)
+=>
+(set-goal g-desired-num-lumber-camp 1)
 )
 
 (defrule
@@ -3678,15 +3693,17 @@
 (up-modify-sn sn-focus-player-number g:= g-temp)
 )
 
+;We want second mill if we have leftover deer
 (defrule
-(or
-	(game-time >= 300)
-	(up-compare-goal g-desired-num-farm > 0))
-(building-type-count-total mill == 0)
-(up-compare-goal g-desired-num-mill < 1)
-(building-type-count town-center > 0)
+;(unit-type-count villager-hunter > 0)
+(unit-type-count villager >= 22)
+(building-type-count-total mill == 1)
+(up-compare-goal g-desired-num-mill < 2)
+(dropsite-min-distance deer-hunting >= 5)
+(dropsite-min-distance deer-hunting <= 20)
 =>
-(up-modify-goal g-desired-num-mill c:= 1)
+(set-goal g-desired-num-mill 2)
+(set-strategic-number sn-preferred-mill-placement 1)	;for deer
 )
 
 #load-if-defined REMOVE-THE-NEXT-TWO-RULES-LATER
@@ -3750,6 +3767,17 @@
 ;====Farms
 
 (defrule
+(up-compare-goal g-desired-num-food-vils > 3)
+(unit-type-count villager-shepherd == 0)
+(unit-type-count villager-forager == 0)
+(unit-type-count villager-hunter == 0)
+(unit-type-count villager-farmer == 0)
+(game-time > 120)
+=>
+(up-modify-goal g-desired-num-farm g:max g-desired-num-food-vils)
+)
+
+(defrule
 (up-compare-goal g-desired-num-farm g:<= g-desired-num-farmers)
 (current-age <= feudal-age)
 (wood-amount > 275)
@@ -3794,6 +3822,17 @@
 	(up-compare-goal g-desired-num-farm g:<= g-desired-num-farmers))
 =>
 (up-modify-goal g-desired-num-farm g:max g-desired-num-farmers)
+)
+
+(defrule
+(or
+	(unit-type-count villager >= 12)
+	(up-compare-goal g-desired-num-farm > 0))
+(building-type-count-total mill == 0)
+(up-compare-goal g-desired-num-mill < 1)
+(building-type-count town-center > 0)
+=>
+(up-modify-goal g-desired-num-mill c:= 1)
 )
 
 (defrule

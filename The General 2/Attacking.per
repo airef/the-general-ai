@@ -108,6 +108,11 @@
 (goal g-attack-status gv-first-attack)
 (goal g-attacking YES)
 (military-population g:< g-stop-attack-num)
+(or
+	(up-compare-goal g-required-attack-num >= 15)
+	(or
+		(military-population < 5)
+		(players-military-population target-player >= 6)))
 =>
 (set-goal g-attacking NO)
 (set-goal g-tsa NO)
@@ -182,68 +187,6 @@
 (defrule
 (up-compare-goal g-attack-status > gv-first-attack)
 (up-compare-goal g-strategy-type >= gv-fc)
-(players-current-age target-player < castle-age)
-=>
-(set-goal g-required-attack-num 12)
-(set-goal g-stop-attack-num 10)
-)
-
-(defrule
-(up-compare-goal g-attack-status > gv-first-attack)
-(up-compare-goal g-strategy-type >= gv-fc)
-(players-current-age target-player == castle-age)
-(up-compare-goal g-age-status == gv-save-for-imperial)
-=>
-(set-goal g-required-attack-num 50)
-(set-goal g-stop-attack-num 35)
-)
-
-(defrule
-(up-compare-goal g-attack-status > gv-first-attack)
-(up-compare-goal g-strategy-type >= gv-fc)
-(players-current-age target-player == castle-age)
-(up-compare-goal g-age-status != gv-save-for-imperial)
-=>
-(set-goal g-required-attack-num 30)
-(set-goal g-stop-attack-num 20)
-)
-
-(defrule
-(up-compare-goal g-attack-status > gv-first-attack)
-(up-compare-goal g-strategy-type >= gv-fc)
-(players-current-age target-player == castle-age)
-(up-compare-goal g-total-superiority > 15)
-=>
-(set-goal g-required-attack-num 20)
-(set-goal g-stop-attack-num 15)
-)
-
-(defrule
-(up-compare-goal g-attack-status > gv-first-attack)
-(up-compare-goal g-strategy-type >= gv-fc)
-(players-current-age target-player == castle-age)
-(up-compare-goal g-total-superiority > 10)
-(up-compare-goal g-military-superiority > 0)
-;(up-compare-goal g-age-status != gv-save-for-imperial)
-=>
-(set-goal g-required-attack-num 15)
-(set-goal g-stop-attack-num 10)
-)
-
-(defrule
-(up-compare-goal g-attack-status > gv-first-attack)
-(up-compare-goal g-strategy-type >= gv-fc)
-(players-current-age target-player <= castle-age)
-(up-compare-goal g-total-superiority > 20)
-(up-compare-goal g-military-superiority > 10)
-=>
-(set-goal g-required-attack-num 12)
-(set-goal g-stop-attack-num 8)
-)
-
-(defrule
-(up-compare-goal g-attack-status > gv-first-attack)
-(up-compare-goal g-strategy-type >= gv-fc)
 (players-current-age target-player == imperial-age)
 (up-compare-goal g-age-status == gv-save-for-imperial)
 =>
@@ -256,6 +199,16 @@
 (up-compare-goal g-strategy-type >= gv-fc)
 (players-current-age target-player == imperial-age)
 (up-compare-goal g-age-status != gv-save-for-imperial)
+=>
+(set-goal g-required-attack-num 50)
+(set-goal g-stop-attack-num 35)
+)
+
+(defrule
+(up-compare-goal g-attack-status > gv-first-attack)
+(up-compare-goal g-strategy-type >= gv-fc)
+(players-current-age target-player == castle-age)
+(up-compare-goal g-age-status == gv-save-for-imperial)
 =>
 (set-goal g-required-attack-num 50)
 (set-goal g-stop-attack-num 35)
@@ -283,13 +236,76 @@
 (set-goal g-stop-attack-num 22)
 )
 
+(defrule
+(up-compare-goal g-attack-status > gv-first-attack)
+(up-compare-goal g-strategy-type >= gv-fc)
+(players-current-age target-player == castle-age)
+(up-compare-goal g-age-status != gv-save-for-imperial)
+=>
+(set-goal g-required-attack-num 30)
+(set-goal g-stop-attack-num 20)
+)
+
+(defrule
+(up-compare-goal g-attack-status > gv-first-attack)
+(up-compare-goal g-strategy-type >= gv-fc)
+(up-compare-goal g-military-superiority > 15)
+=>
+(set-goal g-required-attack-num 20)
+(set-goal g-stop-attack-num 15)
+)
+
+(defrule
+(up-compare-goal g-attack-status > gv-first-attack)
+(up-compare-goal g-strategy-type >= gv-fc)
+(players-current-age target-player == castle-age)
+(up-compare-goal g-total-superiority > 15)
+=>
+(set-goal g-required-attack-num 20)
+(set-goal g-stop-attack-num 15)
+)
+
+(defrule
+(up-compare-goal g-attack-status > gv-first-attack)
+(up-compare-goal g-strategy-type >= gv-fc)
+(players-current-age target-player == castle-age)
+(up-compare-goal g-total-superiority > 10)
+(up-compare-goal g-military-superiority > 0)
+;(up-compare-goal g-age-status != gv-save-for-imperial)
+=>
+(set-goal g-required-attack-num 15)
+(set-goal g-stop-attack-num 10)
+)
+
+(defrule
+(up-compare-goal g-attack-status > gv-first-attack)
+(up-compare-goal g-strategy-type >= gv-fc)
+(players-current-age target-player < castle-age)
+=>
+(set-goal g-required-attack-num 12)
+(set-goal g-stop-attack-num 10)
+)
+
+(defrule
+(up-compare-goal g-attack-status > gv-first-attack)
+(up-compare-goal g-strategy-type >= gv-fc)
+(players-current-age target-player <= castle-age)
+(up-compare-goal g-total-superiority > 20)
+(up-compare-goal g-military-superiority > 10)
+=>
+(set-goal g-required-attack-num 12)
+(set-goal g-stop-attack-num 8)
+)
+
 ;Start attacking for later attacks
 
 (defrule
 (goal g-attack-status gv-before-later-attacks)
 (goal g-attacking NO)
 (military-population g:>= g-required-attack-num)
-(up-compare-goal g-age-status < gv-save-for-imperial)
+(or
+	(up-compare-goal g-age-status < gv-save-for-imperial)
+	(up-compare-goal g-military-superiority >= 15))
 ;(goal g-save-for-next-age NO)
 =>
 (set-goal g-attacking YES)
@@ -305,7 +321,9 @@
 (current-age == imperial-age)
 (or
 	(up-research-status c: ri-cavalier == research-unavailable)
-	(up-research-status c: ri-cavalier == research-complete))
+	(or
+		(up-research-status c: ri-cavalier == research-complete)
+		(up-compare-goal g-military-superiority >= 25)))
 (goal g-primary-unit knight)
 =>
 (set-goal g-attacking YES)
@@ -321,7 +339,9 @@
 (current-age == imperial-age)
 (or
 	(up-research-status c: ri-heavy-camel == research-unavailable)
-	(up-research-status c: ri-heavy-camel == research-complete))
+	(or
+		(up-research-status c: ri-heavy-camel == research-complete)
+		(up-compare-goal g-military-superiority >= 25)))
 (goal g-primary-unit camel)
 =>
 (set-goal g-attacking YES)
@@ -337,7 +357,9 @@
 (current-age == imperial-age)
 (or
 	(up-research-status c: ri-elite-eagle-warrior == research-unavailable)
-	(up-research-status c: ri-elite-eagle-warrior == research-complete))
+	(or
+		(up-research-status c: ri-elite-eagle-warrior == research-complete)
+		(up-compare-goal g-military-superiority >= 25)))
 (goal g-primary-unit eagle-warrior)
 =>
 (set-goal g-attacking YES)
@@ -367,6 +389,10 @@
 (goal g-attacking YES)
 (goal g-attack-status gv-later-attacks)
 (military-population g:< g-stop-attack-num)
+(up-compare-goal g-military-superiority < 25)
+(or
+	(current-age == imperial-age)
+	(up-compare-goal g-military-superiority < 15))
 =>
 (set-goal g-attacking NO)
 (set-goal g-tsa NO)
@@ -467,7 +493,28 @@
 	(up-compare-goal g-temp < 20)				;melee and siege army strength, only retreat with small strength
 	(up-compare-goal g-total-superiority < 15)
 	(up-object-data object-data-hitpoints g:> g-temp-2)	;enemy TC has > 20% left
+	(goal g-local-total 0)				        ;battering ram not found near enemy TC
+	=>
+	(up-get-object-data object-data-id g-temp-3)
+	(up-get-point position-object g-point-x)
+	(up-set-target-point g-point-x)
+	(up-reset-search 0 0 1 1)
+	(up-reset-filters)
+	(up-filter-distance c: -1 c: 9)
+	(up-filter-include cmdid-military -1 -1 monastery-class)
+	(up-find-remote c: all-units-class c: 40)
+	(up-get-search-state g-local-total)
+	)
+
+	(defrule
+	(up-set-target-by-id g: g-temp-3)	        ;found enemy town center
+	(up-compare-goal g-temp < 20)				;melee and siege army strength, only retreat with small strength
+	(up-compare-goal g-total-superiority < 15)
+	(up-object-data object-data-hitpoints g:> g-temp-2)	;enemy TC has > 20% left
 	(goal g-local-total 0)				;battering ram not found near enemy TC
+	(or
+		(up-compare-goal g-remote-total <= 1)       ;1 or fewer enemy soldiers near TC (don't retreat if soldiers nearby)
+		(goal g-attacking NO))
 	=>
 	(set-goal g-projectile-retreat YES)
 	(up-reset-search 1 1 0 0)
@@ -476,20 +523,20 @@
 	(up-remove-objects search-local object-data-speed == 0)		;remove buildings
 	(up-remove-objects search-local object-data-pierce-armor >= 20)	;remove rams
 	(up-remove-objects search-local object-data-attack-stance == stance-no-attack)
-	(up-remove-objects search-local object-data-class == livestock-class)
+	;(up-remove-objects search-local object-data-class == livestock-class)
 	(up-remove-objects search-local object-data-precise-distance > 875)		;> 8.75 tiles away from enemy TC (6 + 2.5 + 0.25)
 	)																		;TC has 6 range, point distance from TC center to edge of TC is between 2 and ~2.83 (i.e. 2*sqrt(2)), and most units have a 0.25 size radius or smaller)
 	
 	(defrule
 	(goal g-projectile-retreat YES)
-	(up-set-target-object search-remote g: i)	;found enemy town center
+	(up-set-target-by-id g: g-temp-3)	        ;found enemy town center
 	(up-projectile-detected projectile-town-center < 2000)
 	(up-set-target-object search-local c: 0)	;find a unit close to the enemy TC
 	=>
 	(up-copy-point g-point-x3 g-point-x)		;store enemy TC location in g-point-x3
 	(up-get-point position-object g-point-x2)
-	(up-lerp-tiles g-point-x3 g-point-x2 c: 10)	;find point 10 tiles away from enemy TC toward home TC
-	(up-cross-tiles g-point-x3 g-point-x2 c: 2)	;so that units don't always retreat to the same spot
+	(up-lerp-tiles g-point-x3 g-point-x2 c: 12)	;find point 12 tiles away from enemy TC toward home TC
+	(up-cross-tiles g-point-x3 g-point-x2 c: 4)	;so that units don't always retreat to the same spot
 	(up-bound-point g-point-x3 g-point-x3)
 	(up-set-target-point g-point-x3)
 	(up-target-point 0 action-move -1 stance-no-attack)
@@ -498,7 +545,7 @@
 
 	(defrule
 	(goal g-projectile-retreat YES)
-	(up-set-target-object search-remote g: i)	;found enemy town center
+	(up-set-target-by-id g: g-temp-3)	        ;found enemy town center
 	;(up-object-data object-data-garrison-count <= 1)
 	(up-projectile-detected projectile-town-center >= 2000)
 	(up-set-target-object search-local c: 0)	;found a unit close to the enemy TC
@@ -508,15 +555,15 @@
 
 	(defrule
 	(goal g-projectile-retreat YES)
-	(up-set-target-object search-remote g: i)	;found enemy town center
+	(up-set-target-by-id g: g-temp-3)	        ;found enemy town center
 	;(up-object-data object-data-garrison-count <= 1)
 	(up-projectile-detected projectile-town-center >= 2000)
 	(up-set-target-object search-local c: 0)	;found a unit close to the enemy TC with <= 40 HP
 	=>
 	(up-copy-point g-point-x3 g-point-x)		;store enemy TC location in g-point-x3
 	(up-get-point position-object g-point-x2)
-	(up-lerp-tiles g-point-x3 g-point-x2 c: 10)	;find point 10 tiles away from enemy TC toward home TC
-	(up-cross-tiles g-point-x3 g-point-x2 c: 2);so that units don't always retreat to the same spot
+	(up-lerp-tiles g-point-x3 g-point-x2 c: 12)	;find point 12 tiles away from enemy TC toward home TC
+	(up-cross-tiles g-point-x3 g-point-x2 c: 4);so that units don't always retreat to the same spot
 	(up-bound-point g-point-x3 g-point-x3)
 	(up-set-target-point g-point-x3)
 	(up-target-point 0 action-move -1 stance-no-attack)
@@ -689,15 +736,15 @@
 ;(chat-local-to-self "Don't decrease. Buildings no longer in town.")
 ;)
 
-(defrule
-(goal g-attacking YES)
-=>
-(up-chat-data-to-self "Closest enemy dist: %d" g: g-closest-enemy-building-distance)
-(up-chat-data-to-self "Nearest enemy defense: %d" g: g-nearest-enemy-defenses-distance)
-(up-chat-data-to-self "Required: %d" g: g-required-attack-num)
-(up-chat-data-to-self "Stop: %d" g: g-stop-attack-num)
-(up-chat-data-to-self "Max TS: %d" s: sn-maximum-town-size)
-)
+; (defrule
+; (goal g-attacking YES)
+; =>
+; (up-chat-data-to-self "Closest enemy dist: %d" g: g-closest-enemy-building-distance)
+; (up-chat-data-to-self "Nearest enemy defense: %d" g: g-nearest-enemy-defenses-distance)
+; (up-chat-data-to-self "Required: %d" g: g-required-attack-num)
+; (up-chat-data-to-self "Stop: %d" g: g-stop-attack-num)
+; (up-chat-data-to-self "Max TS: %d" s: sn-maximum-town-size)
+; )
 
 ;If enemies have no buildings left, switch to attack groups
 
