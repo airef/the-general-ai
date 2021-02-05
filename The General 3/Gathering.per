@@ -1,0 +1,4396 @@
+;Gathering.per
+
+;=========================<>=========================
+;			STATIC DESIRED GATHERER COUNTS
+;=========================<>=========================
+
+    ;-----------------------------
+    ;   Desired Gatherer Counts
+    ;-----------------------------
+
+        ;Number of gatherers on each resource wanted in the future
+
+        ;-----------
+        ;   Reset
+        ;-----------
+
+            (load "The General 3/Functions/Reset")
+
+            (defrule
+            (true)
+            =>
+            (set-goal g-desired-future-food-vils 0)
+            (set-goal g-desired-future-wood-vils 0)
+            (set-goal g-desired-future-stone-vils 0)
+            (set-goal g-desired-future-gold-vils 0)
+            )
+
+        ;----------------------
+        ;   Default Dark Age
+        ;----------------------
+
+            (defrule
+            (unit-type-count villager <= 6)
+            (unit-type-count villager-forager == 0)
+            =>
+            (set-goal g-desired-future-food-vils 6)
+            )
+
+            (defrule
+            (unit-type-count villager >= 7)
+            (unit-type-count villager <= 10)
+            (unit-type-count villager-forager == 0)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 6)
+            (set-goal g-desired-future-wood-vils 4)
+            )
+
+            (defrule
+            (unit-type-count villager == 11)
+            (unit-type-count villager-forager == 0)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 7)
+            (set-goal g-desired-future-wood-vils 4)
+            )
+
+            (defrule
+            (unit-type-count villager <= 7)
+            (unit-type-count villager-forager > 0)
+            =>
+            (set-goal g-desired-future-food-vils 7)
+            )
+
+            (defrule
+            (unit-type-count villager >= 8)
+            (unit-type-count villager <= 11)
+            (unit-type-count villager-forager > 0)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 7)
+            (set-goal g-desired-future-wood-vils 4)
+            )
+
+            (defrule
+            (unit-type-count villager >= 12)
+            (unit-type-count villager <= 17)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 13)
+            (set-goal g-desired-future-wood-vils 4)
+            )
+
+        ;------------------
+        ;   29-vil Krush
+        ;------------------
+            
+            (defrule
+            (goal g-current-strategy FC-KRUSH)
+            (unit-type-count villager >= 18)
+            (unit-type-count villager <= 26)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 15)
+            (set-goal g-desired-future-wood-vils 11)
+            )
+
+            (defrule
+            (goal g-current-strategy FC-KRUSH)
+            (unit-type-count villager >= 27)
+            (unit-type-count villager <= 29)
+            (up-compare-goal g-age-status < EARLY-FEUDAL)
+            =>
+            (set-goal g-desired-future-food-vils 15)
+            (set-goal g-desired-future-wood-vils 11)
+            (set-goal g-desired-future-gold-vils 3)
+            )
+
+            (defrule
+            (goal g-current-strategy FC-KRUSH)
+            (unit-type-count villager == 29)
+            (current-age == feudal-age)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 14)
+            (set-goal g-desired-future-wood-vils 9)
+            (set-goal g-desired-future-gold-vils 6)
+            )
+
+            (defrule
+            (goal g-current-strategy FC-KRUSH)
+            (unit-type-count villager >= 30)
+            (unit-type-count villager <= 31)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 16)
+            (set-goal g-desired-future-wood-vils 9)
+            (set-goal g-desired-future-gold-vils 6)
+            )
+
+            ;Switch to using gathering percentages (out of 1000 villagers)
+            (defrule
+            (goal g-current-strategy FC-KRUSH)
+            (unit-type-count villager >= 32)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            (goal g-percent-dynamic-gathering 0)
+            =>
+            (set-goal g-desired-future-food-vils 520)
+            (set-goal g-desired-future-wood-vils 270)
+            (set-goal g-desired-future-gold-vils 210)
+            )
+
+            (defrule
+            (goal g-current-strategy FC-KRUSH)
+            (goal g-age-status TO-CASTLE)
+            (goal g-percent-dynamic-gathering 0)
+            =>
+            (set-goal g-desired-future-food-vils 550)
+            (set-goal g-desired-future-wood-vils 240)
+            (set-goal g-desired-future-gold-vils 210)
+            )
+
+            (defrule
+            (goal g-current-strategy FC-KRUSH)
+            (current-age >= castle-age)
+            =>
+            (set-goal g-desired-future-food-vils 540)   ;54%
+            (set-goal g-desired-future-wood-vils 230)   ;23%
+            (set-goal g-desired-future-gold-vils 230)   ;23%
+            )
+            
+        ;------------------------
+        ;   30-vil Krush (Old)
+        ;------------------------
+            
+            (defrule
+            (goal g-current-strategy FC-KRUSH-30)
+            (unit-type-count villager >= 18)
+            (unit-type-count villager <= 27)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 15)
+            (set-goal g-desired-future-wood-vils 12)
+            )
+
+            (defrule
+            (goal g-current-strategy FC-KRUSH-30)
+            (unit-type-count villager >= 28)
+            (unit-type-count villager <= 30)
+            (up-compare-goal g-age-status < EARLY-FEUDAL)
+            =>
+            (set-goal g-desired-future-food-vils 15)
+            (set-goal g-desired-future-wood-vils 12)
+            (set-goal g-desired-future-gold-vils 3)
+            )
+
+            (defrule
+            (goal g-current-strategy FC-KRUSH-30)
+            (unit-type-count villager == 30)
+            (current-age == feudal-age)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 14)
+            (set-goal g-desired-future-wood-vils 10)
+            (set-goal g-desired-future-gold-vils 6)
+            )
+
+            (defrule
+            (goal g-current-strategy FC-KRUSH-30)
+            (unit-type-count villager >= 31)
+            (unit-type-count villager <= 32)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 16)
+            (set-goal g-desired-future-wood-vils 10)
+            (set-goal g-desired-future-gold-vils 6)
+            )
+
+            ;Switch to using gathering percentages (out of 1000 villagers)
+            (defrule
+            (goal g-current-strategy FC-KRUSH-30)
+            (unit-type-count villager >= 33)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            (goal g-percent-dynamic-gathering 0)
+            =>
+            (set-goal g-desired-future-food-vils 500)
+            (set-goal g-desired-future-wood-vils 290)
+            (set-goal g-desired-future-gold-vils 210)
+            )
+
+            (defrule
+            (goal g-current-strategy FC-KRUSH-30)
+            (goal g-age-status TO-CASTLE)
+            (goal g-percent-dynamic-gathering 0)
+            =>
+            (set-goal g-desired-future-food-vils 530)
+            (set-goal g-desired-future-wood-vils 260)
+            (set-goal g-desired-future-gold-vils 210)
+            )
+
+            ;Default post-build order percentages (out of 1000 villagers)
+            (defrule
+            (goal g-current-strategy FC-KRUSH-30)
+            (current-age >= castle-age)
+            =>
+            (set-goal g-desired-future-food-vils 540)   ;54%
+            (set-goal g-desired-future-wood-vils 230)   ;23%
+            (set-goal g-desired-future-gold-vils 230)   ;23%
+            )
+
+        ;-----------
+        ;   Crush
+        ;-----------
+            
+            (defrule
+            (goal g-current-strategy FC-CRUSH)
+            (unit-type-count villager >= 18)
+            (unit-type-count villager <= 26)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 15)
+            (set-goal g-desired-future-wood-vils 11)
+            )
+
+            (defrule
+            (goal g-current-strategy FC-CRUSH)
+            (unit-type-count villager >= 27)
+            (unit-type-count villager <= 29)
+            (up-compare-goal g-age-status < EARLY-FEUDAL)
+            =>
+            (set-goal g-desired-future-food-vils 15)
+            (set-goal g-desired-future-wood-vils 11)
+            (set-goal g-desired-future-gold-vils 3)
+            )
+
+            (defrule
+            (goal g-current-strategy FC-CRUSH)
+            (unit-type-count villager == 29)
+            (current-age == feudal-age)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 14)
+            (set-goal g-desired-future-wood-vils 9)
+            (set-goal g-desired-future-gold-vils 6)
+            )
+
+            (defrule
+            (goal g-current-strategy FC-CRUSH)
+            (unit-type-count villager >= 30)
+            (unit-type-count villager <= 31)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 16)
+            (set-goal g-desired-future-wood-vils 9)
+            (set-goal g-desired-future-gold-vils 6)
+            )
+
+            ;Switch to using gathering percentages (out of 1000 villagers)
+            (defrule
+            (goal g-current-strategy FC-CRUSH)
+            (unit-type-count villager >= 32)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            (goal g-percent-dynamic-gathering 0)
+            =>
+            (set-goal g-desired-future-food-vils 520)
+            (set-goal g-desired-future-wood-vils 270)
+            (set-goal g-desired-future-gold-vils 210)
+            )
+
+            (defrule
+            (goal g-current-strategy FC-CRUSH)
+            (goal g-age-status TO-CASTLE)
+            (goal g-percent-dynamic-gathering 0)
+            =>
+            (set-goal g-desired-future-food-vils 550)
+            (set-goal g-desired-future-wood-vils 240)
+            (set-goal g-desired-future-gold-vils 210)
+            )
+
+            (defrule
+            (goal g-current-strategy FC-CRUSH)
+            (current-age >= castle-age)
+            =>
+            (set-goal g-desired-future-food-vils 540)   ;54%
+            (set-goal g-desired-future-wood-vils 230)   ;23%
+            (set-goal g-desired-future-gold-vils 230)   ;23%
+            )
+
+        ;------------------
+        ;   Boom Knights
+        ;------------------
+        
+            (defrule
+            (goal g-current-strategy BOOM-KNIGHTS)
+            (unit-type-count villager >= 18)
+            (unit-type-count villager <= 25)
+            (up-compare-goal g-age-status < TO-FEUDAL)
+            =>
+            (set-goal g-desired-future-food-vils 16)
+            (set-goal g-desired-future-wood-vils 9)
+            )
+
+            (defrule
+            (goal g-current-strategy BOOM-KNIGHTS)
+            (unit-type-count villager >= 26)
+            (unit-type-count villager <= 28)
+            (up-compare-goal g-age-status < TO-FEUDAL)
+            =>
+            (set-goal g-desired-future-food-vils 16)
+            (set-goal g-desired-future-wood-vils 9)
+            (set-goal g-desired-future-gold-vils 3)
+            )
+
+            (defrule
+            (goal g-current-strategy BOOM-KNIGHTS)
+            (goal g-age-status TO-FEUDAL)
+            =>
+            (set-goal g-desired-future-food-vils 11)
+            (set-goal g-desired-future-wood-vils 13)
+            (set-goal g-desired-future-gold-vils 4)
+            )
+
+            (defrule
+            (goal g-current-strategy BOOM-KNIGHTS)
+            (unit-type-count villager >= 28)
+            (unit-type-count villager <= 30)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 13)
+            (set-goal g-desired-future-wood-vils 13)
+            (set-goal g-desired-future-gold-vils 4)
+            )
+
+            ;Switch to using gathering percentages (out of 1000 villagers)
+            (defrule
+            (goal g-current-strategy BOOM-KNIGHTS)
+            (unit-type-count villager >= 31)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            (goal g-percent-dynamic-gathering 0)
+            =>
+            (set-goal g-desired-future-food-vils 440)
+            (set-goal g-desired-future-wood-vils 400)
+            (set-goal g-desired-future-gold-vils 160)
+            )
+
+            (defrule
+            (goal g-current-strategy BOOM-KNIGHTS)
+            (goal g-age-status TO-CASTLE)
+            (goal g-percent-dynamic-gathering 0)
+            =>
+            (set-goal g-desired-future-food-vils 470)
+            (set-goal g-desired-future-wood-vils 370)
+            (set-goal g-desired-future-gold-vils 160)
+            )
+
+            ;Default post-build order percentages (out of 1000 villagers)
+            (defrule
+            (goal g-current-strategy BOOM-KNIGHTS)
+            (current-age >= castle-age)
+            =>
+            (set-goal g-desired-future-food-vils 560)   ;56%
+            (set-goal g-desired-future-wood-vils 240)   ;24%
+            (set-goal g-desired-future-gold-vils 200)   ;20%
+            )
+
+        ;-----------------
+        ;   Boom Camels
+        ;-----------------
+        
+            (defrule
+            (goal g-current-strategy BOOM-CAMELS)
+            (unit-type-count villager >= 18)
+            (unit-type-count villager <= 25)
+            (up-compare-goal g-age-status < TO-FEUDAL)
+            =>
+            (set-goal g-desired-future-food-vils 16)
+            (set-goal g-desired-future-wood-vils 9)
+            )
+
+            (defrule
+            (goal g-current-strategy BOOM-CAMELS)
+            (unit-type-count villager >= 26)
+            (unit-type-count villager <= 28)
+            (up-compare-goal g-age-status < TO-FEUDAL)
+            =>
+            (set-goal g-desired-future-food-vils 16)
+            (set-goal g-desired-future-wood-vils 9)
+            (set-goal g-desired-future-gold-vils 3)
+            )
+
+            (defrule
+            (goal g-current-strategy BOOM-CAMELS)
+            (goal g-age-status TO-FEUDAL)
+            =>
+            (set-goal g-desired-future-food-vils 11)
+            (set-goal g-desired-future-wood-vils 13)
+            (set-goal g-desired-future-gold-vils 4)
+            )
+
+            (defrule
+            (goal g-current-strategy BOOM-CAMELS)
+            (unit-type-count villager >= 28)
+            (unit-type-count villager <= 30)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 13)
+            (set-goal g-desired-future-wood-vils 13)
+            (set-goal g-desired-future-gold-vils 4)
+            )
+
+            ;Switch to using gathering percentages (out of 1000 villagers)
+            (defrule
+            (goal g-current-strategy BOOM-CAMELS)
+            (unit-type-count villager >= 31)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            (goal g-percent-dynamic-gathering 0)
+            =>
+            (set-goal g-desired-future-food-vils 440)
+            (set-goal g-desired-future-wood-vils 400)
+            (set-goal g-desired-future-gold-vils 160)
+            )
+
+            (defrule
+            (goal g-current-strategy BOOM-CAMELS)
+            (goal g-age-status TO-CASTLE)
+            (goal g-percent-dynamic-gathering 0)
+            =>
+            (set-goal g-desired-future-food-vils 470)
+            (set-goal g-desired-future-wood-vils 370)
+            (set-goal g-desired-future-gold-vils 160)
+            )
+
+            ;Default post-build order percentages (out of 1000 villagers)
+            (defrule
+            (goal g-current-strategy BOOM-CAMELS)
+            (current-age >= castle-age)
+            =>
+            (set-goal g-desired-future-food-vils 560)   ;56%
+            (set-goal g-desired-future-wood-vils 240)   ;24%
+            (set-goal g-desired-future-gold-vils 200)   ;20%
+            )
+            
+        ;--------------------
+        ;   Eagles Revenge
+        ;--------------------
+            
+            (defrule
+            (goal g-current-strategy FC-EAGLES-REVENGE)
+            (unit-type-count villager >= 18)
+            (unit-type-count villager <= 25)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 14)
+            (set-goal g-desired-future-wood-vils 11)
+            )
+
+            (defrule
+            (goal g-current-strategy FC-EAGLES-REVENGE)
+            (unit-type-count villager >= 26)
+            (unit-type-count villager <= 30)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 14)
+            (set-goal g-desired-future-wood-vils 11)
+            (set-goal g-desired-future-gold-vils 5)
+            )
+
+            ;Switch to using gathering percentages (out of 1000 villagers)
+            (defrule
+            (goal g-current-strategy FC-EAGLES-REVENGE)
+            (unit-type-count villager >= 31)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            (goal g-percent-dynamic-gathering 0)
+            =>
+            (set-goal g-desired-future-food-vils 470)
+            (set-goal g-desired-future-wood-vils 340)
+            (set-goal g-desired-future-gold-vils 190)
+            )
+
+            (defrule
+            (goal g-current-strategy FC-EAGLES-REVENGE)
+            (goal g-age-status TO-CASTLE)
+            (goal g-percent-dynamic-gathering 0)
+            =>
+            (set-goal g-desired-future-food-vils 500)
+            (set-goal g-desired-future-wood-vils 280)
+            (set-goal g-desired-future-gold-vils 220)
+            )
+
+            (defrule
+            (goal g-current-strategy FC-EAGLES-REVENGE)
+            (current-age >= castle-age)
+            =>
+            (set-goal g-desired-future-food-vils 520)   ;52%
+            (set-goal g-desired-future-wood-vils 240)   ;24%
+            (set-goal g-desired-future-gold-vils 240)   ;24%
+            )
+            
+        ;---------------
+        ;   Strongbow
+        ;---------------
+            
+            (defrule
+            (goal g-current-strategy FC-STRONGBOW)
+            (unit-type-count villager >= 18)
+            (unit-type-count villager <= 24)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 13)
+            (set-goal g-desired-future-wood-vils 11)
+            )
+
+            (defrule
+            (goal g-current-strategy FC-STRONGBOW)
+            (unit-type-count villager >= 25)
+            (unit-type-count villager <= 30)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 13)
+            (set-goal g-desired-future-wood-vils 11)
+            (set-goal g-desired-future-gold-vils 6)
+            )
+
+            ;Switch to using gather percentages (out of 1000 villagers)
+            (defrule
+            (goal g-current-strategy FC-STRONGBOW)
+            (unit-type-count villager >= 31)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            (goal g-percent-dynamic-gathering 0)
+            =>
+            (set-goal g-desired-future-food-vils 430)
+            (set-goal g-desired-future-wood-vils 370)
+            (set-goal g-desired-future-gold-vils 200)
+            )
+
+            (defrule
+            (goal g-current-strategy FC-STRONGBOW)
+            (goal g-age-status TO-CASTLE)
+            (goal g-percent-dynamic-gathering 0)
+            =>
+            (set-goal g-desired-future-food-vils 400)   ;430
+            (set-goal g-desired-future-wood-vils 370)   
+            (set-goal g-desired-future-gold-vils 230)   ;200
+            )
+            (defrule
+            (goal g-current-strategy FC-STRONGBOW)
+            (current-age >= castle-age)
+            =>
+            (set-goal g-desired-future-food-vils 400)   ;46%    ;460
+            (set-goal g-desired-future-wood-vils 320)   ;28%    ;280
+            (set-goal g-desired-future-gold-vils 280)   ;26%    ;260
+            )
+            
+        ;---------------
+        ;   Boom Xbows
+        ;---------------
+            
+            (defrule
+            (goal g-current-strategy BOOM-XBOWS)
+            (unit-type-count villager >= 18)
+            (unit-type-count villager <= 25)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 14)
+            (set-goal g-desired-future-wood-vils 11)
+            )
+
+            (defrule
+            (goal g-current-strategy BOOM-XBOWS)
+            (unit-type-count villager >= 26)
+            (unit-type-count villager <= 30)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 15)
+            (set-goal g-desired-future-wood-vils 11)
+            (set-goal g-desired-future-gold-vils 4)
+            )
+
+            ;Switch to using gathering percentages (out of 1000 villagers)
+            (defrule
+            (goal g-current-strategy BOOM-XBOWS)
+            (unit-type-count villager >= 31)
+            (up-compare-goal g-age-status < TO-CASTLE)
+            (goal g-percent-dynamic-gathering 0)
+            =>
+            (set-goal g-desired-future-food-vils 500)
+            (set-goal g-desired-future-wood-vils 340)
+            (set-goal g-desired-future-gold-vils 160)
+            )
+
+            (defrule
+            (goal g-current-strategy BOOM-XBOWS)
+            (goal g-age-status TO-CASTLE)
+            (goal g-percent-dynamic-gathering 0)
+            =>
+            (set-goal g-desired-future-food-vils 500)
+            (set-goal g-desired-future-wood-vils 340)
+            (set-goal g-desired-future-gold-vils 160)
+            )
+
+            (defrule
+            (goal g-current-strategy BOOM-XBOWS)
+            (current-age >= castle-age)
+            =>
+            (set-goal g-desired-future-food-vils 530)   ;53%
+            (set-goal g-desired-future-wood-vils 240)   ;24%
+            (set-goal g-desired-future-gold-vils 230)   ;23%
+            )
+
+        ;-------------------------------
+        ;   Post-Build Order Defaults
+        ;-------------------------------
+
+            ;These numbers are out of 1000 pop, since the villager gathering system
+            ;relies on the number of future vils being larger than current villager pop
+            ;the actual numbers are adjusted later to fit current population
+
+            (defrule
+            (goal g-strategy-type DRUSH)
+            (current-age == feudal-age)
+            (unit-type-count villager > 29)
+            =>
+            (set-goal g-desired-future-food-vils 600)   ;60%
+            (set-goal g-desired-future-wood-vils 300)   ;30%
+            (set-goal g-desired-future-gold-vils 100)   ;10%
+            (set-goal g-desired-future-stone-vils 0)    ;0%
+            )
+
+            (defrule
+            (goal g-strategy-type FLUSH)
+            (current-age == feudal-age)
+            (unit-type-count villager > 28)
+            =>
+            (set-goal g-desired-future-food-vils 600)   ;60%
+            (set-goal g-desired-future-wood-vils 300)   ;30%
+            (set-goal g-desired-future-gold-vils 100)   ;10%
+            (set-goal g-desired-future-stone-vils 0)    ;0%
+            )
+
+            (defrule
+            (up-compare-goal g-strategy-type != FAST-IMPERIAL)
+            (current-age == castle-age)
+            (unit-type-count villager <= 35)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 540)   ;54%
+            (set-goal g-desired-future-wood-vils 230)   ;23%
+            (set-goal g-desired-future-gold-vils 230)   ;23%
+            )
+
+            (defrule
+            (up-compare-goal g-strategy-type != FAST-IMPERIAL)
+            (current-age == castle-age)
+            (unit-type-count villager > 35)
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            =>
+            (set-goal g-desired-future-food-vils 500)   ;50%
+            (set-goal g-desired-future-wood-vils 300)   ;30%
+            (set-goal g-desired-future-gold-vils 150)   ;15%
+            (set-goal g-desired-future-stone-vils 50)   ;5%
+            )
+
+            (defrule
+            (current-age == imperial-age)
+            (unit-type-count villager > 35)
+            =>
+            (set-goal g-desired-future-food-vils 425)   ;42.5%
+            (set-goal g-desired-future-wood-vils 270)   ;27%
+            (set-goal g-desired-future-gold-vils 270)   ;27%
+            (set-goal g-desired-future-stone-vils 35)   ;3.5%
+            )
+
+        ;-----------------------------------------------
+        ;   Reduce gold miners if we have trade carts
+        ;-----------------------------------------------
+
+            (defrule
+            (unit-type-count trade-cart > 0)
+            =>
+            (up-get-fact unit-type-count trade-cart g-temp)
+            (up-modify-goal g-temp c:* 1000)
+            (up-modify-goal g-temp g:%* 75) ;assume trade carts are about 75% as fast as gold miners
+            (up-modify-goal g-temp c:/ 140)
+            (up-modify-goal g-desired-future-gold-vils g:- g-temp)
+            (up-modify-goal g-temp c:/ 2)
+            (up-modify-goal g-desired-future-food-vils g:+ g-temp)
+            (up-modify-goal g-desired-future-wood-vils g:+ g-temp)
+            )
+
+
+
+;=========================<>=========================
+;			       RETASK VILLAGERS
+;=========================<>=========================
+
+    ;--------------
+    ;   Foragers
+    ;--------------
+
+        (load "The General 3/Functions/Reset")
+
+        (defrule
+        (timer-triggered t-5-sec)
+        (unit-type-count villager-forager > 0)
+        (building-type-count town-center > 0)
+        (or
+            (building-type-count mill > 0)
+            (up-compare-goal g-sheep-found-count > 0))
+        (unit-type-count villager-shepherd <= 5)
+        =>
+        (up-full-reset-search)
+        (up-find-local c: male-forager c: 20)
+        (up-find-local c: female-forager c: 20)
+        (up-remove-objects search-local object-data-carry < 5)      ;only retask when villagers are close to their capacity
+        (up-remove-objects search-local object-data-carry >= 10)    ;don't retask villager that are dropping off resources
+        (up-get-search-state g-local-total)
+        (set-goal i 0)
+        (set-goal g-temp 53641)
+        )
+
+            (defrule
+            (goal g-temp 53641)
+            (up-compare-goal i g:< g-local-total)
+            (up-set-target-object search-local g: i)
+            =>
+            (up-get-point position-object g-point-x)
+            (up-set-target-point g-point-x)
+            (up-filter-distance c: -1 c: 6)
+            (set-strategic-number sn-focus-player-number my-player-number)
+            (up-find-remote c: mill c: 1)
+            (up-find-remote c: town-center c: 1)
+            (up-filter-status c: status-pending c: list-active)
+            (up-find-status-remote c: mill c: 1)
+            (up-find-status-remote c: town-center-foundation c: 1)
+            (up-get-search-state g-local-total)
+            )
+
+            (defrule
+            (goal g-temp 53641)
+            (up-compare-goal i g:< g-local-total)
+            (up-set-target-object search-local g: i)
+            (goal g-remote-total 0)
+            =>
+            (up-target-point 0 action-stop -1 -1)
+            ; (chat-local-to-self "retask forager")
+            )
+
+            (defrule
+            (goal g-temp 53641)
+            (up-compare-goal i g:< g-local-total)
+            (up-compare-goal i < 40)
+            =>
+            (up-modify-goal i c:+ 1)
+            (up-jump-rule -3)
+            )
+
+    ;-----------------
+    ;   Lumberjacks
+    ;-----------------
+
+        (load "The General 3/Functions/Reset")
+
+        (defrule
+        (timer-triggered t-5-sec)
+        (building-type-count town-center > 0)
+        (unit-type-count villager-wood > 0)
+        (dropsite-min-distance wood < 7)
+        =>
+        (up-find-local c: male-lumberjack c: 20)
+        (up-find-local c: female-lumberjack c: 20)
+        (up-remove-objects search-local object-data-carry < 5)      ;only retask when villagers are close to their capacity
+        (up-remove-objects search-local object-data-carry >= 10)    ;don't retask villager that are dropping off resources
+        (up-get-search-state g-local-total)
+        (set-goal i 0)
+        (set-goal g-temp 53642)
+        )
+
+            (defrule
+            (goal g-temp 53642)
+            (up-compare-goal i g:< g-local-total)
+            (up-set-target-object search-local g: i)
+            =>
+            (up-get-point position-object g-point-x)
+            (up-set-target-point g-point-x)
+            (up-filter-distance c: -1 c: 7)
+            (set-strategic-number sn-focus-player-number my-player-number)
+            (up-find-remote c: lumber-camp c: 1)
+            (up-find-remote c: town-center c: 1)
+            (up-filter-status c: status-pending c: list-active)
+            (up-find-status-remote c: lumber-camp c: 1)
+            (up-find-status-remote c: town-center-foundation c: 1)
+            (up-get-search-state g-local-total)
+            )
+
+            (defrule
+            (goal g-temp 53642)
+            (up-compare-goal i g:< g-local-total)
+            (up-set-target-object search-local g: i)
+            (goal g-remote-total 0)
+            =>
+            (up-target-point 0 action-stop -1 -1)
+            ; (chat-local-to-self "retask lumberjack")
+            )
+
+            (defrule
+            (goal g-temp 53642)
+            (up-compare-goal i g:< g-local-total)
+            (up-compare-goal i < 40)
+            =>
+            (up-modify-goal i c:+ 1)
+            (up-jump-rule -3)
+            )
+            
+    ;-----------------
+    ;   Gold Miners
+    ;-----------------
+
+        (load "The General 3/Functions/Reset")
+
+        (defrule
+        (timer-triggered t-5-sec)
+        (building-type-count town-center > 0)
+        (unit-type-count villager-gold > 0)
+        (dropsite-min-distance gold < 7)
+        =>
+        (up-find-local c: male-gold-miner c: 20)
+        (up-find-local c: female-gold-miner c: 20)
+        (up-remove-objects search-local object-data-carry < 5)      ;only retask when villagers are close to their capacity
+        (up-remove-objects search-local object-data-carry >= 10)    ;don't retask villager that are dropping off resources
+        (up-get-search-state g-local-total)
+        (set-goal i 0)
+        (set-goal g-temp 53643)
+        )
+
+            (defrule
+            (goal g-temp 53643)
+            (up-compare-goal i g:< g-local-total)
+            (up-set-target-object search-local g: i)
+            =>
+            (up-get-point position-object g-point-x)
+            (up-set-target-point g-point-x)
+            (up-filter-distance c: -1 c: 7)
+            (set-strategic-number sn-focus-player-number my-player-number)
+            (up-find-remote c: mining-camp c: 1)
+            (up-find-remote c: town-center c: 1)
+            (up-filter-status c: status-pending c: list-active)
+            (up-find-status-remote c: mining-camp c: 1)
+            (up-find-status-remote c: town-center-foundation c: 1)
+            (up-get-search-state g-local-total)
+            )
+
+            (defrule
+            (goal g-temp 53643)
+            (up-compare-goal i g:< g-local-total)
+            (up-set-target-object search-local g: i)
+            (goal g-remote-total 0)
+            =>
+            (up-target-point 0 action-stop -1 -1)
+            ; (chat-local-to-self "retask gold miner")
+            )
+
+            (defrule
+            (goal g-temp 53643)
+            (up-compare-goal i g:< g-local-total)
+            (up-compare-goal i < 40)
+            =>
+            (up-modify-goal i c:+ 1)
+            (up-jump-rule -3)
+            )
+            
+    ;------------------
+    ;   Stone Miners
+    ;------------------
+
+        (defrule
+        (timer-triggered t-5-sec)
+        (building-type-count town-center > 0)
+        (unit-type-count villager-stone > 0)
+        (dropsite-min-distance stone < 7)
+        =>
+        (up-find-local c: male-stone-miner c: 20)
+        (up-find-local c: female-stone-miner c: 20)
+        (up-remove-objects search-local object-data-carry < 5)      ;only retask when villagers are close to their capacity
+        (up-remove-objects search-local object-data-carry >= 10)    ;don't retask villager that are dropping off resources
+        (up-get-search-state g-local-total)
+        (set-goal i 0)
+        (set-goal g-temp 53644)
+        )
+
+            (defrule
+            (goal g-temp 53644)
+            (up-compare-goal i g:< g-local-total)
+            (up-set-target-object search-local g: i)
+            =>
+            (up-get-point position-object g-point-x)
+            (up-set-target-point g-point-x)
+            (up-filter-distance c: -1 c: 7)
+            (set-strategic-number sn-focus-player-number my-player-number)
+            (up-find-remote c: mining-camp c: 1)
+            (up-find-remote c: town-center c: 1)
+            (up-filter-status c: status-pending c: list-active)
+            (up-find-status-remote c: mining-camp c: 1)
+            (up-find-status-remote c: town-center-foundation c: 1)
+            (up-get-search-state g-local-total)
+            )
+
+            (defrule
+            (goal g-temp 53644)
+            (up-compare-goal i g:< g-local-total)
+            (up-set-target-object search-local g: i)
+            (goal g-remote-total 0)
+            =>
+            (up-target-point 0 action-stop -1 -1)
+            ; (chat-local-to-self "retask stone miner")
+            )
+
+            (defrule
+            (goal g-temp 53644)
+            (up-compare-goal i g:< g-local-total)
+            (up-compare-goal i < 40)
+            =>
+            (up-modify-goal i c:+ 1)
+            (up-jump-rule -3)
+            )
+            
+;=========================<>=========================
+;				    DROP RESOURCES
+;=========================<>=========================
+
+    (load "The General 3/Functions/Reset")
+
+    ;Drop resources if we are low on food for villagers
+    (defrule
+    (not
+        (can-afford-unit villager))
+    (up-object-type-count-total c: villager g:< g-desired-num-villager)
+    (building-type-count town-center == 1)
+    (up-pending-objects c: villager <= 1)
+    =>
+    (up-full-reset-search)
+    (up-find-local c: town-center c: 1)
+    )
+
+    (defrule
+    (not
+        (can-afford-unit villager))
+    (up-object-type-count-total c: villager g:< g-desired-num-villager)
+    (building-type-count town-center == 1)
+    (up-pending-objects c: villager <= 1)
+    (up-set-target-object search-local c: 0)
+    (or
+        (up-object-data object-data-progress-value >= 50)
+        (up-object-data object-data-progress-type == 0))    ;not training a villager
+    (unit-type-count villager-hunter > 0)
+    =>
+    (up-drop-resources food c: 10)
+    ;(chat-local-to-self "Drop food (>= 10)")
+    )
+
+    (defrule
+    (not
+        (can-afford-unit villager))
+    (up-object-type-count-total c: villager g:< g-desired-num-villager)
+    (building-type-count town-center == 1)
+    (up-pending-objects c: villager <= 1)
+    (up-set-target-object search-local c: 0)
+    (or
+        (up-object-data object-data-progress-value >= 60)
+        (up-object-data object-data-progress-type == 0))
+    =>
+    (up-drop-resources food c: 3)
+    ;(chat-local-to-self "Drop food (>= 3)")
+    )
+
+
+;=========================<>=========================
+;			   MARKET RESOURCE TRADING
+;=========================<>=========================
+
+    (defrule
+    (up-timer-status t-5-sec == timer-triggered)
+    (or
+        (goal g-age-status SAVE-FOR-CASTLE)
+        (goal g-age-status SAVE-FOR-IMPERIAL))
+    =>
+    (up-get-fact commodity-buying-price food g-food-cost)
+    (up-get-fact commodity-buying-price wood g-wood-cost)
+    (up-get-fact commodity-buying-price stone g-stone-cost)
+    )
+
+    #load-if-defined ITALIAN-CIV
+
+        ;--------------------------
+        ;   Trade for Castle Age
+        ;--------------------------
+    
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (goal g-age-status SAVE-FOR-CASTLE)
+            (food-amount >= 780)
+            (gold-amount < 170)
+            (can-sell-commodity food)
+            (goal g-traded NO)
+            =>
+            (sell-commodity food)
+            (set-goal g-traded YES)
+            (chat-local-to-self "sell food for castle age")
+            )
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (up-compare-goal g-age-status == SAVE-FOR-CASTLE)
+            (food-amount < 780)
+            (gold-amount < 170)
+            (or
+                (wood-amount > 400)
+                (and
+                    (wood-amount > 200)
+                    (goal g-town-under-attack YES)))
+            (can-sell-commodity wood)
+            (goal g-traded NO)
+            =>
+            (sell-commodity wood)
+            (set-goal g-traded YES)
+            (chat-local-to-self "sell wood for castle age")
+            )
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (up-compare-goal g-age-status == SAVE-FOR-CASTLE)
+            (food-amount >= 680)
+            (gold-amount < 170)
+            (or
+                (stone-amount > 200)
+                (goal g-town-under-attack YES))
+            (can-sell-commodity stone)
+            (up-object-type-count-total c: watch-tower g:>= g-desired-num-watch-tower)
+            (up-compare-goal g-desired-num-castle == 0)
+            (goal g-traded NO)
+            =>
+            (sell-commodity stone)
+            (set-goal g-traded YES)
+            (chat-local-to-self "sell stone for castle age")
+            )
+
+            ;Set gold cost
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (goal g-age-status SAVE-FOR-CASTLE)
+            (goal g-traded NO)
+            =>
+            (set-goal g-gold-cost 170)
+            (up-modify-goal g-gold-cost c:max g-max-gold-needed)
+            (set-goal g-traded YES)
+            (up-modify-goal g-gold-cost g:+ g-food-cost)    ;add food buying price
+            )
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (up-compare-goal g-age-status == SAVE-FOR-CASTLE)
+            (food-amount < 680)
+            (up-resource-amount gold g:>= g-gold-cost)
+            (can-buy-commodity food)
+            (goal g-traded NO)
+            =>
+            (buy-commodity food)
+            (set-goal g-traded YES)
+            (chat-local-to-self "buy food for castle age")
+            )
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (goal g-age-status SAVE-FOR-CASTLE)
+            (goal g-traded NO)
+            =>
+            (set-goal g-gold-cost 170)
+            (up-modify-goal g-gold-cost c:max g-max-gold-needed)
+            (set-goal g-traded YES)
+            (up-modify-goal g-gold-cost g:+ g-wood-cost)    ;add wood buying price
+            )
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (up-compare-goal g-age-status == TO-CASTLE)
+            (up-resource-amount gold g:>= g-gold-cost)
+            (wood-amount < 100)
+            (can-buy-commodity wood)
+            (goal g-traded NO)
+            =>
+            (buy-commodity wood)
+            (set-goal g-traded YES)
+            (chat-local-to-self "buy wood for castle age buildings")
+            )
+
+        ;----------------------------
+        ;   Trade for Imperial Age
+        ;----------------------------
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
+            (food-amount >= 950)
+            (gold-amount < 680)
+            (can-sell-commodity food)
+            (goal g-traded NO)
+            =>
+            (sell-commodity food)
+            (set-goal g-traded YES)
+            (chat-local-to-self "sell food for imperial age")
+            )
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
+            (food-amount < 950)
+            (gold-amount < 680)
+            (wood-amount > 300)
+            (can-sell-commodity wood)
+            (goal g-traded NO)
+            =>
+            (sell-commodity wood)
+            (set-goal g-traded YES)
+            (chat-local-to-self "sell wood for imperial age")
+            )
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
+            (food-amount >= 850)
+            (gold-amount < 680)
+            (stone-amount > 200)
+            (up-object-type-count-total c: castle >= g-desired-num-castle)
+            (can-sell-commodity stone)
+            (goal g-traded NO)
+            =>
+            (sell-commodity stone)
+            (set-goal g-traded YES)
+            (chat-local-to-self "sell excess stone for imperial age")
+            )
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (goal g-age-status SAVE-FOR-IMPERIAL)
+            (goal g-traded NO)
+            =>
+            (set-goal g-gold-cost 680)
+            (set-goal g-traded YES)
+            (up-modify-goal g-gold-cost g:+ g-food-cost)    ;add food buying price
+            )
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
+            (food-amount < 850)
+            (up-resource-amount gold g:>= g-gold-cost)
+            (can-buy-commodity food)
+            (goal g-traded NO)
+            =>
+            (buy-commodity food)
+            (set-goal g-traded YES)
+            (chat-local-to-self "buy food for imperial age")
+            )
+
+    #else
+
+        ;--------------------------
+        ;   Trade for Castle Age
+        ;--------------------------
+    
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (goal g-age-status SAVE-FOR-CASTLE)
+            (food-amount >= 900)
+            (gold-amount < 200)
+            (can-sell-commodity food)
+            (goal g-traded NO)
+            =>
+            (sell-commodity food)
+            (set-goal g-traded YES)
+            (chat-local-to-self "sell food for castle age")
+            )
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (up-compare-goal g-age-status == SAVE-FOR-CASTLE)
+            (food-amount < 900)
+            (gold-amount < 200)
+            (or
+                (wood-amount > 400)
+                (and
+                    (wood-amount > 200)
+                    (goal g-town-under-attack YES)))
+            (can-sell-commodity wood)
+            (goal g-traded NO)
+            =>
+            (sell-commodity wood)
+            (set-goal g-traded YES)
+            (chat-local-to-self "sell wood for castle age")
+            )
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (up-compare-goal g-age-status == SAVE-FOR-CASTLE)
+            (food-amount >= 800)
+            (gold-amount < 200)
+            (or
+                (stone-amount > 200)
+                (goal g-town-under-attack YES))
+            (can-sell-commodity stone)
+            (up-object-type-count-total c: watch-tower g:>= g-desired-num-watch-tower)
+            (up-compare-goal g-desired-num-castle == 0)
+            (goal g-traded NO)
+            =>
+            (sell-commodity stone)
+            (set-goal g-traded YES)
+            (chat-local-to-self "sell stone for castle age")
+            )
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (goal g-age-status SAVE-FOR-CASTLE)
+            (goal g-traded NO)
+            =>
+            (set-goal g-gold-cost 200)
+            (set-goal g-traded YES)
+            (up-modify-goal g-gold-cost g:+ g-food-cost)    ;add food buying price
+            )
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (up-compare-goal g-age-status == SAVE-FOR-CASTLE)
+            (food-amount < 800)
+            (up-resource-amount gold g:>= g-gold-cost)
+            (can-buy-commodity food)
+            (goal g-traded NO)
+            =>
+            (buy-commodity food)
+            (set-goal g-traded YES)
+            (chat-local-to-self "buy food for castle age")
+            )
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (goal g-age-status SAVE-FOR-CASTLE)
+            (goal g-traded NO)
+            =>
+            (set-goal g-gold-cost 200)
+            (set-goal g-traded YES)
+            (up-modify-goal g-gold-cost g:+ g-wood-cost)    ;add wood buying price
+            )
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (up-compare-goal g-age-status == TO-CASTLE)
+            (up-resource-amount gold g:>= g-gold-cost)
+            (wood-amount < 100)
+            (can-buy-commodity wood)
+            (goal g-traded NO)
+            =>
+            (buy-commodity wood)
+            (set-goal g-traded YES)
+            (chat-local-to-self "buy wood for castle age buildings")
+            )
+
+        ;----------------------------
+        ;   Trade for Imperial Age
+        ;----------------------------
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
+            (food-amount >= 1100)
+            (gold-amount < 800)
+            (can-sell-commodity food)
+            (goal g-traded NO)
+            =>
+            (sell-commodity food)
+            (set-goal g-traded YES)
+            (chat-local-to-self "sell food for imperial age")
+            )
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
+            (food-amount < 1100)
+            (gold-amount < 800)
+            (wood-amount > 300)
+            (can-sell-commodity wood)
+            (goal g-traded NO)
+            =>
+            (sell-commodity wood)
+            (set-goal g-traded YES)
+            (chat-local-to-self "sell wood for imperial age")
+            )
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
+            (food-amount >= 1000)
+            (gold-amount < 800)
+            (stone-amount > 200)
+            (up-object-type-count-total c: castle >= g-desired-num-castle)
+            (can-sell-commodity stone)
+            (goal g-traded NO)
+            =>
+            (sell-commodity stone)
+            (set-goal g-traded YES)
+            (chat-local-to-self "sell excess stone for imperial age")
+            )
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (goal g-age-status SAVE-FOR-IMPERIAL)
+            (goal g-traded NO)
+            =>
+            (set-goal g-gold-cost 800)
+            (set-goal g-traded YES)
+            (up-modify-goal g-gold-cost g:+ g-food-cost)    ;add food buying price
+            )
+
+            (defrule
+            (up-timer-status t-5-sec == timer-triggered)
+            (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
+            (food-amount < 1000)
+            (up-resource-amount gold g:>= g-gold-cost)
+            (can-buy-commodity food)
+            (goal g-traded NO)
+            =>
+            (buy-commodity food)
+            (set-goal g-traded YES)
+            (chat-local-to-self "buy food for imperial age")
+            )
+
+    #end-if
+
+    #load-if-defined INCAN-CIV
+    
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (goal g-age-status TO-CASTLE)
+        (can-sell-commodity stone)
+        (goal g-current-strategy FC-EAGLES-REVENGE)
+        (or
+            (up-object-type-count-total c: watch-tower g:>= g-desired-num-watch-tower)
+            (stone-amount >= 206))
+        (goal g-traded NO)
+        =>
+        (sell-commodity stone)
+        (set-goal g-traded YES)
+        (chat-local-to-self "sell stone for eagle warriors")
+        )
+
+    #else
+
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (goal g-age-status TO-CASTLE)
+        (can-sell-commodity stone)
+        (goal g-current-strategy FC-EAGLES-REVENGE)
+        (or
+            (up-object-type-count-total c: watch-tower g:>= g-desired-num-watch-tower)
+            (stone-amount >= 225))
+        (goal g-traded NO)
+        =>
+        (sell-commodity stone)
+        (set-goal g-traded YES)
+        (chat-local-to-self "sell stone for eagle warriors")
+        )
+
+    #end-if
+
+    ;---------------------
+    ;   Trade Resources
+    ;---------------------
+
+        (defrule
+        (current-age == imperial-age)
+        (up-timer-status t-5-sec == timer-triggered)
+        (food-amount < 200)
+        (gold-amount >= 600)
+        (can-buy-commodity food)
+        (goal g-traded NO)
+        =>
+        (buy-commodity food)
+        (set-goal g-traded YES)
+        (chat-local-to-self "buy food")
+        )
+
+        (defrule
+        (current-age == imperial-age)
+        (up-timer-status t-5-sec == timer-triggered)
+        (wood-amount < 200)
+        (gold-amount >= 600)
+        (can-buy-commodity wood)
+        (goal g-traded NO)
+        =>
+        (buy-commodity wood)
+        (set-goal g-traded YES)
+        (chat-local-to-self "buy wood")
+        )
+
+        (defrule
+        (current-age == imperial-age)
+        (up-timer-status t-5-sec == timer-triggered)
+        (wood-amount >= 1200)
+        (gold-amount < 200)
+        (can-sell-commodity wood)
+        (goal g-traded NO)
+        =>
+        (sell-commodity wood)
+        (set-goal g-traded YES)
+        (chat-local-to-self "need gold, sell wood")
+        )
+
+        (defrule
+        (current-age == imperial-age)
+        (up-timer-status t-5-sec == timer-triggered)
+        (food-amount >= 1400)
+        (gold-amount < 200)
+        (can-sell-commodity food)
+        (goal g-traded NO)
+        =>
+        (sell-commodity food)
+        (set-goal g-traded YES)
+        (chat-local-to-self "need gold, sell food")
+        )
+
+    ;----------------------------
+    ;   Excess Trade Resources
+    ;----------------------------
+
+        (defrule
+        (current-age == castle-age)
+        ;(up-timer-status t-5-sec == timer-triggered)
+        (food-amount < 200)
+        (gold-amount >= 1000)
+        (can-buy-commodity food)
+        (goal g-traded NO)
+        =>
+        (buy-commodity food)
+        (set-goal g-traded YES)
+        (chat-local-to-self "excess gold, buy food")
+        )
+
+        (defrule
+        (current-age == castle-age)
+        ;(up-timer-status t-5-sec == timer-triggered)
+        (wood-amount < 200)
+        (gold-amount >= 1000)
+        (can-buy-commodity wood)
+        (goal g-traded NO)
+        =>
+        (buy-commodity wood)
+        (set-goal g-traded YES)
+        (chat-local-to-self "excess gold, buy wood")
+        )
+
+        (defrule
+        (current-age == castle-age)
+        ;(up-timer-status t-5-sec == timer-triggered)
+        (wood-amount >= 800)
+        (gold-amount < 200)
+        (can-sell-commodity wood)
+        (goal g-traded NO)
+        =>
+        (sell-commodity wood)
+        (set-goal g-traded YES)
+        (chat-local-to-self "need gold, sell excess wood")
+        )
+
+        (defrule
+        (current-age == castle-age)
+        ;(up-timer-status t-5-sec == timer-triggered)
+        (food-amount >= 1200)
+        (gold-amount < 200)
+        (can-sell-commodity food)
+        (goal g-traded NO)
+        =>
+        (sell-commodity food)
+        (set-goal g-traded YES)
+        (chat-local-to-self "need gold, sell excess food")
+        )
+
+        (defrule
+        (current-age == imperial-age)
+        ;(up-timer-status t-5-sec == timer-triggered)
+        (food-amount < 300)
+        (gold-amount >= 1600)
+        (can-buy-commodity food)
+        (goal g-traded NO)
+        =>
+        (buy-commodity food)
+        (set-goal g-traded YES)
+        (chat-local-to-self "excess gold, buy food")
+        )
+
+        (defrule
+        (current-age == imperial-age)
+        ;(up-timer-status t-5-sec == timer-triggered)
+        (wood-amount < 300)
+        (gold-amount >= 1600)
+        (can-buy-commodity wood)
+        (goal g-traded NO)
+        =>
+        (buy-commodity wood)
+        (set-goal g-traded YES)
+        (chat-local-to-self "excess gold, buy wood")
+        )
+
+        (defrule
+        (current-age == imperial-age)
+        ;(up-timer-status t-5-sec == timer-triggered)
+        (wood-amount >= 1500)
+        (gold-amount < 300)
+        (can-sell-commodity wood)
+        (goal g-traded NO)
+        =>
+        (sell-commodity wood)
+        (set-goal g-traded YES)
+        (chat-local-to-self "need gold, sell excess wood")
+        )
+
+        (defrule
+        (current-age == imperial-age)
+        ;(up-timer-status t-5-sec == timer-triggered)
+        (food-amount >= 1800)
+        (gold-amount < 300)
+        (can-sell-commodity food)
+        (goal g-traded NO)
+        =>
+        (sell-commodity food)
+        (set-goal g-traded YES)
+        (chat-local-to-self "need gold, sell excess food")
+        )
+
+    ;--------------------------
+    ;   Trade for Researches
+    ;--------------------------
+
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (up-resource-amount gold g:< g-max-gold-needed)
+        (up-modify-goal g-temp g:= g-max-food-needed)
+        (up-modify-goal g-temp c:+ 100)
+        (up-resource-amount food g:>= g-temp)    ;we have >= 100 food more than we need
+        (can-sell-commodity food)
+        (goal g-traded NO)
+        =>
+        (sell-commodity food)
+        (set-goal g-traded YES)
+        (chat-local-to-self "need gold for techs, sell food")
+        )
+
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (up-resource-amount wood g:< g-max-wood-needed)
+        (up-resource-amount gold g:< g-max-gold-needed)
+        (up-modify-goal g-temp g:= g-max-food-needed)
+        (up-modify-goal g-temp c:+ 100)
+        (up-resource-amount food g:>= g-temp)    ;we have >= 100 food more than we need
+        (can-sell-commodity food)
+        (goal g-traded NO)
+        =>
+        (sell-commodity food)
+        (set-goal g-traded YES)
+        (chat-local-to-self "need wood for techs/buildings, sell food")
+        )
+
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (up-resource-amount gold g:< g-max-gold-needed)
+        (up-resource-amount stone g:< g-max-stone-needed)
+        (up-modify-goal g-temp g:= g-max-food-needed)
+        (up-modify-goal g-temp c:+ 100)
+        (up-resource-amount food g:>= g-temp)    ;we have >= 100 food more than we need
+        (can-sell-commodity food)
+        (goal g-traded NO)
+        =>
+        (sell-commodity food)
+        (set-goal g-traded YES)
+        (chat-local-to-self "need stone for buildings/techs, sell food")
+        )
+
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (up-resource-amount gold g:< g-max-gold-needed)
+        (up-modify-goal g-temp g:= g-max-wood-needed)
+        (up-modify-goal g-temp c:+ 100)
+        (up-resource-amount wood g:>= g-temp)    ;we have >= 100 wood more than we need
+        (can-sell-commodity wood)
+        (goal g-traded NO)
+        =>
+        (sell-commodity wood)
+        (set-goal g-traded YES)
+        (chat-local-to-self "need gold for techs, sell wood")
+        )
+
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (up-resource-amount gold g:< g-max-gold-needed)
+        (up-resource-amount food g:< g-max-food-needed)
+        (up-modify-goal g-temp g:= g-max-wood-needed)
+        (up-modify-goal g-temp c:+ 100)
+        (up-resource-amount wood g:>= g-temp)    ;we have >= 100 wood more than we need
+        (can-sell-commodity wood)
+        (goal g-traded NO)
+        =>
+        (sell-commodity wood)
+        (set-goal g-traded YES)
+        (chat-local-to-self "need food for techs, sell wood")
+        )
+
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (up-resource-amount gold g:< g-max-gold-needed)
+        (up-resource-amount stone g:< g-max-stone-needed)
+        (up-modify-goal g-temp g:= g-max-wood-needed)
+        (up-modify-goal g-temp c:+ 100)
+        (up-resource-amount wood g:>= g-temp)    ;we have >= 100 wood more than we need
+        (can-sell-commodity wood)
+        (goal g-traded NO)
+        =>
+        (sell-commodity wood)
+        (set-goal g-traded YES)
+        (chat-local-to-self "need stone for buildings/techs, sell wood")
+        )
+
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (up-resource-amount gold g:< g-max-gold-needed)
+        (up-modify-goal g-temp g:= g-max-stone-needed)
+        (up-modify-goal g-temp c:+ 100)
+        (up-resource-amount stone g:>= g-temp)    ;we have >= 100 stone more than we need
+        (can-sell-commodity stone)
+        (goal g-traded NO)
+        =>
+        (sell-commodity stone)
+        (set-goal g-traded YES)
+        (chat-local-to-self "need gold for techs, sell stone")
+        )
+
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (up-resource-amount gold g:< g-max-gold-needed)
+        (up-resource-amount food g:< g-max-food-needed)
+        (up-modify-goal g-temp g:= g-max-stone-needed)
+        (up-modify-goal g-temp c:+ 100)
+        (up-resource-amount stone g:>= g-temp)    ;we have >= 100 stone more than we need
+        (can-sell-commodity stone)
+        (goal g-traded NO)
+        =>
+        (sell-commodity stone)
+        (set-goal g-traded YES)
+        (chat-local-to-self "need food for techs, sell stone")
+        )
+
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (up-resource-amount gold g:< g-max-gold-needed)
+        (up-resource-amount wood g:< g-max-wood-needed)
+        (up-modify-goal g-temp g:= g-max-stone-needed)
+        (up-modify-goal g-temp c:+ 100)
+        (up-resource-amount stone g:>= g-temp)    ;we have >= 100 stone more than we need
+        (can-sell-commodity stone)
+        (goal g-traded NO)
+        =>
+        (sell-commodity stone)
+        (set-goal g-traded YES)
+        (chat-local-to-self "need wood for techs/buildings, sell stone")
+        )
+
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        =>
+        (up-get-fact commodity-buying-price food g-food-cost)
+        (up-get-fact commodity-buying-price wood g-wood-cost)
+        (up-get-fact commodity-buying-price stone g-stone-cost)
+        )
+
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (up-resource-amount food g:< g-max-food-needed)
+        (up-modify-goal g-temp g:= g-max-gold-needed)
+        (up-modify-goal g-temp g:+ g-food-cost)         ;add food buying price
+        (up-resource-amount gold g:>= g-temp)    ;we have more gold than we need, including price to buy food
+        (can-buy-commodity food)
+        (goal g-traded NO)
+        =>
+        (buy-commodity food)
+        (set-goal g-traded YES)
+        (chat-local-to-self "buy food for techs")
+        )
+
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (up-resource-amount wood g:< g-max-wood-needed)
+        (up-modify-goal g-temp g:= g-max-gold-needed)
+        (up-modify-goal g-temp g:+ g-wood-cost)         ;add wood buying price
+        (up-resource-amount gold g:>= g-temp)    ;we have more gold than we need, including price to buy wood
+        (can-buy-commodity wood)
+        (goal g-traded NO)
+        =>
+        (buy-commodity wood)
+        (set-goal g-traded YES)
+        (chat-local-to-self "buy wood for techs/buildings")
+        )
+
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (up-resource-amount stone g:< g-max-stone-needed)
+        (up-modify-goal g-temp g:= g-max-gold-needed)
+        (up-modify-goal g-temp g:+ g-stone-cost)        ;add stone buying price
+        (up-resource-amount gold g:>= g-temp)    ;we have more gold than we need, including price to buy food
+        (can-buy-commodity stone)
+        (goal g-traded NO)
+        =>
+        (buy-commodity stone)
+        (set-goal g-traded YES)
+        (chat-local-to-self "buy stone for buildings/techs")
+        )
+
+;=========================<>=========================
+;		   DYNAMIC DESIRED GATHERER COUNTS
+;=========================<>=========================
+
+    (load "The General 3/Functions/Reset")
+
+    (defrule
+    (up-timer-status t-15-sec == timer-triggered)
+    =>
+    (up-reset-cost-data g-total-objects-food-needed)
+    (up-reset-cost-data g-food-cost)
+    )
+
+    ;------------------------
+    ;   Add Building Costs
+    ;------------------------
+
+        #load-if-defined BRITON-CIV
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+            (wood-amount < 138)
+            =>
+            (up-modify-goal g-total-objects-wood-needed c:+ 138)
+            ;(chat-local-to-self "add wood for TC")
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+            (stone-amount < 100)
+            =>
+            (up-modify-goal g-total-objects-stone-needed c:+ 100)
+            ;(chat-local-to-self "add stone for TC")
+            )
+
+        #else
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+            (wood-amount < 275)
+            =>
+            (up-modify-goal g-total-objects-wood-needed c:+ 150)    ;don't add full cost
+            ;(chat-local-to-self "add wood for TC")
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+            (stone-amount < 100)
+            =>
+            (up-modify-goal g-total-objects-stone-needed c:+ 70)    ;don't add full cost
+            ;(chat-local-to-self "add stone for TC")
+            )
+
+        #end-if
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: house g:< g-desired-num-house)
+        (wood-amount < 30)
+        (population-headroom > 0)
+        =>
+        (up-modify-goal g-total-objects-wood-needed c:+ 25)
+        ;(up-chat-data-to-self "add %d wood for house" g: g-temp)
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: mill g:< g-desired-num-mill)
+        (wood-amount < 100)
+        =>
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-object-cost c: mill c: 1)
+        (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+        ;(up-chat-data-to-self "add %d wood for mill" g: g-wood-cost)
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: mining-camp g:< g-desired-num-mining-camp)
+        (wood-amount < 100)
+        =>
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-object-cost c: mining-camp c: 1)
+        (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+        ;(up-chat-data-to-self "add %d wood for mining camp" g: g-wood-cost)
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: lumber-camp g:< g-desired-num-lumber-camp)
+        (wood-amount < 100)
+        =>
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-object-cost c: lumber-camp c: 1)
+        (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+        ;(up-chat-data-to-self "add %d wood for lumber camp" g: g-wood-cost)
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: dock g:< g-desired-num-dock)
+        (wood-amount < 150)
+        =>
+        (up-modify-goal g-total-objects-wood-needed c:+ 100)    ;don't add full cost of building
+        ; (chat-local-to-self "add wood for dock")
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: farm g:< g-desired-num-farm)
+        (wood-amount < 60)
+        =>
+        (up-modify-goal g-temp g:= g-desired-num-farm)          
+        (up-get-fact building-type-count-total farm g-temp-2)
+        (up-modify-goal g-temp g:- g-temp-2)                    ;get difference between desired farms and current farms
+        (up-modify-goal g-temp c:max 3)
+        (up-modify-goal g-temp c:* 60)                          ;multiply number of extra farms wanted by farm cost (cap at 3 extra farms)
+        (up-modify-goal g-total-objects-wood-needed g:+ g-temp)
+        ; (chat-local-to-self "add wood for farm")
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: blacksmith g:< g-desired-num-blacksmith)
+        (wood-amount < 150)
+        =>
+        (up-modify-goal g-total-objects-wood-needed c:+ 100)    ;don't add full cost of building
+        ; (chat-local-to-self "add wood for blacksmith")
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: market g:< g-desired-num-market)
+        (wood-amount < 175)
+        =>
+        (up-modify-goal g-total-objects-wood-needed c:+ 100)    ;don't add full cost of building
+        ; (chat-local-to-self "add wood for market")
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: monastery g:< g-desired-num-monastery)
+        (wood-amount < 175)
+        =>
+        (up-modify-goal g-total-objects-wood-needed c:+ 100)    ;don't add full cost of building
+        ; (chat-local-to-self "add wood for monastery")
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: university g:< g-desired-num-university)
+        (wood-amount < 200)
+        =>
+        (up-modify-goal g-total-objects-wood-needed c:+ 100)    ;don't add full cost of building
+        ; (chat-local-to-self "add wood for university")
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: wonder g:< g-desired-num-wonder)
+        (wood-amount < 1000)
+        =>
+        (up-modify-goal g-total-objects-wood-needed c:+ 200)    ;don't add full cost of building
+        ; (chat-local-to-self "add wood for wonder")
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: wonder g:< g-desired-num-wonder)
+        (gold-amount < 1000)
+        =>
+        (up-modify-goal g-total-objects-gold-needed c:+ 200)    ;don't add full cost of building
+        ; (chat-local-to-self "add gold for wonder")
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: wonder g:< g-desired-num-wonder)
+        (stone-amount < 1000)
+        =>
+        (up-modify-goal g-total-objects-stone-needed c:+ 200)   ;don't add full cost of building
+        ; (chat-local-to-self "add stone for wonder")
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: barracks g:< g-desired-num-barracks)
+        (wood-amount < 175)
+        =>
+        (up-modify-goal g-total-objects-wood-needed c:+ 100)    ;don't add full cost of building
+        ; (chat-local-to-self "add wood for barracks")
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
+        (wood-amount < 175)
+        =>
+        (up-modify-goal g-total-objects-wood-needed c:+ 100)    ;don't add full cost of building
+        ; (chat-local-to-self "add wood for archery range")
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: stable g:< g-desired-num-stable)
+        (wood-amount < 175)
+        =>
+        (up-modify-goal g-total-objects-wood-needed c:+ 100)    ;don't add full cost of building
+        ; (chat-local-to-self "add wood for stable")
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: siege-workshop g:< g-desired-num-siege-workshop)
+        (wood-amount < 200)
+        =>
+        (up-modify-goal g-total-objects-wood-needed c:+ 100)    ;don't add full cost of building
+        ; (chat-local-to-self "add wood for siege workshop")
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: watch-tower g:< g-desired-num-watch-tower)
+        (wood-amount < 25)
+        =>
+        (up-modify-goal g-total-objects-wood-needed c:+ 25)
+        ; (chat-local-to-self "add wood for tower")
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: watch-tower g:< g-desired-num-watch-tower)
+        (stone-amount < 125)
+        =>
+        (up-modify-goal g-total-objects-stone-needed c:+ 75)    ;don't add full cost of building
+        ; (chat-local-to-self "add stone for tower")
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: bombard-tower g:< g-desired-num-bombard-tower)
+        (gold-amount < 100)
+        =>
+        (up-modify-goal g-total-objects-gold-needed c:+ 60)     ;don't add full cost of building
+        ; (chat-local-to-self "add resources for bombard tower")
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: bombard-tower g:< g-desired-num-bombard-tower)
+        (stone-amount < 125)
+        =>
+        (up-modify-goal g-total-objects-stone-needed c:+ 75)    ;don't add full cost of building
+        ; (chat-local-to-self "add resources for bombard tower")
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: castle g:< g-desired-num-castle)
+        (not
+            (can-afford-building castle))
+        =>
+        (up-modify-goal g-total-objects-stone-needed c:+ 150)    ;don't add full cost of building
+        ; (chat-local-to-self "add stone for castle")
+        )
+
+        ;Add Ongoing Cost of Farms
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-research-status c: ri-wheel-barrow != research-complete)
+        =>
+        (set-goal g-temp-2 FARM-RATE)   ;default farming gather rate per minute * 100
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (research-completed ri-wheel-barrow)
+        (up-research-status c: ri-hand-cart != research-complete)
+        =>
+        (set-goal g-temp-2 FARM-WHEEL-RATE) ;farming gather rate per minute with Wheelbarrow * 100
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (research-completed ri-hand-cart)
+        =>
+        (set-goal g-temp-2 FARM-CART-RATE)  ;farming gather rate per minute with Hand Cart * 100
+        )
+
+        ;Calculate amount of wood per minute needed to sustain farming
+        ;First calculate new farms needed per minute. Get number of desired farms,
+        ;calculate how much food is gathered from those farms per minute, and divide by amount of food per farm.
+        ;Then, multiply by cost per farm. (Order of steps rearranged to avoid rounding errors).
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-research-status c: ri-horse-collar != research-complete)
+        (nor
+            (civ-selected chinese)
+            (players-civ any-ally chinese))
+        (up-compare-goal g-desired-num-farm > 0)
+        =>
+        (up-modify-goal g-temp g:= g-desired-num-farm)
+        (up-modify-goal g-temp g:* g-temp-2)    ;multiply by farming rate per minute
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-object-cost c: farm c: 1)
+        (up-modify-goal g-temp g:* g-wood-cost) ;multiply by cost of farm
+        (up-modify-goal g-temp c:/ 100)         ;the FARM-RATE constants are * 100
+        (up-modify-goal g-temp c:/ 175)         ;divide by amount of wood per farm
+        (up-modify-goal g-total-objects-wood-needed g:+ g-temp)
+        ;(up-chat-data-to-self "add %d wood for farms" g: g-temp)
+        ;(up-chat-data-to-self "Num Desired farms: %d" g: g-desired-num-farm)
+        )
+        
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (research-completed ri-horse-collar)
+        (up-research-status c: ri-heavy-plow != research-complete)
+        (nor
+            (civ-selected chinese)
+            (players-civ any-ally chinese))
+        (up-compare-goal g-desired-num-farm > 0)
+        =>
+        (up-modify-goal g-temp g:= g-desired-num-farm)
+        (up-modify-goal g-temp g:* g-temp-2)    ;multiply by farming rate per minute
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-object-cost c: farm c: 1)
+        (up-modify-goal g-temp g:* g-wood-cost) ;multiply by cost of farm
+        (up-modify-goal g-temp c:/ 100)         ;the FARM-RATE constants are * 100
+        (up-modify-goal g-temp c:/ 250)         ;divide by amount of wood per farm
+        (up-modify-goal g-total-objects-wood-needed g:+ g-temp)
+        ;(up-chat-data-to-self "add %d wood for farms" g: g-temp)
+        )
+        
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (research-completed ri-heavy-plow)
+        (up-research-status c: ri-crop-rotation != research-complete)
+        (nor
+            (civ-selected chinese)
+            (players-civ any-ally chinese))
+        (up-compare-goal g-desired-num-farm > 0)
+        =>
+        (up-modify-goal g-temp g:= g-desired-num-farm)
+        (up-modify-goal g-temp g:* g-temp-2)    ;multiply by farming rate per minute
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-object-cost c: farm c: 1)
+        (up-modify-goal g-temp g:* g-wood-cost) ;multiply by cost of farm
+        (up-modify-goal g-temp c:/ 100)         ;the FARM-RATE constants are * 100
+        (up-modify-goal g-temp c:/ 375)         ;divide by amount of wood per farm
+        (up-modify-goal g-total-objects-wood-needed g:+ g-temp)
+        ;(up-chat-data-to-self "add %d wood for farms" g: g-temp)
+        )
+        
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (research-completed ri-crop-rotation)
+        (nor
+            (civ-selected chinese)
+            (players-civ any-ally chinese))
+        (up-compare-goal g-desired-num-farm > 0)
+        =>
+        (up-modify-goal g-temp g:= g-desired-num-farm)
+        (up-modify-goal g-temp g:* g-temp-2)    ;multiply by farming rate per minute
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-object-cost c: farm c: 1)
+        (up-modify-goal g-temp g:* g-wood-cost) ;multiply by cost of farm
+        (up-modify-goal g-temp c:/ 100)         ;the FARM-RATE constants are * 100
+        (up-modify-goal g-temp c:/ 550)         ;divide by amount of wood per farm
+        (up-modify-goal g-total-objects-wood-needed g:+ g-temp)
+        ;(up-chat-data-to-self "add %d wood for farms" g: g-temp)
+        )
+
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-research-status c: ri-horse-collar != research-complete)
+        (or
+            (civ-selected chinese)
+            (players-civ any-ally chinese))
+        (up-compare-goal g-desired-num-farm > 0)
+        =>
+        (up-modify-goal g-temp g:= g-desired-num-farm)
+        (up-modify-goal g-temp g:* g-temp-2)    ;multiply by farming rate per minute
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-object-cost c: farm c: 1)
+        (up-modify-goal g-temp g:* g-wood-cost) ;multiply by cost of farm
+        (up-modify-goal g-temp c:/ 100)         ;the FARM-RATE constants are * 100
+        (up-modify-goal g-temp c:/ 220)         ;divide by amount of wood per farm
+        (up-modify-goal g-total-objects-wood-needed g:+ g-temp)
+        ;(up-chat-data-to-self "add %d wood for farms" g: g-temp)
+        )
+        
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (research-completed ri-horse-collar)
+        (up-research-status c: ri-heavy-plow != research-complete)
+        (or
+            (civ-selected chinese)
+            (players-civ any-ally chinese))
+        (up-compare-goal g-desired-num-farm > 0)
+        =>
+        (up-modify-goal g-temp g:= g-desired-num-farm)
+        (up-modify-goal g-temp g:* g-temp-2)    ;multiply by farming rate per minute
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-object-cost c: farm c: 1)
+        (up-modify-goal g-temp g:* g-wood-cost) ;multiply by cost of farm
+        (up-modify-goal g-temp c:/ 100)         ;the FARM-RATE constants are * 100
+        (up-modify-goal g-temp c:/ 295)         ;divide by amount of wood per farm
+        (up-modify-goal g-total-objects-wood-needed g:+ g-temp)
+        ;(up-chat-data-to-self "add %d wood for farms" g: g-temp)
+        )
+        
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (research-completed ri-heavy-plow)
+        (up-research-status c: ri-crop-rotation != research-complete)
+        (or
+            (civ-selected chinese)
+            (players-civ any-ally chinese))
+        (up-compare-goal g-desired-num-farm > 0)
+        =>
+        (up-modify-goal g-temp g:= g-desired-num-farm)
+        (up-modify-goal g-temp g:* g-temp-2)    ;multiply by farming rate per minute
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-object-cost c: farm c: 1)
+        (up-modify-goal g-temp g:* g-wood-cost) ;multiply by cost of farm
+        (up-modify-goal g-temp c:/ 100)         ;the FARM-RATE constants are * 100
+        (up-modify-goal g-temp c:/ 420)         ;divide by amount of wood per farm
+        (up-modify-goal g-total-objects-wood-needed g:+ g-temp)
+        ;(up-chat-data-to-self "add %d wood for farms" g: g-temp)
+        )
+        
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (research-completed ri-crop-rotation)
+        (or
+            (civ-selected chinese)
+            (players-civ any-ally chinese))
+        (up-compare-goal g-desired-num-farm > 0)
+        =>
+        (up-modify-goal g-temp g:= g-desired-num-farm)
+        (up-modify-goal g-temp g:* g-temp-2)    ;multiply by farming rate per minute
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-object-cost c: farm c: 1)
+        (up-modify-goal g-temp g:* g-wood-cost) ;multiply by cost of farm
+        (up-modify-goal g-temp c:/ 100)         ;the FARM-RATE constants are * 100
+        (up-modify-goal g-temp c:/ 595)         ;divide by amount of wood per farm
+        (up-modify-goal g-total-objects-wood-needed g:+ g-temp)
+        ;(up-chat-data-to-self "add %d wood for farms" g: g-temp)
+        )
+
+    ;--------------------
+    ;   Add Unit Costs
+    ;--------------------
+
+        ;Determine the resources needed per minute for each unit.
+
+        ;---------------
+        ;   Civilians
+        ;---------------
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: villager g:< g-desired-num-villager)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: villager c: 1)
+            (up-get-fact building-type-count town-center g-temp)
+            (up-modify-goal g-temp g:min g-max-working-town-centers)
+            (up-modify-goal g-food-cost g:* g-temp) ;multiply by number of TCs
+            (up-modify-goal g-food-cost c:* 60)     ;60 seconds per minute
+            (up-modify-goal g-food-cost c:* 100)    ;creation times are * 100
+            (up-modify-goal g-food-cost c:/ VILLAGER-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: trade-cart g:< g-desired-num-trade-cart)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: trade-cart c: 1)
+            (up-get-fact building-type-count market g-temp) ;get number of training building
+            (up-modify-goal g-temp g:min g-max-working-markets)
+            (up-modify-goal g-temp c:* 60)     ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)    ;creation times are * 100
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ TRADE-CART-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ TRADE-CART-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: fishing-ship g:< g-desired-num-fishing-ship)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: fishing-ship c: 1)
+            (up-get-fact building-type-count dock g-temp)
+            (up-modify-goal g-temp g:min g-max-working-docks)
+            (up-modify-goal g-wood-cost g:* g-temp) ;multiply by number of docks
+            (up-modify-goal g-wood-cost c:* 60)     ;60 seconds per minute
+            (up-modify-goal g-wood-cost c:* 100)    ;creation times are * 100
+            (up-modify-goal g-wood-cost c:/ FISHING-SHIP-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: trade-cog g:< g-desired-num-trade-cog)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: trade-cog c: 1)
+            (up-get-fact building-type-count dock g-temp) ;get number of training building
+            (up-modify-goal g-temp g:min g-max-working-docks)
+            (up-modify-goal g-temp c:* 60)     ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)    ;creation times are * 100
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ TRADE-COG-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ TRADE-COG-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+        ;--------------------
+        ;   Barracks Units
+        ;--------------------
+
+            ;Militia
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: militiaman-line g:< g-desired-num-militia)
+            (goal g-primary-unit militiaman)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: militiaman c: 1)
+            (up-get-fact building-type-count barracks g-temp)
+            (up-modify-goal g-temp g:min g-max-working-barracks)
+            (up-modify-goal g-temp c:min 3)     ;aim for using three buildings
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ MILITIA-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ MILITIA-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: militiaman-line g:< g-desired-num-militia)
+            (goal g-support-unit militiaman)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: militiaman c: 1)
+            (up-get-fact building-type-count barracks g-temp)
+            (up-modify-goal g-temp g:min g-max-working-barracks)
+            (up-modify-goal g-temp c:min 2)     ;aim for using two buildings
+            (up-modify-goal g-temp c:= 120)     ;60 seconds per minute, * 2 buildings
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ MILITIA-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ MILITIA-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: militiaman-line g:< g-desired-num-militia)
+            (up-compare-goal g-primary-unit != militiaman)
+            (up-compare-goal g-support-unit != militiaman)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: militiaman c: 1)
+            (set-goal g-temp 1)                 ;aim for using one building
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ MILITIA-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ MILITIA-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            ;Spearman
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: spearman-line g:< g-desired-num-spearman)
+            (goal g-primary-unit spearman)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: spearman c: 1)
+            (up-get-fact building-type-count barracks g-temp)
+            (up-modify-goal g-temp c:min 3)     ;aim for using three buildings
+            (up-modify-goal g-temp g:min g-max-working-barracks)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ SPEARMAN-TIME)  ;divide by creation time
+            (up-modify-goal g-wood-cost c:/ SPEARMAN-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: spearman-line g:< g-desired-num-spearman)
+            (goal g-support-unit spearman)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: spearman c: 1)
+            (up-get-fact building-type-count barracks g-temp)
+            (up-modify-goal g-temp c:min 2)     ;aim for using two buildings
+            (up-modify-goal g-temp g:min g-max-working-barracks)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ SPEARMAN-TIME)  ;divide by creation time
+            (up-modify-goal g-wood-cost c:/ SPEARMAN-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: spearman-line g:< g-desired-num-spearman)
+            (up-compare-goal g-primary-unit != spearman)
+            (up-compare-goal g-support-unit != spearman)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: spearman c: 1)
+            (set-goal g-temp 1)                 ;aim for using three buildings
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ SPEARMAN-TIME)  ;divide by creation time
+            (up-modify-goal g-wood-cost c:/ SPEARMAN-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            )
+
+            ;Eagle Scout
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-eagle-scout-line g:< g-desired-num-eagle-warrior)
+            (goal g-primary-unit eagle-warrior)
+            (up-research-status c: ri-eagle-warrior != research-complete)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: eagle-warrior c: 1)
+            (up-get-fact building-type-count barracks g-temp)
+            (up-modify-goal g-temp c:min 3)
+            (up-modify-goal g-temp g:min g-max-working-barracks)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 to adjust creation times
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ EAGLE-SCOUT-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ EAGLE-SCOUT-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-eagle-scout-line g:< g-desired-num-eagle-warrior)
+            (goal g-support-unit eagle-warrior)
+            (up-research-status c: ri-eagle-warrior != research-complete)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: eagle-warrior c: 1)
+            (up-get-fact building-type-count barracks g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-barracks)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 to adjust creation times
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ EAGLE-SCOUT-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ EAGLE-SCOUT-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-eagle-scout-line g:< g-desired-num-eagle-warrior)
+            (up-compare-goal g-primary-unit != eagle-warrior)
+            (up-compare-goal g-support-unit != eagle-warrior)
+            (up-research-status c: ri-eagle-warrior != research-complete)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: eagle-warrior c: 1)
+            (set-goal g-temp 1)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ EAGLE-SCOUT-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ EAGLE-SCOUT-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            ;Eagle Warrior
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-eagle-scout-line g:< g-desired-num-eagle-warrior)
+            (goal g-primary-unit eagle-warrior)
+            (research-completed ri-eagle-warrior)
+            (up-research-status c: ri-elite-eagle-warrior != research-complete)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: eagle-warrior c: 1)
+            (up-get-fact building-type-count barracks g-temp)
+            (up-modify-goal g-temp c:min 3)
+            (up-modify-goal g-temp g:min g-max-working-barracks)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, * 100 to adjust creation times
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-gold-cost c:/ EAGLE-WARRIOR-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-eagle-scout-line g:< g-desired-num-eagle-warrior)
+            (goal g-primary-unit eagle-warrior)
+            (research-completed ri-eagle-warrior)
+            (up-research-status c: ri-elite-eagle-warrior != research-complete)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: eagle-warrior c: 1)
+            (up-get-fact building-type-count barracks g-temp)
+            (up-modify-goal g-temp c:min 3)
+            (up-modify-goal g-temp g:min g-max-working-barracks)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, * 100 to adjust creation times
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ EAGLE-WARRIOR-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-eagle-scout-line g:< g-desired-num-eagle-warrior)
+            (goal g-support-unit eagle-warrior)
+            (research-completed ri-eagle-warrior)
+            (up-research-status c: ri-elite-eagle-warrior != research-complete)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: eagle-warrior c: 1)
+            (up-get-fact building-type-count barracks g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-barracks)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, * 100 to adjust creation times
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ EAGLE-WARRIOR-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            )
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-eagle-scout-line g:< g-desired-num-eagle-warrior)
+            (goal g-support-unit eagle-warrior)
+            (research-completed ri-eagle-warrior)
+            (up-research-status c: ri-elite-eagle-warrior != research-complete)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: eagle-warrior c: 1)
+            (up-get-fact building-type-count barracks g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-barracks)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, * 100 to adjust creation times
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-gold-cost c:/ EAGLE-WARRIOR-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-eagle-scout-line g:< g-desired-num-eagle-warrior)
+            (up-compare-goal g-primary-unit != eagle-warrior)
+            (up-compare-goal g-support-unit != eagle-warrior)
+            (research-completed ri-eagle-warrior)
+            (up-research-status c: ri-elite-eagle-warrior != research-complete)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: eagle-warrior c: 1)
+            (up-modify-goal g-temp g:= 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ EAGLE-WARRIOR-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ EAGLE-WARRIOR-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            ;Elite Eagle Warrior
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-eagle-scout-line g:< g-desired-num-eagle-warrior)
+            (goal g-primary-unit eagle-warrior)
+            (research-completed ri-elite-eagle-warrior)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: eagle-warrior c: 1)
+            (up-get-fact building-type-count barracks g-temp)
+            (up-modify-goal g-temp c:min 3)
+            (up-modify-goal g-temp g:min g-max-working-barracks)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 to adjust creation times
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ ELITE-EAGLE-WARRIOR-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ ELITE-EAGLE-WARRIOR-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-eagle-scout-line g:< g-desired-num-eagle-warrior)
+            (goal g-support-unit eagle-warrior)
+            (research-completed ri-elite-eagle-warrior)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: eagle-warrior c: 1)
+            (up-get-fact building-type-count barracks g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-barracks)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 to adjust creation times
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ ELITE-EAGLE-WARRIOR-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ ELITE-EAGLE-WARRIOR-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-eagle-scout-line g:< g-desired-num-eagle-warrior)
+            (up-compare-goal g-primary-unit != eagle-warrior)
+            (up-compare-goal g-support-unit != eagle-warrior)
+            (research-completed ri-elite-eagle-warrior)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: eagle-warrior c: 1)
+            (set-goal g-temp 1)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ ELITE-EAGLE-WARRIOR-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ ELITE-EAGLE-WARRIOR-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            ;Condottiero
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: condottiero g:< g-desired-num-condottiero)
+            (goal g-primary-unit condottiero)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: condottiero c: 1)
+            (up-get-fact building-type-count barracks g-temp)
+            (up-modify-goal g-temp c:min 3)
+            (up-modify-goal g-temp g:min g-max-working-barracks)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ CONDOTTIERO-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ CONDOTTIERO-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: condottiero g:< g-desired-num-condottiero)
+            (goal g-support-unit condottiero)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: condottiero c: 1)
+            (up-get-fact building-type-count barracks g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-barracks)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ CONDOTTIERO-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ CONDOTTIERO-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: condottiero g:< g-desired-num-condottiero)
+            (up-compare-goal g-primary-unit != condottiero)
+            (up-compare-goal g-support-unit != condottiero)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: condottiero c: 1)
+            (set-goal g-temp 1)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ CONDOTTIERO-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ CONDOTTIERO-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+        ;-------------------------
+        ;   Archery Range Units
+        ;-------------------------
+
+            ;Archer
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: archer-line g:< g-desired-num-archer)
+            (goal g-primary-unit archer)
+            (up-research-status c: ri-crossbow != research-complete)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: archer c: 1)
+            (up-get-fact building-type-count archery-range g-temp)
+            (up-modify-goal g-temp c:min 3)
+            (up-modify-goal g-temp g:min g-max-working-archery-ranges)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 for creation times
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ ARCHER-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ ARCHER-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: archer-line g:< g-desired-num-archer)
+            (goal g-support-unit archer)
+            (up-research-status c: ri-crossbow != research-complete)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: archer c: 1)
+            (up-get-fact building-type-count archery-range g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-archery-ranges)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 for creation times
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ ARCHER-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ ARCHER-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: archer-line g:< g-desired-num-archer)
+            (up-compare-goal g-primary-unit != archer)
+            (up-compare-goal g-support-unit != archer)
+            (up-research-status c: ri-crossbow != research-complete)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: archer c: 1)
+            (set-goal g-temp 1)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ ARCHER-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ ARCHER-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            ;Crossbowman/Arbalest
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: archer-line g:< g-desired-num-archer)
+            (goal g-primary-unit archer)
+            (research-completed ri-crossbow)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: archer c: 1)
+            (up-get-fact building-type-count archery-range g-temp)
+            (up-modify-goal g-temp c:min 3)
+            (up-modify-goal g-temp g:min g-max-working-archery-ranges)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 for creation times
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ CROSSBOWMAN-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ CROSSBOWMAN-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: archer-line g:< g-desired-num-archer)
+            (goal g-support-unit archer)
+            (research-completed ri-crossbow)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: archer c: 1)
+            (up-get-fact building-type-count archery-range g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-archery-ranges)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 for creation times
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ CROSSBOWMAN-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ CROSSBOWMAN-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: archer-line g:< g-desired-num-archer)
+            (up-compare-goal g-primary-unit != archer)
+            (up-compare-goal g-support-unit != archer)
+            (research-completed ri-crossbow)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: archer c: 1)
+            (set-goal g-temp 1)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ CROSSBOWMAN-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ CROSSBOWMAN-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            ;Skirmisher
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-skirmisher-line g:< g-desired-num-skirmisher)
+            (goal g-primary-unit skirmisher)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: skirmisher c: 1)
+            (up-get-fact building-type-count archery-range g-temp)
+            (up-modify-goal g-temp c:min 3)
+            (up-modify-goal g-temp g:min g-max-working-archery-ranges)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ SKIRMISHER-TIME)  ;divide by creation time
+            (up-modify-goal g-food-cost c:/ SKIRMISHER-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-skirmisher-line g:< g-desired-num-skirmisher)
+            (goal g-support-unit skirmisher)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: skirmisher c: 1)
+            (up-get-fact building-type-count archery-range g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-archery-ranges)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ SKIRMISHER-TIME)  ;divide by creation time
+            (up-modify-goal g-food-cost c:/ SKIRMISHER-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-skirmisher-line g:< g-desired-num-skirmisher)
+            (up-compare-goal g-primary-unit != skirmisher)
+            (up-compare-goal g-support-unit != skirmisher)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: skirmisher c: 1)
+            (set-goal g-temp 1)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ SKIRMISHER-TIME)  ;divide by creation time
+            (up-modify-goal g-food-cost c:/ SKIRMISHER-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            )
+
+            ;Cavalry Archer
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: cavalry-archer-line g:< g-desired-num-cavalry-archer)
+            (goal g-primary-unit cavalry-archer)
+            (up-research-status c: ri-heavy-cavalry-archer != research-complete)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: cavalry-archer c: 1)
+            (up-get-fact building-type-count archery-range g-temp)
+            (up-modify-goal g-temp c:min 3)
+            (up-modify-goal g-temp g:min g-max-working-archery-ranges)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 for creation times
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ CAVALRY-ARCHER-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ CAVALRY-ARCHER-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: cavalry-archer-line g:< g-desired-num-cavalry-archer)
+            (goal g-support-unit cavalry-archer)
+            (up-research-status c: ri-heavy-cavalry-archer != research-complete)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: cavalry-archer c: 1)
+            (up-get-fact building-type-count archery-range g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-archery-ranges)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 for creation times
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ CAVALRY-ARCHER-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ CAVALRY-ARCHER-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: cavalry-archer-line g:< g-desired-num-cavalry-archer)
+            (up-compare-goal g-primary-unit != cavalry-archer)
+            (up-compare-goal g-support-unit != cavalry-archer)
+            (up-research-status c: ri-heavy-cavalry-archer != research-complete)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: cavalry-archer c: 1)
+            (set-goal g-temp 1)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ CAVALRY-ARCHER-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ CAVALRY-ARCHER-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            ;Heavy Cavalry Archer
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: cavalry-archer-line g:< g-desired-num-cavalry-archer)
+            (goal g-primary-unit cavalry-archer)
+            (research-completed ri-heavy-cavalry-archer)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: cavalry-archer c: 1)
+            (up-get-fact building-type-count archery-range g-temp)
+            (up-modify-goal g-temp c:min 3)
+            (up-modify-goal g-temp g:min g-max-working-archery-ranges)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 for creation times
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ HEAVY-CAVALRY-ARCHER-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ HEAVY-CAVALRY-ARCHER-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: cavalry-archer-line g:< g-desired-num-cavalry-archer)
+            (goal g-support-unit cavalry-archer)
+            (research-completed ri-heavy-cavalry-archer)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: cavalry-archer c: 1)
+            (up-get-fact building-type-count archery-range g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-archery-ranges)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 for creation times
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ HEAVY-CAVALRY-ARCHER-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ HEAVY-CAVALRY-ARCHER-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: cavalry-archer-line g:< g-desired-num-cavalry-archer)
+            (up-compare-goal g-primary-unit != cavalry-archer)
+            (up-compare-goal g-support-unit != cavalry-archer)
+            (research-completed ri-heavy-cavalry-archer)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: cavalry-archer c: 1)
+            (set-goal g-temp 1)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ HEAVY-CAVALRY-ARCHER-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ HEAVY-CAVALRY-ARCHER-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            ;Hand Cannoneer
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: hand-cannoneer g:< g-desired-num-hand-cannoneer)
+            (goal g-primary-unit hand-cannoneer)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: hand-cannoneer c: 1)
+            (up-get-fact building-type-count archery-range g-temp)
+            (up-modify-goal g-temp c:min 3)
+            (up-modify-goal g-temp g:min g-max-working-archery-ranges)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ HAND-CANNONEER-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ HAND-CANNONEER-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: hand-cannoneer g:< g-desired-num-hand-cannoneer)
+            (goal g-support-unit hand-cannoneer)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: hand-cannoneer c: 1)
+            (up-get-fact building-type-count archery-range g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-archery-ranges)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ HAND-CANNONEER-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ HAND-CANNONEER-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: hand-cannoneer g:< g-desired-num-hand-cannoneer)
+            (up-compare-goal g-primary-unit != hand-cannoneer)
+            (up-compare-goal g-support-unit != hand-cannoneer)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: hand-cannoneer c: 1)
+            (set-goal g-temp 1)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ HAND-CANNONEER-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ HAND-CANNONEER-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            ;Slinger
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: slinger g:< g-desired-num-slinger)
+            (goal g-primary-unit slinger)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: slinger c: 1)
+            (up-get-fact building-type-count archery-range g-temp)
+            (up-modify-goal g-temp c:min 3)
+            (up-modify-goal g-temp g:min g-max-working-archery-ranges)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ SLINGER-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ SLINGER-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: slinger g:< g-desired-num-slinger)
+            (goal g-support-unit slinger)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: slinger c: 1)
+            (up-get-fact building-type-count archery-range g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-archery-ranges)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ SLINGER-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ SLINGER-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: slinger g:< g-desired-num-slinger)
+            (up-compare-goal g-primary-unit != slinger)
+            (up-compare-goal g-support-unit != slinger)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: slinger c: 1)
+            (set-goal g-temp 1)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ SLINGER-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ SLINGER-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            ;Genitour
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-genitour-line g:< g-desired-num-genitour)
+            (goal g-primary-unit genitour)
+            (up-research-status c: ri-elite-genitour != research-complete)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: genitour c: 1)
+            (up-get-fact building-type-count archery-range g-temp)
+            (up-modify-goal g-temp c:min 3)
+            (up-modify-goal g-temp g:min g-max-working-archery-ranges)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 to adjust creation times
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ GENITOUR-TIME)  ;divide by creation time
+            (up-modify-goal g-food-cost c:/ GENITOUR-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-genitour-line g:< g-desired-num-genitour)
+            (goal g-support-unit genitour)
+            (up-research-status c: ri-elite-genitour != research-complete)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: genitour c: 1)
+            (up-get-fact building-type-count archery-range g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-archery-ranges)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 to adjust creation times
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ GENITOUR-TIME)  ;divide by creation time
+            (up-modify-goal g-food-cost c:/ GENITOUR-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-genitour-line g:< g-desired-num-genitour)
+            (up-compare-goal g-primary-unit != genitour)
+            (up-compare-goal g-support-unit != genitour)
+            (up-research-status c: ri-elite-genitour != research-complete)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: genitour c: 1)
+            (set-goal g-temp 1)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ GENITOUR-TIME)  ;divide by creation time
+            (up-modify-goal g-food-cost c:/ GENITOUR-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            )
+
+            ;Elite Genitour
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-genitour-line g:< g-desired-num-genitour)
+            (goal g-primary-unit genitour)
+            (research-completed ri-elite-genitour)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: genitour c: 1)
+            (up-get-fact building-type-count archery-range g-temp)
+            (up-modify-goal g-temp c:min 3)
+            (up-modify-goal g-temp g:min g-max-working-archery-ranges)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 to adjust creation times
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ ELITE-GENITOUR-TIME)  ;divide by creation time
+            (up-modify-goal g-food-cost c:/ ELITE-GENITOUR-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-genitour-line g:< g-desired-num-genitour)
+            (goal g-support-unit genitour)
+            (research-completed ri-elite-genitour)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: genitour c: 1)
+            (up-get-fact building-type-count archery-range g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-archery-ranges)
+            (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 to adjust creation times
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ ELITE-GENITOUR-TIME)  ;divide by creation time
+            (up-modify-goal g-food-cost c:/ ELITE-GENITOUR-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-genitour-line g:< g-desired-num-genitour)
+            (up-compare-goal g-primary-unit != genitour)
+            (up-compare-goal g-support-unit != genitour)
+            (research-completed ri-elite-genitour)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: genitour c: 1)
+            (set-goal g-temp 1)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ ELITE-GENITOUR-TIME)  ;divide by creation time
+            (up-modify-goal g-food-cost c:/ ELITE-GENITOUR-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            )
+
+        ;-------------------
+        ;   Stable Units
+        ;-------------------
+
+            ;Scout Cavalry
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: scout-cavalry-line g:< g-desired-num-scout-cavalry)
+            (goal g-primary-unit scout-cavalry)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: scout-cavalry c: 1)
+            (up-get-fact building-type-count stable g-temp)
+            (up-modify-goal g-temp c:min 3)
+            (up-modify-goal g-temp g:min g-max-working-stables)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ SCOUT-CAVALRY-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: scout-cavalry-line g:< g-desired-num-scout-cavalry)
+            (goal g-support-unit scout-cavalry)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: scout-cavalry c: 1)
+            (up-get-fact building-type-count stable g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-stables)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ SCOUT-CAVALRY-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: scout-cavalry-line g:< g-desired-num-scout-cavalry)
+            (up-compare-goal g-primary-unit != scout-cavalry)
+            (up-compare-goal g-support-unit != scout-cavalry)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: scout-cavalry c: 1)
+            (set-goal g-temp 1)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ SCOUT-CAVALRY-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            )
+
+            ;Knight
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: knight-line g:< g-desired-num-knight)
+            (goal g-primary-unit knight)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: knight c: 1)
+            (up-get-fact building-type-count stable g-temp)
+            (up-modify-goal g-temp c:min 3)
+            (up-modify-goal g-temp g:min g-max-working-stables)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ KNIGHT-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ KNIGHT-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: knight-line g:< g-desired-num-knight)
+            (goal g-support-unit knight)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: knight c: 1)
+            (up-get-fact building-type-count stable g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-stables)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ KNIGHT-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ KNIGHT-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: knight-line g:< g-desired-num-knight)
+            (up-compare-goal g-primary-unit != knight)
+            (up-compare-goal g-support-unit != knight)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: knight c: 1)
+            (set-goal g-temp 1)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ KNIGHT-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ KNIGHT-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            ;Camel
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-camel-line g:< g-desired-num-camel)
+            (goal g-primary-unit camel)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: camel c: 1)
+            (up-get-fact building-type-count stable g-temp)
+            (up-modify-goal g-temp c:min 3)
+            (up-modify-goal g-temp g:min g-max-working-stables)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ CAMEL-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ CAMEL-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-camel-line g:< g-desired-num-camel)
+            (goal g-support-unit camel)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: camel c: 1)
+            (up-get-fact building-type-count stable g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-stables)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ CAMEL-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ CAMEL-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-camel-line g:< g-desired-num-camel)
+            (up-compare-goal g-primary-unit != camel)
+            (up-compare-goal g-support-unit != camel)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: camel c: 1)
+            (set-goal g-temp 1)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ CAMEL-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ CAMEL-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            ;Battle Elephant
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-battle-elephant-line g:< g-desired-num-battle-elephant)
+            (goal g-primary-unit battle-elephant)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: battle-elephant c: 1)
+            (up-get-fact building-type-count stable g-temp)
+            (up-modify-goal g-temp c:min 3)
+            (up-modify-goal g-temp g:min g-max-working-stables)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ BATTLE-ELEPHANT-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ BATTLE-ELEPHANT-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-battle-elephant-line g:< g-desired-num-battle-elephant)
+            (goal g-support-unit battle-elephant)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: battle-elephant c: 1)
+            (up-get-fact building-type-count stable g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-stables)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ BATTLE-ELEPHANT-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ BATTLE-ELEPHANT-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-battle-elephant-line g:< g-desired-num-battle-elephant)
+            (up-compare-goal g-primary-unit != battle-elephant)
+            (up-compare-goal g-support-unit != battle-elephant)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: battle-elephant c: 1)
+            (set-goal g-temp 1)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-food-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-food-cost c:/ BATTLE-ELEPHANT-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ BATTLE-ELEPHANT-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            #load-if-defined DE-AVAILABLE
+
+                ;Steppe Lancer
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-object-type-count c: steppe-lancer-line g:< g-desired-num-steppe-lancer)
+                (goal g-primary-unit steppe-lancer)
+                (up-research-status c: ri-elite-steppe-lancer != research-complete)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: steppe-lancer c: 1)
+                (up-get-fact building-type-count stable g-temp)
+                (up-modify-goal g-temp c:min 3)
+                (up-modify-goal g-temp g:min g-max-working-stables)
+                (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 to adjust creation times
+                (up-modify-goal g-food-cost g:* g-temp)
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-food-cost c:/ STEPPE-LANCER-TIME)  ;divide by creation time
+                (up-modify-goal g-gold-cost c:/ STEPPE-LANCER-TIME)  ;divide by creation time
+                (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+                (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+                )
+
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-object-type-count c: steppe-lancer-line g:< g-desired-num-steppe-lancer)
+                (goal g-support-unit steppe-lancer)
+                (up-research-status c: ri-elite-steppe-lancer != research-complete)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: steppe-lancer c: 1)
+                (up-get-fact building-type-count stable g-temp)
+                (up-modify-goal g-temp c:min 2)
+                (up-modify-goal g-temp g:min g-max-working-stables)
+                (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 to adjust creation times
+                (up-modify-goal g-food-cost g:* g-temp)
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-food-cost c:/ STEPPE-LANCER-TIME)  ;divide by creation time
+                (up-modify-goal g-gold-cost c:/ STEPPE-LANCER-TIME)  ;divide by creation time
+                (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+                (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+                )
+
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-object-type-count c: steppe-lancer-line g:< g-desired-num-steppe-lancer)
+                (up-compare-goal g-primary-unit != steppe-lancer)
+                (up-compare-goal g-support-unit != steppe-lancer)
+                (up-research-status c: ri-elite-steppe-lancer != research-complete)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: steppe-lancer c: 1)
+                (set-goal g-temp 1)
+                (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+                (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+                (up-modify-goal g-food-cost g:* g-temp)
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-food-cost c:/ STEPPE-LANCER-TIME)  ;divide by creation time
+                (up-modify-goal g-gold-cost c:/ STEPPE-LANCER-TIME)  ;divide by creation time
+                (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+                (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+                )
+
+                ;Elite Steppe Lancer
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-object-type-count c: steppe-lancer-line g:< g-desired-num-steppe-lancer)
+                (goal g-primary-unit steppe-lancer)
+                (research-completed ri-elite-steppe-lancer)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: steppe-lancer c: 1)
+                (up-get-fact building-type-count stable g-temp)
+                (up-modify-goal g-temp c:min 3)
+                (up-modify-goal g-temp g:min g-max-working-stables)
+                (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 to adjust creation times
+                (up-modify-goal g-food-cost g:* g-temp)
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-food-cost c:/ ELITE-STEPPE-LANCER-TIME)  ;divide by creation time
+                (up-modify-goal g-gold-cost c:/ ELITE-STEPPE-LANCER-TIME)  ;divide by creation time
+                (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+                (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+                )
+
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-object-type-count c: steppe-lancer-line g:< g-desired-num-steppe-lancer)
+                (goal g-support-unit steppe-lancer)
+                (research-completed ri-elite-steppe-lancer)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: steppe-lancer c: 1)
+                (up-get-fact building-type-count stable g-temp)
+                (up-modify-goal g-temp c:min 2)
+                (up-modify-goal g-temp g:min g-max-working-stables)
+                (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 to adjust creation times
+                (up-modify-goal g-food-cost g:* g-temp)
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-food-cost c:/ ELITE-STEPPE-LANCER-TIME)  ;divide by creation time
+                (up-modify-goal g-gold-cost c:/ ELITE-STEPPE-LANCER-TIME)  ;divide by creation time
+                (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+                (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+                )
+
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-object-type-count c: steppe-lancer-line g:< g-desired-num-steppe-lancer)
+                (up-compare-goal g-primary-unit != steppe-lancer)
+                (up-compare-goal g-support-unit != steppe-lancer)
+                (research-completed ri-elite-steppe-lancer)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: steppe-lancer c: 1)
+                (up-modify-goal g-temp c:= 1)
+                (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+                (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+                (up-modify-goal g-food-cost g:* g-temp)
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-food-cost c:/ ELITE-STEPPE-LANCER-TIME)  ;divide by creation time
+                (up-modify-goal g-gold-cost c:/ ELITE-STEPPE-LANCER-TIME)  ;divide by creation time
+                (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+                (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+                )
+
+            #end-if
+
+        ;------------------
+        ;   Castle Units
+        ;------------------
+
+            ;Unique Unit
+            (defrule
+            (or
+                (up-compare-goal g-max-working-castles < 2)
+                (or
+                    (building-type-count castle < 2)
+                    (up-compare-goal g-primary-unit != my-unique-unit)))
+            =>
+            (up-jump-rule 1)
+            )
+
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-compare-goal g-unique-unit-line g:< g-desired-num-unique-unit)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: my-unique-unit c: 1)
+                (up-modify-goal g-temp c:= 12000)   ;60 seconds per minute, * 2 buildings, * 100 to adjust for creation times
+                (up-modify-goal g-food-cost g:* g-temp)
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-wood-cost g:* g-temp)
+                (up-modify-goal g-food-cost c:/ UNIQUE-UNIT-TIME)  ;divide by creation time
+                (up-modify-goal g-gold-cost c:/ UNIQUE-UNIT-TIME)  ;divide by creation time
+                (up-modify-goal g-wood-cost c:/ UNIQUE-UNIT-TIME)  ;divide by creation time
+                (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+                (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+                (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+                )
+
+            (defrule
+            (or
+                (and
+                    (up-compare-goal g-max-working-castles >= 2)
+                    (and
+                        (building-type-count castle >= 2)
+                        (goal g-primary-unit my-unique-unit)))
+                (building-type-count castle == 0))
+            =>
+            (up-jump-rule 1)
+            )
+
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-compare-goal g-unique-unit-line g:< g-desired-num-unique-unit)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: my-unique-unit c: 1)
+                (up-modify-goal g-temp c:= 6000)     ;60 seconds per minute, * 100 to adjust for creation times
+                (up-modify-goal g-food-cost g:* g-temp)
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-wood-cost g:* g-temp)
+                (up-modify-goal g-food-cost c:/ UNIQUE-UNIT-TIME)  ;divide by creation time
+                (up-modify-goal g-gold-cost c:/ UNIQUE-UNIT-TIME)  ;divide by creation time
+                (up-modify-goal g-wood-cost c:/ UNIQUE-UNIT-TIME)  ;divide by creation time
+                (up-modify-goal g-total-objects-food-needed g:+ g-food-cost)
+                (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+                (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+                )
+
+            ;Trebuchet
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: trebuchet-set g:< g-desired-num-trebuchet)
+            (building-type-count castle > 0)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: trebuchet c: 1)
+            (up-modify-goal g-temp c:= 30)      ;60 seconds per minute, / 2 to cut amount to save in half
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ TREBUCHET-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ TREBUCHET-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+        ;---------------------
+        ;   Monastery Units
+        ;---------------------
+
+            ;Monk
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count-total c: monk g:< g-desired-num-monk)
+            (or
+                (goal g-primary-unit monk)
+                (goal g-support-unit monk))
+            (building-type-count monastery > 0)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: monk c: 1)
+            (up-get-fact building-type-count monastery g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-monasteries)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-gold-cost c:/ MONK-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count-total c: monk g:< g-desired-num-monk)
+            (nor
+                (goal g-primary-unit monk)
+                (goal g-support-unit monk))
+            (up-compare-goal g-desired-num-monk >= 5)
+            (building-type-count monastery > 0)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: monk c: 1)
+            (set-goal g-temp 1)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-gold-cost c:/ MONK-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            ;Missionary
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count-total c: missionary g:< g-desired-num-missionary)
+            (or
+                (goal g-primary-unit missionary)
+                (goal g-support-unit missionary))
+            (building-type-count monastery > 0)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: missionary c: 1)
+            (up-get-fact building-type-count monastery g-temp)
+            (up-modify-goal g-temp c:min 2)
+            (up-modify-goal g-temp g:min g-max-working-monasteries)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-gold-cost c:/ MISSIONARY-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count-total c: missionary g:< g-desired-num-missionary)
+            (nor
+                (goal g-primary-unit missionary)
+                (goal g-support-unit missionary))
+            (up-compare-goal g-desired-num-missionary >= 5)
+            (building-type-count monastery > 0)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: missionary c: 1)
+            (set-goal g-temp 1)
+            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-gold-cost c:/ MISSIONARY-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+        ;--------------------------
+        ;   Siege Workshop Units
+        ;--------------------------
+
+            ;Battering Ram
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: battering-ram-line g:< g-desired-num-battering-ram)
+            (building-type-count siege-workshop > 0)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: battering-ram c: 1)
+            (up-modify-goal g-temp c:= 30)      ;60 seconds per minute, / 2 to cut amount to save in half
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ BATTERING-RAM-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ BATTERING-RAM-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            ;Mangonel
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-compare-goal g-mangonel-line g:< g-desired-num-mangonel)
+            (building-type-count siege-workshop > 0)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: mangonel c: 1)
+            (up-modify-goal g-temp c:= 30)      ;60 seconds per minute, / 2 to cut amount to save in half
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ MANGONEL-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ MANGONEL-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            ;Scorpion
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: scorpion-line g:< g-desired-num-scorpion)
+            (building-type-count siege-workshop > 0)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: scorpion c: 1)
+            (up-modify-goal g-temp c:= 30)      ;60 seconds per minute, / 2 to cut amount to save in half
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ SCORPION-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ SCORPION-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+            ;Bombard Cannon
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count c: bombard-cannon g:< g-desired-num-bombard-cannon)
+            (building-type-count siege-workshop > 0)
+            =>
+            (up-setup-cost-data 1 g-food-cost)
+            (up-add-object-cost c: bombard-cannon c: 1)
+            (up-modify-goal g-temp c:= 30)      ;60 seconds per minute, / 2 to cut amount to save in half
+            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+            (up-modify-goal g-wood-cost g:* g-temp)
+            (up-modify-goal g-gold-cost g:* g-temp)
+            (up-modify-goal g-wood-cost c:/ BOMBARD-CANNON-TIME)  ;divide by creation time
+            (up-modify-goal g-gold-cost c:/ BOMBARD-CANNON-TIME)  ;divide by creation time
+            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+            )
+
+    ;------------------------
+    ;   Add Costs Together
+    ;------------------------
+
+        ;Divide tech costs by 2 to deprioritize them over units
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        =>
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-cost-data g-total-techs-food-needed c: 1)
+        (up-modify-goal g-food-cost c:/ 3)
+        (up-modify-goal g-wood-cost c:/ 3)
+        (up-modify-goal g-stone-cost c:/ 3)
+        (up-modify-goal g-gold-cost c:/ 3)
+        (up-setup-cost-data 1 g-total-food-needed)
+        (up-add-cost-data g-food-cost c: 1)
+        (up-add-cost-data g-total-objects-food-needed c: 1)
+        )
+
+    ;---------------------------------------------
+    ;   Calculate Needed Gatherers Per Resource
+    ;---------------------------------------------
+
+        (load "The General 3/Functions/Reset")
+
+        ;For each resource, calculate difference between the resource stockpile and the needed
+        ;resource amount. If we have excess resources over our max needed amount, then subtract
+        ;this amount from the total amount of that resource we need in the next minute.
+        ;Then, multiply the net total resource needed by 100 since gathering rates are 100 times
+        ;larger than the real gathering rates, and divide by the gathering rate. This gives
+        ;us the number of gatherers we need per resource.
+
+        ;Food
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        ; (up-compare-goal g-percent-dynamic-gathering > 0)
+        =>
+        (up-modify-goal g-required-num-food-vils g:= g-total-food-needed)
+        (up-get-fact food-amount 0 g-temp)
+        (up-modify-goal g-temp g:- g-max-food-needed)
+        (up-modify-goal g-temp c:/ 2)   ;spread excess resources over two minutes instead of one
+        (up-modify-goal g-temp c:max 0)
+        (up-modify-goal g-required-num-food-vils g:- g-temp)
+        (up-modify-goal g-required-num-food-vils c:max 0)
+        (up-modify-goal g-required-num-food-vils c:* 100)    ;*100 to adjust gathering rates
+        (up-modify-goal g-required-num-food-vils g:/ g-current-farming-gathering-rate)
+        )
+
+        ;Wood
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        ; (up-compare-goal g-percent-dynamic-gathering > 0)
+        =>
+        (up-modify-goal g-required-num-wood-vils g:= g-total-wood-needed)
+        (up-get-fact wood-amount 0 g-temp)
+        (up-modify-goal g-temp g:- g-max-wood-needed)
+        (up-modify-goal g-temp c:/ 2)   ;spread excess resources over two minutes instead of one
+        (up-modify-goal g-temp c:max 0)
+        (up-modify-goal g-required-num-wood-vils g:- g-temp)
+        (up-modify-goal g-required-num-wood-vils c:max 0)
+        (up-modify-goal g-required-num-wood-vils c:* 100)    ;*100 to adjust gathering rates
+        (up-modify-goal g-required-num-wood-vils g:/ g-current-wood-gathering-rate)
+        )
+
+        ;Gold
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        ; (up-compare-goal g-percent-dynamic-gathering > 0)
+        =>
+        (up-modify-goal g-required-num-gold-vils g:= g-total-gold-needed)
+        (up-get-fact gold-amount 0 g-temp)
+        (up-modify-goal g-temp g:- g-max-gold-needed)
+        (up-modify-goal g-temp c:/ 2)   ;spread excess resources over two minutes instead of one
+        (up-modify-goal g-temp c:max 0)
+        (up-modify-goal g-required-num-gold-vils g:- g-temp)
+        (up-modify-goal g-required-num-gold-vils c:max 0)
+        (up-modify-goal g-required-num-gold-vils c:* 100)    ;*100 to adjust gathering rates
+        (up-modify-goal g-required-num-gold-vils g:/ g-current-gold-gathering-rate)
+        )
+
+        ;Stone
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        ; (up-compare-goal g-percent-dynamic-gathering > 0)
+        =>
+        (up-modify-goal g-required-num-stone-vils g:= g-total-stone-needed)
+        (up-get-fact stone-amount 0 g-temp)
+        (up-modify-goal g-temp g:- g-max-stone-needed)
+        (up-modify-goal g-temp c:/ 2)   ;spread excess resources over two minutes instead of one
+        (up-modify-goal g-temp c:max 0)
+        (up-modify-goal g-required-num-stone-vils g:- g-temp)
+        (up-modify-goal g-required-num-stone-vils c:max 0)
+        (up-modify-goal g-required-num-stone-vils c:* 100)    ;*100 to adjust gathering rates
+        (up-modify-goal g-required-num-stone-vils g:/ g-current-stone-gathering-rate)
+        )
+
+        ;Total
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        ; (up-compare-goal g-percent-dynamic-gathering > 0)
+        =>
+        (up-modify-goal g-total-needed-villagers g:= g-required-num-food-vils)
+        (up-modify-goal g-total-needed-villagers g:+ g-required-num-wood-vils)
+        (up-modify-goal g-total-needed-villagers g:+ g-required-num-gold-vils)
+        (up-modify-goal g-total-needed-villagers g:+ g-required-num-stone-vils)
+        ; (chat-to-player my-player-number "242")
+        )
+
+    ;-------------------------------------------
+    ;	GOAL 292: g-percent-dynamic-gathering
+    ;-------------------------------------------
+
+        (defrule
+        (or
+            (and
+                (up-compare-goal g-age-status < MID-CASTLE)
+                (unit-type-count villager < 45))
+            (and
+                (unit-type-count villager >= 50)
+                (up-compare-goal g-total-needed-villagers <= 30)))	;if we have many more villagers than needed, this often means we have excess resources
+        (up-compare-goal g-percent-dynamic-gathering != 0)			;which can easily throw off proper gathering percentages, revert to default percentages
+        =>
+        (set-goal g-percent-dynamic-gathering 0)
+        )
+
+        (defrule
+        (or
+            (up-compare-goal g-age-status >= MID-CASTLE)
+            (unit-type-count villager >= 45))
+        (up-compare-goal g-percent-dynamic-gathering != 80)
+        (or
+            (unit-type-count villager < 50)
+            (up-compare-goal g-total-needed-villagers > 30))
+        =>
+        (set-goal g-percent-dynamic-gathering 80)
+        )
+
+    ;-------------------------------------
+    ;   Adjust Desired Future Gatherers
+    ;-------------------------------------
+
+        ;Adjust future gatherers
+        ;For dynamic gathering, the desired future gatherers are a combination of preset
+        ;desired gatherer numbers and the dynamic gatherer numbers calculated above.
+        ;The percentage of both is determined by g-percent-dynamic-gatherers.
+
+        (load "The General 3/Functions/Reset")
+
+        ;Food
+        (defrule
+        (up-compare-goal g-percent-dynamic-gathering > 0)
+        (up-compare-goal g-total-needed-villagers > 0)
+        =>
+        (set-goal g-temp 100)
+        (up-modify-goal g-temp g:- g-percent-dynamic-gathering)
+        (up-modify-goal g-desired-future-food-vils g:%* g-temp) ;reduce prior static future gatherers
+        (set-goal g-temp 1000)
+        (up-modify-goal g-temp g:%/ g-total-needed-villagers)   ;scale the total required villager counts to
+        (up-modify-goal g-temp g:%* g-percent-dynamic-gathering);equal the total static future gatherer numbers
+        (up-modify-goal g-temp-2 g:= g-required-num-food-vils)
+        (up-modify-goal g-temp-2 g:%* g-temp)                   ;scale the required food villager count
+        (up-modify-goal g-desired-future-food-vils g:+ g-temp-2);add scaled required food villager count to future gatherers
+        )
+
+        ;Wood
+        (defrule
+        (up-compare-goal g-percent-dynamic-gathering > 0)
+        (up-compare-goal g-total-needed-villagers > 0)
+        =>
+        (set-goal g-temp 100)
+        (up-modify-goal g-temp g:- g-percent-dynamic-gathering)
+        (up-modify-goal g-desired-future-wood-vils g:%* g-temp) ;reduce prior static future gatherers
+        (set-goal g-temp 1000)
+        (up-modify-goal g-temp g:%/ g-total-needed-villagers)   ;scale the total required villager counts to
+        (up-modify-goal g-temp g:%* g-percent-dynamic-gathering);equal the total static future gatherer numbers
+        (up-modify-goal g-temp-2 g:= g-required-num-wood-vils)
+        (up-modify-goal g-temp-2 g:%* g-temp)                   ;scale the required wood villager count
+        (up-modify-goal g-desired-future-wood-vils g:+ g-temp-2);add scaled required wood villager count to future gatherers
+        )
+
+        ;Gold
+        (defrule
+        (up-compare-goal g-percent-dynamic-gathering > 0)
+        (up-compare-goal g-total-needed-villagers > 0)
+        =>
+        (set-goal g-temp 100)
+        (up-modify-goal g-temp g:- g-percent-dynamic-gathering)
+        (up-modify-goal g-desired-future-gold-vils g:%* g-temp) ;reduce prior static future gatherers
+        (set-goal g-temp 1000)
+        (up-modify-goal g-temp g:%/ g-total-needed-villagers)   ;scale the total required villager counts to
+        (up-modify-goal g-temp g:%* g-percent-dynamic-gathering);equal the total static future gatherer numbers
+        (up-modify-goal g-temp-2 g:= g-required-num-gold-vils)
+        (up-modify-goal g-temp-2 g:%* g-temp)                   ;scale the required gold villager count
+        (up-modify-goal g-desired-future-gold-vils g:+ g-temp-2);add scaled required gold villager count to future gatherers
+        )
+
+        ;Stone
+        (defrule
+        (up-compare-goal g-percent-dynamic-gathering > 0)
+        (up-compare-goal g-total-needed-villagers > 0)
+        =>
+        (set-goal g-temp 100)
+        (up-modify-goal g-temp g:- g-percent-dynamic-gathering)
+        (up-modify-goal g-desired-future-stone-vils g:%* g-temp) ;reduce prior static future gatherers
+        (set-goal g-temp 1000)
+        (up-modify-goal g-temp g:%/ g-total-needed-villagers)   ;scale the total required villager counts to
+        (up-modify-goal g-temp g:%* g-percent-dynamic-gathering);equal the total static future gatherer numbers
+        (up-modify-goal g-temp-2 g:= g-required-num-stone-vils)
+        (up-modify-goal g-temp-2 g:%* g-temp)                   ;scale the required stone villager count
+        (up-modify-goal g-desired-future-stone-vils g:+ g-temp-2);add scaled required food villager count to future gatherers
+        )
+
+;=========================<>=========================
+;		      SET GATHERING PERCENTAGES
+;=========================<>=========================
+
+    ;Scale desired future gatherer counts if needed
+    (defrule
+    (true)
+    =>
+    (up-modify-goal g-temp g:= g-desired-future-food-vils)
+    (up-modify-goal g-temp g:+ g-desired-future-wood-vils)
+    (up-modify-goal g-temp g:+ g-desired-future-stone-vils)
+    (up-modify-goal g-temp g:+ g-desired-future-gold-vils)
+    )
+
+    (defrule
+    (up-object-type-count c: villager g:> g-temp)   ;current number of villagers > the sum of future gatherers wanted
+    =>
+    (up-modify-goal g-desired-future-food-vils c:+ 1)
+    ; (chat-local-to-self "need extra villager")
+    )
+
+    ;Adjust future gatherers for when resources run out
+    (defrule
+    (up-gaia-type-count c: gold == 0)
+    (up-compare-goal g-desired-future-gold-vils > 0)
+    =>
+    (up-modify-goal g-desired-future-wood-vils g:+ g-desired-future-gold-vils)
+    (set-goal g-desired-future-gold-vils 0)
+    ;(chat-to-player my-player-number "No more gold to gather")
+    )
+
+    (defrule
+    (up-gaia-type-count c: stone == 0)
+    (up-compare-goal g-desired-future-stone-vils > 0)
+    =>
+    (up-modify-goal g-desired-future-wood-vils g:+ g-desired-future-stone-vils)
+    (set-goal g-desired-future-stone-vils 0)
+    ;(chat-to-player my-player-number "No more stone to gather")
+    )
+
+    (defrule
+    (up-gaia-type-count c: wood == 0)
+    (up-compare-goal g-desired-future-wood-vils > 0)
+    =>
+    (up-modify-goal g-desired-future-food-vils g:+ g-desired-future-wood-vils)
+    (set-goal g-desired-future-wood-vils 0)
+    ;(chat-to-player my-player-number "No more wood to gather")
+    )
+    
+    ;Cap current gatherers to future gatherer amounts
+    (defrule
+    (goal g-percent-dynamic-gathering 0)
+    =>
+    (up-modify-goal g-desired-num-food-vils g:min g-desired-future-food-vils)
+    (up-modify-goal g-desired-num-wood-vils g:min g-desired-future-wood-vils)
+    (up-modify-goal g-desired-num-stone-vils g:min g-desired-future-stone-vils)
+    (up-modify-goal g-desired-num-gold-vils g:min g-desired-future-gold-vils)
+    (up-modify-goal g-temp g:= g-desired-num-food-vils)
+    (up-modify-goal g-temp g:+ g-desired-num-wood-vils)
+    (up-modify-goal g-temp g:+ g-desired-num-stone-vils)
+    (up-modify-goal g-temp g:+ g-desired-num-gold-vils)
+    (set-goal i 0)
+    )
+
+        ;Find which resource we need a new villager on
+        (defrule
+        (or
+            (up-object-type-count c: villager g:> g-previous-villager-count)
+            (and
+                (timer-triggered t-15-sec)
+                (or
+                    (goal g-age-status TO-FEUDAL)
+                    (goal g-age-status TO-CASTLE))))
+        (up-object-type-count c: villager g:> g-temp)   ;we need to assign new villagers
+        (goal g-percent-dynamic-gathering 0)
+        =>
+        (up-modify-goal g-food-cost g:= g-desired-future-food-vils)
+        (up-modify-goal g-food-cost g:- g-desired-num-food-vils)
+        (up-modify-goal g-food-cost g:%/ g-desired-future-food-vils)
+        (up-modify-goal g-wood-cost g:= g-desired-future-wood-vils)
+        (up-modify-goal g-wood-cost g:- g-desired-num-wood-vils)
+        (up-modify-goal g-wood-cost g:%/ g-desired-future-wood-vils)
+        )
+
+        (defrule
+        (or
+            (up-object-type-count c: villager g:> g-previous-villager-count)
+            (and
+                (timer-triggered t-15-sec)
+                (or
+                    (goal g-age-status TO-FEUDAL)
+                    (goal g-age-status TO-CASTLE))))
+        (up-object-type-count c: villager g:> g-temp)   ;we need to assign new villagers
+        (goal g-percent-dynamic-gathering 0)
+        =>
+        (up-modify-goal g-stone-cost g:= g-desired-future-stone-vils)
+        (up-modify-goal g-stone-cost g:- g-desired-num-stone-vils)
+        (up-modify-goal g-stone-cost g:%/ g-desired-future-stone-vils)
+        (up-modify-goal g-gold-cost g:= g-desired-future-gold-vils)
+        (up-modify-goal g-gold-cost g:- g-desired-num-gold-vils)
+        (up-modify-goal g-gold-cost g:%/ g-desired-future-gold-vils)
+        )
+
+        ;Set food as default resource to place new villager on
+        (defrule
+        (or
+            (up-object-type-count c: villager g:> g-previous-villager-count)
+            (and
+                (timer-triggered t-15-sec)
+                (or
+                    (goal g-age-status TO-FEUDAL)
+                    (goal g-age-status TO-CASTLE))))
+        (up-object-type-count c: villager g:> g-temp)   ;we need to assign new villagers
+        (goal g-percent-dynamic-gathering 0)
+        =>
+        (set-goal g-temp-2 food)
+        (up-modify-goal g-temp-3 g:= g-food-cost)
+        )
+
+        ;If we need a wood villager more than food, set wood as resource for new villager
+        (defrule
+        (or
+            (up-object-type-count c: villager g:> g-previous-villager-count)
+            (and
+                (timer-triggered t-15-sec)
+                (or
+                    (goal g-age-status TO-FEUDAL)
+                    (goal g-age-status TO-CASTLE))))
+        (up-object-type-count c: villager g:> g-temp)   ;we need to assign new villagers
+        (goal g-percent-dynamic-gathering 0)
+        (up-compare-goal g-wood-cost g:> g-temp-3)
+        =>
+        (set-goal g-temp-2 wood)
+        (up-modify-goal g-temp-3 g:= g-wood-cost)
+        )
+
+        ;If we need a gold villager more than food or wood, set gold as resource for new villager
+        (defrule
+        (or
+            (up-object-type-count c: villager g:> g-previous-villager-count)
+            (and
+                (timer-triggered t-15-sec)
+                (or
+                    (goal g-age-status TO-FEUDAL)
+                    (goal g-age-status TO-CASTLE))))
+        (up-object-type-count c: villager g:> g-temp)   ;we need to assign new villagers
+        (goal g-percent-dynamic-gathering 0)
+        (up-compare-goal g-gold-cost g:> g-temp-3)
+        =>
+        (set-goal g-temp-2 gold)
+        (up-modify-goal g-temp-3 g:= g-gold-cost)
+        )
+
+        ;If we need a stone villager more than food, wood, or gold, set stone as resource for new villager
+        (defrule
+        (or
+            (up-object-type-count c: villager g:> g-previous-villager-count)
+            (and
+                (timer-triggered t-15-sec)
+                (or
+                    (goal g-age-status TO-FEUDAL)
+                    (goal g-age-status TO-CASTLE))))
+        (up-object-type-count c: villager g:> g-temp)   ;we need to assign new villagers
+        (up-compare-goal g-stone-cost g:> g-temp-3)
+        (goal g-percent-dynamic-gathering 0)
+        =>
+        (set-goal g-temp-2 stone)
+        (up-modify-goal g-temp-3 g:= g-stone-cost)
+        )
+
+        ;Increase desired number of current gathers for the most urgent resource
+        (defrule
+        (or
+            (up-object-type-count c: villager g:> g-previous-villager-count)
+            (and
+                (timer-triggered t-15-sec)
+                (or
+                    (goal g-age-status TO-FEUDAL)
+                    (goal g-age-status TO-CASTLE))))
+        (up-object-type-count c: villager g:> g-temp)   ;we need to assign new villagers
+        (goal g-percent-dynamic-gathering 0)
+        (goal g-temp-2 food)
+        (game-time > 10)
+        =>
+        (up-modify-goal g-desired-num-food-vils c:+ 1)
+        ; (chat-local-to-self "new villager on food")
+        )
+
+        (defrule
+        (or
+            (up-object-type-count c: villager g:> g-previous-villager-count)
+            (and
+                (timer-triggered t-15-sec)
+                (or
+                    (goal g-age-status TO-FEUDAL)
+                    (goal g-age-status TO-CASTLE))))
+        (up-object-type-count c: villager g:> g-temp)   ;we need to assign new villagers
+        (goal g-percent-dynamic-gathering 0)
+        (goal g-temp-2 wood)
+        (game-time > 10)
+        =>
+        (up-modify-goal g-desired-num-wood-vils c:+ 1)
+        ; (chat-local-to-self "new villager on wood")
+        )
+
+        (defrule
+        (or
+            (up-object-type-count c: villager g:> g-previous-villager-count)
+            (and
+                (timer-triggered t-15-sec)
+                (or
+                    (goal g-age-status TO-FEUDAL)
+                    (goal g-age-status TO-CASTLE))))
+        (up-object-type-count c: villager g:> g-temp)   ;we need to assign new villagers
+        (goal g-percent-dynamic-gathering 0)
+        (goal g-temp-2 stone)
+        (game-time > 10)
+        =>
+        (up-modify-goal g-desired-num-stone-vils c:+ 1)
+        ; (chat-local-to-self "new villager on stone")
+        )
+
+        (defrule
+        (or
+            (up-object-type-count c: villager g:> g-previous-villager-count)
+            (and
+                (timer-triggered t-15-sec)
+                (or
+                    (goal g-age-status TO-FEUDAL)
+                    (goal g-age-status TO-CASTLE))))
+        (up-object-type-count c: villager g:> g-temp)   ;we need to assign new villagers
+        (goal g-percent-dynamic-gathering 0)
+        (goal g-temp-2 gold)
+        (game-time > 10)
+        =>
+        (up-modify-goal g-desired-num-gold-vils c:+ 1)
+        ; (chat-local-to-self "new villager on gold")
+        )
+
+        ;Recalculate desired gatherer numbers to see if we need to assign another villager
+        (defrule
+        (or
+            (up-object-type-count c: villager g:> g-previous-villager-count)
+            (and
+                (timer-triggered t-15-sec)
+                (or
+                    (goal g-age-status TO-FEUDAL)
+                    (goal g-age-status TO-CASTLE))))
+        (up-object-type-count c: villager g:> g-temp)   ;we need to assign new villagers
+        (goal g-percent-dynamic-gathering 0)
+        (up-compare-goal i < 30)
+        =>
+        (up-modify-goal g-temp g:= g-desired-num-food-vils)
+        (up-modify-goal g-temp g:+ g-desired-num-wood-vils)
+        (up-modify-goal g-temp g:+ g-desired-num-stone-vils)
+        (up-modify-goal g-temp g:+ g-desired-num-gold-vils)
+        (up-modify-goal i c:+ 1)
+        (up-jump-rule -11)
+        )
+
+    ;Set gatherer percentages when not using dynamic gathering
+    (defrule
+    (goal g-percent-dynamic-gathering 0)
+    =>
+    (up-get-fact unit-type-count villager g-previous-villager-count)
+    (up-modify-sn sn-food-gatherer-percentage g:= g-desired-num-food-vils)
+    (up-modify-sn sn-food-gatherer-percentage g:%/ g-previous-villager-count)
+    (up-modify-sn sn-wood-gatherer-percentage g:= g-desired-num-wood-vils)
+    (up-modify-sn sn-wood-gatherer-percentage g:%/ g-previous-villager-count)
+    (up-modify-sn sn-stone-gatherer-percentage g:= g-desired-num-stone-vils)
+    (up-modify-sn sn-stone-gatherer-percentage g:%/ g-previous-villager-count)
+    (up-modify-sn sn-gold-gatherer-percentage g:= g-desired-num-gold-vils)
+    (up-modify-sn sn-gold-gatherer-percentage g:%/ g-previous-villager-count)
+    )
+    
+    ;If we are done with the build order or we are using dynamic gathering, future gatherer counts are out of 1000.
+    ;If this isn't the case, skip the rule.
+    (defrule
+    (goal g-percent-dynamic-gathering 0)
+    (up-compare-goal g-desired-future-food-vils < 250)
+    (up-compare-goal g-desired-future-wood-vils < 250)
+    (up-compare-goal g-desired-future-stone-vils < 250)
+    (up-compare-goal g-desired-future-gold-vils < 250)
+    =>
+    (up-jump-rule 1)
+    )
+
+    ;Future gatherer counts are out of 1000, so just divide by 10 and set gathering % to this number
+    (defrule
+    (true)
+    =>
+    (up-modify-goal g-temp g:= g-desired-future-food-vils)
+    (up-modify-goal g-temp c:/ 10)
+    (up-modify-sn sn-food-gatherer-percentage g:= g-temp)
+    (up-modify-goal g-temp g:= g-desired-future-wood-vils)
+    (up-modify-goal g-temp c:/ 10)
+    (up-modify-sn sn-wood-gatherer-percentage g:= g-temp)
+    (up-modify-goal g-temp g:= g-desired-future-gold-vils)
+    (up-modify-goal g-temp c:/ 10)
+    (up-modify-sn sn-gold-gatherer-percentage g:= g-temp)
+    (up-modify-goal g-temp g:= g-desired-future-stone-vils)
+    (up-modify-goal g-temp c:/ 10)
+    (up-modify-sn sn-stone-gatherer-percentage g:= g-temp)
+    )
+
+    ; ;Adjust wood gathering % if we need more farms
+    ; (defrule
+    ; (up-timer-status t-15-sec == timer-triggered)
+    ; (current-age >= castle-age)
+    ; (building-type-count farm > 0)
+    ; (up-get-fact building-type-count-total farm g-temp)
+    ; (up-get-fact unit-type-count villager g-temp-2) ;get percentage of farms out of total villagers
+    ; (up-modify-goal g-temp g:%/ g-temp-2)           ;this is the theoretical food gathering % limit
+    ; (up-compare-sn sn-food-gatherer-percentage g:> g-temp)    ;not enough farms to support food gathering %
+    ; =>
+    ; (up-modify-goal g-temp-2 s:= sn-food-gatherer-percentage)
+    ; (up-modify-goal g-temp-2 s:- g-temp)
+    ; ; (up-modify-goal g-temp-2 c:max 10)
+    ; (up-modify-sn sn-food-gatherer-percentage g:- g-temp-2)
+    ; (up-modify-sn sn-wood-gatherer-percentage g:+ g-temp-2)
+    ; )
+
+    ;Make sure percentages sum to 100%
+    (defrule
+    (true)
+    =>
+    (up-modify-goal g-temp s:= sn-food-gatherer-percentage)
+    (up-modify-goal g-temp s:+ sn-wood-gatherer-percentage)
+    (up-modify-goal g-temp s:+ sn-stone-gatherer-percentage)
+    (up-modify-goal g-temp s:+ sn-gold-gatherer-percentage)
+    (set-goal g-temp-2 100)
+    (up-modify-goal g-temp-2 g:%/ g-temp)
+    (up-modify-sn sn-food-gatherer-percentage g:%* g-temp-2)
+    (up-modify-sn sn-wood-gatherer-percentage g:%* g-temp-2)
+    (up-modify-sn sn-stone-gatherer-percentage g:%* g-temp-2)
+    (up-modify-sn sn-gold-gatherer-percentage g:%* g-temp-2)
+    ;(up-chat-data-to-self "Desired Food Vils: %d" s: sn-food-gatherer-percentage)
+    ;(up-chat-data-to-self "Desired Wood Vils: %d" s: sn-wood-gatherer-percentage)
+    ;(up-chat-data-to-self "Desired Gold Vils: %d" s: sn-gold-gatherer-percentage)
+    )
+
+    (defrule
+    (timer-triggered t-15-sec)
+    (up-compare-goal g-percent-dynamic-gathering > 0)
+    =>
+    (up-get-fact unit-type-count villager g-desired-num-food-vils)
+    (up-modify-goal g-desired-num-food-vils s:%* sn-food-gatherer-percentage)
+    (up-get-fact unit-type-count villager g-desired-num-wood-vils)
+    (up-modify-goal g-desired-num-wood-vils s:%* sn-wood-gatherer-percentage)
+    (up-get-fact unit-type-count villager g-desired-num-gold-vils)
+    (up-modify-goal g-desired-num-gold-vils s:%* sn-gold-gatherer-percentage)
+    (up-get-fact unit-type-count villager g-desired-num-stone-vils)
+    (up-modify-goal g-desired-num-stone-vils s:%* sn-stone-gatherer-percentage)
+    )

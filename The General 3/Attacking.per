@@ -1,0 +1,1052 @@
+;=========================<>=========================
+;		   		 ADJUST ATTACK STATUS
+;=========================<>=========================
+
+	(defrule
+	(up-compare-goal g-attack-status < BEFORE-CASTLE-ATTACKS)
+	(goal g-attacking NO)
+	(current-age == castle-age)
+	=>
+	(set-goal g-attack-status BEFORE-CASTLE-ATTACKS)
+	)
+
+	(defrule
+	(goal g-attack-status BEFORE-CASTLE-ATTACKS)
+	(current-age == castle-age)
+	(current-age-time >= 480)
+	=>
+	(set-goal g-attack-status BEFORE-LATER-CASTLE-ATTACKS)
+	; (chat-local-to-self "Skip first castle attack")
+	(set-goal g-first-attack-launched YES)
+	)
+
+	(defrule
+	(goal g-game-focus BOOM)
+	(up-compare-goal g-current-strategy >= 1101)	;Boom Strategies
+	(up-compare-goal g-current-strategy <= 1300)
+	(goal g-attack-status BEFORE-CASTLE-ATTACKS)
+	=>
+	(set-goal g-attack-status BEFORE-LATER-CASTLE-ATTACKS)
+	; (chat-local-to-self "Skip first castle attack to boom")
+	(set-goal g-first-attack-launched YES)
+	)
+
+	(defrule
+	(up-compare-goal g-attack-status < BEFORE-IMPERIAL-ATTACKS)
+	(goal g-attacking NO)
+	(current-age == imperial-age)
+	=>
+	(set-goal g-attack-status BEFORE-IMPERIAL-ATTACKS)
+	)
+
+;=========================<>=========================
+;		   REQUIRED AND STOP ATTACK NUMBERS
+;=========================<>=========================
+
+	;-----------
+	;	Reset
+	;-----------
+
+		(defrule
+		(true)
+		=>
+		(up-modify-goal g-required-attack-num g:= g-desired-num-military)
+		(up-modify-goal g-required-attack-num c:- 5)
+		(up-modify-goal g-required-attack-num c:max 6)
+		(up-modify-goal g-stop-attack-num g:= g-desired-num-military)
+		(up-modify-goal g-stop-attack-num c:- 10)
+		(up-modify-goal g-stop-attack-num c:max 4)
+		)
+
+	;--------------
+	;	Dark Age
+	;--------------
+
+		(defrule
+		(goal g-attack-status BEFORE-CASTLE-ATTACKS)
+		(goal g-strategy-type DRUSH)
+		=>
+		(set-goal g-required-attack-num 4)
+		(set-goal g-stop-attack-num 2)
+		(up-modify-goal g-stop-attack-num c:+ g-additional-stop-attack-num)
+		)
+
+	;----------------
+	;	Feudal Age
+	;----------------
+
+		(defrule
+		(goal g-attack-status BEFORE-CASTLE-ATTACKS)
+		(goal g-strategy-type FLUSH)
+		=>
+		(set-goal g-required-attack-num 6)
+		(set-goal g-stop-attack-num 4)
+		(up-modify-goal g-stop-attack-num c:+ g-additional-stop-attack-num)
+		)
+
+	;---------------------------
+	;	Before Castle Attacks
+	;---------------------------
+
+		(defrule
+		(or
+			(goal g-attack-status BEFORE-CASTLE-ATTACKS)
+			(goal g-attack-status FIRST-CASTLE-ATTACK))
+		(or
+			(goal g-primary-unit-class cavalry-class)
+			(or
+				(goal g-primary-unit-class siege-weapon-class)
+				(goal g-primary-unit-class scorpion-class)))
+		=>
+		(set-goal g-required-attack-num 6)
+		(set-goal g-stop-attack-num 3)
+		(up-modify-goal g-stop-attack-num g:+ g-additional-stop-attack-num)
+		)
+
+		(defrule
+		(or
+			(goal g-attack-status BEFORE-CASTLE-ATTACKS)
+			(goal g-attack-status FIRST-CASTLE-ATTACK))
+		(or
+			(goal g-primary-unit-class infantry-class)
+			(or
+				(goal g-primary-unit-class cavalry-archer-class)
+				(goal g-primary-unit-class cavalry-cannon-class)))
+		=>
+		(set-goal g-required-attack-num 9)
+		(set-goal g-stop-attack-num 5)
+		(up-modify-goal g-stop-attack-num g:+ g-additional-stop-attack-num)
+		)
+
+		(defrule
+		(or
+			(goal g-attack-status BEFORE-CASTLE-ATTACKS)
+			(goal g-attack-status FIRST-CASTLE-ATTACK))
+		(or
+			(goal g-primary-unit-class archery-class)
+			(goal g-primary-unit-class archery-cannon-class))
+		=>
+		(set-goal g-required-attack-num 16)
+		(set-goal g-stop-attack-num 9)
+		(up-modify-goal g-stop-attack-num g:+ g-additional-stop-attack-num)
+		)
+
+		(defrule
+		(or
+			(goal g-attack-status BEFORE-CASTLE-ATTACKS)
+			(goal g-attack-status FIRST-CASTLE-ATTACK))
+		(goal g-primary-unit-class monastery-class)
+		=>
+		(set-goal g-required-attack-num 20)
+		(set-goal g-stop-attack-num 12)
+		(up-modify-goal g-stop-attack-num g:+ g-additional-stop-attack-num)
+		)
+
+		(defrule
+		(or
+			(goal g-attack-status BEFORE-CASTLE-ATTACKS)
+			(goal g-attack-status FIRST-CASTLE-ATTACK))
+		(players-current-age target-player >= castle-age)
+		=>
+		;(up-modify-goal g-required-attack-num c:+ 2)
+		(up-modify-goal g-stop-attack-num c:+ 2)
+		)
+
+		(defrule
+		(or
+			(goal g-attack-status BEFORE-CASTLE-ATTACKS)
+			(goal g-attack-status FIRST-CASTLE-ATTACK))
+		(goal g-position POCKET)
+		=>
+		(up-modify-goal g-required-attack-num c:+ 2)
+		;(up-modify-goal g-stop-attack-num c:+ 2)
+		)
+
+		(defrule
+		(or
+			(goal g-attack-status BEFORE-CASTLE-ATTACKS)
+			(goal g-attack-status FIRST-CASTLE-ATTACK))
+		(up-compare-goal g-target-age-parity != WE-ARE-AHEAD)
+		(or
+			(up-compare-goal g-primary-unit-class != infantry-class)
+			(goal g-primary-unit spearman))
+		(or
+			(up-compare-goal g-primary-unit-class != cavalry-class)
+			(goal g-primary-unit scout-cavalry))
+		(up-compare-goal g-target-military-parity < 0)
+		=>
+		(up-modify-goal g-stop-attack-num g:- g-target-military-parity)	;add the military size our enemy outnumbers us by to g-stop-attack-num (use subtraction because g-target-military-parity will be negative)
+		(up-modify-goal g-stop-attack-num g:- g-target-military-parity)	;add (subtract) it a second time
+		; (up-chat-data-to-self "Adjust Stop %d" g: g-stop-attack-num)
+		)
+
+	;--------------------------
+	;	Later Castle Attacks
+	;--------------------------
+
+		(defrule
+		(current-age == castle-age)
+		(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS)
+		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+		(up-research-status c: imperial-age != research-pending)
+		=>
+		(set-goal g-required-attack-num 35)
+		)
+
+		(defrule
+		(current-age == castle-age)
+		(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS)
+		(players-current-age target-player == imperial-age)
+		(or
+			(up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
+			(up-research-status c: imperial-age == research-pending))
+		=>
+		(set-goal g-required-attack-num 75)
+		)
+
+		(defrule
+		(current-age == castle-age)
+		(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS)
+		(players-current-age target-player < imperial-age)
+		(or
+			(up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
+			(up-research-status c: imperial-age == research-pending))
+		=>
+		(set-goal g-required-attack-num 50)
+		)
+
+		(defrule
+		(current-age == castle-age)
+		(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS)
+		(or
+			(and
+				(players-current-age target-player == castle-age)
+				(up-compare-goal g-age-status == SAVE-FOR-IMPERIAL))
+			(and
+				(players-current-age target-player == imperial-age)
+				(and
+					(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+					(up-research-status c: imperial-age != research-pending))))
+		=>
+		(set-goal g-required-attack-num 50)
+		)
+
+		(defrule
+		(current-age == castle-age)
+		(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS)
+		(players-current-age target-player == imperial-age)
+		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+		(up-research-status c: imperial-age != research-pending)
+		(up-compare-goal g-target-pop-parity > 15)
+		=>
+		(set-goal g-required-attack-num 40)
+		)
+
+		(defrule
+		(current-age == castle-age)
+		(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS)
+		(players-current-age target-player <= castle-age)
+		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+		(up-research-status c: imperial-age != research-pending)
+		(up-compare-goal g-target-pop-parity > 0)
+		=>
+		(set-goal g-required-attack-num 30)
+		)
+
+		(defrule
+		(current-age == castle-age)
+		(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS)
+		(players-current-age target-player <= castle-age)
+		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+		(up-research-status c: imperial-age != research-pending)
+		(up-compare-goal g-target-pop-parity > 15)
+		;(up-compare-goal g-top-enemy-military-parity > -10)
+		=>
+		(set-goal g-required-attack-num 20)
+		)
+
+		(defrule
+		(current-age == castle-age)
+		(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS)
+		(players-current-age target-player <= castle-age)
+		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+		(up-research-status c: imperial-age != research-pending)
+		(up-compare-goal g-target-military-parity > 10)
+		(up-compare-goal g-target-pop-parity > 10)
+		;(up-compare-goal g-top-enemy-military-parity > -10)
+		=>
+		(set-goal g-required-attack-num 20)
+		)
+
+		(defrule
+		(current-age == castle-age)
+		(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS)
+		(players-current-age target-player <= castle-age)
+		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+		(up-research-status c: imperial-age != research-pending)
+		(up-compare-goal g-target-pop-parity > 10)
+		(up-compare-goal g-target-military-parity > 0)
+		;(up-compare-goal g-top-enemy-military-parity > -5)
+		=>
+		(set-goal g-required-attack-num 15)
+		)
+
+		;Enemy is outbooming us, time to be aggressive
+		(defrule
+		(current-age == castle-age)
+		(up-compare-goal g-age-status < SAVE-FOR-IMPERIAL)
+		(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS)
+		(players-current-age target-player <= castle-age)
+		(goal g-game-focus AGGRESSIVE)
+		;(military-population < 20)
+		(up-compare-goal g-target-military-parity > 0)
+		(up-compare-goal g-target-pop-parity < -10)
+		;(up-compare-goal g-top-enemy-military-parity > -10)
+		=>
+		(set-goal g-required-attack-num 15)
+		)
+
+		(defrule
+		(current-age == castle-age)
+		(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS)
+		(players-current-age target-player < castle-age)
+		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+		(up-research-status c: imperial-age != research-pending)
+		(up-compare-goal g-target-military-parity > -6)
+		;(up-compare-goal g-top-enemy-military-parity > -2)
+		=>
+		(set-goal g-required-attack-num 12)
+		)
+
+	;---------------------------
+	;	First Imperial Attack
+	;---------------------------
+
+		(defrule
+		(or
+			(goal g-attack-status BEFORE-IMPERIAL-ATTACKS)
+			(goal g-attack-status FIRST-IMPERIAL-ATTACK))
+		=>
+		(set-goal g-required-attack-num 50)
+		)
+
+		(defrule
+		(or
+			(goal g-attack-status BEFORE-IMPERIAL-ATTACKS)
+			(goal g-attack-status FIRST-IMPERIAL-ATTACK))
+		(players-current-age target-player == imperial-age)
+		(up-compare-goal g-target-pop-parity > 0)
+		;(up-compare-goal g-top-enemy-military-parity > -5)
+		=>
+		(set-goal g-required-attack-num 30)
+		)
+
+		(defrule
+		(or
+			(goal g-attack-status BEFORE-IMPERIAL-ATTACKS)
+			(goal g-attack-status FIRST-IMPERIAL-ATTACK))
+		(players-current-age target-player == imperial-age)
+		(up-compare-goal g-target-pop-parity > 15)
+		;(up-compare-goal g-top-enemy-military-parity > -5)
+		=>
+		(set-goal g-required-attack-num 20)
+		)
+
+		(defrule
+		(or
+			(goal g-attack-status BEFORE-IMPERIAL-ATTACKS)
+			(goal g-attack-status FIRST-IMPERIAL-ATTACK))
+		(players-current-age target-player < imperial-age)
+		(up-compare-goal g-target-pop-parity >= -15)
+		(up-compare-goal g-top-enemy-military-parity > -3)
+		=>
+		(set-goal g-required-attack-num 16)
+		)
+
+		(defrule
+		(or
+			(goal g-attack-status BEFORE-IMPERIAL-ATTACKS)
+			(goal g-attack-status FIRST-IMPERIAL-ATTACK))
+		(players-current-age target-player < castle-age)
+		(up-compare-goal g-top-enemy-military-parity > 0)
+		=>
+		(set-goal g-required-attack-num 12)
+		)
+
+	;----------------------------
+	;	Later Imperial Attacks
+	;----------------------------
+
+		(defrule
+		(up-compare-goal g-attack-status >= BEFORE-LATER-IMPERIAL-ATTACKS)
+		(up-compare-goal g-target-pop-parity <= 0)
+		=>
+		(up-modify-goal g-required-attack-num g:= g-desired-num-military)
+		(up-modify-goal g-required-attack-num c:- 5)
+		)
+
+		(defrule
+		(up-compare-goal g-attack-status >= BEFORE-LATER-IMPERIAL-ATTACKS)
+		(up-compare-goal g-target-pop-parity > 0)
+		=>
+		(up-modify-goal g-required-attack-num g:= g-desired-num-military)
+		(up-modify-goal g-required-attack-num c:- 15)
+		)
+
+		(defrule
+		(up-compare-goal g-attack-status >= BEFORE-LATER-IMPERIAL-ATTACKS)
+		(players-current-age target-player < imperial-age)
+		(up-compare-goal g-target-pop-parity >= -15)
+		;(up-compare-goal g-top-enemy-military-parity > -5)
+		=>
+		(set-goal g-required-attack-num 40)
+		)
+
+		(defrule
+		(up-compare-goal g-attack-status >= BEFORE-LATER-IMPERIAL-ATTACKS)
+		(players-current-age target-player < castle-age)
+		(up-compare-goal g-top-enemy-military-parity > -8)
+		=>
+		(set-goal g-required-attack-num 20)
+		)
+
+		(defrule
+		(up-compare-goal g-attack-status >= BEFORE-LATER-IMPERIAL-ATTACKS)
+		(up-compare-goal g-target-military-parity > 0)
+		(up-compare-goal g-target-pop-parity < -15)
+		=>
+		(set-goal g-required-attack-num 20)
+		)
+
+	;-------------------------
+	;	All Age Adjustments
+	;-------------------------
+
+		(defrule
+		(players-building-type-count target-player castle > 0)
+		(up-compare-goal g-siege-class < 2)
+		=>
+		(up-modify-goal g-required-attack-num c:+ 15)
+		(up-modify-goal g-required-attack-num g:min g-desired-num-military)
+		(up-modify-goal g-temp g:= g-desired-num-military)
+		(up-modify-goal g-temp c:- 10)
+		(up-modify-goal g-stop-attack-num c:+ 10)
+		(up-modify-goal g-stop-attack-num g:min g-temp)
+		)
+
+	;-----------------------------
+	;	Dynamic Stop Attack Num
+	;-----------------------------
+
+		(defrule
+		(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS)
+		=>
+		(up-modify-goal g-stop-attack-num g:= g-required-attack-num)
+		(up-modify-goal g-stop-attack-num c:%* 60)
+		)
+
+;=========================<>=========================
+;			   		 START ATTACK
+;=========================<>=========================
+
+	(defrule
+	(current-age == castle-age)
+	(goal g-attacking NO)
+	(military-population g:>= g-required-attack-num)
+	(military-population g:>= g-stop-attack-num)
+	(military-population > 5)
+	(players-building-count target-player > 0)
+	(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	=>
+	(set-goal g-attacking YES)
+	(set-goal g-attack-coordination ATTACK-STARTED)
+	(up-modify-goal g-attack-status c:+ 1)
+	(chat-to-player my-player-number "Start castle attack")
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-attacking NO)
+	(or
+		(population >= NINETY-PERCENT-POP)
+		(and
+			(military-population g:>= g-required-attack-num)
+			(military-population g:>= g-stop-attack-num)))
+	(players-building-count target-player > 0)
+	(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
+	=>
+	(set-goal g-attacking YES)
+	(set-goal g-attack-coordination ATTACK-STARTED)
+	(up-modify-goal g-attack-status c:+ 1)
+	(chat-to-player my-player-number "Start imperial attack")
+	)
+
+	(defrule
+	(or
+		(goal g-attack-status FIRST-FEUDAL-ATTACK)
+		(or
+			(goal g-attack-status FIRST-CASTLE-ATTACK)
+			(goal g-attack-status FIRST-IMPERIAL-ATTACK)))
+	(up-timer-status t-first-attack == timer-disabled)
+	=>
+	(enable-timer t-first-attack 30)
+	)
+
+	(defrule
+	(goal g-attack-status FIRST-CASTLE-ATTACK)
+	(timer-triggered t-attack-size-increase)
+	(or
+		(and	
+			(goal g-primary-unit-class cavalry-class)
+			(up-compare-goal g-stop-attack-num < 8))
+		(and
+			(up-compare-goal g-primary-unit-class != cavalry-class)
+			(up-compare-goal g-stop-attack-num < 12)))
+	=>
+	(disable-timer t-attack-size-increase)
+	(up-modify-goal g-additional-stop-attack-num c:+ 1)
+	(up-modify-goal g-temp-2 g:= g-stop-attack-num)
+	(up-modify-goal g-temp-2 c:+ 1)
+	(up-chat-data-to-self "Increase stop attack number to %d" g: g-temp-2)
+	(enable-timer t-attack-size-increase INCREASE-TIME)
+	)
+
+	(defrule
+	(goal g-attack-status FIRST-CASTLE-ATTACK)
+	(up-timer-status t-attack-size-increase == timer-disabled)
+	=>
+	(enable-timer t-attack-size-increase INCREASE-TIME)
+	(set-goal g-additional-stop-attack-num 0)
+	)
+
+;=========================<>=========================
+;			   		 STOP ATTACK
+;=========================<>=========================
+
+	(load "The General 3/Functions/Reset")
+
+	;Conditions to Stop Attack
+	(defrule
+	(goal g-attack-status FIRST-CASTLE-ATTACK)
+	(goal g-attacking YES)
+	(or
+		(military-population g:< g-stop-attack-num)
+		(military-population < 5))
+	(up-compare-goal g-target-pop-parity < 20)
+	=>
+	(set-goal g-attacking NO)
+	(set-goal g-attack-coordination STOP-ATTACKING)
+	(chat-to-player my-player-number "Stop first castle attack - too few soldiers")
+	)
+
+	(defrule
+	(goal g-attack-status FIRST-CASTLE-ATTACK)
+	(goal g-attacking YES)
+	(military-population g:< g-stop-attack-num)
+	(up-compare-goal g-target-pop-parity < 20)
+	(or
+		(players-military-population target-player >= 6)
+		(players-building-type-count target-player castle >= 1))
+	(timer-triggered t-first-attack)
+	=>
+	(set-goal g-attacking NO)
+	(set-goal g-attack-coordination STOP-ATTACKING)
+	(chat-to-player my-player-number "Stop first castle attack - enemy too strong")
+	)
+
+	(defrule
+	(goal g-attack-status LATER-CASTLE-ATTACKS)
+	(goal g-attacking YES)
+	(military-population g:< g-stop-attack-num)
+	(up-compare-goal g-target-pop-parity < 30)
+	=>
+	(set-goal g-attacking NO)
+	(set-goal g-attack-coordination STOP-ATTACKING)
+	(chat-to-player my-player-number "Stop later castle attack")
+	)
+
+	(defrule
+	(up-compare-goal g-attack-status >= FIRST-IMPERIAL-ATTACK)
+	(goal g-attacking YES)
+	(military-population g:< g-stop-attack-num)
+	(population < EIGHTY-FIVE-PERCENT-POP)
+	(up-compare-goal g-target-pop-parity < 50)
+	=>
+	(set-goal g-attacking NO)
+	(set-goal g-attack-coordination STOP-ATTACKING)
+	(chat-to-player my-player-number "Stop imperial attack")
+	)
+
+	;Stop attack
+	(defrule
+	(goal g-attack-coordination STOP-ATTACKING)
+	(or
+		(up-timer-status t-first-attack == timer-running)	;If attack lasted less than 30 seconds (timer is still running),
+		(or													;then attack never really happened
+			(goal g-attack-status LATER-FEUDAL-ATTACKS)
+			(and
+				(goal g-attack-status LATER-CASTLE-ATTACKS)
+				(current-age < imperial-age))))
+	=>
+	(up-modify-goal g-attack-status c:- 1)	;move back to previous attack status
+	(up-modify-sn sn-maximum-town-size s:= sn-safe-town-size)
+	; (up-modify-sn sn-maximum-town-size c:min 40)
+	(up-update-targets)
+	(set-goal g-attack-coordination RETREAT)
+	(disable-timer t-first-attack)
+	)
+
+	(defrule
+	(goal g-attack-coordination STOP-ATTACKING)
+	(or
+		(up-timer-status t-first-attack == timer-running)	;If attack lasted less than 30 seconds (timer is still running),
+		(or													;then attack never really happened
+			(and
+				(goal g-attack-status FIRST-IMPERIAL-ATTACK)
+				(current-age-time < 600))
+			(goal g-attack-status LATER-IMPERIAL-ATTACKS)))
+	=>
+	(up-modify-goal g-attack-status c:- 1)	;move back to previous attack status
+	(up-modify-sn sn-maximum-town-size s:= sn-safe-town-size)
+	; (up-modify-sn sn-maximum-town-size c:min 40)
+	(up-update-targets)
+	(set-goal g-attack-coordination RETREAT)
+	(disable-timer t-first-attack)
+	)
+
+	(defrule
+	(goal g-attack-coordination STOP-ATTACKING)
+	=>
+	(up-modify-goal g-attack-status c:+ 1)
+	(up-modify-sn sn-maximum-town-size s:= sn-safe-town-size)
+	(up-modify-sn sn-maximum-town-size c:min 40)
+	(up-update-targets)
+	(set-goal g-attack-coordination RETREAT)
+	(disable-timer t-first-attack)
+	)
+
+;=========================<>=========================
+;		   SET SN-MAXIMUM-TOWN-SIZE FOR TSA
+;=========================<>=========================
+
+	(defrule
+	(true)
+	=>
+	(up-modify-flag g-attack-method-flag c:+ USE-TSA)
+	(up-modify-flag g-attack-method-flag c:- USE-ATTACK-GROUPS)
+	(disable-self)
+	)
+
+	(defrule
+	(goal g-attacking YES)
+	(up-compare-flag g-attack-method-flag == USE-TSA)
+	(strategic-number sn-target-player-number > 0)
+	=>
+	(up-modify-goal g-temp g:= g-closest-enemy-building-distance)	;set to nearest building of target enemy player
+	;(up-modify-goal g-temp g:min g-nearest-enemy-defenses-distance)	;or nearest castle/tower of all enemies
+	(up-modify-goal g-temp c:+ 20)	;give some wiggle room to TSA and allow for multiple building target options
+	)
+
+	(defrule
+	(goal g-attacking YES)
+	(up-compare-flag g-attack-method-flag == USE-TSA)
+	(up-compare-goal g-temp s:> sn-maximum-town-size)
+	(strategic-number sn-target-player-number > 0)
+	=>
+	(up-modify-sn sn-maximum-town-size g:= g-temp)	;nearest enemy building distance + 5
+	(up-modify-sn sn-maximum-town-size c:min HUNDRED-PERCENT-MAP-SIZE)
+	(up-update-targets)
+	; (up-chat-data-to-self "Increase TSA: %d" s: sn-maximum-town-size)
+	)
+
+	(defrule
+	(goal g-attacking YES)
+	(up-compare-flag g-attack-method-flag == USE-TSA)
+	(up-enemy-buildings-in-town == 0)
+	(strategic-number sn-maximum-town-size < HUNDRED-PERCENT-MAP-SIZE)
+	(strategic-number sn-target-player-number > 0)
+	=>
+	(up-modify-sn sn-maximum-town-size c:+ 20)
+	(up-modify-sn sn-maximum-town-size c:min HUNDRED-PERCENT-MAP-SIZE)
+	; (up-chat-data-to-self "Increase TSA more: %d" s: sn-maximum-town-size)
+	(up-update-targets)
+	)
+
+	(defrule
+	(goal g-attacking YES)
+	(up-compare-flag g-attack-method-flag == USE-TSA)
+	(up-enemy-buildings-in-town == 0)
+	(strategic-number sn-maximum-town-size >= HUNDRED-PERCENT-MAP-SIZE)
+	=>
+	(chat-to-all "Bug! No buildings for target player found on map. Notify Leif!")
+	)
+
+	(defrule
+	(goal g-attacking YES)
+	(up-compare-flag g-attack-method-flag == USE-TSA)
+	(up-compare-goal g-temp s:< sn-maximum-town-size)
+	(up-compare-goal g-enemy-buildings-in-town > 0)
+	=>
+	(up-modify-sn sn-maximum-town-size g:= g-temp)
+	(up-modify-sn sn-maximum-town-size c:min HUNDRED-PERCENT-MAP-SIZE)
+	; (up-chat-data-to-self "Decrease TSA: %d" s: sn-maximum-town-size)
+	)
+
+	; (defrule
+	; (goal g-attacking YES)
+	; (timer-triggered t-10-sec)
+	; =>
+	; (up-chat-data-to-self "Closest enemy dist: %d" g: g-closest-enemy-building-distance)
+	; (up-chat-data-to-self "Nearest enemy defense: %d" g: g-nearest-enemy-defenses-distance)
+	; (up-chat-data-to-self "Required: %d" g: g-required-attack-num)
+	; (up-chat-data-to-self "Stop: %d" g: g-stop-attack-num)
+	; (up-chat-data-to-self "Max TS: %d" s: sn-maximum-town-size)
+	; )
+
+	;Turn on attack groups momentarily to assist with army gathering
+	; (defrule
+	; (or
+	; 	(goal g-attacking NO)
+	; 	(timer-triggered t-15-sec))
+	; (up-compare-flag g-attack-method-flag == USE-ATTACK-GROUPS)
+	; (up-compare-flag g-attack-method-flag == USE-TSA)
+	; =>
+	; (up-modify-flag g-attack-method-flag c:- USE-ATTACK-GROUPS)		;only use attack groups to gather soldiers together
+	; (chat-to-player my-player-number "return to TSA")
+	; (up-update-targets)
+	; (up-reset-unit c: all-units-class)
+	; )
+
+	; (defrule
+	; (timer-triggered t-30-sec)
+	; (goal g-attacking YES)
+	; (up-compare-flag g-attack-method-flag == USE-TSA)
+	; (up-compare-flag g-attack-method-flag != USE-ATTACK-GROUPS)
+	; =>
+	; (up-modify-flag g-attack-method-flag c:+ USE-ATTACK-GROUPS)		;only use attack groups to gather soldiers together
+	; (chat-to-player my-player-number "gather soldiers")
+	; )
+
+	;If enemies have no buildings left, switch to attack groups
+	(defrule
+	(goal g-attacking YES)
+	(up-compare-flag g-attack-method-flag != USE-ATTACK-GROUPS)
+	(players-building-count every-enemy == 0)
+	(game-time > 600)
+	(up-compare-sn sn-maximum-town-size >= HUNDRED-FIFTY-PERCENT-MAP-SIZE)
+	(up-compare-sn sn-number-attack-groups == 0)
+	=>
+	(up-modify-flag g-attack-method-flag c:+ USE-ATTACK-GROUPS)
+	(up-modify-sn sn-task-ungrouped-soldiers c:= 1)
+	(up-modify-sn sn-number-explore-groups c:= 4)
+	(up-modify-sn sn-total-number-explorers c:= 4)
+	(chat-local-to-self "No enemy buildings. Switch to attack groups.")
+	)
+
+	(defrule
+	(goal g-attacking YES)
+	(up-compare-sn sn-number-attack-groups != 0)
+	(players-building-count every-enemy != 0)
+	(game-time > 600)
+	=>
+	(up-modify-flag g-attack-method-flag c:- USE-ATTACK-GROUPS)
+	(up-modify-sn sn-task-ungrouped-soldiers c:= 0)
+	(up-modify-sn sn-number-explore-groups c:= 1)
+	(up-modify-sn sn-total-number-explorers c:= 1)
+	(chat-local-to-self "Found enemy buildings. Switch back to TSA.")
+	)
+
+;=========================<>=========================
+;				ATTACK GROUPS SETTINGS
+;=========================<>=========================
+
+	; (defrule
+	; (up-compare-flag g-attack-method-flag == USE-ATTACK-GROUPS)
+	; (up-compare-sn sn-number-attack-groups == 0)
+	; =>
+	; (up-modify-sn sn-number-attack-groups c:= 30)
+	; )
+
+	; (defrule
+	; (up-compare-flag g-attack-method-flag != USE-ATTACK-GROUPS)
+	; (up-compare-sn sn-number-attack-groups > 0)
+	; =>
+	; (up-modify-sn sn-number-attack-groups c:= 0)
+	; )
+
+;=========================<>=========================
+;		   		  TARGET PRIORITIES
+;=========================<>=========================
+
+	;--------------------------
+	;	Offensive Priorities
+	;--------------------------
+
+	;--------------------------
+	;	Defensive Priorities
+	;--------------------------
+
+		(defrule
+		(true)
+		=>
+		(up-set-defense-priority c: palisade-wall c: 1000)
+		(up-set-defense-priority c: stone-wall c: 1000)
+		(up-set-defense-priority c: fortified-wall c: 1000)
+		(disable-self)
+		)
+
+		(defrule
+		(goal g-attacking YES)
+		(military-population < 10)
+		=>
+		(up-set-defense-priority c: lumber-camp c: 3000)
+		(up-set-defense-priority c: mining-camp c: 3000)
+		(up-set-defense-priority c: mill c: 2000)
+		(up-set-defense-priority c: town-center c: 1000)
+		(up-set-defense-priority c: watch-tower c: 50)
+		(up-set-defense-priority c: guard-tower c: 20)
+		(up-set-defense-priority c: keep c: 20)
+		(up-set-defense-priority c: bombard-tower c: 10)
+		(up-set-defense-priority c: castle c: 5)
+		(up-jump-rule 1)
+		)
+
+			(defrule
+			(goal g-attacking YES)
+			(goal g-siege-class 0)
+			(population < 120)
+			(current-age < imperial-age)
+			=>
+			(up-set-defense-priority c: lumber-camp c: 3000)
+			(up-set-defense-priority c: mining-camp c: 3000)
+			(up-set-defense-priority c: mill c: 2000)
+			(up-set-defense-priority c: town-center c: 1000)
+			(up-set-defense-priority c: watch-tower c: 50)
+			(up-set-defense-priority c: guard-tower c: 20)
+			(up-set-defense-priority c: keep c: 20)
+			(up-set-defense-priority c: bombard-tower c: 10)
+			(up-set-defense-priority c: castle c: 5)
+			)
+
+		(defrule
+		(goal g-attacking YES)
+		(military-population >= 10)
+		(up-compare-goal g-siege-class > 0)
+		(up-compare-goal g-target-pop-parity > 10)
+		=>
+		(up-set-defense-priority c: lumber-camp c: 750)
+		(up-set-defense-priority c: mining-camp c: 750)
+		(up-set-defense-priority c: mill c: 600)
+		(up-set-defense-priority c: town-center c: 3000)
+		(up-set-defense-priority c: watch-tower c: 1000)
+		(up-set-defense-priority c: guard-tower c: 1000)
+		(up-set-defense-priority c: keep c: 1000)
+		(up-set-defense-priority c: bombard-tower c: 2000)
+		(up-set-defense-priority c: castle c: 5000)
+		(up-jump-rule 1)
+		)
+
+			(defrule
+			(goal g-attacking YES)
+			(military-population >= 10)
+			(or
+				(population >= 120)
+				(current-age == imperial-age))
+			(up-compare-goal g-target-pop-parity > 10)
+			=>
+			(up-set-defense-priority c: lumber-camp c: 750)
+			(up-set-defense-priority c: mining-camp c: 750)
+			(up-set-defense-priority c: mill c: 600)
+			(up-set-defense-priority c: town-center c: 3000)
+			(up-set-defense-priority c: watch-tower c: 1000)
+			(up-set-defense-priority c: guard-tower c: 1000)
+			(up-set-defense-priority c: keep c: 1000)
+			(up-set-defense-priority c: bombard-tower c: 2000)
+			(up-set-defense-priority c: castle c: 5000)
+			)
+
+		(defrule
+		(goal g-attacking NO)
+		(up-compare-goal g-siege-class == 0)
+		=>
+		(up-set-defense-priority c: lumber-camp c: 50)
+		(up-set-defense-priority c: mining-camp c: 50)
+		(up-set-defense-priority c: mill c: 50)
+		(up-set-defense-priority c: town-center c: 2000)
+		(up-set-defense-priority c: watch-tower c: 1500)
+		(up-set-defense-priority c: guard-tower c: 1500)
+		(up-set-defense-priority c: keep c: 1500)
+		(up-set-defense-priority c: bombard-tower c: 1000)
+		(up-set-defense-priority c: castle c: 5)
+		)
+
+		(defrule
+		(goal g-attacking NO)
+		(up-compare-goal g-siege-class > 0)
+		=>
+		(up-set-defense-priority c: lumber-camp c: 50)
+		(up-set-defense-priority c: mining-camp c: 50)
+		(up-set-defense-priority c: mill c: 50)
+		(up-set-defense-priority c: town-center c: 2000)
+		(up-set-defense-priority c: watch-tower c: 3000)
+		(up-set-defense-priority c: guard-tower c: 4000)
+		(up-set-defense-priority c: keep c: 5000)
+		(up-set-defense-priority c: bombard-tower c: 6000)
+		(up-set-defense-priority c: castle c: 10000)
+		)
+
+		(defrule
+		(or
+			(current-age == imperial-age)
+			(population >= 100))
+		=>
+		(up-set-defense-priority c: lumber-camp c: 50)
+		(up-set-defense-priority c: mining-camp c: 50)
+		(up-set-defense-priority c: mill c: 50)
+		)
+
+		#load-if-not-defined VICTORY-CONQUEST
+
+			(defrule
+			(enemy-captured-relics)
+			=>
+			(up-set-defense-priority c: monastery c: 20000)
+			)
+
+			(defrule
+			(not
+				(enemy-captured-relics))
+			=>
+			(up-set-defense-priority c: monastery c: 500)
+			)
+
+		#end-if
+
+		(load "The General 3/Functions/Reset")
+
+		;Check for towers surrounded by walls
+		;If they exist, set wall defense priorities higher
+		(defrule
+		(up-projectile-detected projectile-watch-tower <= 5000)
+		(timer-triggered t-5-sec)
+		=>
+		(up-get-projectile-player projectile-watch-tower g-temp)
+		(up-modify-sn sn-focus-player-number g:= g-temp)
+		(up-full-reset-search)
+		(up-find-remote c: watch-tower c: 40)
+		(up-remove-objects search-remote object-data-next-attack <= 0)
+		)
+
+		(defrule
+		(up-projectile-detected projectile-watch-tower <= 5000)
+		(up-set-target-object search-remote c: 0)
+		(timer-triggered t-5-sec)
+		=>
+		(up-get-point position-object g-point-x)
+		(up-set-target-point g-point-x)
+		(up-get-object-data object-data-id g-temp-2)
+		(up-full-reset-search)
+		(up-filter-distance c: -1 c: 2)
+		(up-find-remote c: palisade-wall c: 20)
+		(up-find-remote c: stone-wall c: 20)
+		(up-find-remote c: fortified-wall c: 20)
+		(up-get-search-state g-local-total)
+		)
+
+		(defrule
+		(up-projectile-detected projectile-watch-tower <= 5000)
+		(up-compare-goal g-remote-total < 3)
+		(timer-triggered t-5-sec)
+		=>
+		(up-set-defense-priority c: watch-tower c: 500)
+		)
+
+		;Get soldiers that are targeteting nearby walled tower
+		(defrule
+		(up-projectile-detected projectile-watch-tower <= 5000)
+		(up-compare-goal g-remote-total >= 3)
+		(timer-triggered t-5-sec)
+		(up-set-target-by-id g: g-temp-2)
+		=>
+		(up-reset-search 1 1 0 0)
+		(up-reset-filters)
+		(up-filter-distance c: -1 c: 10)
+		(up-filter-include cmdid-military -1 -1 -1)
+		(up-filter-exclude -1 actionid-explore orderid-explore -1)
+		(up-find-local c: all-units-class c: 240)
+		(up-remove-objects search-local object-data-attack-stance == stance-stand-ground)
+		(up-remove-objects search-local object-data-range > 0)
+		(up-get-search-state g-local-total)
+		(up-remove-objects search-local object-data-target-id g:!= g-temp-2)	;remove soldiers targeting tower with walls around it
+		(up-get-search-state g-local-total)
+		(up-set-defense-priority c: watch-tower c: 20)
+		)
+
+		;Retarget these soldiers against wall instead
+		(defrule
+		(up-projectile-detected projectile-watch-tower <= 5000)
+		(up-compare-goal g-remote-total >= 3)
+		(up-compare-goal g-local-total > 0)
+		(timer-triggered t-5-sec)
+		=>
+		(up-chat-data-to-all "near num targeting tower %d" g: g-local-total)
+		(up-target-objects 0 action-default -1 stance-stand-ground)	;attack walls
+		)
+
+		;Get soldiers targeting the walled tower that aren't nearby
+		(defrule
+		(up-projectile-detected projectile-watch-tower <= 5000)
+		(up-compare-goal g-remote-total >= 3)
+		(timer-triggered t-5-sec)
+		(up-set-target-by-id g: g-temp-2)
+		=>
+		(up-reset-search 1 1 0 0)
+		(up-reset-filters)
+		(up-filter-distance c: 10 c: -1)
+		(up-filter-include cmdid-military -1 -1 -1)
+		(up-filter-exclude -1 actionid-explore orderid-explore -1)
+		(up-find-local c: all-units-class c: 240)
+		(up-remove-objects search-local object-data-attack-stance == stance-stand-ground)
+		(up-remove-objects search-local object-data-range > 0)
+		(up-get-search-state g-local-total)
+		(up-remove-objects search-local object-data-target-id g:!= g-temp-2)	;remove soldiers targeting tower with walls around it
+		(up-get-search-state g-local-total)
+		(up-set-defense-priority c: watch-tower c: 20)
+		)
+
+		;Try to stop these soldiers from targeting the tower
+		(defrule
+		(up-projectile-detected projectile-watch-tower <= 5000)
+		(up-compare-goal g-remote-total >= 3)
+		(up-compare-goal g-local-total > 0)
+		(timer-triggered t-5-sec)
+		=>
+		(up-chat-data-to-all "far num targeting tower %d" g: g-local-total)
+		(up-target-point 0 action-none -1 -1)	;stop targeting tower (hopefully)
+		)
+		
+		;Reset stand ground units if they don't need to target wall anymore
+		(defrule
+		(true)
+		=>
+		(up-full-reset-search)
+		(up-filter-include cmdid-military -1 -1 -1)
+		(up-filter-exclude -1 actionid-explore orderid-explore -1)
+		(up-find-local c: all-units-class c: 240)
+		(up-remove-objects search-local object-data-attack-stance != stance-stand-ground)
+		(up-remove-objects search-local object-data-target == wall-class)
+		(up-target-point 0 action-none -1 stance-aggressive)
+		)
+		
+		;Reset idle stand ground units
+		(defrule
+		(true)
+		=>
+		(up-full-reset-search)
+		(up-filter-include cmdid-military -1 -1 -1)
+		(up-filter-exclude -1 actionid-explore orderid-explore -1)
+		(up-find-local c: all-units-class c: 240)
+		(up-remove-objects search-local object-data-attack-stance != stance-stand-ground)
+		(up-remove-objects search-local object-data-action == actionid-attack)
+		(up-target-point 0 action-none -1 stance-aggressive)
+		)
