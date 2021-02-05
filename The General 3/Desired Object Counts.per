@@ -4884,19 +4884,24 @@
 		)
 
 		;We want second mill if we have leftover deer
-		(defrule
-		;(unit-type-count villager-hunter > 0)
-		(unit-type-count villager >= 22)
-		(building-type-count-total mill == 1)
-		(up-compare-goal g-desired-num-mill < 2)
-		(up-compare-goal g-deer-current-count >= 2)
-		(dropsite-min-distance deer-hunting >= 5)
-		(dropsite-min-distance deer-hunting <= 20)
-		(up-compare-goal g-scouting-status >= FIND-ENEMY)
-		=>
-		(set-goal g-desired-num-mill 2)
-		(set-strategic-number sn-preferred-mill-placement 1)	;for deer
-		)
+
+		#load-if-defined WAIT-UNTIL-DUC-MILLS
+
+			(defrule
+			;(unit-type-count villager-hunter > 0)
+			(unit-type-count villager >= 22)
+			(building-type-count-total mill == 1)
+			(up-compare-goal g-desired-num-mill < 2)
+			(up-compare-goal g-deer-current-count >= 2)
+			(dropsite-min-distance deer-hunting >= 5)
+			(dropsite-min-distance deer-hunting <= 20)
+			(up-compare-goal g-scouting-status >= FIND-ENEMY)
+			=>
+			(set-goal g-desired-num-mill 2)
+			(set-strategic-number sn-preferred-mill-placement 1)	;for deer
+			)
+			
+		#end-if
 
 		;Backup in case we never built a mill after 5 minutes
 		(defrule
