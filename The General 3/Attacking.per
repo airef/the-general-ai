@@ -153,6 +153,15 @@
 		)
 
 		(defrule
+		(up-compare-goal g-target-military-parity < 0)
+		=>
+		(up-modify-goal g-temp g:= g-target-military-parity)
+		(up-modify-goal g-temp c:/ -8)
+		(up-modify-goal g-stop-attack-num g:+ g-temp)
+		(up-modify-goal g-stop-attack-num g:min g-required-attack-num)
+		)
+
+		(defrule
 		(or
 			(goal g-attack-status BEFORE-CASTLE-ATTACKS)
 			(goal g-attack-status FIRST-CASTLE-ATTACK))
@@ -178,6 +187,26 @@
 		(up-modify-goal g-stop-attack-num g:- g-target-military-parity)	;add the military size our enemy outnumbers us by to g-stop-attack-num (use subtraction because g-target-military-parity will be negative)
 		(up-modify-goal g-stop-attack-num g:- g-target-military-parity)	;add (subtract) it a second time
 		; (up-chat-data-to-self "Adjust Stop %d" g: g-stop-attack-num)
+		)
+
+		(defrule
+		(or
+			(goal g-attack-status BEFORE-CASTLE-ATTACKS)
+			(goal g-attack-status FIRST-CASTLE-ATTACK))
+		(military-population >= 10)
+		(up-compare-goal g-target-military-parity > 0)
+		(or
+			(goal g-target-age-parity WE-ARE-AHEAD)
+			(and
+				(up-compare-goal g-target-military-parity > 5)
+				(or
+					(goal g-target-age-parity WE-ARE-EQUAL)
+					(up-compare-goal g-target-military-parity > 10))))
+		=>
+		(up-get-fact military-population 0 g-temp)
+		(up-modify-goal g-required-attack-num g:= g-temp)
+		(up-modify-goal g-stop-attack-num g:= g-temp)
+		(up-modify-goal g-stop-attack-num c:%* 60)
 		)
 
 	;--------------------------
@@ -318,6 +347,23 @@
 		(set-goal g-required-attack-num 12)
 		)
 
+		(defrule
+		(current-age == castle-age)
+		(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS)
+		(military-population >= 10)
+		(up-compare-goal g-target-military-parity > 0)
+		(or
+			(goal g-target-age-parity WE-ARE-AHEAD)
+			(and
+				(up-compare-goal g-target-military-parity > 5)
+				(or
+					(goal g-target-age-parity WE-ARE-EQUAL)
+					(up-compare-goal g-target-military-parity > 10))))
+		=>
+		(up-get-fact military-population 0 g-temp)
+		(up-modify-goal g-required-attack-num g:= g-temp)
+		)
+
 	;---------------------------
 	;	First Imperial Attack
 	;---------------------------
@@ -373,6 +419,20 @@
 		(set-goal g-required-attack-num 12)
 		)
 
+		(defrule
+		(or
+			(goal g-attack-status BEFORE-IMPERIAL-ATTACKS)
+			(goal g-attack-status FIRST-IMPERIAL-ATTACK))
+		(military-population >= 20)
+		(up-compare-goal g-target-military-parity > 5)
+		(or
+			(goal g-target-age-parity WE-ARE-AHEAD)
+			(up-compare-goal g-target-military-parity > 12))
+		=>
+		(up-get-fact military-population 0 g-temp)
+		(up-modify-goal g-required-attack-num g:= g-temp)
+		)
+
 	;----------------------------
 	;	Later Imperial Attacks
 	;----------------------------
@@ -416,6 +476,18 @@
 		(up-compare-goal g-target-pop-parity < -15)
 		=>
 		(set-goal g-required-attack-num 20)
+		)
+
+		(defrule
+		(up-compare-goal g-attack-status >= BEFORE-LATER-IMPERIAL-ATTACKS)
+		(military-population >= 20)
+		(up-compare-goal g-target-military-parity > 5)
+		(or
+			(goal g-target-age-parity WE-ARE-AHEAD)
+			(up-compare-goal g-target-military-parity > 12))
+		=>
+		(up-get-fact military-population 0 g-temp)
+		(up-modify-goal g-required-attack-num g:= g-temp)
 		)
 
 	;-------------------------

@@ -8,7 +8,6 @@
 	(true)
 	=>
 	(up-get-indirect-goal g: g-desired-num-constant-train-unit-goal g-desired-num-constant-train-unit)
-	(set-goal g-escrow with-escrow)
 	(set-strategic-number sn-enable-training-queue 1)
 	)
 
@@ -16,14 +15,12 @@
 	(up-object-type-count-total g: g-constant-train-unit g:< g-desired-num-constant-train-unit)
 	(up-can-train g-escrow g: g-constant-train-unit)
 	=>
-	(set-goal g-escrow with-escrow)
 	(up-train g-escrow g: g-constant-train-unit)
 	)
 
 	(defrule
 	(true)
 	=>
-	(set-goal g-escrow without-escrow)
 	(set-strategic-number sn-enable-training-queue 0)
 	)
 
@@ -53,7 +50,6 @@
 		(goal g-villager-training TRAIN-WITH-ESCROW)
 		(can-train-with-escrow villager)
 		=>
-		(set-goal g-escrow with-escrow)
 		(up-train g-escrow c: villager)
 		)
 
@@ -63,7 +59,6 @@
 		(up-pending-objects c: villager g:< g-max-working-town-centers)
 		(can-train-with-escrow villager)
 		=>
-		(set-goal g-escrow with-escrow)
 		(up-train g-escrow c: villager)
 		)
 
@@ -91,9 +86,9 @@
 		(defrule
 		(up-object-type-count-total c: fishing-ship g:< g-desired-num-fishing-ship)
 		(up-pending-objects c: fishing-ship g:< g-max-working-docks)
-		(can-train fishing-ship)
+		(can-train-with-escrow fishing-ship)
 		=>
-		(train fishing-ship)
+		(up-train g-escrow c: fishing-ship)
 		)
 
 	;-----------------
@@ -113,7 +108,6 @@
 				(up-research-status c: ri-caravan >= research-pending)
 				(can-train-with-escrow trade-cog)
 				=>
-				(set-goal g-escrow with-escrow)
 				(up-train g-escrow c: trade-cog)
 				)
 
@@ -139,7 +133,6 @@
 				(up-compare-goal g-enemy-units-in-town < 10)
 				(up-research-status c: ri-caravan >= research-pending)
 				=>
-				(set-goal g-escrow with-escrow)
 				(up-train g-escrow c: trade-cart)
 				)
 
@@ -170,7 +163,6 @@
 					(building-type-count castle == 0))
 				(can-train-with-escrow trade-cog)
 				=>
-				(set-goal g-escrow with-escrow)
 				(up-train g-escrow c: trade-cog)
 				)
 
@@ -202,7 +194,6 @@
 					(up-research-status c: my-unique-research >= research-pending)
 					(building-type-count castle == 0))
 				=>
-				(set-goal g-escrow with-escrow)
 				(up-train g-escrow c: trade-cart)
 				)
 
@@ -237,9 +228,7 @@
 		(up-pending-objects c: bombard-cannon g:< g-max-working-siege-workshops)
 		(can-train-with-escrow bombard-cannon)
 		=>
-		(up-modify-escrow wood c:- 225)
-		(up-modify-escrow gold c:- 225)
-		(train bombard-cannon)
+		(up-train g-escrow c: bombard-cannon)
 		)
 
 		(defrule
@@ -252,9 +241,7 @@
 		(up-pending-objects c: trebuchet g:< g-max-working-castles)
 		(can-train-with-escrow trebuchet)
 		=>
-		(up-modify-escrow wood c:- 200)
-		(up-modify-escrow gold c:- 200)
-		(train trebuchet)
+		(up-train g-escrow c: trebuchet)
 		)
 
 		(defrule
@@ -270,9 +257,7 @@
 		; (up-research-status c: ri-capped-ram != research-available)
 		(can-train-with-escrow battering-ram-line)
 		=>
-		(up-modify-escrow wood c:- 160)
-		(up-modify-escrow gold c:- 75)
-		(train battering-ram-line)
+		(up-train g-escrow c: battering-ram-line)
 		)
 
 		(defrule
@@ -287,9 +272,7 @@
 		; (up-research-status c: ri-capped-ram != research-available)
 		(can-train-with-escrow battering-ram-line)
 		=>
-		(up-modify-escrow wood c:- 160)
-		(up-modify-escrow gold c:- 75)
-		(train battering-ram-line)
+		(up-train g-escrow c: battering-ram-line)
 		)
 
 		(defrule
@@ -299,9 +282,18 @@
 		(up-pending-objects c: wk-onager g:< g-max-working-siege-workshops)
 		(can-train-with-escrow mangonel)
 		=>
-		(up-modify-escrow wood c:- 135)
-		(up-modify-escrow gold c:- 135)
-		(train mangonel)
+		(up-train g-escrow c: mangonel)
+		)
+
+		(defrule
+		(goal g-siege-workshop-next-unit scorpion-line)
+		(goal g-town-under-attack NO)
+		(up-object-type-count-total c: scorpion-line g:< g-desired-num-scorpion)
+		(up-pending-objects c: scorpion-line g:< g-max-working-siege-workshops)
+		(can-train-with-escrow scorpion)
+		(unit-type-count-total scorpion-line == 0)
+		=>
+		(up-train g-escrow c: mangonel)
 		)
 
 		(defrule
@@ -419,6 +411,14 @@
 
 				(defrule
 				(up-compare-goal g-unique-unit-line g:< g-desired-num-unique-unit)
+				(goal g-unique-unit-line 0)
+				(can-train-with-escrow my-unique-unit)
+				=>
+				(up-train g-escrow c: my-unique-unit)
+				)
+
+				(defrule
+				(up-compare-goal g-unique-unit-line g:< g-desired-num-unique-unit)
 				(up-pending-objects c: my-unique-unit-line g:< g-max-working-castles)
 				(up-pending-objects c: my-elite-unique-unit g:< g-max-working-castles)
 				(can-train my-unique-unit)
@@ -430,6 +430,22 @@
 		#end-if
 
 		#load-if-defined GOTHIC-CIV
+
+			(defrule
+			(up-compare-goal g-desired-num-unique-unit > 0)
+			(unit-type-count-total huskarl-set == 0)
+			(can-train-with-escrow barracks-huskarl)
+			=>
+			(up-train g-escrow c: barracks-huskarl)
+			)
+
+			(defrule
+			(up-compare-goal g-desired-num-unique-unit > 0)
+			(unit-type-count-total huskarl-set == 0)
+			(can-train-with-escrow huskarl-line)
+			=>
+			(up-train g-escrow c: huskarl-line)
+			)
 
 			(defrule
 			(up-object-type-count-total c: huskarl-set g:< g-desired-num-unique-unit)
@@ -455,6 +471,26 @@
 			#load-if-defined UP-GAME-WK
 
 				(defrule
+				(up-compare-goal g-desired-num-unique-unit > 0)
+				(unit-type-count-total tarkan-line == 0)
+				(unit-type-count-total stable-tarkan == 0)
+				(unit-type-count-total elite-stable-tarkan == 0)
+				(can-train-with-escrow stable-tarkan)
+				=>
+				(up-train g-escrow c: stable-tarkan)
+				)
+
+				(defrule
+				(up-compare-goal g-desired-num-unique-unit > 0)
+				(unit-type-count-total tarkan-line == 0)
+				(unit-type-count-total stable-tarkan == 0)
+				(unit-type-count-total elite-stable-tarkan == 0)
+				(can-train-with-escrow tarkan-line)
+				=>
+				(up-train g-escrow c: tarkan-line)
+				)
+
+				(defrule
 				(up-compare-goal g-tarkan-line g:< g-desired-num-unique-unit)
 				(up-pending-objects c: my-unique-unit-line g:< g-max-working-castles)
 				(up-train-site-ready c: tarkan)
@@ -475,6 +511,14 @@
 				)
 
 			#else
+
+				(defrule
+				(up-compare-goal g-desired-num-unique-unit > 0)
+				(unit-type-count-total tarkan-line == 0)
+				(can-train-with-escrow tarkan-line)
+				=>
+				(up-train g-escrow c: tarkan-line)
+				)
 			
 				(defrule
 				(up-compare-goal g-tarkan-line g:< g-desired-num-unique-unit)
@@ -503,12 +547,15 @@
 	;-------------
 
 		(defrule
+		(up-compare-goal g-desired-num-battle-elephant > 0)
+		(up-compare-goal g-battle-elephant-line == 0)
+		(can-train-with-escrow battle-elephant)
+		=>
+		(up-train g-escrow c: battle-elephant)
+		)
+
+		(defrule
 		(goal g-stable-next-unit battle-elephant)
-		(or
-			(up-compare-goal g-battle-elephant-tech-progress >= REQUIRED-CASTLE-COMPLETE)
-			(and
-				(up-compare-goal g-primary-unit != battle-elephant)
-				(civilian-population < 80)))
 		(up-compare-goal g-battle-elephant-line g:< g-desired-num-battle-elephant)
 		(up-pending-objects c: battle-elephant-line g:< g-max-working-stables)
 		(up-pending-objects c: battle-elephant g:< g-max-working-stables)
@@ -519,24 +566,15 @@
 		)
 
 		(defrule
-		(goal g-stable-next-unit battle-elephant)
-		(up-compare-goal g-battle-elephant-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
-		(up-compare-goal g-battle-elephant-line g:< g-desired-num-battle-elephant)
-		(up-pending-objects c: battle-elephant-line g:< g-max-working-stables)
-		(up-pending-objects c: battle-elephant g:< g-max-working-stables)
-		(up-pending-objects c: elite-battle-elephant g:< g-max-working-stables)
-		(can-train battle-elephant)
+		(up-compare-goal g-desired-num-knight > 0)
+		(unit-type-count-total knight-line == 0)
+		(can-train-with-escrow knight-line)
 		=>
-		(train battle-elephant)
+		(up-train g-escrow c: knight-line)
 		)
 
 		(defrule
 		(goal g-stable-next-unit knight-line)
-		(or
-			(up-compare-goal g-knight-tech-progress >= REQUIRED-CASTLE-COMPLETE)
-			(and
-				(up-compare-goal g-primary-unit != knight)
-				(civilian-population < 80)))
 		(up-object-type-count-total c: knight-line g:< g-desired-num-knight)
 		(up-pending-objects c: knight-line g:< g-max-working-stables)
 		(can-train knight-line)
@@ -545,22 +583,15 @@
 		)
 
 		(defrule
-		(goal g-stable-next-unit knight-line)
-		(up-compare-goal g-knight-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
-		(up-object-type-count-total c: knight-line g:< g-desired-num-knight)
-		(up-pending-objects c: knight-line g:< g-max-working-stables)
-		(can-train knight-line)
+		(up-compare-goal g-desired-num-camel > 0)
+		(up-compare-goal g-camel-line == 0)
+		(can-train-with-escrow camel)
 		=>
-		(train knight-line)
+		(up-train g-escrow c: camel)
 		)
 
 		(defrule
 		(goal g-stable-next-unit camel)
-		(or
-			(up-compare-goal g-camel-tech-progress >= REQUIRED-CASTLE-COMPLETE)
-			(and
-				(up-compare-goal g-primary-unit != camel)
-				(civilian-population < 80)))
 		(up-object-type-count-total g: g-camel-line g:< g-desired-num-camel)
 		(up-pending-objects c: camel-line g:< g-max-working-stables)
 		(up-pending-objects c: imperial-camel g:< g-max-working-stables)
@@ -570,23 +601,15 @@
 		)
 
 		(defrule
-		(goal g-stable-next-unit camel)
-		(up-compare-goal g-camel-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
-		(up-object-type-count-total g: g-camel-line g:< g-desired-num-camel)
-		(up-pending-objects c: camel-line g:< g-max-working-stables)
-		(up-pending-objects c: imperial-camel g:< g-max-working-stables)
-		(can-train camel)
+		(up-compare-goal g-desired-num-steppe-lancer > 0)
+		(unit-type-count-total steppe-lancer-line == 0)
+		(can-train-with-escrow steppe-lancer-line)
 		=>
-		(train camel)
+		(up-train g-escrow c: steppe-lancer-line)
 		)
 
 		(defrule
 		(goal g-stable-next-unit steppe-lancer-line)
-		(or
-			(up-compare-goal g-steppe-lancer-tech-progress >= REQUIRED-CASTLE-COMPLETE)
-			(and
-				(up-compare-goal g-primary-unit != steppe-lancer)
-				(civilian-population < 80)))
 		(up-object-type-count-total c: steppe-lancer-line g:< g-desired-num-steppe-lancer)
 		(up-pending-objects c: steppe-lancer-line g:< g-max-working-stables)
 		(can-train steppe-lancer-line)
@@ -595,44 +618,15 @@
 		)
 
 		(defrule
-		(goal g-stable-next-unit steppe-lancer-line)
-		(up-compare-goal g-steppe-lancer-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
-		(up-object-type-count-total c: steppe-lancer-line g:< g-desired-num-steppe-lancer)
-		(up-pending-objects c: steppe-lancer-line g:< g-max-working-stables)
-		(can-train steppe-lancer-line)
+		(up-compare-goal g-desired-num-scout-cavalry > 0)
+		(unit-type-count-total scout-cavalry-line == 0)
+		(can-train-with-escrow scout-cavalry-line)
 		=>
-		(train steppe-lancer-line)
+		(up-train g-escrow c: scout-cavalry-line)
 		)
 
 		(defrule
 		(goal g-stable-next-unit scout-cavalry-line)
-		(or
-			(up-compare-goal g-scout-cavalry-tech-progress >= REQUIRED-FEUDAL-COMPLETE)
-			(up-compare-goal g-primary-unit != scout-cavalry))
-		(up-object-type-count-total c: scout-cavalry-line g:< g-desired-num-scout-cavalry)
-		(up-pending-objects c: scout-cavalry-line g:< g-max-working-stables)
-		(can-train scout-cavalry-line)
-		=>
-		(train scout-cavalry-line)
-		)
-
-		(defrule
-		(goal g-stable-next-unit scout-cavalry-line)
-		(or
-			(up-compare-goal g-scout-cavalry-tech-progress >= REQUIRED-CASTLE-COMPLETE)
-			(and
-				(up-compare-goal g-primary-unit != scout-cavalry)
-				(civilian-population < 80)))
-		(up-object-type-count-total c: scout-cavalry-line g:< g-desired-num-scout-cavalry)
-		(up-pending-objects c: scout-cavalry-line g:< g-max-working-stables)
-		(can-train scout-cavalry-line)
-		=>
-		(train scout-cavalry-line)
-		)
-
-		(defrule
-		(goal g-stable-next-unit scout-cavalry-line)
-		(up-compare-goal g-scout-cavalry-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
 		(up-object-type-count-total c: scout-cavalry-line g:< g-desired-num-scout-cavalry)
 		(up-pending-objects c: scout-cavalry-line g:< g-max-working-stables)
 		(can-train scout-cavalry-line)
@@ -645,6 +639,14 @@
 	;-----------
 
 		(defrule
+		(up-compare-goal g-desired-num-monk > 0)
+		(unit-type-count-total monk == 0)
+		(can-train-with-escrow monk)
+		=>
+		(up-train g-escrow c: monk)
+		)
+
+		(defrule
 		(up-object-type-count-total c: monk-set g:< g-desired-num-monk)
 		(up-pending-objects c: monk g:< g-max-working-monasteries)
 		(can-train monk)
@@ -653,6 +655,14 @@
 		)
 
 		#load-if-defined SPANISH-CIV
+
+			(defrule
+			(up-compare-goal g-desired-num-missionary > 0)
+			(unit-type-count-total missionary == 0)
+			(can-train-with-escrow missionary)
+			=>
+			(up-train g-escrow c: missionary)
+			)
 
 			(defrule
 			(up-object-type-count-total c: missionary g:< g-desired-num-missionary)
@@ -668,14 +678,15 @@
 	;	Archers
 	;-------------
 
-		;Cavalry Archers
 		(defrule
-		(current-age == castle-age)
-		(or
-			(up-compare-goal g-cavalry-archer-tech-progress >= REQUIRED-CASTLE-COMPLETE)
-			(and
-				(up-compare-goal g-primary-unit != cavalry-archer)
-				(civilian-population < 80)))
+		(up-compare-goal g-desired-num-cavalry-archer > 0)
+		(unit-type-count-total cavalry-archer-line == 0)
+		(can-train-with-escrow cavalry-archer-line)
+		=>
+		(up-train g-escrow c: cavalry-archer-line)
+		)
+
+		(defrule
 		(or
 			(goal g-archery-range-next-unit cavalry-archer-line)
 			(not
@@ -688,22 +699,14 @@
 		)
 
 		(defrule
-		(current-age == imperial-age)
-		(up-compare-goal g-cavalry-archer-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
-		(or
-			(goal g-archery-range-next-unit cavalry-archer-line)
-			(not
-				(up-can-train 0 g: g-archery-range-next-unit)))
-		(up-object-type-count-total c: cavalry-archer-line g:< g-desired-num-cavalry-archer)
-		(up-pending-objects c: cavalry-archer-line g:< g-max-working-archery-ranges)
-		(can-train cavalry-archer-line)
+		(up-compare-goal g-desired-num-hand-cannoneer > 0)
+		(unit-type-count-total hand-cannoneer == 0)
+		(can-train-with-escrow hand-cannoneer)
 		=>
-		(train cavalry-archer-line)
+		(up-train g-escrow c: hand-cannoneer)
 		)
 
-		;Hand Cannoneers
 		(defrule
-		(up-compare-goal g-hand-cannoneer-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
 		(or
 			(goal g-archery-range-next-unit hand-cannoneer)
 			(not
@@ -715,30 +718,17 @@
 		(train hand-cannoneer)
 		)
 
-		;Slingers
 		#load-if-defined INCAN-CIV
 
 			(defrule
-			(current-age == castle-age)
-			(or
-				(up-compare-goal g-slinger-tech-progress >= REQUIRED-CASTLE-COMPLETE)
-				(and
-					(up-compare-goal g-primary-unit != cavalry-archer)
-					(civilian-population < 80)))
-			(or
-				(goal g-archery-range-next-unit slinger)
-				(not
-					(up-can-train 0 g: g-archery-range-next-unit)))
-			(up-object-type-count-total c: slinger g:< g-desired-num-slinger)
-			(up-pending-objects c: slinger g:< g-max-working-archery-ranges)
-			(can-train slinger)
+			(up-compare-goal g-desired-num-slinger > 0)
+			(unit-type-count-total slinger == 0)
+			(can-train-with-escrow slinger)
 			=>
-			(train slinger)
+			(up-train g-escrow c: slinger)
 			)
 
 			(defrule
-			(current-age == imperial-age)
-			(up-compare-goal g-slinger-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
 			(or
 				(goal g-archery-range-next-unit slinger)
 				(not
@@ -752,12 +742,15 @@
 
 		#end-if
 
-		;Archers
 		(defrule
-		(current-age == feudal-age)
-		(or
-			(up-compare-goal g-archer-tech-progress >= REQUIRED-FEUDAL-COMPLETE)
-			(up-compare-goal g-primary-unit != archer))
+		(up-compare-goal g-desired-num-archer > 0)
+		(unit-type-count-total archer-line == 0)
+		(can-train-with-escrow archer-line)
+		=>
+		(up-train g-escrow c: archer-line)
+		)
+
+		(defrule
 		(or
 			(goal g-archery-range-next-unit archer-line)
 			(not
@@ -770,41 +763,14 @@
 		)
 
 		(defrule
-		(current-age == castle-age)
-		(or
-			(up-compare-goal g-archer-tech-progress >= REQUIRED-CASTLE-COMPLETE)
-			(and
-				(up-compare-goal g-primary-unit != archer)
-				(civilian-population < 80)))
-		(or
-			(goal g-archery-range-next-unit archer-line)
-			(not
-				(up-can-train 0 g: g-archery-range-next-unit)))
-		(up-object-type-count-total c: archer-line g:< g-desired-num-archer)
-		(up-pending-objects c: archer-line g:< g-max-working-archery-ranges)
-		(can-train archer-line)
+		(up-compare-goal g-desired-num-genitour > 0)
+		(up-compare-goal g-genitour-line == 0)
+		(can-train-with-escrow genitour-placeholder)
 		=>
-		(train archer-line)
+		(up-train g-escrow c: genitour-placeholder)
 		)
-
+		
 		(defrule
-		(current-age == imperial-age)
-		(up-compare-goal g-archer-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
-		(or
-			(goal g-archery-range-next-unit archer-line)
-			(not
-				(up-can-train 0 g: g-archery-range-next-unit)))
-		(up-object-type-count-total c: archer-line g:< g-desired-num-archer)
-		(up-pending-objects c: archer-line g:< g-max-working-archery-ranges)
-		(can-train archer-line)
-		=>
-		(train archer-line)
-		)
-
-		;Genitours
-		(defrule
-		(current-age == castle-age)
-		(up-compare-goal g-genitour-tech-progress >= REQUIRED-CASTLE-COMPLETE)
 		(or
 			(goal g-archery-range-next-unit genitour-placeholder)
 			(not
@@ -820,80 +786,14 @@
 		)
 
 		(defrule
-		(current-age == castle-age)
-		(up-compare-goal g-primary-unit != genitour)
-		(civilian-population < 80)
-		(or
-			(goal g-archery-range-next-unit genitour-placeholder)
-			(not
-				(up-can-train 0 g: g-archery-range-next-unit)))
-		(up-compare-goal g-genitour-line g:< g-desired-num-genitour)
-		(up-pending-objects c: genitour-line g:< g-max-working-archery-ranges)
-		(up-pending-objects c: genitour g:< g-max-working-archery-ranges)
-		(up-pending-objects c: elite-genitour g:< g-max-working-archery-ranges)
-		(up-pending-objects c: genitour-placeholder g:< g-max-working-archery-ranges)
-		(can-train genitour-placeholder)
+		(up-compare-goal g-desired-num-skirmisher > 0)
+		(up-compare-goal g-skirmisher-line == 0)
+		(can-train-with-escrow skirmisher-line)
 		=>
-		(train genitour-placeholder)
+		(up-train g-escrow c: skirmisher-line)
 		)
 
 		(defrule
-		(current-age == imperial-age)
-		(up-compare-goal g-genitour-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
-		(or
-			(goal g-archery-range-next-unit genitour-placeholder)
-			(not
-				(up-can-train 0 g: g-archery-range-next-unit)))
-		(up-compare-goal g-genitour-line g:< g-desired-num-genitour)
-		(up-pending-objects c: genitour-line g:< g-max-working-archery-ranges)
-		(up-pending-objects c: genitour g:< g-max-working-archery-ranges)
-		(up-pending-objects c: elite-genitour g:< g-max-working-archery-ranges)
-		(up-pending-objects c: genitour-placeholder g:< g-max-working-archery-ranges)
-		(can-train genitour-placeholder)
-		=>
-		(train genitour-placeholder)
-		)
-
-		;Skirmishers
-		(defrule
-		(current-age == feudal-age)
-		(or
-			(up-compare-goal g-skirmisher-tech-progress >= REQUIRED-FEUDAL-COMPLETE)
-			(up-compare-goal g-primary-unit != skirmisher))
-		(or
-			(goal g-archery-range-next-unit skirmisher)
-			(not
-				(up-can-train 0 g: g-archery-range-next-unit)))
-		(up-compare-goal g-skirmisher-line g:< g-desired-num-skirmisher)
-		(up-pending-objects c: skirmisher-line g:< g-max-working-archery-ranges)
-		(up-pending-objects c: imperial-skirmisher g:< g-max-working-archery-ranges)
-		(can-train skirmisher)
-		=>
-		(train skirmisher)
-		)
-
-		(defrule
-		(current-age == castle-age)
-		(or
-			(up-compare-goal g-skirmisher-tech-progress >= REQUIRED-CASTLE-COMPLETE)
-			(and
-				(up-compare-goal g-primary-unit != skirmisher)
-				(civilian-population < 80)))
-		(or
-			(goal g-archery-range-next-unit skirmisher)
-			(not
-				(up-can-train 0 g: g-archery-range-next-unit)))
-		(up-compare-goal g-skirmisher-line g:< g-desired-num-skirmisher)
-		(up-pending-objects c: skirmisher-line g:< g-max-working-archery-ranges)
-		(up-pending-objects c: imperial-skirmisher g:< g-max-working-archery-ranges)
-		(can-train skirmisher)
-		=>
-		(train skirmisher)
-		)
-
-		(defrule
-		(current-age == imperial-age)
-		(up-compare-goal g-skirmisher-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
 		(or
 			(goal g-archery-range-next-unit skirmisher)
 			(not
@@ -910,9 +810,15 @@
 	;	Infantry
 	;--------------
 
-		;Condottieros
 		(defrule
-		(up-compare-goal g-condottiero-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
+		(up-compare-goal g-desired-num-condottiero > 0)
+		(unit-type-count-total condottiero == 0)
+		(can-train-with-escrow condottiero)
+		=>
+		(up-train g-escrow c: condottiero)
+		)
+
+		(defrule
 		(or
 			(goal g-barracks-next-unit condottiero-placeholder)
 			(not
@@ -925,12 +831,15 @@
 		(train condottiero-placeholder)
 		)
 
-		;Eagle Warriors
 		(defrule
-		(current-age == feudal-age)
-		(or
-			(up-compare-goal g-eagle-warrior-tech-progress >= REQUIRED-FEUDAL-COMPLETE)
-			(up-compare-goal g-primary-unit != eagle-warrior))
+		(up-compare-goal g-desired-num-eagle-warrior > 0)
+		(up-compare-goal g-eagle-scout-line == 0)
+		(can-train-with-escrow eagle-warrior)
+		=>
+		(up-train g-escrow c: eagle-warrior)
+		)
+
+		(defrule
 		(or
 			(goal g-barracks-next-unit eagle-warrior)
 			(not
@@ -938,62 +847,20 @@
 		(up-compare-goal g-eagle-scout-line g:< g-desired-num-eagle-warrior)
 		(up-pending-objects c: eagle-warrior-line g:< g-max-working-barracks)
 		(up-pending-objects c: heavy-eagle-warrior g:< g-max-working-barracks)
-		; (or
-		; 	(up-research-status c: ri-eagle-warrior != research-available)
-		; 	(players-current-age target-player <= feudal-age))
 		(can-train eagle-warrior)
 		=>
 		(train eagle-warrior)
 		)
 
 		(defrule
-		(current-age == castle-age)
-		(or
-			(up-compare-goal g-eagle-warrior-tech-progress >= REQUIRED-CASTLE-COMPLETE)
-			(and
-				(up-compare-goal g-primary-unit != eagle-warrior)
-				(civilian-population < 80)))
-		(or
-			(goal g-barracks-next-unit eagle-warrior)
-			(not
-				(up-can-train 0 g: g-barracks-next-unit)))
-		(up-compare-goal g-eagle-scout-line g:< g-desired-num-eagle-warrior)
-		(up-pending-objects c: eagle-warrior-line g:< g-max-working-barracks)
-		(up-pending-objects c: heavy-eagle-warrior g:< g-max-working-barracks)
-		; (or
-		; 	(up-research-status c: ri-eagle-warrior != research-available)
-		; 	(players-current-age target-player <= feudal-age))
-		(can-train eagle-warrior)
+		(up-compare-goal g-desired-num-militia > 0)
+		(unit-type-count-total militiaman-line == 0)
+		(can-train-with-escrow militiaman-line)
 		=>
-		(train eagle-warrior)
+		(up-train g-escrow c: militiaman-line)
 		)
 
 		(defrule
-		(current-age == imperial-age)
-		(up-compare-goal g-eagle-warrior-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
-		(or
-			(goal g-barracks-next-unit eagle-warrior)
-			(not
-				(up-can-train 0 g: g-barracks-next-unit)))
-		(up-compare-goal g-eagle-scout-line g:< g-desired-num-eagle-warrior)
-		(up-pending-objects c: eagle-warrior-line g:< g-max-working-barracks)
-		(up-pending-objects c: heavy-eagle-warrior g:< g-max-working-barracks)
-		; (or
-		; 	(up-research-status c: ri-eagle-warrior != research-available)
-		; 	(players-current-age target-player <= feudal-age))
-		(can-train eagle-warrior)
-		=>
-		(train eagle-warrior)
-		)
-
-		;Swordsmen
-		(defrule
-		(current-age <= feudal-age)
-		(or
-			(up-compare-goal g-militia-tech-progress >= REQUIRED-FEUDAL-COMPLETE)
-			(or
-				(current-age == dark-age)
-				(up-compare-goal g-primary-unit != militiaman)))
 		(or
 			(goal g-barracks-next-unit militiaman-line)
 			(not
@@ -1006,75 +873,14 @@
 		)
 
 		(defrule
-		(current-age == castle-age)
-		(or
-			(up-compare-goal g-militia-tech-progress >= REQUIRED-CASTLE-COMPLETE)
-			(and
-				(up-compare-goal g-primary-unit != militiaman)
-				(civilian-population < 80)))
-		(or
-			(goal g-barracks-next-unit militiaman-line)
-			(not
-				(up-can-train 0 g: g-barracks-next-unit)))
-		(up-object-type-count-total c: militiaman-line g:< g-desired-num-militia)
-		(up-pending-objects c: militiaman-line g:< g-max-working-barracks)
-		(can-train militiaman-line)
+		(up-compare-goal g-desired-num-spearman > 0)
+		(unit-type-count-total spearman-line == 0)
+		(can-train-with-escrow spearman-line)
 		=>
-		(train militiaman-line)
+		(up-train g-escrow c: spearman-line)
 		)
 
 		(defrule
-		(current-age == imperial-age)
-		(up-compare-goal g-militia-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
-		(or
-			(goal g-barracks-next-unit militiaman-line)
-			(not
-				(up-can-train 0 g: g-barracks-next-unit)))
-		(up-object-type-count-total c: militiaman-line g:< g-desired-num-militia)
-		(up-pending-objects c: militiaman-line g:< g-max-working-barracks)
-		(can-train militiaman-line)
-		=>
-		(train militiaman-line)
-		)
-
-		;Spearmen
-		(defrule
-		(current-age == feudal-age)
-		(or
-			(up-compare-goal g-spearman-tech-progress >= REQUIRED-FEUDAL-COMPLETE)
-			(up-compare-goal g-primary-unit != spearman))
-		(or
-			(goal g-barracks-next-unit spearman-line)
-			(not
-				(up-can-train 0 g: g-barracks-next-unit)))
-		(up-object-type-count-total c: spearman-line g:< g-desired-num-spearman)
-		(up-pending-objects c: spearman-line g:< g-max-working-barracks)
-		(can-train spearman-line)
-		=>
-		(train spearman-line)
-		)
-
-		(defrule
-		(current-age == castle-age)
-		(or
-			(up-compare-goal g-spearman-tech-progress >= REQUIRED-CASTLE-COMPLETE)
-			(and
-				(up-compare-goal g-primary-unit != spearman)
-				(civilian-population < 80)))
-		(or
-			(goal g-barracks-next-unit spearman-line)
-			(not
-				(up-can-train 0 g: g-barracks-next-unit)))
-		(up-object-type-count-total c: spearman-line g:< g-desired-num-spearman)
-		(up-pending-objects c: spearman-line g:< g-max-working-barracks)
-		(can-train spearman-line)
-		=>
-		(train spearman-line)
-		)
-
-		(defrule
-		(current-age == imperial-age)
-		(up-compare-goal g-spearman-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
 		(or
 			(goal g-barracks-next-unit spearman-line)
 			(not

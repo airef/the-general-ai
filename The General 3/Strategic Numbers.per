@@ -728,3 +728,25 @@
     (enable-timer t-spread-soldiers 1)
     ; (chat-local-to-self "spread out soldiers")
     )
+
+;------------------------------
+;   SN-COUNTERING-PREFERENCE
+;------------------------------
+
+    (defrule
+    (true)
+    =>
+    (set-strategic-number sn-countering-preference 100)
+    )
+
+    ;Adjust score more if low military or defensive
+    (defrule
+    (current-age >= feudal-age)
+    (or
+        (military-population g:< g-min-military-pop)
+        (or
+            (goal g-game-focus DEFENSIVE)
+            (up-compare-goal g-target-military-parity < -5)))
+    =>
+    (up-modify-sn sn-countering-preference c:%* 150)
+    )

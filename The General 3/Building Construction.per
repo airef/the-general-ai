@@ -40,7 +40,6 @@
 	(set-strategic-number sn-placement-zone-size 8)
 	(set-strategic-number sn-placement-fail-delta 1)
 	(up-assign-builders c: castle c: 4)
-	(set-goal g-escrow with-escrow)
 	(up-build place-control g-escrow c: castle)
 	(set-goal g-place-control-used YES)
 	;(chat-to-player my-player-number "Build Castle")
@@ -59,7 +58,6 @@
 	(up-modify-sn sn-placement-zone-size c:= 8)
 	(set-strategic-number sn-placement-fail-delta 1)
 	(up-assign-builders c: castle c: 4)
-	(set-goal g-escrow with-escrow)
 	(up-build place-control g-escrow c: castle)
 	(set-goal g-place-control-used YES)
 	;(chat-to-player my-player-number "Build Castle")
@@ -68,27 +66,6 @@
 ;------------------
 ;	Town Centers
 ;------------------
-
-	(defrule
-	(up-object-type-count-total c: town-center g:< g-desired-num-town-center)
-	(can-build-with-escrow town-center)
-	(or
-		(building-type-count-total town-center != 1)
-		(timer-triggered t-10-sec))
-	(up-pending-objects c: town-center < 2)
-	(or
-		(up-compare-goal g-game-focus != AGGRESSIVE)
-		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop))
-	=>
-	(set-strategic-number sn-dropsite-separation-distance 8)
-	(up-assign-builders c: town-center-foundation c: 4)
-	(up-modify-sn sn-stone-dropsite-distance c:= 50)
-	(up-modify-sn sn-gold-dropsite-distance c:= 8)
-	(release-escrow wood)
-	(release-escrow stone)
-	(build town-center)
-	;(chat-to-player my-player-number "Build Town Center")
-	)
 
 	(defrule
 	(up-object-type-count-total c: town-center g:< g-desired-num-town-center)
@@ -108,7 +85,7 @@
 	(set-goal g-build-line-dropsite-distance 8)
 	(set-goal g-build-line-enemy-bldg-distance 45)
 	(up-assign-builders c: town-center-foundation c: 4)
-	;(chat-to-player my-player-number "Build Town Center")
+	; (chat-to-player my-player-number "Build Town Center (Gold)")
 	)
 
 	(defrule
@@ -129,25 +106,67 @@
 	(set-goal g-build-line-dropsite-distance 12)
 	(set-goal g-build-line-enemy-bldg-distance 45)
 	(up-assign-builders c: town-center-foundation c: 4)
-	;(chat-to-player my-player-number "Build Town Center")
+	; (chat-to-player my-player-number "Build Town Center (Wood)")
 	)
 
 	(defrule
-	(goal g-build-line-resource-type gold)
+	(up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+	(can-build-with-escrow town-center)
+	(wood-amount > 300)
+	(up-pending-objects c: town-center < 2)
+	(or
+		(up-compare-goal g-game-focus != AGGRESSIVE)
+		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop))
+	=>
+	(set-goal g-build-line-bldg town-center)
+	(set-goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+	(set-goal g-build-line-expand-direction NO-DIRECTION)
+	(set-goal g-build-line-zone-radius 0)
+	(set-goal g-build-line-max-zone-radius 7)
+	(set-goal g-build-line-resource-type wood)
+	(set-goal g-build-line-dropsite-distance 12)
+	(set-goal g-build-line-enemy-bldg-distance 45)
+	(up-assign-builders c: town-center-foundation c: 4)
+	; (chat-to-player my-player-number "Build Town Center (Wood)")
+	)
+	
+	; (defrule
+	; (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+	; (can-build-with-escrow town-center)
+	; (wood-amount > 300)	;delay to prefer DUC placement
+	; (up-pending-objects c: town-center < 2)
+	; (or
+	; 	(up-compare-goal g-game-focus != AGGRESSIVE)
+	; 	(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop))
+	; =>
+	; (set-strategic-number sn-dropsite-separation-distance 8)
+	; (up-assign-builders c: town-center-foundation c: 4)
+	; (up-modify-sn sn-stone-dropsite-distance c:= 50)
+	; (up-modify-sn sn-gold-dropsite-distance c:= 8)
+	; (release-escrow wood)
+	; (release-escrow stone)
+	; (build town-center)
+	; ;(chat-to-player my-player-number "Build Town Center")
+	; )
+
+	(defrule
+	; (goal g-build-line-resource-type gold)
 	(goal g-build-line-bldg town-center)
 	(or
 		(current-age <= castle-age)
 		(population <= FIFTY-PERCENT-POP))
 	=>
-	(set-goal g-build-line-max-distance 50)
+	(set-goal g-build-line-expand-direction NO-DIRECTION)
+	(set-goal g-build-line-max-distance 70)
 	)
 
 	(defrule
-	(goal g-build-line-resource-type gold)
+	; (goal g-build-line-resource-type gold)
 	(goal g-build-line-bldg town-center)
 	(current-age == imperial-age)
 	(population >= FIFTY-PERCENT-POP)
 	=>
+	(set-goal g-build-line-expand-direction NO-DIRECTION)
 	(set-goal g-build-line-max-distance -1)
 	)
 
@@ -402,7 +421,6 @@
 		(building-type-count house < 2)
 		(game-time > 5)
 		=>
-		(set-goal g-escrow with-escrow)
 		(up-build place-normal g-escrow c: house)
 		;(chat-to-player my-player-number "Build House")
 		)
@@ -417,7 +435,6 @@
 		(up-set-placement-data my-player-number -1 c: 5)
 		(set-strategic-number sn-placement-fail-delta 0)
 		(set-strategic-number sn-placement-zone-size 5)
-		(set-goal g-escrow with-escrow)
 		(up-build place-control g-escrow c: house)
 		(set-goal g-place-control-used YES)
 		;(chat-to-player my-player-number "Build House")
@@ -547,7 +564,6 @@
 	; =>
 	; (up-modify-sn sn-stone-dropsite-distance c:= 50)
 	; (up-modify-sn sn-gold-dropsite-distance c:= 8)
-	; (set-goal g-escrow with-escrow)
 	; (set-strategic-number sn-allow-adjacent-dropsites 0)
 	; (up-build place-normal g-escrow c: mining-camp)
 	; (up-modify-sn sn-mining-camp-max-distance c:+ 5)
@@ -563,7 +579,6 @@
 	; =>
 	; (up-modify-sn sn-gold-dropsite-distance c:= 50)
 	; (up-modify-sn sn-stone-dropsite-distance c:= 8)
-	; (set-goal g-escrow with-escrow)
 	; (set-strategic-number sn-allow-adjacent-dropsites 0)
 	; (up-build place-normal g-escrow c: mining-camp)
 	; (up-modify-sn sn-mining-camp-max-distance c:+ 5)
@@ -641,7 +656,6 @@
 	; (resource-found wood)
 	; (dropsite-min-distance wood < 255)
 	; =>
-	; (set-goal g-escrow with-escrow)
 	; (set-strategic-number sn-allow-adjacent-dropsites 1)
 	; (up-build place-normal g-escrow c: lumber-camp)
 	; (up-chat-data-to-self "Build LC, max dist %d" s: sn-lumber-camp-max-distance)
@@ -655,7 +669,6 @@
 	; (resource-found wood)
 	; (dropsite-min-distance wood < 255)
 	; =>
-	; (set-goal g-escrow with-escrow)
 	; (set-strategic-number sn-allow-adjacent-dropsites 1)
 	; (up-build place-normal g-escrow c: lumber-camp)
 	; (up-modify-sn sn-lumber-camp-max-distance c:+ 5)
@@ -789,8 +802,7 @@
 	(up-get-fact building-type-count farm g-temp-2)
 	(up-modify-goal g-temp g:- g-temp-2)
 	(up-assign-builders c: farm g: g-temp)
-	(up-modify-escrow wood c:- 60)
-	(build farm)
+	(up-build place-normal g-escrow c: farm)
 	)
 
 	;Build farms with escrow if we want >= 4 more farms
@@ -813,8 +825,7 @@
 	(up-get-fact building-type-count farm g-temp-2)
 	(up-modify-goal g-temp g:- g-temp-2)
 	(up-assign-builders c: farm g: g-temp)
-	(up-modify-escrow wood c:- 60)
-	(build farm)
+	(up-build place-normal g-escrow c: farm)
 	)
 
 	(defrule
@@ -857,8 +868,6 @@
 	(goal g-attacking YES)
 	=>
 	(up-assign-builders c: siege-workshop c: 2)
-	(up-modify-escrow wood c:- 200)
-	(set-goal g-escrow with-escrow)
 	(up-build place-forward g-escrow c: siege-workshop)
 	(up-jump-rule 1)
 	)
@@ -877,8 +886,6 @@
 	(up-modify-sn sn-placement-zone-size c:= 5)
 	(set-strategic-number sn-placement-fail-delta 0)
 	(up-assign-builders c: siege-workshop c: 1)
-	(up-modify-escrow wood c:- 200)
-	(set-goal g-escrow with-escrow)
 	(up-build place-control g-escrow c: siege-workshop)
 	(set-goal g-place-control-used YES)
 	;(chat-to-player my-player-number "Build Siege Workshop")
@@ -896,8 +903,6 @@
 	(up-modify-sn sn-placement-zone-size c:= 5)
 	(set-strategic-number sn-placement-fail-delta 0)
 	(up-assign-builders c: siege-workshop c: 2)
-	(up-modify-escrow wood c:- 200)
-	(set-goal g-escrow with-escrow)
 	(up-build place-forward g-escrow c: siege-workshop)
 	;(chat-to-player my-player-number "Build Siege Workshop")
 	)
@@ -919,7 +924,6 @@
 	(up-modify-sn sn-placement-zone-size c:= 5)
 	(set-strategic-number sn-placement-fail-delta 0)
 	(up-assign-builders c: university c: 1)
-	(set-goal g-escrow with-escrow)
 	(up-build place-control g-escrow c: university)
 	(set-goal g-place-control-used YES)
 	;(chat-to-player my-player-number "Build University")
@@ -942,7 +946,6 @@
 	(up-modify-sn sn-placement-zone-size c:= 5)
 	(set-strategic-number sn-placement-fail-delta 0)
 	;(up-assign-builders c: monastery c: 1)
-	(set-goal g-escrow with-escrow)
 	(up-build place-control g-escrow c: monastery)
 	(set-goal g-place-control-used YES)
 	;(chat-to-player my-player-number "Build Monastery")
@@ -962,7 +965,6 @@
 	(up-modify-sn sn-placement-zone-size c:= 5)
 	(set-strategic-number sn-placement-fail-delta 0)
 	;(up-assign-builders c: monastery c: 1)
-	(set-goal g-escrow with-escrow)
 	(up-build place-control g-escrow c: monastery)
 	(set-goal g-place-control-used YES)
 	;(chat-to-player my-player-number "Build Monastery")
@@ -993,10 +995,10 @@
 ;--------------
 
 	(defrule
+	(goal g-primary-unit-class infantry-class)
+	(up-compare-goal g-primary-unit != my-unique-unit)
 	(up-object-type-count-total c: barracks g:< g-desired-num-barracks)
-	(or
-		(up-compare-goal g-desired-num-archery-range > 0)
-		(up-compare-goal g-desired-num-stable > 0))
+	(building-type-count-total barracks < 2)
 	(can-build-with-escrow barracks)
 	(up-pending-objects c: barracks < 1)
 	(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
@@ -1005,54 +1007,43 @@
 	(up-set-placement-data my-player-number -1 c: -5)
 	(up-modify-sn sn-placement-zone-size c:= 5)
 	(set-strategic-number sn-placement-fail-delta 0)
-	(set-goal g-escrow with-escrow)
 	(up-assign-builders c: barracks c: 1)
 	(up-build place-control g-escrow c: barracks)
 	(set-goal g-place-control-used YES)
 	;(chat-to-player my-player-number "Build Barracks")
+	)
+
+	(defrule
+	(up-get-fact building-type-count-total barracks g-temp)
+	(up-modify-goal g-temp g:%/ g-desired-num-barracks)
+	=>
+	(up-get-fact building-type-count-total archery-range g-temp-2)
+	(up-modify-goal g-temp-2 g:%/ g-desired-num-archery-range)
+	(up-get-fact building-type-count-total stable g-temp-3)
+	(up-modify-goal g-temp-3 g:%/ g-desired-num-stable)
 	)
 
 	(defrule
 	(up-object-type-count-total c: barracks g:< g-desired-num-barracks)
 	(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 	(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+	(up-compare-goal g-temp g:<= g-temp-2)
+	(up-compare-goal g-temp g:<= g-temp-3)
 	(can-build-with-escrow barracks)
 	(up-pending-objects c: barracks < 1)
 	(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
-	(goal g-primary-unit-class infantry-class)
-	(up-compare-goal g-primary-unit != my-unique-unit)
 	(goal g-place-control-used NO)
 	=>
 	(up-set-placement-data my-player-number -1 c: -5)
 	(up-modify-sn sn-placement-zone-size c:= 5)
 	(set-strategic-number sn-placement-fail-delta 0)
-	(set-goal g-escrow with-escrow)
 	(up-assign-builders c: barracks c: 1)
 	(up-build place-control g-escrow c: barracks)
 	(set-goal g-place-control-used YES)
 	;(chat-to-player my-player-number "Build Barracks")
 	)
 
-	(defrule
-	(up-object-type-count-total c: barracks g:< g-desired-num-barracks)
-	(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-	(can-build-with-escrow barracks)
-	(up-pending-objects c: barracks < 1)
-	(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
-	(goal g-support-unit-class infantry-class)
-	(up-compare-goal g-support-unit != my-unique-unit)
-	(goal g-place-control-used NO)
-	=>
-	(up-set-placement-data my-player-number -1 c: -5)
-	(up-modify-sn sn-placement-zone-size c:= 5)
-	(set-strategic-number sn-placement-fail-delta 0)
-	(set-goal g-escrow with-escrow)
-	(up-assign-builders c: barracks c: 1)
-	(up-build place-control g-escrow c: barracks)
-	(set-goal g-place-control-used YES)
-	;(chat-to-player my-player-number "Build Barracks")
-	)
-
+	;Without Escrow
 	(defrule
 	(up-object-type-count-total c: barracks g:< g-desired-num-barracks)
 	(can-build barracks)
@@ -1092,84 +1083,111 @@
 	)
 
 	(defrule
+	(or
+		(goal g-primary-unit archer)
+		(goal g-primary-unit skirmisher))
+	(up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
+	(building-type-count-total archery-range < 2)
+	(can-build-with-escrow archery-range)
+	(up-pending-objects c: archery-range < 1)
+	(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+	(goal g-place-control-used NO)
+	=>
+	(up-set-placement-data my-player-number -1 c: -5)
+	(up-modify-sn sn-placement-zone-size c:= 5)
+	(set-strategic-number sn-placement-fail-delta 0)
+	(up-assign-builders c: archery-range c: 1)
+	(up-build place-control g-escrow c: archery-range)
+	(set-goal g-place-control-used YES)
+	)
+
+	(defrule
+	(up-compare-goal g-desired-num-archery-range > 0)
+	(building-type-count-total archery-range == 0)
+	(or
+		(building-type-count-total stable > 0)
+		(up-compare-goal g-primary-unit-class != cavalry-class))
+	(can-build-with-escrow archery-range)
+	(up-pending-objects c: archery-range < 1)
+	(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+	(goal g-place-control-used NO)
+	=>
+	(up-set-placement-data my-player-number -1 c: -5)
+	(up-modify-sn sn-placement-zone-size c:= 5)
+	(set-strategic-number sn-placement-fail-delta 0)
+	(up-assign-builders c: archery-range c: 1)
+	(up-build place-control g-escrow c: archery-range)
+	(set-goal g-place-control-used YES)
+	)
+
+	(defrule
+	(or
+		(goal g-primary-unit cavalry-archer)
+		(goal g-primary-unit hand-cannoneer))
+	(up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
+	(building-type-count-total archery-range < 2)
+	(can-build-with-escrow archery-range)
+	(up-pending-objects c: archery-range < 1)
+	(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+	(goal g-place-control-used NO)
+	=>
+	(up-set-placement-data my-player-number -1 c: -5)
+	(up-modify-sn sn-placement-zone-size c:= 5)
+	(set-strategic-number sn-placement-fail-delta 0)
+	(up-assign-builders c: archery-range c: 1)
+	(up-build place-control g-escrow c: archery-range)
+	(set-goal g-place-control-used YES)
+	)
+
+	(defrule
+	(or
+		(goal g-primary-unit slinger)
+		(goal g-primary-unit genitour))
+	(up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
+	(building-type-count-total archery-range < 2)
+	(can-build-with-escrow archery-range)
+	(up-pending-objects c: archery-range < 1)
+	(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+	(goal g-place-control-used NO)
+	=>
+	(up-set-placement-data my-player-number -1 c: -5)
+	(up-modify-sn sn-placement-zone-size c:= 5)
+	(set-strategic-number sn-placement-fail-delta 0)
+	(up-assign-builders c: archery-range c: 1)
+	(up-build place-control g-escrow c: archery-range)
+	(set-goal g-place-control-used YES)
+	)
+
+	(defrule
+	(up-get-fact building-type-count-total archery-range g-temp)
+	(up-modify-goal g-temp g:%/ g-desired-num-archery-range)
+	=>
+	(up-get-fact building-type-count-total barracks g-temp-2)
+	(up-modify-goal g-temp-2 g:%/ g-desired-num-barracks)
+	(up-get-fact building-type-count-total stable g-temp-3)
+	(up-modify-goal g-temp-3 g:%/ g-desired-num-stable)
+	)
+
+	(defrule
 	(up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
 	(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 	(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+	(up-compare-goal g-temp g:<= g-temp-2)
+	(up-compare-goal g-temp g:<= g-temp-3)
 	(can-build-with-escrow archery-range)
 	(up-pending-objects c: archery-range < 1)
 	(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
-	(goal g-primary-unit-class archery-class)
-	(up-compare-goal g-primary-unit != my-unique-unit)
 	(goal g-place-control-used NO)
 	=>
 	(up-set-placement-data my-player-number -1 c: -5)
 	(up-modify-sn sn-placement-zone-size c:= 5)
 	(set-strategic-number sn-placement-fail-delta 0)
-	(set-goal g-escrow with-escrow)
+	(up-assign-builders c: archery-range c: 1)
 	(up-build place-control g-escrow c: archery-range)
 	(set-goal g-place-control-used YES)
-	;(chat-to-player my-player-number "Build Archery Range")
 	)
 
-	(defrule
-	(up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
-	(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-	(can-build-with-escrow archery-range)
-	(up-pending-objects c: archery-range < 1)
-	(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
-	(or
-		(goal g-primary-unit cavalry-archer-class)
-		(goal g-primary-unit hand-cannoneer))
-	(up-compare-goal g-primary-unit != my-unique-unit)
-	(goal g-place-control-used NO)
-	=>
-	(up-set-placement-data my-player-number -1 c: -5)
-	(up-modify-sn sn-placement-zone-size c:= 5)
-	(set-strategic-number sn-placement-fail-delta 0)
-	(set-goal g-escrow with-escrow)
-	(up-build place-control g-escrow c: archery-range)
-	(set-goal g-place-control-used YES)
-	;(chat-to-player my-player-number "Build Archery Range")
-	)
-
-	(defrule
-	(up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
-	(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-	(can-build-with-escrow archery-range)
-	(up-pending-objects c: archery-range < 1)
-	(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
-	(goal g-support-unit-class archery-class)
-	(up-compare-goal g-support-unit != my-unique-unit)
-	(goal g-place-control-used NO)
-	=>
-	(up-set-placement-data my-player-number -1 c: -5)
-	(up-modify-sn sn-placement-zone-size c:= 5)
-	(set-goal g-escrow with-escrow)
-	(up-build place-control g-escrow c: archery-range)
-	(set-goal g-place-control-used YES)
-	;(chat-to-player my-player-number "Build Archery Range")
-	)
-
-	(defrule
-	(up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
-	(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-	(can-build-with-escrow archery-range)
-	(up-pending-objects c: archery-range < 1)
-	(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
-	(or
-		(goal g-support-unit cavalry-archer-class)
-		(goal g-support-unit hand-cannoneer))
-	(up-compare-goal g-support-unit != my-unique-unit)
-	(goal g-place-control-used NO)
-	=>
-	(up-set-placement-data my-player-number -1 c: -5)
-	(up-modify-sn sn-placement-zone-size c:= 5)
-	(set-goal g-escrow with-escrow)
-	(up-build place-control g-escrow c: archery-range)
-	(set-goal g-place-control-used YES)
-	;(chat-to-player my-player-number "Build Archery Range")
-	)
-
+	;Without Escrow
 	(defrule
 	(up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
 	(can-build archery-range)
@@ -1180,9 +1198,9 @@
 	(up-set-placement-data my-player-number -1 c: -5)
 	(up-modify-sn sn-placement-zone-size c:= 5)
 	(set-strategic-number sn-placement-fail-delta 0)
+	(up-assign-builders c: archery-range c: 1)
 	(up-build place-control 0 c: archery-range)
 	(set-goal g-place-control-used YES)
-	;(chat-to-player my-player-number "Build Archery Range")
 	)
 
 ;----------
@@ -1224,65 +1242,72 @@
 	)
 
 	(defrule
-	(up-object-type-count-total c: stable g:< g-desired-num-stable)
 	(goal g-primary-unit-class cavalry-class)
+	(up-compare-goal g-primary-unit != my-unique-unit)
+	(up-object-type-count-total c: stable g:< g-desired-num-stable)
+	(building-type-count-total stable < 2)
 	(can-build-with-escrow stable)
 	(up-pending-objects c: stable < 1)
 	(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
-	(goal g-primary-unit-class cavalry-class)
-	(up-compare-goal g-primary-unit != my-unique-unit)
 	(goal g-place-control-used NO)
 	=>
 	(up-set-placement-data my-player-number -1 c: -5)
 	(up-modify-sn sn-placement-zone-size c:= 5)
 	(set-strategic-number sn-placement-fail-delta 0)
-	(set-goal g-escrow with-escrow)
+	(up-assign-builders c: stable c: 1)
 	(up-build place-control g-escrow c: stable)
 	(set-goal g-place-control-used YES)
-	;(chat-to-player my-player-number "Build Stable")
+	)
+
+	(defrule
+	(up-compare-goal g-desired-num-stable > 0)
+	(building-type-count-total stable == 0)
+	(or
+		(building-type-count archery-range > 0)
+		(up-compare-goal g-desired-num-archery-range == 0))
+	(can-build-with-escrow stable)
+	(up-pending-objects c: stable < 1)
+	(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+	(goal g-place-control-used NO)
+	=>
+	(up-set-placement-data my-player-number -1 c: -5)
+	(up-modify-sn sn-placement-zone-size c:= 5)
+	(set-strategic-number sn-placement-fail-delta 0)
+	(up-assign-builders c: stable c: 1)
+	(up-build place-control g-escrow c: stable)
+	(set-goal g-place-control-used YES)
+	)
+
+	(defrule
+	(up-get-fact building-type-count-total stable g-temp)
+	(up-modify-goal g-temp g:%/ g-desired-num-stable)
+	=>
+	(up-get-fact building-type-count-total archery-range g-temp-2)
+	(up-modify-goal g-temp-2 g:%/ g-desired-num-archery-range)
+	(up-get-fact building-type-count-total barracks g-temp-3)
+	(up-modify-goal g-temp-3 g:%/ g-desired-num-barracks)
 	)
 
 	(defrule
 	(up-object-type-count-total c: stable g:< g-desired-num-stable)
 	(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 	(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+	(up-compare-goal g-temp g:<= g-temp-2)
+	(up-compare-goal g-temp g:<= g-temp-3)
 	(can-build-with-escrow stable)
 	(up-pending-objects c: stable < 1)
 	(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
-	(goal g-primary-unit-class cavalry-class)
-	(up-compare-goal g-primary-unit != my-unique-unit)
 	(goal g-place-control-used NO)
 	=>
 	(up-set-placement-data my-player-number -1 c: -5)
 	(up-modify-sn sn-placement-zone-size c:= 5)
 	(set-strategic-number sn-placement-fail-delta 0)
-	(set-goal g-escrow with-escrow)
+	(up-assign-builders c: stable c: 1)
 	(up-build place-control g-escrow c: stable)
 	(set-goal g-place-control-used YES)
-	;(chat-to-player my-player-number "Build Stable")
 	)
 
-	(defrule
-	(up-object-type-count-total c: stable g:< g-desired-num-stable)
-	(or
-		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-		(goal g-primary-unit-class cavalry-class))
-	(can-build-with-escrow stable)
-	(up-pending-objects c: stable < 1)
-	(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
-	(goal g-support-unit-class cavalry-class)
-	(up-compare-goal g-support-unit != my-unique-unit)
-	(goal g-place-control-used NO)
-	=>
-	(up-set-placement-data my-player-number -1 c: -5)
-	(up-modify-sn sn-placement-zone-size c:= 5)
-	(set-strategic-number sn-placement-fail-delta 0)
-	(set-goal g-escrow with-escrow)
-	(up-build place-control g-escrow c: stable)
-	(set-goal g-place-control-used YES)
-	;(chat-to-player my-player-number "Build Stable")
-	)
-
+	;Without Escrow
 	(defrule
 	(up-object-type-count-total c: stable g:< g-desired-num-stable)
 	(can-build stable)
@@ -1293,9 +1318,9 @@
 	(up-set-placement-data my-player-number -1 c: -5)
 	(up-modify-sn sn-placement-zone-size c:= 5)
 	(set-strategic-number sn-placement-fail-delta 0)
+	(up-assign-builders c: stable c: 1)
 	(up-build place-control 0 c: stable)
 	(set-goal g-place-control-used YES)
-	;(chat-to-player my-player-number "Build Stable")
 	)
 
 ;------------
@@ -1325,7 +1350,7 @@
 	(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 	(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 	(goal g-desired-num-trade-cart 0)
-	(up-compare-goal g-age-status < LATE-IMPERIAL)
+	(building-type-count-total market == 0)
 	(can-build-with-escrow market)
 	(up-pending-objects c: market < 1)
 	(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
@@ -1334,7 +1359,6 @@
 	(up-set-placement-data my-player-number -1 c: -5)
 	(up-modify-sn sn-placement-zone-size c:= 5)
 	(set-strategic-number sn-placement-fail-delta -1)
-	(set-goal g-escrow with-escrow)
 	(up-build place-control g-escrow c: market)
 	(set-goal g-place-control-used YES)
 	;(chat-to-player my-player-number "Build Market")
@@ -1345,41 +1369,19 @@
 	(up-object-type-count-total c: market g:< g-desired-num-market)
 	(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 	(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
-	(up-compare-goal g-age-status >= LATE-IMPERIAL)
+	(or
+		(up-compare-goal g-desired-num-trade-cart > 0)
+		(building-type-count-total market >= 1))
 	(can-build-with-escrow market)
 	(up-pending-objects c: market < 1)
 	; (building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 	(goal g-place-control-used NO)
 	=>
 	(set-strategic-number sn-placement-to-center 1)
-	(set-strategic-number sn-placement-zone-size 50)
+	(set-strategic-number sn-placement-zone-size 5)
 	(up-set-placement-data my-player-number -1 c: -128)
-	(up-set-placement-data my-player-number -1 g: g-temp)	;try to build market in corner
 	(set-strategic-number sn-placement-fail-delta 0)
 	;(up-assign-builders c: market c: 1)
-	(set-goal g-escrow with-escrow)
-	(up-build place-control g-escrow c: market)
-	(set-goal g-place-control-used YES)
-	;(chat-to-player my-player-number "Build Market")
-	)
-
-	(defrule
-	(up-object-type-count-total c: market g:< g-desired-num-market)
-	(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-	(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
-	(up-compare-goal g-desired-num-trade-cart > 0)
-	(can-build-with-escrow market)
-	(up-pending-objects c: market < 1)
-	; (building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
-	(goal g-place-control-used NO)
-	=>
-	(set-strategic-number sn-placement-to-center 1)
-	(set-strategic-number sn-placement-zone-size 50)
-	(up-set-placement-data my-player-number -1 c: -128)
-	(up-set-placement-data my-player-number -1 g: g-temp)	;try to build market in corner
-	(set-strategic-number sn-placement-fail-delta 0)
-	;(up-assign-builders c: market c: 1)
-	(set-goal g-escrow with-escrow)
 	(up-build place-control g-escrow c: market)
 	(set-goal g-place-control-used YES)
 	;(chat-to-player my-player-number "Build Market")
@@ -1402,7 +1404,6 @@
 	(up-modify-sn sn-placement-zone-size c:= 5)
 	(set-strategic-number sn-placement-fail-delta 0)
 	(up-assign-builders c: blacksmith c: 2)
-	(set-goal g-escrow with-escrow)
 	(up-build place-control g-escrow c: blacksmith)
 	(set-goal g-place-control-used YES)
 	;(chat-to-player my-player-number "Build Blacksmith")
@@ -1419,7 +1420,7 @@
 	(defrule
 	(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
 	(up-compare-goal g-watch-tower-line == 0)
-	(can-build watch-tower)
+	(can-build-with-escrow watch-tower)
 	(up-pending-objects c: watch-tower < 1)
 	(goal g-place-point-used NO)
 	=>
@@ -1434,7 +1435,7 @@
 
 	(defrule
 	(goal g-temp-3 9986)
-	(can-build watch-tower)
+	(can-build-with-escrow watch-tower)
 	(up-set-target-object search-local c: 0)
 	=>
 	(up-get-point position-object g-point-x)
@@ -1446,7 +1447,7 @@
 
 	(defrule
 	(goal g-temp-3 9987)
-	(can-build watch-tower)
+	(can-build-with-escrow watch-tower)
 	(up-set-target-object search-local c: 0)
 	(up-compare-goal g-temp g:<= g-temp-2) ;mining camp is closer to enemy than TC
 	=>
@@ -1455,13 +1456,12 @@
 	(up-set-target-point g-place-point-x)
 	(set-goal g-place-point-used YES)
 	(set-strategic-number sn-placement-fail-delta 1)
-	(set-goal g-escrow with-escrow)
 	(up-build place-point g-escrow c: watch-tower)
 	)
 
 	;Mining camp isn't a good place for tower, try lumber camp instead
 	(defrule
-	(can-build watch-tower)
+	(can-build-with-escrow watch-tower)
 	(or
 		(and
 			(up-compare-goal g-temp g:> g-temp-2)
@@ -1479,7 +1479,7 @@
 
 	(defrule
 	(goal g-temp-3 9988)
-	(can-build watch-tower)
+	(can-build-with-escrow watch-tower)
 	(up-set-target-object search-local c: 0)
 	=>
 	(up-get-point position-object g-point-x)
@@ -1491,7 +1491,7 @@
 
 	(defrule
 	(goal g-temp-3 9989)
-	(can-build watch-tower)
+	(can-build-with-escrow watch-tower)
 	(up-set-target-object search-local c: 0)
 	(up-compare-goal g-temp g:<= g-temp-2) ;lumber camp is closer to enemy than TC
 	=>
@@ -1500,7 +1500,6 @@
 	(up-set-target-point g-place-point-x)
 	(set-goal g-place-point-used YES)
 	(set-strategic-number sn-placement-fail-delta 1)
-	(set-goal g-escrow with-escrow)
 	(up-build place-point g-escrow c: watch-tower)
 	)
 
@@ -1508,7 +1507,7 @@
 	(defrule
 	(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
 	(up-compare-goal g-watch-tower-line == 0)
-	(can-build watch-tower)
+	(can-build-with-escrow watch-tower)
 	(up-pending-objects c: watch-tower < 1)
 	(goal g-place-point-used NO)
 	(up-compare-goal g-gather-point-x > -1)
@@ -1520,7 +1519,6 @@
 	(up-set-target-point g-place-point-x)
 	(set-goal g-place-point-used YES)
 	(set-strategic-number sn-placement-fail-delta 1)
-	(set-goal g-escrow with-escrow)
 	(up-build place-point g-escrow c: watch-tower)
 	)
 

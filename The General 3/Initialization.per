@@ -154,6 +154,8 @@
 		(defconst tatars 33)
 		(defconst cumans 34)
 		(defconst lithuanians 35)
+		(defconst burgundians 36)
+		(defconst sicilians 37)
 
 		;1.0c Techs
 		(defconst ri-herbal-medicine 441)		;was never defined
@@ -208,7 +210,7 @@
 			(defconst ri-elite-elephant-archer 481)
 			(defconst elephant-archer 873)
 			(defconst elite-elephant-archer 875)
-			(defconst imperial-camel 897)
+			(defconst imperial-camel 207)
 			(defconst ri-elite-genoese-crossbow 468)
 			(defconst genoese-crossbowman 866)
 			(defconst elite-genoese-crossbowman 868)
@@ -275,7 +277,7 @@
 			(defconst gbeto-line -252)
 			(defconst organ-gun-line -253)
 			(defconst caravel-line -254)
-			(defconst camel-archer-line -285)
+			(defconst camel-archer-line -263)	;-285 in DE
 			(defconst karambit-warrior-line -245)
 			(defconst battle-elephant-line -246)
 			(defconst arambai-line -247)
@@ -2141,10 +2143,10 @@
 			(defconst CAMEL-AVAILABLE NO)
 			(defconst HEAVY-CAMEL-AVAILABLE NO)
 			(defconst SIEGE-RAM-AVAILABLE YES)
-			(defconst ONAGER-AVAILABLE YES)
-			(defconst SIEGE-ONAGER-AVAILABLE YES)
+			(defconst ONAGER-AVAILABLE NO)
+			(defconst SIEGE-ONAGER-AVAILABLE NO)
 			(defconst HEAVY-SCORPION-AVAILABLE YES)
-			(defconst BOMBARD-CANNON-AVAILABLE YES)
+			(defconst BOMBARD-CANNON-AVAILABLE NO)
 
 			;Buildings
 			(defconst STONE-GATE-AVAILABLE YES)
@@ -6023,6 +6025,13 @@
 			(defconst MIDC-RANGED 707)			;Xbows and Elite Skirms
 			(defconst MIDC-UNIQUE 708)
 			(defconst MIDC-MONKS 709)
+			(defconst MIDC-SWORDS 751)
+			(defconst MIDC-PIKES 752)
+			(defconst MIDC-SKIRMS 753)
+			(defconst MIDC-LIGHT 754)
+			(defconst MIDC-LANCERS 755)
+			(defconst MIDC-SLINGERS 756)
+			(defconst MIDC-GENITOURS 757)
 			;Fast Imperial Age
 			(defconst FI-SNIPER 801)			;Hand Cannon/Bombard Cannon rush
 			(defconst FI-FARMERTRON 802)		;champion flood
@@ -6044,6 +6053,15 @@
 			(defconst MIDI-CIRCUS 1006)
 			(defconst MIDI-CHAMPIONS 1007)
 			(defconst MIDI-UNIQUE 1008)
+			(defconst MIDI-HALBS 1051)
+			(defconst MIDI-CONDOS 1052)
+			(defconst MIDI-SKIRMS 1053)
+			(defconst MIDI-CANNONEERS 1054)
+			(defconst MIDI-SLINGERS 1055)
+			(defconst MIDI-GENITOURS 1056)
+			(defconst MIDI-HUSSARS 1057)
+			(defconst MIDI-LANCERS 1058)
+			(defconst MIDI-MONKS 1059)
 			;Booming Castle Age Strats
 			(defconst BOOM-KNIGHTS 1101)		;boom with knights defense
 			(defconst BOOM-XBOWS 1102)			;boom with crossbowmen defense
@@ -6185,6 +6203,7 @@
 		(defconst g-temp 41)							;Used as temporary storage
 		(defconst g-temp-2 42)							;Used as temporary storage
 		(defconst g-temp-3 43)							;Used as temporary storage
+		(defconst g-temp-4 341)							;Used as temporary storage
 		(defconst g-min-forest-distance 44)				;Distance to the nearest forest tree
 		(defconst g-rule-pass-count 45)					;The number of passes the AI has made
 		(defconst g-position 46)						;determines flank/pocket position, used to communicate position with allies
@@ -6397,22 +6416,32 @@
 			(defconst DONE-FINDING-PLAYERS 9)
 		(defconst g-enemy-strategy 200)
 		(defconst g-enemy-strategy-type 201)
-		(defconst g-enemy-swordsmen-count 202)			;militia, woad raider, throwing axemen, berserk, shotel warrior, gbeto, karambit warrior, teutonic knight, foot konnik
+		(defconst g-enemy-swordsmen-count 202)			;militia, woad raider, throwing axemen, berserk, shotel warrior, gbeto, karambit warrior, foot konnik
 		(defconst g-enemy-spearmen-count 203)			;spearman, kamayuk
 		(defconst g-enemy-eagle-warrior-count 204)
 		(defconst g-enemy-condottiero-count 205)
 		(defconst g-enemy-foot-archers-count 206)		;archer, longbowman, chu-ko-nu, plumed archer, janissary, rattan archer
 		(defconst g-enemy-skirmishers-count 207)		;skirmisher, genitour
-		(defconst g-enemy-cavalry-archers-count 208)	;cavalry archer, camel archer, arambai, war wagon, mangudai, conquistador, kipchak
+		(defconst g-enemy-cavalry-archers-count 208)	;cavalry archer, arambai, war wagon, mangudai, conquistador, kipchak
 		(defconst g-enemy-hand-cannoneer-slinger-count 209)	;hand cannoneer, slinger
-		(defconst g-enemy-light-cavalry-count 210)		;scout cavalry, magyar huszar, steppe lancer
-		(defconst g-enemy-heavy-cavalry-count 232)		;knight, tarkan, boyar, konnik, keshik
+		(defconst g-enemy-light-cavalry-count 210)		;scout cavalry
+		(defconst g-enemy-heavy-cavalry-count 232)		;knight, tarkan, magyar huszar, boyar, konnik, keshik, steppe lancer
 		(defconst g-enemy-camel-count 211)				;camel
 		(defconst g-enemy-elephants-count 212)			;battle elephant, elephant archer, ballista elephant, war elephant
 		(defconst g-enemy-field-siege-count 213)		;mangonel, scorpion, organ gun
-		(defconst g-enemy-special-unique-unit-count 214);jaguar warrior, camel archer, cataphract, huskarl, elephant archer, genoese crossbowman, samurai, ballista elephant, leitis, mameluke, teutonic knight
+		(defconst g-enemy-special-unique-unit-count 214);jaguar warrior, camel archer, cataphract, huskarl, genoese crossbowman, samurai, leitis, mameluke, teutonic knight
+		(defconst g-enemy-special-unique-unit-flag 340)
+			(defconst JAGUAR-WARRIOR-FLAG 1)
+			(defconst CAMEL-ARCHER-FLAG 2)
+			(defconst CATAPHRACT-FLAG 4)
+			(defconst HUSKARL-FLAG 8)
+			(defconst GENOESE-CROSSBOWMAN-FLAG 16)
+			(defconst SAMURAI-FLAG 32)
+			(defconst LEITIS-FLAG 64)
+			(defconst MAMELUKE-FLAG 128)
+			(defconst TEUTONIC-KNIGHT-FLAG 256)
 		(defconst g-enemy-monks-count 215)				;monk, missionary
-		(defconst g-enemy-visible-military-count 216)
+		(defconst g-counted-enemy-military-pop 216)
 		(defconst g-previous-enemy-visible-military-count 217)
 		(defconst g-primary-enemy-threat 308)
 		(defconst g-constant-train-unit 219)
@@ -6569,19 +6598,17 @@
 			(defconst STOP-ATTACKING 11)
 			(defconst RETREAT 12)
 		(defconst g-attack-target-id 337)
-		; (defconst g- 340)
-		; (defconst g- 341)
-		; (defconst g- 342)
-		; (defconst g- 343)
-		; (defconst g- 344)
-		; (defconst g- 345)
-		; (defconst g- 346)
-		; (defconst g- 347)
-		; (defconst g- 348)
-		; (defconst g- 349)
-		; (defconst g- 350)
-		; (defconst g- 351)
-		; (defconst g- 352)
+		(defconst g-countering-cap 342)
+		(defconst g-average-enemy-military-pop 343)
+		(defconst g-num-counter-units-allowed 344)
+		(defconst g-most-effective-unit 345)			
+		(defconst g-most-effective-unit-score 346)	
+		(defconst g-primary-unit-score 347)			
+		(defconst g-primary-unit-score-goal 348)		
+		(defconst g-next-most-effective-unit 349)
+		(defconst g-next-most-effective-unit-score 350)
+		(defconst g-seen-enemy-military-pop 351)
+		(defconst g-previous-seen-enemy-military-pop 352)
 		; (defconst g- 353)
 		; (defconst g- 354)
 		; (defconst g- 355)
@@ -7821,7 +7848,7 @@
 		;(defconst sn- 97)	;don't use with sn-91
 		(defconst sn-special-attack-influence2 110)
 		(defconst sn-special-attack-influence3 111)
-		;(defconst sn- 121)
+		(defconst sn-countering-preference 121)
 		;(defconst sn- 124)
 		;(defconst sn- 125)
 		;(defconst sn- 126)
@@ -8074,7 +8101,7 @@
 		(set-goal g-desired-num-wood-vils 0)
 		(set-goal g-desired-num-stone-vils 0)
 		(set-goal g-desired-num-gold-vils 0)
-		(set-goal g-escrow without-escrow)
+		(set-goal g-escrow with-escrow)
 		(set-goal g-far-boar NO)
 		(set-goal g-need-gold-camp NO)
 		(set-goal g-need-stone-camp NO)
@@ -8141,6 +8168,14 @@
 	;--------------------
 	;	Initialize SNs
 	;--------------------
+
+		;Custom SNs
+		(defrule
+		(true)
+		=>
+		(set-strategic-number sn-countering-preference 100)
+		(disable-self)
+		)
 
 																;Default SN Value
 		;Exploration SNs
@@ -8355,8 +8390,8 @@
 		(set-strategic-number sn-attack-winning-player 0)				;1
 		(set-strategic-number sn-attack-coordination 2)					;-1
 		(set-strategic-number sn-enable-patrol-attack 1)				;0
-		(up-find-player enemy find-ordered g-temp)
-		(up-modify-sn sn-target-player-number g:= g-temp)		;0
+		(up-find-player enemy find-random g-temp)
+		(up-modify-sn sn-target-player-number g:= g-temp)				;0
 		(set-strategic-number sn-enable-offensive-priority 1)			;0
 		(set-strategic-number sn-disable-attack-groups 1)				;0
 		(set-strategic-number sn-local-targeting-mode 1)				;0

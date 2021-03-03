@@ -1615,47 +1615,6 @@
 	;---------------------
 
 		;Select the starting strategy. This will eventually be different according to the general, but for now it's just based on civ and flank/pocket
-
-		#load-if-not-defined AZTEC-CIV
-		#load-if-not-defined BRITON-CIV
-		#load-if-not-defined INCAN-CIV
-		#load-if-not-defined INDIAN-CIV
-		#load-if-not-defined MAYAN-CIV
-			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-KRUSH)
-			(set-goal g-dark-strategy FC-KRUSH)
-			(set-goal g-early-feudal-strategy FC-KRUSH)
-			(set-goal g-mid-feudal-strategy FC-KRUSH)
-			(set-goal g-early-castle-strategy FC-KRUSH)
-			(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-
 		#load-if-defined AZTEC-CIV
 			
 			(defrule
@@ -3320,6 +3279,68 @@
 		(up-modify-goal g-current-strategy g:= g-late-imperial-strategy)
 		)
 
+	;--------------------------------
+	;	Switch to Counter Strategy
+	;--------------------------------
+
+		(defrule
+		(or
+			(goal g-current-strategy FC-STRONGBOW)
+			(or
+				(goal g-current-strategy EARLYC-XBOWS)
+				(or
+					(goal g-current-strategy MIDC-XBOWS)
+					(or
+						(goal g-current-strategy MIDC-CAV-ARCHERS)
+						(goal g-current-strategy MIDC-RANGED)))))
+		(up-compare-goal g-enemy-skirmishers-count > 10)
+		(up-compare-goal g-target-military-parity < 0)
+		(up-compare-const KNIGHT-AVAILABLE == YES)
+		(building-type-count stable > 0)
+		=>
+		(set-goal g-early-castle-strategy EARLYC-KNIGHTS)
+		(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
+		)
+
+		(defrule
+		(or
+			(goal g-current-strategy FC-STRONGBOW)
+			(or
+				(goal g-current-strategy EARLYC-XBOWS)
+				(or
+					(goal g-current-strategy MIDC-XBOWS)
+					(goal g-current-strategy MIDC-RANGED))))
+		(up-compare-goal g-enemy-skirmishers-count > 10)
+		(up-compare-goal g-target-military-parity < 0)
+		(up-compare-const EAGLE-WARRIOR-AVAILABLE == YES)
+		(building-type-count barracks > 0)
+		=>
+		(set-goal g-early-castle-strategy EARLYC-EAGLES)
+		(set-goal g-mid-castle-strategy MIDC-EAGLES)
+		)
+
+		#load-if-defined INDIAN-CIV
+
+			(defrule
+			(or
+				(goal g-current-strategy FC-STRONGBOW)
+				(or
+					(goal g-current-strategy EARLYC-XBOWS)
+					(or
+						(goal g-current-strategy MIDC-XBOWS)
+						(or
+							(goal g-current-strategy MIDC-CAV-ARCHERS)
+							(goal g-current-strategy MIDC-RANGED)))))
+			(up-compare-goal g-enemy-skirmishers-count > 12)
+			(up-compare-goal g-target-military-parity < 0)
+			(building-type-count stable > 0)
+			=>
+			(set-goal g-early-castle-strategy EARLYC-CAMELS)
+			(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
+			)
+
+		#end-if
+
 ;--------------------------------
 ;	GOAL 3: g-initial-strategy
 ;--------------------------------
@@ -3480,6 +3501,7 @@
 		;Not currently attacked by many soldiers, but a threat from the enemy seems imminent
 		(defrule
 		(goal g-game-focus PENDING)
+		(goal g-position FLANK)
 		(up-compare-goal g-enemy-units-in-town < 2)
 		(or
 			(up-compare-goal g-target-military-parity < -8)
@@ -3594,6 +3616,7 @@
 		(up-compare-goal g-target-military-parity < 0)
 		(up-compare-goal g-target-pop-parity g:< g-target-military-parity)	;also behind in civilian pop
 		(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+		(up-compare-goal g-target-age-parity != WE-ARE-AHEAD)
 		=>
 		(set-goal g-game-focus BOOM)
 		)
@@ -5670,9 +5693,9 @@
 		(up-allied-goal focus-player g-position == FLANK))
 	(timer-triggered t-10-sec)
 	(players-building-count any-enemy > 0)
-	(or
+	;(or
 		(players-civilian-population any-enemy > 20)
-		(players-building-type-count any-enemy town-center > 0))
+	;	(players-building-type-count any-enemy town-center > 0))
 	=>
 	(up-find-player enemy find-closest g-temp)
 	(up-modify-sn sn-focus-player-number g:= g-temp)
@@ -5691,9 +5714,9 @@
 		(or
 			(not 
 				(player-in-game focus-player))
-			(and
-				(players-civilian-population focus-player <= 20)
-				(goal g-remote-total 0)))	;didn't find town center
+			;(or
+				(players-civilian-population focus-player <= 20))
+			;	(goal g-remote-total 0)))	;didn't find town center
 		(up-compare-goal i < 8)
 		=>
 		(up-modify-goal i c:+ 1)
@@ -5710,9 +5733,8 @@
 	(players-building-count any-enemy > 0)
 	(player-in-game focus-player)
 	;(players-building-count focus-player > 0)
-	(or
-		(players-civilian-population focus-player > 20)
-		(up-compare-goal g-remote-total > 0))	;found enemy TC
+	(players-civilian-population focus-player > 20)
+	;(up-compare-goal g-remote-total > 0)	;found enemy TC
 	=>
 	(up-modify-goal g-closest-enemy g:= g-temp)
 	)
@@ -5884,16 +5906,15 @@
 
 	(load "The General 3/Functions/Reset")
 
-	(defrule
-	(timer-triggered t-10-sec)
-	(players-building-count target-player > 0)
-	=>
-	(up-modify-goal g-previous-enemy-visible-military-count g:= g-enemy-visible-military-count)
-	)
+	; (defrule
+	; (timer-triggered t-10-sec)
+	; (players-building-count target-player > 0)
+	; =>
+	; (up-modify-goal g-previous-enemy-visible-military-count g:= g-counted-enemy-military-pop)
+	; )
 
 	(defrule
-	(timer-triggered t-10-sec)
-	(players-building-count target-player > 0)
+	(true)
 	=>
 	(set-goal g-enemy-swordsmen-count 0)
 	(set-goal g-enemy-spearmen-count 0)
@@ -5903,12 +5924,6 @@
 	(set-goal g-enemy-skirmishers-count 0)
 	(set-goal g-enemy-cavalry-archers-count 0)
 	(set-goal g-enemy-hand-cannoneer-slinger-count 0)
-	)
-
-	(defrule
-	(timer-triggered t-10-sec)
-	(players-building-count target-player > 0)
-	=>
 	(set-goal g-enemy-light-cavalry-count 0)
 	(set-goal g-enemy-heavy-cavalry-count 0)
 	(set-goal g-enemy-camel-count 0)
@@ -5918,597 +5933,25 @@
 	(set-goal g-enemy-monks-count 0)
 	)
 
-	;---------------
-	;	Swordsmen
-	;---------------
+	(defrule
+	(true)
+	=>
+	(up-modify-flag g-enemy-special-unique-unit-flag c:- JAGUAR-WARRIOR-FLAG)
+	(up-modify-flag g-enemy-special-unique-unit-flag c:- CAMEL-ARCHER-FLAG)
+	(up-modify-flag g-enemy-special-unique-unit-flag c:- CATAPHRACT-FLAG)
+	(up-modify-flag g-enemy-special-unique-unit-flag c:- HUSKARL-FLAG)
+	(up-modify-flag g-enemy-special-unique-unit-flag c:- GENOESE-CROSSBOWMAN-FLAG)
+	(up-modify-flag g-enemy-special-unique-unit-flag c:- SAMURAI-FLAG)
+	(up-modify-flag g-enemy-special-unique-unit-flag c:- LEITIS-FLAG)
+	(up-modify-flag g-enemy-special-unique-unit-flag c:- MAMELUKE-FLAG)
+	(up-modify-flag g-enemy-special-unique-unit-flag c:- TEUTONIC-KNIGHT-FLAG)
+	)
 
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: militiaman-line c: 40)
-		(up-get-search-state g-local-total)
-		)
+	#load-if-defined OLD-CODE-DONT-USE
 
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: militiaman-line c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: woad-raider-line c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: woad-raider-line c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: berserk-line c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: berserk-line c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: shotel-warrior c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: shotel-warrior c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: karambit-warrior c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: karambit-warrior c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: foot-konnik-line c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: foot-konnik-line c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: throwing-axeman-line c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: throwing-axeman-line c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: gbeto c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: gbeto c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-	;--------------
-	;	Spearmen
-	;--------------
-
-		(load "The General 3/Functions/Reset")
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: spearman-line c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-spearmen-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: spearman-line c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: kamayuk c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-spearmen-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: kamayuk c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-	;--------------------
-	;	Eagle Warriors
-	;--------------------
-
-		(load "The General 3/Functions/Reset")
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: eagle-warrior c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-eagle-warrior-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: eagle-warrior c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-	;------------------
-	;	Condottieros
-	;------------------
-
-		(load "The General 3/Functions/Reset")
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: condottiero c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-condottiero-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: condottiero c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-	;------------------
-	;	Foot Archers
-	;------------------
-
-		(load "The General 3/Functions/Reset")
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: archer-line c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-foot-archers-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: archer-line c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: longbowman-line c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-foot-archers-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: longbowman-line c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: chu-ko-nu-line c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-foot-archers-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: chu-ko-nu-line c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: plumed-archer-line c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-foot-archers-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: plumed-archer-line c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: janissary-line c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-foot-archers-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: janissary-line c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: rattan-archer c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-foot-archers-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: rattan-archer c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-	;-----------------
-	;	Skirmishers
-	;-----------------
-
-		(load "The General 3/Functions/Reset")
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: skirmisher-line c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-skirmishers-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: skirmisher-line c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: genitour c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-skirmishers-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: genitour c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-	;---------------------
-	;	Cavalry Archers
-	;---------------------
-
-		(load "The General 3/Functions/Reset")
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: cavalry-archer-line c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-cavalry-archers-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: cavalry-archer-line c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: arambai c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-cavalry-archers-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: arambai c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: war-wagon-line c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-cavalry-archers-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: war-wagon-line c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: mangudai-line c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-cavalry-archers-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: mangudai-line c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: conquistador-line c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-cavalry-archers-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: conquistador-line c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		#load-if-defined DE-AVAILABLE
+		;---------------
+		;	Swordsmen
+		;---------------
 
 			(defrule
 			(timer-triggered t-10-sec)
@@ -6516,7 +5959,483 @@
 			=>
 			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
 			(up-full-reset-search)
-			(up-find-remote c: kipchak-line c: 40)
+			(up-find-remote c: militiaman-line c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: militiaman-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: woad-raider-line c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: woad-raider-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: berserk-line c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: berserk-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: shotel-warrior c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: shotel-warrior c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: karambit-warrior c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: karambit-warrior c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: foot-konnik-line c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: foot-konnik-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: throwing-axeman-line c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: throwing-axeman-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: gbeto c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: gbeto c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+		;--------------
+		;	Spearmen
+		;--------------
+
+			(load "The General 3/Functions/Reset")
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: spearman-line c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-spearmen-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: spearman-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: kamayuk c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-spearmen-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: kamayuk c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+		;--------------------
+		;	Eagle Warriors
+		;--------------------
+
+			(load "The General 3/Functions/Reset")
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: eagle-warrior c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-eagle-warrior-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: eagle-warrior c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+		;------------------
+		;	Condottieros
+		;------------------
+
+			(load "The General 3/Functions/Reset")
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: condottiero c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-condottiero-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: condottiero c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+		;------------------
+		;	Foot Archers
+		;------------------
+
+			(load "The General 3/Functions/Reset")
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: archer-line c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-foot-archers-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: archer-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: longbowman-line c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-foot-archers-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: longbowman-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: chu-ko-nu-line c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-foot-archers-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: chu-ko-nu-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: plumed-archer-line c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-foot-archers-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: plumed-archer-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: janissary-line c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-foot-archers-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: janissary-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: rattan-archer c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-foot-archers-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: rattan-archer c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+		;-----------------
+		;	Skirmishers
+		;-----------------
+
+			(load "The General 3/Functions/Reset")
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: skirmisher-line c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-skirmishers-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: skirmisher-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: genitour c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-skirmishers-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: genitour c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+		;---------------------
+		;	Cavalry Archers
+		;---------------------
+
+			(load "The General 3/Functions/Reset")
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: cavalry-archer-line c: 40)
 			(up-get-search-state g-local-total)
 			)
 
@@ -6527,145 +6446,233 @@
 				=>
 				(up-modify-goal g-enemy-cavalry-archers-count g:+ g-remote-total)
 				(up-reset-search 1 1 0 1)
+				(up-find-remote c: cavalry-archer-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: arambai c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-cavalry-archers-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: arambai c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: war-wagon-line c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-cavalry-archers-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: war-wagon-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: mangudai-line c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-cavalry-archers-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: mangudai-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: conquistador-line c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-cavalry-archers-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: conquistador-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			#load-if-defined DE-AVAILABLE
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				=>
+				(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+				(up-full-reset-search)
 				(up-find-remote c: kipchak-line c: 40)
 				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
 				)
 
-		#end-if
+					(defrule
+					(timer-triggered t-10-sec)
+					(players-building-count target-player > 0)
+					(up-compare-goal g-remote-total > 0)
+					=>
+					(up-modify-goal g-enemy-cavalry-archers-count g:+ g-remote-total)
+					(up-reset-search 1 1 0 1)
+					(up-find-remote c: kipchak-line c: 40)
+					(up-get-search-state g-local-total)
+					(up-jump-rule -1)
+					)
 
-	;---------------------
-	;	Hand Cannoneers
-	;---------------------
+			#end-if
 
-		(load "The General 3/Functions/Reset")
+		;---------------------
+		;	Hand Cannoneers
+		;---------------------
 
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: hand-cannoneer c: 40)
-		(up-get-search-state g-local-total)
-		)
+			(load "The General 3/Functions/Reset")
 
 			(defrule
 			(timer-triggered t-10-sec)
 			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
 			=>
-			(up-modify-goal g-enemy-hand-cannoneer-slinger-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
 			(up-find-remote c: hand-cannoneer c: 40)
 			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
 			)
 
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: slinger c: 40)
-		(up-get-search-state g-local-total)
-		)
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-hand-cannoneer-slinger-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: hand-cannoneer c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
 
 			(defrule
 			(timer-triggered t-10-sec)
 			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
 			=>
-			(up-modify-goal g-enemy-hand-cannoneer-slinger-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
 			(up-find-remote c: slinger c: 40)
 			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
 			)
 
-	;-------------------
-	;	Heavy Cavalry
-	;-------------------
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-hand-cannoneer-slinger-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: slinger c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
 
-		(load "The General 3/Functions/Reset")
+		;-------------------
+		;	Heavy Cavalry
+		;-------------------
 
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: knight-line c: 40)
-		(up-get-search-state g-local-total)
-		)
+			(load "The General 3/Functions/Reset")
 
 			(defrule
 			(timer-triggered t-10-sec)
 			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
 			=>
-			(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
 			(up-find-remote c: knight-line c: 40)
 			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
 			)
 
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: tarkan-line c: 40)
-		(up-get-search-state g-local-total)
-		)
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: knight-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
 
 			(defrule
 			(timer-triggered t-10-sec)
 			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
 			=>
-			(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
 			(up-find-remote c: tarkan-line c: 40)
 			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
 			)
 
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: boyar c: 40)
-		(up-get-search-state g-local-total)
-		)
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: tarkan-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
 
 			(defrule
 			(timer-triggered t-10-sec)
 			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
 			=>
-			(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
 			(up-find-remote c: boyar c: 40)
 			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		#load-if-defined DE-AVAILABLE
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: konnik-line c: 40)
-			(up-get-search-state g-local-total)
 			)
 
 				(defrule
@@ -6675,108 +6682,86 @@
 				=>
 				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-remote-total)
 				(up-reset-search 1 1 0 1)
+				(up-find-remote c: boyar c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			#load-if-defined DE-AVAILABLE
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				=>
+				(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+				(up-full-reset-search)
 				(up-find-remote c: konnik-line c: 40)
 				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
 				)
 
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: krepost-konnik-line c: 40)
-			(up-get-search-state g-local-total)
-			)
+					(defrule
+					(timer-triggered t-10-sec)
+					(players-building-count target-player > 0)
+					(up-compare-goal g-remote-total > 0)
+					=>
+					(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-remote-total)
+					(up-reset-search 1 1 0 1)
+					(up-find-remote c: konnik-line c: 40)
+					(up-get-search-state g-local-total)
+					(up-jump-rule -1)
+					)
 
 				(defrule
 				(timer-triggered t-10-sec)
 				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
 				=>
-				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
+				(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+				(up-full-reset-search)
 				(up-find-remote c: krepost-konnik-line c: 40)
 				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
 				)
 
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: keshik-line c: 40)
-			(up-get-search-state g-local-total)
-			)
+					(defrule
+					(timer-triggered t-10-sec)
+					(players-building-count target-player > 0)
+					(up-compare-goal g-remote-total > 0)
+					=>
+					(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-remote-total)
+					(up-reset-search 1 1 0 1)
+					(up-find-remote c: krepost-konnik-line c: 40)
+					(up-get-search-state g-local-total)
+					(up-jump-rule -1)
+					)
 
 				(defrule
 				(timer-triggered t-10-sec)
 				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
 				=>
-				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
+				(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+				(up-full-reset-search)
 				(up-find-remote c: keshik-line c: 40)
 				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
 				)
 
-		#end-if
-		
-	;-------------------
-	;	Light Cavalry
-	;-------------------
+					(defrule
+					(timer-triggered t-10-sec)
+					(players-building-count target-player > 0)
+					(up-compare-goal g-remote-total > 0)
+					=>
+					(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-remote-total)
+					(up-reset-search 1 1 0 1)
+					(up-find-remote c: keshik-line c: 40)
+					(up-get-search-state g-local-total)
+					(up-jump-rule -1)
+					)
 
-		(load "The General 3/Functions/Reset")
+			#end-if
+			
+		;-------------------
+		;	Light Cavalry
+		;-------------------
 
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: scout-cavalry-line c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-light-cavalry-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: scout-cavalry-line c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: magyar-huszar c: 40)
-		(up-get-search-state g-local-total)
-		)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-light-cavalry-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: magyar-huszar c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
-
-		#load-if-defined DE-AVAILABLE
+			(load "The General 3/Functions/Reset")
 
 			(defrule
 			(timer-triggered t-10-sec)
@@ -6784,7 +6769,7 @@
 			=>
 			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
 			(up-full-reset-search)
-			(up-find-remote c: steppe-lancer-line c: 40)
+			(up-find-remote c: scout-cavalry-line c: 40)
 			(up-get-search-state g-local-total)
 			)
 
@@ -6795,548 +6780,436 @@
 				=>
 				(up-modify-goal g-enemy-light-cavalry-count g:+ g-remote-total)
 				(up-reset-search 1 1 0 1)
-				(up-find-remote c: steppe-lancer-line c: 40)
+				(up-find-remote c: scout-cavalry-line c: 40)
 				(up-get-search-state g-local-total)
 				(up-jump-rule -1)
 				)
 
-		#end-if
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: magyar-huszar c: 40)
+			(up-get-search-state g-local-total)
+			)
 
-	;------------
-	;	Camels
-	;------------
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-light-cavalry-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: magyar-huszar c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
 
-		(load "The General 3/Functions/Reset")
+			#load-if-defined DE-AVAILABLE
 
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: camel-line c: 40)
-		(up-get-search-state g-local-total)
-		)
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				=>
+				(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+				(up-full-reset-search)
+				(up-find-remote c: steppe-lancer-line c: 40)
+				(up-get-search-state g-local-total)
+				)
+
+					(defrule
+					(timer-triggered t-10-sec)
+					(players-building-count target-player > 0)
+					(up-compare-goal g-remote-total > 0)
+					=>
+					(up-modify-goal g-enemy-light-cavalry-count g:+ g-remote-total)
+					(up-reset-search 1 1 0 1)
+					(up-find-remote c: steppe-lancer-line c: 40)
+					(up-get-search-state g-local-total)
+					(up-jump-rule -1)
+					)
+
+			#end-if
+
+		;------------
+		;	Camels
+		;------------
+
+			(load "The General 3/Functions/Reset")
 
 			(defrule
 			(timer-triggered t-10-sec)
 			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
 			=>
-			(up-modify-goal g-enemy-camel-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
 			(up-find-remote c: camel-line c: 40)
 			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
 			)
 
-	;---------------
-	;	Elephants
-	;---------------
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-camel-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: camel-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
 
-		(load "The General 3/Functions/Reset")
+		;---------------
+		;	Elephants
+		;---------------
 
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: war-elephant-line c: 40)
-		(up-get-search-state g-local-total)
-		)
+			(load "The General 3/Functions/Reset")
 
 			(defrule
 			(timer-triggered t-10-sec)
 			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
 			=>
-			(up-modify-goal g-enemy-elephants-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
 			(up-find-remote c: war-elephant-line c: 40)
 			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
 			)
 
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: battle-elephant c: 40)
-		(up-get-search-state g-local-total)
-		)
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-elephants-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: war-elephant-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
 
 			(defrule
 			(timer-triggered t-10-sec)
 			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
 			=>
-			(up-modify-goal g-enemy-elephants-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
 			(up-find-remote c: battle-elephant c: 40)
 			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
 			)
 
-	;-----------------
-	;	Field Siege
-	;-----------------
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-elephants-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: battle-elephant c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
 
-		(load "The General 3/Functions/Reset")
+		;-----------------
+		;	Field Siege
+		;-----------------
 
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: mangonel-line c: 40)
-		(up-get-search-state g-local-total)
-		)
+			(load "The General 3/Functions/Reset")
 
 			(defrule
 			(timer-triggered t-10-sec)
 			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
 			=>
-			(up-modify-goal g-enemy-field-siege-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
 			(up-find-remote c: mangonel-line c: 40)
 			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
 			)
 
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: mangonel-line c: 40)
-		(up-get-search-state g-local-total)
-		)
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-field-siege-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: mangonel-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
 
 			(defrule
 			(timer-triggered t-10-sec)
 			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
 			=>
-			(up-modify-goal g-enemy-field-siege-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
 			(up-find-remote c: mangonel-line c: 40)
 			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
 			)
 
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: scorpion-line c: 40)
-		(up-get-search-state g-local-total)
-		)
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-field-siege-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: mangonel-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
 
 			(defrule
 			(timer-triggered t-10-sec)
 			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
 			=>
-			(up-modify-goal g-enemy-field-siege-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
 			(up-find-remote c: scorpion-line c: 40)
 			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
 			)
 
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: organ-gun c: 40)
-		(up-get-search-state g-local-total)
-		)
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-field-siege-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: scorpion-line c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
 
 			(defrule
 			(timer-triggered t-10-sec)
 			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
 			=>
-			(up-modify-goal g-enemy-field-siege-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
 			(up-find-remote c: organ-gun c: 40)
 			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
 			)
 
-	;-----------
-	;	Monks
-	;-----------
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-field-siege-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: organ-gun c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
 
-		(load "The General 3/Functions/Reset")
+		;-----------
+		;	Monks
+		;-----------
 
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: monk c: 40)
-		(up-get-search-state g-local-total)
-		)
+			(load "The General 3/Functions/Reset")
 
 			(defrule
 			(timer-triggered t-10-sec)
 			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
 			=>
-			(up-modify-goal g-enemy-monks-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
 			(up-find-remote c: monk c: 40)
 			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
 			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-monks-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: monk c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: missionary c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-monks-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: missionary c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+		;------------------
+		;	Unique Units
+		;------------------
+
+			(load "The General 3/Functions/Reset")
+
+			#load-if-not-defined BRITON-CIV
+			#load-if-not-defined BULGARIANS-CIV
+			#load-if-not-defined BURMESE-CIV
+			#load-if-not-defined CELTIC-CIV
+			#load-if-not-defined CHINESE-CIV
+			#load-if-not-defined CUMANS-CIV
+			#load-if-not-defined ETHIOPIAN-CIV
+			#load-if-not-defined FRANKISH-CIV
+			#load-if-not-defined HUN-CIV
+			#load-if-not-defined INCAN-CIV
+			#load-if-not-defined KOREAN-CIV
+			#load-if-not-defined MAGYAR-CIV
+			#load-if-not-defined MALAY-CIV
+			#load-if-not-defined MALIAN-CIV
+			#load-if-not-defined MAYAN-CIV
+			#load-if-not-defined MONGOL-CIV
+			#load-if-not-defined PERSIAN-CIV
+			#load-if-not-defined PORTUGUESE-CIV
+			#load-if-not-defined SLAVIC-CIV
+			#load-if-not-defined SPANISH-CIV
+			#load-if-not-defined TATARS-CIV
+			#load-if-not-defined TURKISH-CIV
+			#load-if-not-defined VIETNAMESE-CIV
+			#load-if-not-defined VIKING-CIV
+
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			=>
+			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+			(up-full-reset-search)
+			(up-find-remote c: my-unique-unit c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+				(defrule
+				(timer-triggered t-10-sec)
+				(players-building-count target-player > 0)
+				(up-compare-goal g-remote-total > 0)
+				=>
+				(up-modify-goal g-enemy-special-unique-unit-count g:+ g-remote-total)
+				(up-reset-search 1 1 0 1)
+				(up-find-remote c: my-unique-unit c: 40)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+
+		;Total Visible Enemy Units
 
 		(defrule
 		(timer-triggered t-10-sec)
 		(players-building-count target-player > 0)
 		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: missionary c: 40)
-		(up-get-search-state g-local-total)
+		(up-modify-goal g-counted-enemy-military-pop g:= g-enemy-swordsmen-count)
+		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-spearmen-count)
+		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-eagle-warrior-count)
+		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-condottiero-count)
+		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-foot-archers-count)
+		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-skirmishers-count)
+		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-cavalry-archers-count)
+		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-hand-cannoneer-slinger-count)
 		)
 
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-monks-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: missionary c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
+		(defrule
+		(timer-triggered t-10-sec)
+		(players-building-count target-player > 0)
+		=>
+		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-light-cavalry-count)
+		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-heavy-cavalry-count)
+		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-camel-count)
+		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-elephants-count)
+		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-field-siege-count)
+		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-special-unique-unit-count)
+		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-monks-count)
+		)
 
-	;------------------
-	;	Unique Units
-	;------------------
+		;Modify enemy unit counts to adjust for unseen units
 
 		(load "The General 3/Functions/Reset")
 
-		#load-if-not-defined BRITON-CIV
-		#load-if-not-defined BULGARIANS-CIV
-		#load-if-not-defined BURMESE-CIV
-		#load-if-not-defined CELTIC-CIV
-		#load-if-not-defined CHINESE-CIV
-		#load-if-not-defined CUMANS-CIV
-		#load-if-not-defined ETHIOPIAN-CIV
-		#load-if-not-defined FRANKISH-CIV
-		#load-if-not-defined HUN-CIV
-		#load-if-not-defined INCAN-CIV
-		#load-if-not-defined KOREAN-CIV
-		#load-if-not-defined MAGYAR-CIV
-		#load-if-not-defined MALAY-CIV
-		#load-if-not-defined MALIAN-CIV
-		#load-if-not-defined MAYAN-CIV
-		#load-if-not-defined MONGOL-CIV
-		#load-if-not-defined PERSIAN-CIV
-		#load-if-not-defined PORTUGUESE-CIV
-		#load-if-not-defined SLAVIC-CIV
-		#load-if-not-defined SPANISH-CIV
-		#load-if-not-defined TATARS-CIV
-		#load-if-not-defined TURKISH-CIV
-		#load-if-not-defined VIETNAMESE-CIV
-		#load-if-not-defined VIKING-CIV
+		(defrule
+		(timer-triggered t-10-sec)
+		(players-building-count target-player > 0)
+		(players-military-population target-player > 0)
+		=>
+		(up-modify-goal g-temp g:= g-counted-enemy-military-pop)
+		(up-get-player-fact target-player military-population 0 g-temp-2)
+		(up-modify-goal g-temp-2 g:%/ g-temp)
+		)
 
 		(defrule
 		(timer-triggered t-10-sec)
 		(players-building-count target-player > 0)
+		;(players-military-population target-player > 0)
+		(up-compare-goal g-temp-2 <= 200) ;at least 50% of enemy military is visible
 		=>
-		(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-		(up-full-reset-search)
-		(up-find-remote c: my-unique-unit c: 40)
-		(up-get-search-state g-local-total)
+		(up-modify-goal g-enemy-swordsmen-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-spearmen-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-eagle-warrior-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-condottiero-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-foot-archers-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-skirmishers-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-cavalry-archers-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-hand-cannoneer-slinger-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-light-cavalry-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-heavy-cavalry-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-camel-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-elephants-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-field-siege-count g:%* g-temp-2)
 		)
 
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(up-compare-goal g-remote-total > 0)
-			=>
-			(up-modify-goal g-enemy-special-unique-unit-count g:+ g-remote-total)
-			(up-reset-search 1 1 0 1)
-			(up-find-remote c: my-unique-unit c: 40)
-			(up-get-search-state g-local-total)
-			(up-jump-rule -1)
-			)
+		(defrule
+		(timer-triggered t-10-sec)
+		(players-building-count target-player > 0)
+		(players-military-population target-player > 0)
+		(up-compare-goal g-temp-2 <= 200) ;at least 50% of enemy military is visible
+		=>
+		(up-modify-goal g-enemy-special-unique-unit-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-monks-count g:%* g-temp-2)
+		)
 
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
+		;If less than 50% enemy military is visible, use players-unit-type-count instead of DUC search
 
-	;Total Visible Enemy Units
-
-	(defrule
-	(timer-triggered t-10-sec)
-	(players-building-count target-player > 0)
-	=>
-	(up-modify-goal g-enemy-visible-military-count g:= g-enemy-swordsmen-count)
-	(up-modify-goal g-enemy-visible-military-count g:+ g-enemy-spearmen-count)
-	(up-modify-goal g-enemy-visible-military-count g:+ g-enemy-eagle-warrior-count)
-	(up-modify-goal g-enemy-visible-military-count g:+ g-enemy-condottiero-count)
-	(up-modify-goal g-enemy-visible-military-count g:+ g-enemy-foot-archers-count)
-	(up-modify-goal g-enemy-visible-military-count g:+ g-enemy-skirmishers-count)
-	(up-modify-goal g-enemy-visible-military-count g:+ g-enemy-cavalry-archers-count)
-	(up-modify-goal g-enemy-visible-military-count g:+ g-enemy-hand-cannoneer-slinger-count)
-	)
-
-	(defrule
-	(timer-triggered t-10-sec)
-	(players-building-count target-player > 0)
-	=>
-	(up-modify-goal g-enemy-visible-military-count g:+ g-enemy-light-cavalry-count)
-	(up-modify-goal g-enemy-visible-military-count g:+ g-enemy-heavy-cavalry-count)
-	(up-modify-goal g-enemy-visible-military-count g:+ g-enemy-camel-count)
-	(up-modify-goal g-enemy-visible-military-count g:+ g-enemy-elephants-count)
-	(up-modify-goal g-enemy-visible-military-count g:+ g-enemy-field-siege-count)
-	(up-modify-goal g-enemy-visible-military-count g:+ g-enemy-special-unique-unit-count)
-	(up-modify-goal g-enemy-visible-military-count g:+ g-enemy-monks-count)
-	)
-
-	;Modify enemy unit counts to adjust for unseen units
-
-	(load "The General 3/Functions/Reset")
-
-	(defrule
-	(timer-triggered t-10-sec)
-	(players-building-count target-player > 0)
-	(players-military-population target-player > 0)
-	=>
-	(up-modify-goal g-temp g:= g-enemy-visible-military-count)
-	(up-get-player-fact target-player military-population 0 g-temp-2)
-	(up-modify-goal g-temp-2 g:%/ g-temp)
-	)
-
-	(defrule
-	(timer-triggered t-10-sec)
-	(players-building-count target-player > 0)
-	;(players-military-population target-player > 0)
-	(up-compare-goal g-temp-2 <= 200) ;at least 50% of enemy military is visible
-	=>
-	(up-modify-goal g-enemy-swordsmen-count g:%* g-temp-2)
-	(up-modify-goal g-enemy-spearmen-count g:%* g-temp-2)
-	(up-modify-goal g-enemy-eagle-warrior-count g:%* g-temp-2)
-	(up-modify-goal g-enemy-condottiero-count g:%* g-temp-2)
-	(up-modify-goal g-enemy-foot-archers-count g:%* g-temp-2)
-	(up-modify-goal g-enemy-skirmishers-count g:%* g-temp-2)
-	(up-modify-goal g-enemy-cavalry-archers-count g:%* g-temp-2)
-	(up-modify-goal g-enemy-hand-cannoneer-slinger-count g:%* g-temp-2)
-	(up-modify-goal g-enemy-light-cavalry-count g:%* g-temp-2)
-	(up-modify-goal g-enemy-heavy-cavalry-count g:%* g-temp-2)
-	(up-modify-goal g-enemy-camel-count g:%* g-temp-2)
-	(up-modify-goal g-enemy-elephants-count g:%* g-temp-2)
-	(up-modify-goal g-enemy-field-siege-count g:%* g-temp-2)
-	)
-
-	(defrule
-	(timer-triggered t-10-sec)
-	(players-building-count target-player > 0)
-	(players-military-population target-player > 0)
-	(up-compare-goal g-temp-2 <= 200) ;at least 50% of enemy military is visible
-	=>
-	(up-modify-goal g-enemy-special-unique-unit-count g:%* g-temp-2)
-	(up-modify-goal g-enemy-monks-count g:%* g-temp-2)
-	)
-
-	;If less than 50% enemy military is visible, use players-unit-type-count instead of DUC search
-
-	;Swordsmen, Spearmen, eagle warriors, and condottieros
-
-	(defrule
-	(timer-triggered t-10-sec)
-	(players-building-count target-player > 0)
-	(players-military-population target-player > 0)
-	(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
-	=>
-	(up-get-player-fact target-player unit-type-count militiaman-line g-enemy-swordsmen-count)
-	(up-get-player-fact target-player unit-type-count woad-raider-line g-temp)
-	(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count berserk-line g-temp)
-	(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count shotel-warrior g-temp)
-	(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count elite-shotel-warrior g-temp)
-	(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count karambit-warrior g-temp)
-	(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
-	)
-
-	(defrule
-	(timer-triggered t-10-sec)
-	(players-building-count target-player > 0)
-	(players-military-population target-player > 0)
-	(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
-	=>
-	(up-get-player-fact target-player unit-type-count elite-karambit-warrior g-temp)
-	(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count spearman-line g-enemy-spearmen-count)
-	(up-get-player-fact target-player unit-type-count kamayuk g-temp)
-	(up-modify-goal g-enemy-spearmen-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count elite-kamayuk g-temp)
-	(up-modify-goal g-enemy-spearmen-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count eagle-warrior-line g-enemy-eagle-warrior-count)
-	(up-get-player-fact target-player unit-type-count heavy-eagle-warrior g-temp)
-	(up-modify-goal g-enemy-eagle-warrior-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count condottiero g-enemy-condottiero-count)
-	)
-
-	;Archers, skirmishers, and hand-cannoneer-slinger
-
-	(defrule
-	(timer-triggered t-10-sec)
-	(players-building-count target-player > 0)
-	(players-military-population target-player > 0)
-	(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
-	=>
-	(up-get-player-fact target-player unit-type-count archer-line g-enemy-foot-archers-count)
-	(up-get-player-fact target-player unit-type-count longbowman-line g-temp)
-	(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count chu-ko-nu-line g-temp)
-	(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count plumed-archer-line g-temp)
-	(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count janissary-line g-temp)
-	(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count rattan-archer g-temp)
-	(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
-	)
-
-	(defrule
-	(timer-triggered t-10-sec)
-	(players-building-count target-player > 0)
-	(players-military-population target-player > 0)
-	(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
-	=>
-	(up-get-player-fact target-player unit-type-count elite-rattan-archer g-temp)
-	(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count skirmisher-line g-enemy-skirmishers-count)
-	(up-get-player-fact target-player unit-type-count imperial-skirmisher g-temp)
-	(up-modify-goal g-enemy-skirmishers-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count genitour g-temp)
-	(up-modify-goal g-enemy-skirmishers-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count elite-genitour g-temp)
-	(up-modify-goal g-enemy-skirmishers-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count hand-cannoneer g-enemy-hand-cannoneer-slinger-count)
-	(up-get-player-fact target-player unit-type-count slinger g-temp)
-	(up-modify-goal g-enemy-hand-cannoneer-slinger-count g:+ g-temp)
-	)
-
-	;Cavalry Archers, Camels, Battle Elephants, and Monks
-
-	(defrule
-	(timer-triggered t-10-sec)
-	(players-building-count target-player > 0)
-	(players-military-population target-player > 0)
-	(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
-	=>
-	(up-get-player-fact target-player unit-type-count cavalry-archer-line g-enemy-cavalry-archers-count)
-	(up-get-player-fact target-player unit-type-count arambai g-temp)
-	(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count elite-arambai g-temp)
-	(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count war-wagon-line g-temp)
-	(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count monk g-enemy-monks-count)
-	(up-get-player-fact target-player unit-type-count missionary g-temp)
-	(up-modify-goal g-enemy-monks-count g:+ g-temp)
-	)
-
-	(defrule
-	(timer-triggered t-10-sec)
-	(players-building-count target-player > 0)
-	(players-military-population target-player > 0)
-	(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
-	=>
-	(up-get-player-fact target-player unit-type-count mangudai-line g-temp)
-	(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count conquistador-line g-temp)
-	(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count camel-line g-enemy-camel-count)
-	(up-get-player-fact target-player unit-type-count imperial-camel g-temp)
-	(up-modify-goal g-enemy-camel-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count battle-elephant g-enemy-elephants-count)
-	(up-get-player-fact target-player unit-type-count elite-battle-elephant g-temp)
-	(up-modify-goal g-enemy-elephants-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count war-elephant-line g-temp)
-	(up-modify-goal g-enemy-elephants-count g:+ g-temp)
-	)
-
-	;Cavalry and Field Siege
-
-	(defrule
-	(timer-triggered t-10-sec)
-	(players-building-count target-player > 0)
-	(players-military-population target-player > 0)
-	(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
-	=>
-	(up-get-player-fact target-player unit-type-count scout-cavalry-line g-enemy-light-cavalry-count)
-	(up-get-player-fact target-player unit-type-count magyar-huszar g-temp)
-	(up-modify-goal g-enemy-light-cavalry-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count elite-magyar-huszar g-temp)
-	(up-modify-goal g-enemy-light-cavalry-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count knight-line g-enemy-heavy-cavalry-count)
-	(up-get-player-fact target-player unit-type-count tarkan-line g-temp)
-	(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count boyar g-temp)
-	(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
-	)
-
-	(defrule
-	(timer-triggered t-10-sec)
-	(players-building-count target-player > 0)
-	(players-military-population target-player > 0)
-	(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
-	=>
-	(up-get-player-fact target-player unit-type-count elite-boyar g-temp)
-	(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count mangonel-line g-enemy-field-siege-count)
-	(up-get-player-fact target-player unit-type-count scorpion-line g-temp)
-	(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count organ-gun g-temp)
-	(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
-	(up-get-player-fact target-player unit-type-count elite-organ-gun g-temp)
-	(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
-	)
-
-	#load-if-defined DE-AVAILABLE
+		;Swordsmen, Spearmen, eagle warriors, and condottieros
 
 		(defrule
 		(timer-triggered t-10-sec)
@@ -7344,78 +7217,1669 @@
 		(players-military-population target-player > 0)
 		(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
 		=>
-		(up-get-player-fact target-player unit-type-count foot-konnik-line g-temp)
+		(up-get-player-fact target-player unit-type-count militiaman-line g-enemy-swordsmen-count)
+		(up-get-player-fact target-player unit-type-count woad-raider-line g-temp)
 		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count kipchak-line g-temp)
+		(up-get-player-fact target-player unit-type-count berserk-line g-temp)
+		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count shotel-warrior g-temp)
+		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count elite-shotel-warrior g-temp)
+		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count karambit-warrior g-temp)
+		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+		)
+
+		(defrule
+		(timer-triggered t-10-sec)
+		(players-building-count target-player > 0)
+		(players-military-population target-player > 0)
+		(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
+		=>
+		(up-get-player-fact target-player unit-type-count elite-karambit-warrior g-temp)
+		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count spearman-line g-enemy-spearmen-count)
+		(up-get-player-fact target-player unit-type-count kamayuk g-temp)
+		(up-modify-goal g-enemy-spearmen-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count elite-kamayuk g-temp)
+		(up-modify-goal g-enemy-spearmen-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count eagle-warrior-line g-enemy-eagle-warrior-count)
+		(up-get-player-fact target-player unit-type-count heavy-eagle-warrior g-temp)
+		(up-modify-goal g-enemy-eagle-warrior-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count condottiero g-enemy-condottiero-count)
+		)
+
+		;Archers, skirmishers, and hand-cannoneer-slinger
+
+		(defrule
+		(timer-triggered t-10-sec)
+		(players-building-count target-player > 0)
+		(players-military-population target-player > 0)
+		(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
+		=>
+		(up-get-player-fact target-player unit-type-count archer-line g-enemy-foot-archers-count)
+		(up-get-player-fact target-player unit-type-count longbowman-line g-temp)
+		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count chu-ko-nu-line g-temp)
+		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count plumed-archer-line g-temp)
+		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count janissary-line g-temp)
+		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count rattan-archer g-temp)
+		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+		)
+
+		(defrule
+		(timer-triggered t-10-sec)
+		(players-building-count target-player > 0)
+		(players-military-population target-player > 0)
+		(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
+		=>
+		(up-get-player-fact target-player unit-type-count elite-rattan-archer g-temp)
+		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count skirmisher-line g-enemy-skirmishers-count)
+		(up-get-player-fact target-player unit-type-count imperial-skirmisher g-temp)
+		(up-modify-goal g-enemy-skirmishers-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count genitour g-temp)
+		(up-modify-goal g-enemy-skirmishers-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count elite-genitour g-temp)
+		(up-modify-goal g-enemy-skirmishers-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count hand-cannoneer g-enemy-hand-cannoneer-slinger-count)
+		(up-get-player-fact target-player unit-type-count slinger g-temp)
+		(up-modify-goal g-enemy-hand-cannoneer-slinger-count g:+ g-temp)
+		)
+
+		;Cavalry Archers, Camels, Battle Elephants, and Monks
+
+		(defrule
+		(timer-triggered t-10-sec)
+		(players-building-count target-player > 0)
+		(players-military-population target-player > 0)
+		(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
+		=>
+		(up-get-player-fact target-player unit-type-count cavalry-archer-line g-enemy-cavalry-archers-count)
+		(up-get-player-fact target-player unit-type-count arambai g-temp)
 		(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count steppe-lancer-line g-temp)
+		(up-get-player-fact target-player unit-type-count elite-arambai g-temp)
+		(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count war-wagon-line g-temp)
+		(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count monk g-enemy-monks-count)
+		(up-get-player-fact target-player unit-type-count missionary g-temp)
+		(up-modify-goal g-enemy-monks-count g:+ g-temp)
+		)
+
+		(defrule
+		(timer-triggered t-10-sec)
+		(players-building-count target-player > 0)
+		(players-military-population target-player > 0)
+		(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
+		=>
+		(up-get-player-fact target-player unit-type-count mangudai-line g-temp)
+		(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count conquistador-line g-temp)
+		(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count camel-line g-enemy-camel-count)
+		(up-get-player-fact target-player unit-type-count imperial-camel g-temp)
+		(up-modify-goal g-enemy-camel-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count battle-elephant g-enemy-elephants-count)
+		(up-get-player-fact target-player unit-type-count elite-battle-elephant g-temp)
+		(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count war-elephant-line g-temp)
+		(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+		)
+
+		;Cavalry and Field Siege
+
+		(defrule
+		(timer-triggered t-10-sec)
+		(players-building-count target-player > 0)
+		(players-military-population target-player > 0)
+		(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
+		=>
+		(up-get-player-fact target-player unit-type-count scout-cavalry-line g-enemy-light-cavalry-count)
+		(up-get-player-fact target-player unit-type-count magyar-huszar g-temp)
 		(up-modify-goal g-enemy-light-cavalry-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count konnik-line g-temp)
+		(up-get-player-fact target-player unit-type-count elite-magyar-huszar g-temp)
+		(up-modify-goal g-enemy-light-cavalry-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count knight-line g-enemy-heavy-cavalry-count)
+		(up-get-player-fact target-player unit-type-count tarkan-line g-temp)
 		(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count krepost-konnik-line g-temp)
-		(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count keshik-line g-temp)
+		(up-get-player-fact target-player unit-type-count boyar g-temp)
 		(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
 		)
 
-	#end-if
+		(defrule
+		(timer-triggered t-10-sec)
+		(players-building-count target-player > 0)
+		(players-military-population target-player > 0)
+		(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
+		=>
+		(up-get-player-fact target-player unit-type-count elite-boyar g-temp)
+		(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count mangonel-line g-enemy-field-siege-count)
+		(up-get-player-fact target-player unit-type-count scorpion-line g-temp)
+		(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count organ-gun g-temp)
+		(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count elite-organ-gun g-temp)
+		(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
+		)
 
-	#load-if-not-defined BRITON-CIV
-	#load-if-not-defined BULGARIANS-CIV
-	#load-if-not-defined BURMESE-CIV
-	#load-if-not-defined CELTIC-CIV
-	#load-if-not-defined CHINESE-CIV
-	#load-if-not-defined CUMANS-CIV
-	#load-if-not-defined ETHIOPIAN-CIV
-	#load-if-not-defined HUN-CIV
-	#load-if-not-defined INCAN-CIV
-	#load-if-not-defined KOREAN-CIV
-	#load-if-not-defined MAGYAR-CIV
-	#load-if-not-defined MALAY-CIV
-	#load-if-not-defined MAYAN-CIV
-	#load-if-not-defined MONGOL-CIV
-	#load-if-not-defined PERSIAN-CIV
-	#load-if-not-defined PORTUGUESE-CIV
-	#load-if-not-defined SLAVIC-CIV
-	#load-if-not-defined SPANISH-CIV
-	#load-if-not-defined TATARS-CIV
-	#load-if-not-defined TURKISH-CIV
-	#load-if-not-defined VIETNAMESE-CIV
-	#load-if-not-defined VIKING-CIV
+		#load-if-defined DE-AVAILABLE
 
-	(defrule
-	(timer-triggered t-10-sec)
-	(players-building-count target-player > 0)
-	(players-military-population target-player > 0)
-	(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
-	=>
-	(up-get-player-fact target-player unit-type-count my-unique-unit g-enemy-special-unique-unit-count)
-	(up-get-player-fact target-player unit-type-count my-unique-unit-upgrade g-temp)
-	(up-modify-goal g-enemy-special-unique-unit-count g:+ g-temp)
-	)
+			(defrule
+			(timer-triggered t-10-sec)
+			(players-building-count target-player > 0)
+			(players-military-population target-player > 0)
+			(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
+			=>
+			(up-get-player-fact target-player unit-type-count foot-konnik-line g-temp)
+			(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+			(up-get-player-fact target-player unit-type-count kipchak-line g-temp)
+			(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+			(up-get-player-fact target-player unit-type-count steppe-lancer-line g-temp)
+			(up-modify-goal g-enemy-light-cavalry-count g:+ g-temp)
+			(up-get-player-fact target-player unit-type-count konnik-line g-temp)
+			(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+			(up-get-player-fact target-player unit-type-count krepost-konnik-line g-temp)
+			(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+			(up-get-player-fact target-player unit-type-count keshik-line g-temp)
+			(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+			)
 
-	#end-if
-	#end-if
-	#end-if
-	#end-if
-	#end-if
-	#end-if
-	#end-if
-	#end-if
-	#end-if
-	#end-if
-	#end-if
-	#end-if
-	#end-if
-	#end-if
-	#end-if
-	#end-if
-	#end-if
-	#end-if
-	#end-if
-	#end-if
-	#end-if
-	#end-if
+		#end-if
+	#end-if	;Old Code
+
+
+
+	;Get enemy numbers of each soldier type.
+	;The target player is intentionally double-counted, except if only one enemy is alive. This prioritizes countering the target enemy over other players.
+
+	;---------------
+	;	Swordsmen
+	;---------------
+	
+		;Target Enemy
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game target-player)
+		(up-players-in-game enemy > 1)
+		=>
+		(up-get-player-fact target-player unit-type-count militiaman-line g-temp)
+		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count woad-raider-line g-temp)
+		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count throwing-axeman-line g-temp)
+		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count berserk-line g-temp)
+		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+		)
+
+		;All Enemies
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		=>
+		(up-get-fact-sum any-enemy unit-type-count militiaman-line g-temp)
+		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+		(up-get-fact-sum any-enemy unit-type-count woad-raider-line g-temp)
+		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+		(up-get-fact-sum any-enemy unit-type-count throwing-axeman-line g-temp)
+		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+		(up-get-fact-sum any-enemy unit-type-count berserk-line g-temp)
+		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+		)
+
+		#load-if-defined UP-GAME-WK
+			#load-if-not-defined DE-AVAILABLE
+
+				;Target Enemy
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				=>
+				(up-get-player-fact target-player unit-type-count shotel-warrior g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count elite-shotel-warrior g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count gbeto g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count elite-gbeto g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count karambit-warrior g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count elite-karambit-warrior g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				)
+
+				;All Enemies
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				=>
+				(up-get-fact-sum any-enemy unit-type-count shotel-warrior g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count elite-shotel-warrior g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count gbeto g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count elite-gbeto g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count karambit-warrior g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count elite-karambit-warrior g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				)
+
+			#else
+			
+				;Target Enemy
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				=>
+				(up-get-player-fact target-player unit-type-count shotel-warrior-line g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count gbeto-line g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count karambit-warrior-line g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count foot-konnik-line g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				)
+
+				;All Enemies
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				=>
+				(up-get-fact-sum any-enemy unit-type-count shotel-warrior-line g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count gbeto-line g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count karambit-warrior-line g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count foot-konnik-line g-temp)
+				(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
+				)
+
+			#end-if
+		#end-if
+
+	;--------------
+	;	Spearmen
+	;--------------
+	
+		;Target Enemy
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game target-player)
+		(up-players-in-game enemy > 1)
+		=>
+		(up-get-player-fact target-player unit-type-count spearman-line g-temp)
+		(up-modify-goal g-enemy-spearmen-count g:+ g-temp)
+		)
+
+		;All Enemies
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		=>
+		(up-get-fact-sum any-enemy unit-type-count spearman-line g-temp)
+		(up-modify-goal g-enemy-spearmen-count g:+ g-temp)
+		)
+		
+		#load-if-defined UP-GAME-WK
+			#load-if-not-defined DE-AVAILABLE
+
+				;Target Enemy
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				=>
+				(up-get-player-fact target-player unit-type-count kamayuk g-temp)
+				(up-modify-goal g-enemy-spearmen-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count elite-kamayuk g-temp)
+				(up-modify-goal g-enemy-spearmen-count g:+ g-temp)
+				)
+
+				;All Enemies
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				=>
+				(up-get-fact-sum any-enemy unit-type-count kamayuk g-temp)
+				(up-modify-goal g-enemy-spearmen-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count elite-kamayuk g-temp)
+				(up-modify-goal g-enemy-spearmen-count g:+ g-temp)
+				)
+
+			#else
+			
+				;Target Enemy
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				=>
+				(up-get-player-fact target-player unit-type-count kamayuk-line g-temp)
+				(up-modify-goal g-enemy-spearmen-count g:+ g-temp)
+				)
+
+				;All Enemies
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				=>
+				(up-get-fact-sum any-enemy unit-type-count kamayuk-line g-temp)
+				(up-modify-goal g-enemy-spearmen-count g:+ g-temp)
+				)
+
+			#end-if
+		#end-if
+
+	;--------------------
+	;	Eagle Warriors	
+	;--------------------
+	
+		;Target Enemy
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game target-player)
+		(up-players-in-game enemy > 1)
+		=>
+		(up-get-player-fact target-player unit-type-count eagle-warrior-line g-temp)
+		(up-modify-goal g-enemy-eagle-warrior-count g:+ g-temp)
+		)
+
+		;All Enemies
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		=>
+		(up-get-fact-sum any-enemy unit-type-count eagle-warrior-line g-temp)
+		(up-modify-goal g-enemy-eagle-warrior-count g:+ g-temp)
+		)
+
+		#load-if-defined UP-GAME-WK
+		#load-if-not-defined DE-AVAILABLE
+	
+			;Target Enemy
+			(defrule
+			(players-military-population any-enemy > 1)
+			(player-in-game target-player)
+			(up-players-in-game enemy > 1)
+			=>
+			(up-get-player-fact target-player unit-type-count heavy-eagle-warrior g-temp)
+			(up-modify-goal g-enemy-eagle-warrior-count g:+ g-temp)
+			)
+
+			;All Enemies
+			(defrule
+			(players-military-population any-enemy > 1)
+			(player-in-game any-enemy)
+			=>
+			(up-get-fact-sum any-enemy unit-type-count heavy-eagle-warrior g-temp)
+			(up-modify-goal g-enemy-eagle-warrior-count g:+ g-temp)
+			)
+
+		#end-if
+		#end-if
+
+	;-----------------
+	;	Condottieri
+	;-----------------
+
+		#load-if-defined UP-GAME-WK
+	
+			;Target Enemy
+			(defrule
+			(players-military-population any-enemy > 1)
+			(player-in-game target-player)
+			(up-players-in-game enemy > 1)
+			=>
+			(up-get-player-fact target-player unit-type-count condottiero g-temp)
+			(up-modify-goal g-enemy-condottiero-count g:+ g-temp)
+			)
+
+			;All Enemies
+			(defrule
+			(players-military-population any-enemy > 1)
+			(player-in-game any-enemy)
+			=>
+			(up-get-fact-sum any-enemy unit-type-count condottiero g-temp)
+			(up-modify-goal g-enemy-condottiero-count g:+ g-temp)
+			)
+
+		#end-if
+
+	;------------------
+	;	Foot Archers
+	;------------------
+	
+		;Target Enemy
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game target-player)
+		(up-players-in-game enemy > 1)
+		=>
+		(up-get-player-fact target-player unit-type-count archer-line g-temp)
+		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count longbowman-line g-temp)
+		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count chu-ko-nu-line g-temp)
+		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count plumed-archer-line g-temp)
+		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count janissary-line g-temp)
+		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+		)
+
+		;All Enemies
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		=>
+		(up-get-fact-sum any-enemy unit-type-count archer-line g-temp)
+		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+		(up-get-fact-sum any-enemy unit-type-count longbowman-line g-temp)
+		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+		(up-get-fact-sum any-enemy unit-type-count chu-ko-nu-line g-temp)
+		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+		(up-get-fact-sum any-enemy unit-type-count plumed-archer-line g-temp)
+		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+		(up-get-fact-sum any-enemy unit-type-count janissary-line g-temp)
+		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+		)
+
+		#load-if-defined UP-GAME-WK
+			#load-if-not-defined DE-AVAILABLE
+
+				;Target Enemy
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				=>
+				(up-get-player-fact target-player unit-type-count rattan-archer g-temp)
+				(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count elite-rattan-archer g-temp)
+				(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+				)
+
+				;All Enemies
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				=>
+				(up-get-fact-sum any-enemy unit-type-count rattan-archer g-temp)
+				(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count elite-rattan-archer g-temp)
+				(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+				)
+
+			#else
+			
+				;Target Enemy
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				=>
+				(up-get-player-fact target-player unit-type-count rattan-archer-line g-temp)
+				(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+				)
+
+				;All Enemies
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				=>
+				(up-get-fact-sum any-enemy unit-type-count rattan-archer-line g-temp)
+				(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
+				)
+
+			#end-if
+		#end-if
+
+	;-----------------
+	;	Skirmishers
+	;-----------------
+	
+		;Target Enemy
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game target-player)
+		(up-players-in-game enemy > 1)
+		=>
+		(up-get-player-fact target-player unit-type-count skirmisher-line g-temp)
+		(up-modify-goal g-enemy-skirmishers-count g:+ g-temp)
+		)
+
+		;All Enemies
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		=>
+		(up-get-fact-sum any-enemy unit-type-count skirmisher-line g-temp)
+		(up-modify-goal g-enemy-skirmishers-count g:+ g-temp)
+		)
+
+		#load-if-defined UP-GAME-WK
+			#load-if-not-defined DE-AVAILABLE
+		
+				;Target Enemy
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				=>
+				(up-get-player-fact target-player unit-type-count imperial-skirmisher g-temp)
+				(up-modify-goal g-enemy-skirmishers-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count genitour g-temp)
+				(up-modify-goal g-enemy-skirmishers-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count elite-genitour g-temp)
+				(up-modify-goal g-enemy-skirmishers-count g:+ g-temp)
+				)
+
+				;All Enemies
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				=>
+				(up-get-fact-sum any-enemy unit-type-count imperial-skirmisher g-temp)
+				(up-modify-goal g-enemy-skirmishers-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count genitour g-temp)
+				(up-modify-goal g-enemy-skirmishers-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count elite-genitour g-temp)
+				(up-modify-goal g-enemy-skirmishers-count g:+ g-temp)
+				)
+
+			#else
+		
+				;Target Enemy
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				=>
+				(up-get-player-fact target-player unit-type-count genitour-line g-temp)
+				(up-modify-goal g-enemy-skirmishers-count g:+ g-temp)
+				)
+
+				;All Enemies
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				=>
+				(up-get-fact-sum any-enemy unit-type-count genitour-line g-temp)
+				(up-modify-goal g-enemy-skirmishers-count g:+ g-temp)
+				)
+
+			#end-if
+		#end-if
+		
+	;---------------------
+	;	Cavalry Archers
+	;---------------------
+
+		;Target Enemy
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game target-player)
+		(up-players-in-game enemy > 1)
+		=>
+		(up-get-player-fact target-player unit-type-count cavalry-archer-line g-temp)
+		(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count war-wagon-line g-temp)
+		(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count mangudai-line g-temp)
+		(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count conquistador-line g-temp)
+		(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+		)
+
+		;All Enemies
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		=>
+		(up-get-fact-sum any-enemy unit-type-count cavalry-archer-line g-temp)
+		(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+		(up-get-fact-sum any-enemy unit-type-count war-wagon-line g-temp)
+		(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+		(up-get-fact-sum any-enemy unit-type-count mangudai-line g-temp)
+		(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+		(up-get-fact-sum any-enemy unit-type-count conquistador-line g-temp)
+		(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+		)
+
+		#load-if-defined UP-GAME-WK
+			#load-if-not-defined DE-AVAILABLE
+
+				;Target Enemy
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				=>
+				(up-get-player-fact target-player unit-type-count arambai g-temp)
+				(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count elite-arambai g-temp)
+				(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+				)
+
+				;All Enemies
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				=>
+				(up-get-fact-sum any-enemy unit-type-count arambai g-temp)
+				(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count elite-arambai g-temp)
+				(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+				)
+
+			#else
+
+				;Target Enemy
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				=>
+				(up-get-player-fact target-player unit-type-count arambai-line g-temp)
+				(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count kipchak-line g-temp)
+				(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+				)
+
+				;All Enemies
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				=>
+				(up-get-fact-sum any-enemy unit-type-count arambai-line g-temp)
+				(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count kipchak-line g-temp)
+				(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
+				)
+
+			#end-if
+		#end-if
+
+	;------------------------------
+	;	Hand Cannoneers/Slingers
+	;------------------------------
+		
+		;Target Enemy
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game target-player)
+		(up-players-in-game enemy > 1)
+		=>
+		(up-get-player-fact target-player unit-type-count hand-cannoneer g-temp)
+		(up-modify-goal g-enemy-hand-cannoneer-slinger-count g:+ g-temp)
+		)
+
+		;All Enemies
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		=>
+		(up-modify-goal g-enemy-hand-cannoneer-slinger-count g:+ g-temp)
+		(up-get-fact-sum any-enemy unit-type-count hand-cannoneer g-temp)
+		)
+
+		#load-if-defined UP-GAME-WK ;includes DE
+
+			;Target Enemy
+			(defrule
+			(players-military-population any-enemy > 1)
+			(player-in-game target-player)
+			(up-players-in-game enemy > 1)
+			=>
+			(up-get-player-fact target-player unit-type-count slinger g-temp)
+			(up-modify-goal g-enemy-hand-cannoneer-slinger-count g:+ g-temp)
+			)
+
+			;All Enemies
+			(defrule
+			(players-military-population any-enemy > 1)
+			(player-in-game any-enemy)
+			=>
+			(up-get-fact-sum any-enemy unit-type-count slinger g-temp)
+			(up-modify-goal g-enemy-hand-cannoneer-slinger-count g:+ g-temp)
+			)
+
+		#end-if
+
+	;-------------------
+	;	Light Cavalry
+	;-------------------
+	
+		;Target Enemy
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game target-player)
+		(up-players-in-game enemy > 1)
+		=>
+		(up-get-player-fact target-player unit-type-count scout-cavalry-line g-temp)
+		(up-modify-goal g-enemy-light-cavalry-count g:+ g-temp)
+		)
+
+		;All Enemies
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		=>
+		(up-get-fact-sum any-enemy unit-type-count scout-cavalry-line g-temp)
+		(up-modify-goal g-enemy-light-cavalry-count g:+ g-temp)
+		)
+		
+	;-------------------
+	;	Heavy Cavalry
+	;-------------------
+	
+		;Target Enemy
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game target-player)
+		(up-players-in-game enemy > 1)
+		=>
+		(up-get-player-fact target-player unit-type-count knight-line g-temp)
+		(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count tarkan-line g-temp)
+		(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+		)
+
+		;All Enemies
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		=>
+		(up-get-fact-sum any-enemy unit-type-count knight-line g-temp)
+		(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+		(up-get-fact-sum any-enemy unit-type-count tarkan-line g-temp)
+		(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+		)
+
+		#load-if-defined UP-GAME-WK
+			#load-if-not-defined DE-AVAILABLE
+
+				;Target Enemy
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				=>
+				(up-get-player-fact target-player unit-type-count magyar-huszar g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count elite-magyar-huszar g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count boyar g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count elite-boyar g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count stable-tarkan g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count elite-stable-tarkan g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				)
+
+				;All Enemies
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				=>
+				(up-get-fact-sum any-enemy unit-type-count magyar-huszar g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count elite-magyar-huszar g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count boyar g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count elite-boyar g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count stable-tarkan g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count elite-stable-tarkan g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				)
+
+			#else
+			
+				;Target Enemy
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				=>
+				(up-get-player-fact target-player unit-type-count magyar-huszar-line g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count boyar-line g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count steppe-lancer-line g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count konnik-line g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count krepost-konnik-line g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count keshik-line g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				)
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				=>
+				(up-get-player-fact target-player unit-type-count stable-tarkan g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count elite-stable-tarkan g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				)
+
+				;All Enemies
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				=>
+				(up-get-fact-sum any-enemy unit-type-count magyar-huszar-line g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count boyar-line g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count steppe-lancer-line g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count konnik-line g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count krepost-konnik-line g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count keshik-line g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				)
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				=>
+				(up-get-fact-sum any-enemy unit-type-count stable-tarkan g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count elite-stable-tarkan g-temp)
+				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
+				)
+
+			#end-if
+		#end-if
+
+	;------------
+	;	Camels
+	;------------
+	
+		;Target Enemy
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game target-player)
+		(up-players-in-game enemy > 1)
+		=>
+		(up-get-player-fact target-player unit-type-count camel-line g-temp)
+		(up-modify-goal g-enemy-camel-count g:+ g-temp)
+		)
+
+		;All Enemies
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		=>
+		(up-get-fact-sum any-enemy unit-type-count camel-line g-temp)
+		(up-modify-goal g-enemy-camel-count g:+ g-temp)
+		)
+
+		#load-if-defined UP-GAME-WK
+		#load-if-not-defined DE-AVAILABLE
+	
+			;Target Enemy
+			(defrule
+			(players-military-population any-enemy > 1)
+			(player-in-game target-player)
+			(up-players-in-game enemy > 1)
+			=>
+			(up-get-player-fact target-player unit-type-count imperial-camel g-temp)
+			(up-modify-goal g-enemy-camel-count g:+ g-temp)
+			)
+
+			;All Enemies
+			(defrule
+			(players-military-population any-enemy > 1)
+			(player-in-game any-enemy)
+			=>
+			(up-get-fact-sum any-enemy unit-type-count imperial-camel g-temp)
+			(up-modify-goal g-enemy-camel-count g:+ g-temp)
+			)
+
+		#end-if
+		#end-if
+
+	;---------------
+	;	Elephants
+	;---------------
+
+		;Target Enemy
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game target-player)
+		(up-players-in-game enemy > 1)
+		=>
+		(up-get-player-fact target-player unit-type-count war-elephant-line g-temp)
+		(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+		)
+
+		;All Enemies
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		=>
+		(up-get-fact-sum any-enemy unit-type-count war-elephant-line g-temp)
+		(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+		)
+
+		#load-if-defined UP-GAME-WK
+			#load-if-not-defined DE-AVAILABLE
+
+				;Target Enemy
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				=>
+				(up-get-player-fact target-player unit-type-count battle-elephant g-temp)
+				(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count elite-battle-elephant g-temp)
+				(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count elephant-archer g-temp)
+				(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count elite-elephant-archer g-temp)
+				(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count ballista-elephant g-temp)
+				(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count elite-ballista-elephant g-temp)
+				(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+				)
+
+				;All Enemies
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				=>
+				(up-get-fact-sum any-enemy unit-type-count battle-elephant g-temp)
+				(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count elite-battle-elephant g-temp)
+				(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count elephant-archer g-temp)
+				(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count elite-elephant-archer g-temp)
+				(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count ballista-elephant g-temp)
+				(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count elite-ballista-elephant g-temp)
+				(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+				)
+
+			#else
+
+				;Target Enemy
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				=>
+				(up-get-player-fact target-player unit-type-count battle-elephant-line g-temp)
+				(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count elephant-archer-line g-temp)
+				(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count ballista-elephant-line g-temp)
+				(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+				)
+
+				;All Enemies
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				=>
+				(up-get-fact-sum any-enemy unit-type-count battle-elephant-line g-temp)
+				(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count elephant-archer-line g-temp)
+				(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count ballista-elephant-line g-temp)
+				(up-modify-goal g-enemy-elephants-count g:+ g-temp)
+				)
+
+			#end-if
+		#end-if
+
+	;-----------------
+	;	Field Siege
+	;-----------------
+	
+		;Target Enemy
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game target-player)
+		(up-players-in-game enemy > 1)
+		=>
+		(up-get-player-fact target-player unit-type-count mangonel-line g-temp)
+		(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count scorpion-line g-temp)
+		(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
+		)
+
+		;All Enemies
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		=>
+		(up-get-fact-sum any-enemy unit-type-count mangonel-line g-temp)
+		(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
+		(up-get-fact-sum any-enemy unit-type-count scorpion-line g-temp)
+		(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
+		)
+
+		#load-if-defined UP-GAME-WK
+			#load-if-not-defined DE-AVAILABLE
+
+				;Target Enemy
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				=>
+				(up-get-player-fact target-player unit-type-count wk-onager g-temp)
+				(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count organ-gun g-temp)
+				(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
+				(up-get-player-fact target-player unit-type-count elite-organ-gun g-temp)
+				(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
+				)
+
+				;All Enemies
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				=>
+				(up-get-fact-sum any-enemy unit-type-count wk-onager g-temp)
+				(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count organ-gun g-temp)
+				(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
+				(up-get-fact-sum any-enemy unit-type-count elite-organ-gun g-temp)
+				(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
+				)
+
+			#else
+			
+				;Target Enemy
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				=>
+				(up-get-player-fact target-player unit-type-count organ-gun-line g-temp)
+				(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
+				)
+
+				;All Enemies
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				=>
+				(up-get-fact-sum any-enemy unit-type-count organ-gun-line g-temp)
+				(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
+				)
+
+			#end-if
+		#end-if
+
+	;--------------------------
+	;	Special Unique Units
+	;--------------------------
+
+		;Jaguar Warriors
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game target-player)
+		(up-players-in-game enemy > 1)
+		(up-get-player-fact target-player unit-type-count jaguar-man-line g-temp)
+		(up-compare-goal g-temp > 0)
+		=>
+		(up-modify-goal g-enemy-special-unique-unit-count g:+ g-temp)
+		(up-modify-flag g-enemy-special-unique-unit-flag c:+ JAGUAR-WARRIOR-FLAG)
+		)
+
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		(up-get-fact-sum any-enemy unit-type-count jaguar-man-line g-temp)
+		(up-compare-goal g-temp > 0)
+		=>
+		(up-modify-goal g-enemy-special-unique-unit-count g:+ g-temp)
+		(up-modify-flag g-enemy-special-unique-unit-flag c:+ JAGUAR-WARRIOR-FLAG)
+		)
+
+		;Cataphracts
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game target-player)
+		(up-players-in-game enemy > 1)
+		(up-get-player-fact target-player unit-type-count cataphract-line g-temp)
+		(up-compare-goal g-temp > 0)
+		=>
+		(up-modify-goal g-enemy-special-unique-unit-count g:+ g-temp)
+		(up-modify-flag g-enemy-special-unique-unit-flag c:+ CATAPHRACT-FLAG)
+		)
+
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		(up-get-fact-sum any-enemy unit-type-count cataphract-line g-temp)
+		(up-compare-goal g-temp > 0)
+		=>
+		(up-modify-goal g-enemy-special-unique-unit-count g:+ g-temp)
+		(up-modify-flag g-enemy-special-unique-unit-flag c:+ CATAPHRACT-FLAG)
+		)
+
+		;Huskarls
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game target-player)
+		(up-players-in-game enemy > 1)
+		(up-get-player-fact target-player unit-type-count huskarl-line g-temp)
+		(up-compare-goal g-temp > 0)
+		=>
+		(up-modify-goal g-enemy-special-unique-unit-count g:+ g-temp)
+		(up-modify-flag g-enemy-special-unique-unit-flag c:+ HUSKARL-FLAG)
+		)
+
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		(up-get-fact-sum any-enemy unit-type-count huskarl-line g-temp)
+		(up-compare-goal g-temp > 0)
+		=>
+		(up-modify-goal g-enemy-special-unique-unit-count g:+ g-temp)
+		(up-modify-flag g-enemy-special-unique-unit-flag c:+ HUSKARL-FLAG)
+		)
+
+		;Samurai
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game target-player)
+		(up-players-in-game enemy > 1)
+		(up-get-player-fact target-player unit-type-count samurai-line g-temp)
+		(up-compare-goal g-temp > 0)
+		=>
+		(up-modify-goal g-enemy-special-unique-unit-count g:+ g-temp)
+		(up-modify-flag g-enemy-special-unique-unit-flag c:+ SAMURAI-FLAG)
+		)
+
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		(up-get-fact-sum any-enemy unit-type-count samurai-line g-temp)
+		(up-compare-goal g-temp > 0)
+		=>
+		(up-modify-goal g-enemy-special-unique-unit-count g:+ g-temp)
+		(up-modify-flag g-enemy-special-unique-unit-flag c:+ SAMURAI-FLAG)
+		)
+
+		;Mamelukes
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game target-player)
+		(up-players-in-game enemy > 1)
+		(up-get-player-fact target-player unit-type-count mameluke-line g-temp)
+		(up-compare-goal g-temp > 0)
+		=>
+		(up-modify-goal g-enemy-special-unique-unit-count g:+ g-temp)
+		(up-modify-flag g-enemy-special-unique-unit-flag c:+ MAMELUKE-FLAG)
+		)
+
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		(up-get-fact-sum any-enemy unit-type-count mameluke-line g-temp)
+		(up-compare-goal g-temp > 0)
+		=>
+		(up-modify-goal g-enemy-special-unique-unit-count g:+ g-temp)
+		(up-modify-flag g-enemy-special-unique-unit-flag c:+ MAMELUKE-FLAG)
+		)
+
+		;Teutonic Knights
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game target-player)
+		(up-players-in-game enemy > 1)
+		(up-get-player-fact target-player unit-type-count teutonic-knight-line g-temp)
+		(up-compare-goal g-temp > 0)
+		=>
+		(up-modify-goal g-enemy-special-unique-unit-count g:+ g-temp)
+		(up-modify-flag g-enemy-special-unique-unit-flag c:+ TEUTONIC-KNIGHT-FLAG)
+		)
+
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		(up-get-fact-sum any-enemy unit-type-count teutonic-knight-line g-temp)
+		(up-compare-goal g-temp > 0)
+		=>
+		(up-modify-goal g-enemy-special-unique-unit-count g:+ g-temp)
+		(up-modify-flag g-enemy-special-unique-unit-flag c:+ TEUTONIC-KNIGHT-FLAG)
+		)
+
+		#load-if-defined UP-GAME-WK
+			#load-if-not-defined DE-AVAILABLE
+
+				;Camel Archers
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				(up-get-player-fact target-player unit-type-count camel-archer g-temp)
+				(up-get-player-fact target-player unit-type-count elite-camel-archer g-temp-2)
+				(up-modify-goal g-temp g:+ g-temp-2)
+				(up-compare-goal g-temp > 0)
+				=>
+				(up-modify-goal g-enemy-special-unique-unit-count g:+ g-temp)
+				(up-modify-flag g-enemy-special-unique-unit-flag c:+ CAMEL-ARCHER-FLAG)
+				)
+
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				(up-get-fact-sum any-enemy unit-type-count camel-archer g-temp)
+				(up-get-fact-sum any-enemy unit-type-count elite-camel-archer g-temp-2)
+				(up-modify-goal g-temp g:+ g-temp-2)
+				(up-compare-goal g-temp > 0)
+				=>
+				(up-modify-goal g-enemy-special-unique-unit-count g:+ g-temp)
+				(up-modify-flag g-enemy-special-unique-unit-flag c:+ CAMEL-ARCHER-FLAG)
+				)
+
+			#else
+
+				;Camel Archers
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				(up-get-player-fact target-player unit-type-count camel-archer-line g-temp)
+				(up-compare-goal g-temp > 0)
+				=>
+				(up-modify-goal g-enemy-special-unique-unit-count g:+ g-temp)
+				(up-modify-flag g-enemy-special-unique-unit-flag c:+ CAMEL-ARCHER-FLAG)
+				)
+
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				(up-get-fact-sum any-enemy unit-type-count camel-archer-line g-temp)
+				(up-compare-goal g-temp > 0)
+				=>
+				(up-modify-goal g-enemy-special-unique-unit-count g:+ g-temp)
+				(up-modify-flag g-enemy-special-unique-unit-flag c:+ CAMEL-ARCHER-FLAG)
+				)
+
+				;Leitis
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game target-player)
+				(up-players-in-game enemy > 1)
+				(up-get-player-fact target-player unit-type-count leitis-line g-temp)
+				(up-compare-goal g-temp > 0)
+				=>
+				(up-modify-goal g-enemy-special-unique-unit-count g:+ g-temp)
+				(up-modify-flag g-enemy-special-unique-unit-flag c:+ LEITIS-FLAG)
+				)
+
+				(defrule
+				(players-military-population any-enemy > 1)
+				(player-in-game any-enemy)
+				(up-get-fact-sum any-enemy unit-type-count leitis-line g-temp)
+				(up-compare-goal g-temp > 0)
+				=>
+				(up-modify-goal g-enemy-special-unique-unit-count g:+ g-temp)
+				(up-modify-flag g-enemy-special-unique-unit-flag c:+ LEITIS-FLAG)
+				)
+
+			#end-if
+		#end-if
+
+	;-----------
+	;	Monks
+	;-----------
+	
+		;Target Enemy
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game target-player)
+		(up-players-in-game enemy > 1)
+		=>
+		(up-get-player-fact target-player unit-type-count monk g-temp)
+		(up-modify-goal g-enemy-monks-count g:+ g-temp)
+		(up-get-player-fact target-player unit-type-count missionary g-temp)
+		(up-modify-goal g-enemy-monks-count g:+ g-temp)
+		)
+
+		;All Enemies
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		=>
+		(up-get-fact-sum any-enemy unit-type-count monk g-temp)
+		(up-modify-goal g-enemy-monks-count g:+ g-temp)
+		(up-get-fact-sum any-enemy unit-type-count missionary g-temp)
+		(up-modify-goal g-enemy-monks-count g:+ g-temp)
+		)
+
+	;--------------------------------------
+	;	Adjust for enemy starting scouts
+	;--------------------------------------
+		
+		(defrule
+		(game-time < 1800)	;30 minutes
+		(players-military-population any-enemy > 1)
+		=>
+		(up-get-fact players-in-game enemy g-temp)
+		(up-modify-goal g-enemy-light-cavalry-count g:- g-temp)
+		(up-modify-goal g-enemy-light-cavalry-count c:- 1)	;for target-player double counting
+		)
+
+		(defrule
+		(game-time < 1800)	;30 minutes
+		(players-military-population any-enemy > 1)
+		(player-in-game 1)
+		(stance-toward 1 enemy)
+		(or
+			(players-civ 1 aztec)
+			(or
+				(players-civ 1 incan)
+				(players-civ 1 mayan)))
+		=>
+		(up-modify-goal g-enemy-eagle-warrior-count c:- 1)
+		(up-modify-goal g-enemy-light-cavalry-count c:+ 1)
+		)
+
+		(defrule
+		(game-time < 1800)	;30 minutes
+		(players-military-population any-enemy > 1)
+		(player-in-game 2)
+		(stance-toward 2 enemy)
+		(or
+			(players-civ 2 aztec)
+			(or
+				(players-civ 2 incan)
+				(players-civ 2 mayan)))
+		=>
+		(up-modify-goal g-enemy-eagle-warrior-count c:- 1)
+		(up-modify-goal g-enemy-light-cavalry-count c:+ 1)
+		)
+
+		(defrule
+		(game-time < 1800)	;30 minutes
+		(players-military-population any-enemy > 1)
+		(player-in-game 3)
+		(stance-toward 3 enemy)
+		(or
+			(players-civ 3 aztec)
+			(or
+				(players-civ 3 incan)
+				(players-civ 3 mayan)))
+		=>
+		(up-modify-goal g-enemy-eagle-warrior-count c:- 1)
+		(up-modify-goal g-enemy-light-cavalry-count c:+ 1)
+		)
+
+		(defrule
+		(game-time < 1800)	;30 minutes
+		(players-military-population any-enemy > 1)
+		(player-in-game 4)
+		(stance-toward 4 enemy)
+		(or
+			(players-civ 4 aztec)
+			(or
+				(players-civ 4 incan)
+				(players-civ 4 mayan)))
+		=>
+		(up-modify-goal g-enemy-eagle-warrior-count c:- 1)
+		(up-modify-goal g-enemy-light-cavalry-count c:+ 1)
+		)
+
+		(defrule
+		(game-time < 1800)	;30 minutes
+		(players-military-population any-enemy > 1)
+		(player-in-game 5)
+		(stance-toward 5 enemy)
+		(or
+			(players-civ 5 aztec)
+			(or
+				(players-civ 5 incan)
+				(players-civ 5 mayan)))
+		=>
+		(up-modify-goal g-enemy-eagle-warrior-count c:- 1)
+		(up-modify-goal g-enemy-light-cavalry-count c:+ 1)
+		)
+
+		(defrule
+		(game-time < 1800)	;30 minutes
+		(players-military-population any-enemy > 1)
+		(player-in-game 6)
+		(stance-toward 6 enemy)
+		(or
+			(players-civ 6 aztec)
+			(or
+				(players-civ 6 incan)
+				(players-civ 6 mayan)))
+		=>
+		(up-modify-goal g-enemy-eagle-warrior-count c:- 1)
+		(up-modify-goal g-enemy-light-cavalry-count c:+ 1)
+		)
+
+		(defrule
+		(game-time < 1800)	;30 minutes
+		(players-military-population any-enemy > 1)
+		(player-in-game 7)
+		(stance-toward 7 enemy)
+		(or
+			(players-civ 7 aztec)
+			(or
+				(players-civ 7 incan)
+				(players-civ 7 mayan)))
+		=>
+		(up-modify-goal g-enemy-eagle-warrior-count c:- 1)
+		(up-modify-goal g-enemy-light-cavalry-count c:+ 1)
+		)
+
+		(defrule
+		(game-time < 1800)	;30 minutes
+		(players-military-population any-enemy > 1)
+		(player-in-game 8)
+		(stance-toward 8 enemy)
+		(or
+			(players-civ 8 aztec)
+			(or
+				(players-civ 8 incan)
+				(players-civ 8 mayan)))
+		=>
+		(up-modify-goal g-enemy-eagle-warrior-count c:- 1)
+		(up-modify-goal g-enemy-light-cavalry-count c:+ 1)
+		)
+
+		(defrule
+		(game-time < 1800)	;30 minutes
+		(players-military-population any-enemy > 1)
+		(or
+			(players-civ any-enemy aztec)
+			(or
+				(players-civ any-enemy incan)
+				(players-civ any-enemy mayan)))
+		=>
+		(up-modify-goal g-enemy-eagle-warrior-count c:- 1)	;for target player double counting
+		)
+
+		(defrule
+		(game-time < 1800)	;30 minutes
+		(players-military-population any-enemy > 1)
+		=>
+		(up-modify-goal g-enemy-eagle-warrior-count c:max 0)
+		(up-modify-goal g-enemy-light-cavalry-count c:max 0)
+		)
+
+	;--------------------------------
+	;	Scale By Number of Enemies
+	;--------------------------------
+
+		(defrule
+		(players-military-population any-enemy > 1)
+		=>
+		(up-modify-goal g-previous-seen-enemy-military-pop g:= g-seen-enemy-military-pop)
+		)
+	
+		(defrule
+		(players-military-population any-enemy > 1)
+		=>
+		(up-modify-goal g-seen-enemy-military-pop g:= g-enemy-swordsmen-count)
+		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-spearmen-count)
+		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-eagle-warrior-count)
+		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-condottiero-count)
+		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-foot-archers-count)
+		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-skirmishers-count)
+		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-cavalry-archers-count)
+		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-hand-cannoneer-slinger-count)
+		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-light-cavalry-count)
+		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-heavy-cavalry-count)
+		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-camel-count)
+		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-elephants-count)
+		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-field-siege-count)
+		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-special-unique-unit-count)
+		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-monks-count)
+		)
+	
+		;Divide results by number of enemies to scale it to the army size of one player
+		(defrule
+		(players-military-population any-enemy > 1)
+		=>
+		(up-get-fact players-in-game enemy g-temp)
+		(up-modify-goal g-enemy-swordsmen-count g:/ g-temp)
+		(up-modify-goal g-enemy-spearmen-count g:/ g-temp)
+		(up-modify-goal g-enemy-eagle-warrior-count g:/ g-temp)
+		(up-modify-goal g-enemy-condottiero-count g:/ g-temp)
+		(up-modify-goal g-enemy-foot-archers-count g:/ g-temp)
+		(up-modify-goal g-enemy-skirmishers-count g:/ g-temp)
+		(up-modify-goal g-enemy-cavalry-archers-count g:/ g-temp)
+		(up-modify-goal g-enemy-hand-cannoneer-slinger-count g:/ g-temp)
+		(up-modify-goal g-enemy-light-cavalry-count g:/ g-temp)
+		(up-modify-goal g-enemy-heavy-cavalry-count g:/ g-temp)
+		(up-modify-goal g-enemy-camel-count g:/ g-temp)
+		(up-modify-goal g-enemy-elephants-count g:/ g-temp)
+		(up-modify-goal g-enemy-field-siege-count g:/ g-temp)
+		(up-modify-goal g-enemy-special-unique-unit-count g:/ g-temp)
+		)
+
+		(defrule
+		(players-military-population any-enemy > 1)
+		=>
+		(up-get-fact players-in-game enemy g-temp)
+		(up-modify-goal g-enemy-monks-count g:/ g-temp)
+		)
+
+		(defrule
+		(players-military-population any-enemy > 1)
+		=>
+		(up-modify-goal g-enemy-swordsmen-count c:max 0)
+		(up-modify-goal g-enemy-spearmen-count c:max 0)
+		(up-modify-goal g-enemy-eagle-warrior-count c:max 0)
+		(up-modify-goal g-enemy-condottiero-count c:max 0)
+		(up-modify-goal g-enemy-foot-archers-count c:max 0)
+		(up-modify-goal g-enemy-skirmishers-count c:max 0)
+		(up-modify-goal g-enemy-cavalry-archers-count c:max 0)
+		(up-modify-goal g-enemy-hand-cannoneer-slinger-count c:max 0)
+		(up-modify-goal g-enemy-light-cavalry-count c:max 0)
+		(up-modify-goal g-enemy-heavy-cavalry-count c:max 0)
+		(up-modify-goal g-enemy-camel-count c:max 0)
+		(up-modify-goal g-enemy-elephants-count c:max 0)
+		(up-modify-goal g-enemy-field-siege-count c:max 0)
+		(up-modify-goal g-enemy-special-unique-unit-count c:max 0)
+		(up-modify-goal g-enemy-monks-count c:max 0)
+		)
+
+		;Calculate average enemy military pop
+		(defrule
+		(players-military-population any-enemy > 1)
+		(player-in-game any-enemy)
+		=>
+		(up-get-fact-sum any-enemy military-population 0 g-average-enemy-military-pop)
+		(up-get-fact players-in-game enemy g-temp-2)
+		(up-modify-goal g-average-enemy-military-pop g:/ g-temp-2)
+		)
+
+		;Cap military numbers at average enemy military population (enemy player unit counts can sometimes go way too high)
+		(defrule
+		(players-military-population any-enemy > 1)
+		=>
+		(up-modify-goal g-temp g:= g-enemy-swordsmen-count)
+		(up-modify-goal g-temp g:+ g-enemy-spearmen-count)
+		(up-modify-goal g-temp g:+ g-enemy-eagle-warrior-count)
+		(up-modify-goal g-temp g:+ g-enemy-condottiero-count)
+		(up-modify-goal g-temp g:+ g-enemy-foot-archers-count)
+		(up-modify-goal g-temp g:+ g-enemy-skirmishers-count)
+		(up-modify-goal g-temp g:+ g-enemy-cavalry-archers-count)
+		(up-modify-goal g-temp g:+ g-enemy-hand-cannoneer-slinger-count)
+		(up-modify-goal g-temp g:+ g-enemy-light-cavalry-count)
+		(up-modify-goal g-temp g:+ g-enemy-heavy-cavalry-count)
+		(up-modify-goal g-temp g:+ g-enemy-camel-count)
+		(up-modify-goal g-temp g:+ g-enemy-elephants-count)
+		(up-modify-goal g-temp g:+ g-enemy-field-siege-count)
+		(up-modify-goal g-temp g:+ g-enemy-special-unique-unit-count)
+		(up-modify-goal g-temp g:+ g-enemy-monks-count)
+		)
+
+		(defrule
+		(players-military-population any-enemy > 1)
+		(up-compare-goal g-temp g:> g-average-enemy-military-pop)
+		(up-modify-goal g-temp-2 g:= g-average-enemy-military-pop)
+		(up-modify-goal g-temp-2 g:%/ g-temp)
+		=>
+		(up-modify-goal g-enemy-swordsmen-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-spearmen-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-eagle-warrior-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-condottiero-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-foot-archers-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-skirmishers-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-cavalry-archers-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-hand-cannoneer-slinger-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-light-cavalry-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-heavy-cavalry-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-camel-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-elephants-count g:%* g-temp-2)
+		)
+
+		(defrule
+		(players-military-population any-enemy > 1)
+		(up-compare-goal g-temp g:> g-average-enemy-military-pop)
+		(up-modify-goal g-temp-2 g:= g-average-enemy-military-pop)
+		(up-modify-goal g-temp-2 g:%/ g-temp)
+		=>
+		(up-modify-goal g-enemy-field-siege-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-special-unique-unit-count g:%* g-temp-2)
+		(up-modify-goal g-enemy-monks-count g:%* g-temp-2)
+		)
+
+		(defrule
+		(players-military-population any-enemy > 1)
+		(timer-triggered t-30-sec)
+		=>
+		(chat-to-player my-player-number "238")
+		)
 
 ;-------------------------------------
 ;	GOAL 219: g-constant-train-unit
@@ -10212,6 +11676,7 @@
 			(or
 				(research-completed ri-paladin)
 				(up-compare-const PALADIN-AVAILABLE == NO))
+			(up-research-status c: my-second-unique-research >= research-pending)
 			=>
 			(set-goal g-knight-tech-progress SECONDARY-IMPERIAL-COMPLETE)
 			)
@@ -10224,7 +11689,6 @@
 			(or
 				(research-completed ri-paladin)
 				(up-compare-const PALADIN-AVAILABLE == NO))
-			(up-research-status c: my-second-unique-research >= research-pending)
 			=>
 			(set-goal g-knight-tech-progress SECONDARY-IMPERIAL-COMPLETE)
 			)
@@ -11204,7 +12668,6 @@
 		(current-age == imperial-age)
 		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
 		(research-completed ri-iron-casting)
-		(research-completed ri-squires)
 		(research-completed ri-blast-furnace)
 		(research-completed ri-plate-mail)
 		(research-completed my-unique-unit-upgrade)
@@ -14178,6 +15641,51 @@
 	(set-goal g-villager-training TRAIN-WITH-ESCROW)
 	)
 
+	(defrule
+	(up-object-type-count-total c: villager g:< g-desired-num-villager)
+	(goal g-game-focus DEFENSIVE)
+	(military-population g:< g-min-military-pop)
+	(or
+		(up-compare-goal g-desired-num-militia > 0)
+		(or
+			(up-compare-goal g-desired-num-condottiero > 0)
+			(or
+				(up-compare-goal g-desired-num-genitour > 0)
+				(or
+					(up-compare-goal g-desired-num-scout-cavalry > 0)
+					(up-compare-goal g-desired-num-knight > 0)))))
+	=>
+	(set-goal g-villager-training LIMITED-TRAIN-WITH-ESCROW)
+	)
+
+	(defrule
+	(up-object-type-count-total c: villager g:< g-desired-num-villager)
+	(goal g-game-focus DEFENSIVE)
+	(military-population g:< g-min-military-pop)
+	(or
+		(up-compare-goal g-desired-num-camel > 0)
+		(or
+			(up-compare-goal g-desired-num-battle-elephant > 0)
+			(or
+				(up-compare-goal g-desired-num-steppe-lancer > 0)
+				(and
+					(up-compare-goal g-desired-num-unique-unit > 0)
+					(and
+						(up-compare-const UNIQUE-UNIT-CLASS != archery-class)
+						(up-compare-const UNIQUE-UNIT-CLASS != cavalry-archer-class))))))
+	=>
+	(set-goal g-villager-training LIMITED-TRAIN-WITH-ESCROW)
+	)
+
+	(defrule
+	(up-compare-goal g-game-focus != BOOM)
+	(up-compare-goal g-game-focus != REBUILD)
+	(up-compare-goal g-target-pop-parity g:> g-target-military-parity)	;We have more villagers than opponent
+	(up-compare-goal g-target-military-parity < -10)
+	=>
+	(set-goal g-villager-training LIMITED-TRAIN-WITH-ESCROW)
+	)
+
 	; (defrule
 	; (goal g-villager-training TRAIN-WITH-ESCROW)
 	; (or
@@ -14240,7 +15748,7 @@
 			(goal g-current-strategy FC-EAGLES-REVENGE)	;strategies that can train
 			(goal g-current-strategy FC-STRONGBOW))		;rush unit in feudal
 		(up-modify-goal g-temp g:= g-required-num-villager)
-		(up-modify-goal g-temp c:+ 3)
+		(up-modify-goal g-temp c:+ 2)
 		(up-object-type-count c: villager g:>= g-temp)
 		(goal g-age-status SAVE-FOR-CASTLE)
 		=>
@@ -14270,7 +15778,7 @@
 		(goal g-strategy-type FAST-CASTLE)
 		(goal g-current-strategy FC-STRONGBOW)
 		(up-modify-goal g-temp g:= g-required-num-villager)
-		(up-modify-goal g-temp c:+ 3)
+		(up-modify-goal g-temp c:+ 2)
 		(up-object-type-count c: villager g:>= g-temp)
 		(goal g-age-status SAVE-FOR-CASTLE)
 		=>
@@ -19113,3 +20621,40 @@
 		)
 
 	#end-if
+
+;--------------------------------
+;	GOAL 346: g-countering-cap
+;--------------------------------
+
+	;Max number of enemy soldiers to counter
+	;Once this number of soldiers is reached, countering sensitivity is capped at 100%
+
+	(defrule
+	(current-age == feudal-age)
+	=>
+	(set-goal g-countering-cap 5)
+	(set-goal g-temp 100)
+	(up-modify-sn sn-countering-preference c:max 1)			;adjust according to sn-countering-preference (% factor between 1 and infinity)
+	(up-modify-goal g-temp s:%/ sn-countering-preference)	
+	(up-modify-goal g-countering-cap g:%* g-temp)
+	)
+
+	(defrule
+	(current-age == castle-age)
+	=>
+	(set-goal g-countering-cap 20)
+	(set-goal g-temp 100)
+	(up-modify-sn sn-countering-preference c:max 1)			;adjust according to sn-countering-preference (% factor between 1 and infinity)
+	(up-modify-goal g-temp s:%/ sn-countering-preference)	
+	(up-modify-goal g-countering-cap g:%* g-temp)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	=>
+	(set-goal g-countering-cap 35)
+	(set-goal g-temp 100)
+	(up-modify-sn sn-countering-preference c:max 1)			;adjust according to sn-countering-preference (% factor between 1 and infinity)
+	(up-modify-goal g-temp s:%/ sn-countering-preference)	
+	(up-modify-goal g-countering-cap g:%* g-temp)
+	)

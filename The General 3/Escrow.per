@@ -33,10 +33,8 @@
                 (goal g-game-focus BOOM)
                 (goal g-game-focus BALANCED)))
         (or
-            (goal g-current-age-primary-unit-tech-progress PRIORITY-COMPLETE)
-            (or
-                (goal g-current-age-primary-unit-tech-progress SECONDARY-COMPLETE)
-                (up-compare-goal g-current-age-support-unit-tech-progress < ALL-COMPLETE)))
+            (up-compare-goal g-current-age-primary-unit-tech-progress < ALL-COMPLETE)
+            (up-compare-goal g-current-age-support-unit-tech-progress < ALL-COMPLETE))
         =>
         (set-goal g-wood-escrow-type ACCUMULATED)
         (set-goal g-food-escrow-type ACCUMULATED)
@@ -168,6 +166,23 @@
         (set-goal g-gold-escrow-type ACCUMULATED)
         )
 
+        (defrule
+        (goal g-game-focus DEFENSIVE)
+        (goal g-age-status SAVE-FOR-FEUDAL)
+        =>
+        (set-goal g-food-escrow-type ACCUMULATED)
+        )
+
+        (defrule
+        (goal g-game-focus DEFENSIVE)
+        (or
+            (goal g-age-status SAVE-FOR-CASTLE)
+            (goal g-age-status SAVE-FOR-IMPERIAL))
+        =>
+        (set-goal g-food-escrow-type ACCUMULATED)
+        (set-goal g-gold-escrow-type ACCUMULATED)
+        )
+
         ;Buildings
         (defrule
         (goal g-game-focus AGGRESSIVE)
@@ -187,61 +202,61 @@
         )
 
         (defrule
-        (goal g-game-focus DEFENSIVE)
+        ; (goal g-game-focus DEFENSIVE)
         (up-object-type-count-total c: barracks g:< g-desired-num-barracks)
         (building-type-count barracks == 0)
         (or
-            (up-compare-goal g-desired-num-militia > 10)
+            (up-compare-goal g-desired-num-militia > 0)
             (or
-                (up-compare-goal g-desired-num-spearman > 10)
+                (up-compare-goal g-desired-num-spearman > 0)
                 (or
-                    (up-compare-goal g-desired-num-eagle-warrior > 10)
-                    (up-compare-goal g-desired-num-condottiero > 10))))
+                    (up-compare-goal g-desired-num-eagle-warrior > 0)
+                    (up-compare-goal g-desired-num-condottiero > 0))))
         (military-population g:>= g-min-military-pop)
         =>
         (set-goal g-wood-escrow-type ACCUMULATED)
         )
 
         (defrule
-        (goal g-game-focus DEFENSIVE)
+        ; (goal g-game-focus DEFENSIVE)
         (up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
         (building-type-count archery-range == 0)
         (or
-            (up-compare-goal g-desired-num-archer > 10)
+            (up-compare-goal g-desired-num-archer > 0)
             (or
-                (up-compare-goal g-desired-num-skirmisher > 10)
+                (up-compare-goal g-desired-num-skirmisher > 0)
                 (or
-                    (up-compare-goal g-desired-num-cavalry-archer > 10)
+                    (up-compare-goal g-desired-num-cavalry-archer > 0)
                     (or
-                        (up-compare-goal g-desired-num-hand-cannoneer > 10)
+                        (up-compare-goal g-desired-num-hand-cannoneer > 0)
                         (or
-                            (up-compare-goal g-desired-num-slinger > 10)
-                            (up-compare-goal g-desired-num-genitour > 10))))))
+                            (up-compare-goal g-desired-num-slinger > 0)
+                            (up-compare-goal g-desired-num-genitour > 0))))))
         (military-population g:>= g-min-military-pop)
         =>
         (set-goal g-wood-escrow-type ACCUMULATED)
         )
 
         (defrule
-        (goal g-game-focus DEFENSIVE)
+        ; (goal g-game-focus DEFENSIVE)
         (up-object-type-count-total c: stable g:< g-desired-num-stable)
         (building-type-count stable == 0)
         (or
-            (up-compare-goal g-desired-num-scout-cavalry > 10)
+            (up-compare-goal g-desired-num-scout-cavalry > 0)
             (or
-                (up-compare-goal g-desired-num-knight > 10)
+                (up-compare-goal g-desired-num-knight > 0)
                 (or
-                    (up-compare-goal g-desired-num-camel > 10)
+                    (up-compare-goal g-desired-num-camel > 0)
                     (or
-                        (up-compare-goal g-desired-num-battle-elephant > 10)
-                        (up-compare-goal g-desired-num-steppe-lancer > 10)))))
+                        (up-compare-goal g-desired-num-battle-elephant > 0)
+                        (up-compare-goal g-desired-num-steppe-lancer > 0)))))
         (military-population g:>= g-min-military-pop)
         =>
         (set-goal g-wood-escrow-type ACCUMULATED)
         )
 
         (defrule
-        (goal g-game-focus DEFENSIVE)
+        ; (goal g-game-focus DEFENSIVE)
         (up-object-type-count-total c: siege-workshop g:< g-desired-num-siege-workshop)
         (building-type-count siege-workshop == 0)
         (or
@@ -257,11 +272,11 @@
         )
 
         (defrule
-        (goal g-game-focus DEFENSIVE)
+        ; (goal g-game-focus DEFENSIVE)
         (up-object-type-count-total c: castle g:< g-desired-num-castle)
         (building-type-count castle == 0)
         (or
-            (up-compare-goal g-desired-num-unique-unit > 10)
+            (up-compare-goal g-desired-num-unique-unit > 0)
             (up-compare-goal g-desired-num-trebuchet > 0))
         (military-population g:>= g-min-military-pop)
         =>
@@ -269,12 +284,12 @@
         )
 
         (defrule
-        (goal g-game-focus DEFENSIVE)
+        ; (goal g-game-focus DEFENSIVE)
         (up-object-type-count-total c: monastery g:< g-desired-num-monastery)
         (building-type-count monastery == 0)
         (or
-            (up-compare-goal g-desired-num-monk > 2)
-            (up-compare-goal g-desired-num-missionary > 2))
+            (up-compare-goal g-desired-num-monk > 0)
+            (up-compare-goal g-desired-num-missionary > 0))
         (military-population g:>= g-min-military-pop)
         =>
         (set-goal g-wood-escrow-type ACCUMULATED)
@@ -335,7 +350,8 @@
                 (and
                     (goal g-game-focus REBUILD)
                     (up-compare-goal g-desired-num-military > 0))))
-        (up-compare-goal g-current-age-primary-unit-tech-progress < PRIORITY-COMPLETE)
+        (up-compare-goal g-target-military-parity > 0)
+        (up-compare-goal g-current-age-primary-unit-tech-progress < REQUIRED-COMPLETE)
         =>
         (set-goal g-wood-escrow-type IMMEDIATE)
         (set-goal g-food-escrow-type IMMEDIATE)
@@ -349,6 +365,7 @@
             (or
                 (up-compare-goal g-current-age-support-unit-tech-progress < PRIORITY-COMPLETE)
                 (up-compare-goal g-current-age-eco-tech-progress < SECONDARY-COMPLETE)))
+        (up-compare-goal g-target-military-parity > 0)
         =>
         (set-goal g-wood-escrow-type IMMEDIATE)
         (set-goal g-food-escrow-type IMMEDIATE)
@@ -367,6 +384,7 @@
         (defrule
         (goal g-game-focus AGGRESSIVE)
         (up-object-type-count-total c: barracks g:< g-desired-num-barracks)
+        (building-type-count-total barracks < 2)
         (goal g-primary-unit-class infantry-class)
         (up-compare-goal g-primary-unit != my-unique-unit)
         =>
@@ -376,6 +394,7 @@
         (defrule
         (goal g-game-focus AGGRESSIVE)
         (up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
+        (building-type-count-total archery-range < 2)
         (or
             (goal g-primary-unit-class archery-class)
             (or
@@ -389,6 +408,7 @@
         (defrule
         (goal g-game-focus AGGRESSIVE)
         (up-object-type-count-total c: stable g:< g-desired-num-stable)
+        (building-type-count-total stable < 2)
         (goal g-primary-unit-class cavalry-class)
         (up-compare-goal g-primary-unit != my-unique-unit)
         =>
@@ -398,6 +418,7 @@
         (defrule
         (goal g-game-focus AGGRESSIVE)
         (up-object-type-count-total c: siege-workshop g:< g-desired-num-siege-workshop)
+        (building-type-count-total siege-workshop == 0)
         (or
             (goal g-primary-unit-class siege-weapon-class)
             (goal g-primary-unit scorpion))
@@ -413,6 +434,7 @@
                 (goal g-game-focus DEFENSIVE)
                 (goal g-game-focus BALANCED)))
         (up-object-type-count-total c: monastery g:< g-desired-num-monastery)
+        (building-type-count-total monastery == 0)
         (or
             (goal g-primary-unit monk)
             (goal g-primary-unit missionary))
@@ -427,6 +449,7 @@
                 (goal g-game-focus REBUILD)
                 (goal g-game-focus BALANCED)))
         (up-object-type-count-total c: market g:< g-desired-num-market)
+        (building-type-count-total market == 0)
         =>
         (set-goal g-wood-escrow-type IMMEDIATE)
         )
@@ -468,9 +491,7 @@
                 (up-object-type-count-total c: barracks g:< g-desired-num-barracks)
                 (or
                     (up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
-                    (or
-                        (up-object-type-count-total c: stable g:< g-desired-num-stable)
-                        (up-object-type-count-total c: town-center g:< g-desired-num-town-center)))))
+                    (up-object-type-count-total c: stable g:< g-desired-num-stable))))
         =>
         (set-goal g-wood-escrow-type IMMEDIATE)
         )
@@ -561,28 +582,40 @@
         (goal g-wood-escrow-type ACCUMULATED)
         (goal g-wood-cost IMMEDIATE)	;prior setting
         =>
-        (release-escrow wood)
+        (up-get-fact wood-amount 0 g-temp)
+        (up-modify-escrow wood g:= g-temp)
+        (up-modify-escrow wood c:- 150)
+        (up-modify-escrow wood c:max 0)
         )
 
         (defrule
         (goal g-food-escrow-type ACCUMULATED)
         (goal g-food-cost IMMEDIATE)	;prior setting
         =>
-        (release-escrow food)
+        (up-get-fact food-amount 0 g-temp)
+        (up-modify-escrow food g:= g-temp)
+        (up-modify-escrow food c:- 100)
+        (up-modify-escrow food c:max 0)
         )
 
         (defrule
         (goal g-gold-escrow-type ACCUMULATED)
         (goal g-gold-cost IMMEDIATE)	;prior setting
         =>
-        (release-escrow gold)
+        (up-get-fact gold-amount 0 g-temp)
+        (up-modify-escrow gold g:= g-temp)
+        (up-modify-escrow gold c:- 100)
+        (up-modify-escrow gold c:max 0)
         )
 
         (defrule
         (goal g-stone-escrow-type ACCUMULATED)
         (goal g-stone-cost IMMEDIATE)	;prior setting
         =>
-        (release-escrow stone)
+        (up-get-fact stone-amount 0 g-temp)
+        (up-modify-escrow stone g:= g-temp)
+        (up-modify-escrow stone c:- 100)
+        (up-modify-escrow stone c:max 0)
         )
 
 ;=========================<>=========================
@@ -642,6 +675,7 @@
     ;Accumulated
 	(defrule
 	(goal g-wood-escrow-type ACCUMULATED)
+    (up-compare-goal g-game-focus != DEFENSIVE)
 	(or
 		(up-compare-goal g-current-age-primary-unit-tech-progress < SECONDARY-COMPLETE)
 		(and
@@ -653,10 +687,7 @@
 
 	(defrule
 	(goal g-wood-escrow-type ACCUMULATED)
-	(up-compare-goal g-current-age-primary-unit-tech-progress >= SECONDARY-COMPLETE)
-	(or
-		(goal g-support-unit PENDING)
-		(up-compare-goal g-current-age-support-unit-tech-progress >= SECONDARY-COMPLETE))
+    (goal g-game-focus DEFENSIVE)
 	=>
 	(set-escrow-percentage wood 15)
 	)
@@ -670,9 +701,24 @@
 	=>
 	(set-escrow-percentage wood 15)
 	)
+    
+    (defrule
+	(goal g-food-escrow-type ACCUMULATED)
+    (or
+        (goal g-age-status SAVE-FOR-FEUDAL)
+        (or
+            (goal g-age-status SAVE-FOR-CASTLE)
+            (goal g-age-status SAVE-FOR-IMPERIAL)))
+    =>
+    (set-escrow-percentage food 50)
+    )
 
 	(defrule
 	(goal g-food-escrow-type ACCUMULATED)
+    (up-compare-goal g-age-status != SAVE-FOR-FEUDAL)
+    (up-compare-goal g-age-status != SAVE-FOR-CASTLE)
+    (up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+    (up-compare-goal g-game-focus != DEFENSIVE)
 	(or
 		(up-compare-goal g-current-age-primary-unit-tech-progress < SECONDARY-COMPLETE)
 		(and
@@ -684,6 +730,19 @@
 
 	(defrule
 	(goal g-food-escrow-type ACCUMULATED)
+    (up-compare-goal g-age-status != SAVE-FOR-FEUDAL)
+    (up-compare-goal g-age-status != SAVE-FOR-CASTLE)
+    (up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+    (goal g-game-focus DEFENSIVE)
+	=>
+	(set-escrow-percentage food 15)
+	)
+
+	(defrule
+	(goal g-food-escrow-type ACCUMULATED)
+    (up-compare-goal g-age-status != SAVE-FOR-FEUDAL)
+    (up-compare-goal g-age-status != SAVE-FOR-CASTLE)
+    (up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 	(up-compare-goal g-current-age-primary-unit-tech-progress >= SECONDARY-COMPLETE)
 	(or
 		(goal g-support-unit PENDING)
@@ -691,9 +750,24 @@
 	=>
 	(set-escrow-percentage food 15)
 	)
+    
+    (defrule
+	(goal g-gold-escrow-type ACCUMULATED)
+    (or
+        (goal g-age-status SAVE-FOR-FEUDAL)
+        (or
+            (goal g-age-status SAVE-FOR-CASTLE)
+            (goal g-age-status SAVE-FOR-IMPERIAL)))
+    =>
+    (set-escrow-percentage gold 50)
+    )
 
 	(defrule
 	(goal g-gold-escrow-type ACCUMULATED)
+    (up-compare-goal g-age-status != SAVE-FOR-FEUDAL)
+    (up-compare-goal g-age-status != SAVE-FOR-CASTLE)
+    (up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+    (up-compare-goal g-game-focus != DEFENSIVE)
 	(or
 		(up-compare-goal g-current-age-primary-unit-tech-progress < SECONDARY-COMPLETE)
 		(and
@@ -705,10 +779,10 @@
 
 	(defrule
 	(goal g-gold-escrow-type ACCUMULATED)
-	(up-compare-goal g-current-age-primary-unit-tech-progress >= SECONDARY-COMPLETE)
-	(or
-		(goal g-support-unit PENDING)
-		(up-compare-goal g-current-age-support-unit-tech-progress >= SECONDARY-COMPLETE))
+    (up-compare-goal g-age-status != SAVE-FOR-FEUDAL)
+    (up-compare-goal g-age-status != SAVE-FOR-CASTLE)
+    (up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+    (goal g-game-focus DEFENSIVE)
 	=>
 	(set-escrow-percentage gold 15)
 	)
@@ -723,10 +797,16 @@
 	(defrule
 	(true)
 	=>
+    (up-setup-cost-data 1 g-food-cost)
+    (up-get-cost-delta g-food-delta)
 	(up-modify-escrow food g:min g-max-food-needed)
+    (up-modify-escrow food g:min g-food-delta)
 	(up-modify-escrow wood g:min g-max-wood-needed)
+    (up-modify-escrow wood g:min g-wood-delta)
 	(up-modify-escrow stone g:min g-max-stone-needed)
+    (up-modify-escrow stone g:min g-stone-delta)
 	(up-modify-escrow gold g:min g-max-gold-needed)
+    (up-modify-escrow gold g:min g-gold-delta)
 	)
 	
 ;=========================<>=========================

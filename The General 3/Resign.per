@@ -8,11 +8,11 @@
 	(defrule
 	(goal g-resign NO)
 	(game-time > 600)
-	(population < FIFTEEN-PERCENT-POP)
-	(players-population any-enemy >= TWENTY-PERCENT-POP)
+	(population < TWENTY-FIVE-PERCENT-POP)
+	(players-population any-enemy >= TWENTY-FIVE-PERCENT-POP)
 	(up-get-fact population 0 g-temp)	;Example, say we have 30 pop. We have < 40% of enemy pop if enemy has > 75 pop.
-	(up-modify-goal g-temp c:%* 150)	;Multiply 30 * 1.5 = 45. This equals the min pop difference required to resign (75 minus 30).
-	(up-compare-goal g-temp g:< g-top-enemy-pop-parity)
+	(up-modify-goal g-temp c:%* -150)	;Multiply 30 * 1.5 = 45. This equals the min pop difference required to resign (75 minus 30).
+	(up-compare-goal g-top-enemy-pop-parity g:< g-temp)
 	=>
 	(set-goal g-resign DECIDE-TO-RESIGN)
 	)
@@ -111,6 +111,7 @@
 	=>
 	(set-goal g-resign DECIDE-TO-RESIGN)
 	)
+
 	(defrule
 	(population < FIFTY-PERCENT-POP)
 	(civilian-population < FIFTEEN-PERCENT-POP)
@@ -206,7 +207,6 @@
 )
 
 (defrule
-(up-timer-status t-resign == timer-triggered)
 (goal g-resign DECIDE-TO-RESIGN)
 =>
 (chat-to-all "Well fought. We shall do battle again another day.")

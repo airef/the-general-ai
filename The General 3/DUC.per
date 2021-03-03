@@ -1638,6 +1638,7 @@
         (load "The General 3/Functions/Reset")
 
         (defrule
+        (goal g-first-attack-launched YES)
         (building-type-count lumber-camp > 1)
         =>
         (up-full-reset-search)
@@ -1647,6 +1648,7 @@
         )
 
             (defrule
+            (goal g-first-attack-launched YES)
             (up-compare-goal i g:< g-local-total)
             (building-type-count lumber-camp > 1)
             (up-set-target-object search-local g: i)
@@ -1666,6 +1668,7 @@
 			;If no trees or dropsite within 7 tiles, only delete lumber camp if we can afford new lumber camp immediately
 			;Otherwise, keep lumber camp around if we have several trees within 10 tiles
             (defrule
+            (goal g-first-attack-launched YES)
             (up-compare-goal i g:< g-local-total)
             (building-type-count lumber-camp > 1)
             (up-set-target-object search-local g: i)
@@ -1679,12 +1682,13 @@
             )
 
             (defrule
-            (up-compare-goal i g:< g-local-total)
+            (goal g-first-attack-launched YES)
+            ; (up-compare-goal i g:< g-local-total)
             (building-type-count lumber-camp > 1)
             (up-set-target-object search-local g: i)
             (up-object-data object-data-type == lumber-camp)
             (goal g-remote-total 0)             ;no nearby trees found
-			(wood-amount < 100)
+			(wood-amount >= 100)
             =>
 			(set-goal g-temp 49567)
             (up-get-point position-object g-point-x)
@@ -1699,12 +1703,13 @@
             )
 
             (defrule
+            (goal g-first-attack-launched YES)
             (up-compare-goal i g:< g-local-total)
             (building-type-count lumber-camp > 1)
             (up-set-target-object search-local g: i)
             (up-object-data object-data-type == lumber-camp)
             (up-compare-goal g-remote-total < 10)     ;less than 10 trees within 8 tiles
-			(wood-amount < 100)
+			(wood-amount >= 100)
 			(goal g-temp 49567)
             =>
             (up-remove-objects search-local object-data-index g:!= i)
@@ -1713,6 +1718,7 @@
             )
 
             (defrule
+            (goal g-first-attack-launched YES)
             (up-compare-goal i g:< g-local-total)
             (building-type-count lumber-camp > 1)
             (up-set-target-object search-local g: i)
@@ -1729,6 +1735,7 @@
         (load "The General 3/Functions/Reset")
 
         (defrule
+        (goal g-first-attack-launched YES)
         (building-type-count mining-camp > 1)
         =>
         (up-full-reset-search)
@@ -1738,6 +1745,7 @@
         )
 
             (defrule
+            (goal g-first-attack-launched YES)
             (up-compare-goal i g:< g-local-total)
             (building-type-count mining-camp > 1)
             (up-set-target-object search-local g: i)
@@ -1755,6 +1763,7 @@
             )
 
             (defrule
+            (goal g-first-attack-launched YES)
             (up-compare-goal i g:< g-local-total)
             (building-type-count mining-camp > 1)
             (up-set-target-object search-local g: i)
@@ -1765,6 +1774,7 @@
             )
             
             (defrule
+            (goal g-first-attack-launched YES)
             (up-compare-goal i g:< g-local-total)
             (building-type-count mining-camp > 1)
             (up-set-target-object search-local g: i)
@@ -2530,6 +2540,8 @@
         ; (up-send-flare g-gather-point-x)
         ; )
 
+        #load-if-defined FIX-LATER
+
         (load "The General 3/Functions/Reset")
 
         ;If town not under attack and not attacking, gather all soldiers at gather point
@@ -2695,6 +2707,8 @@
 		; (up-target-point g-gather-point-x action-move -1 -1)
         ; )
 
+        #end-if
+
     ;---------------------------
     ;   End of Attack Retreat
     ;---------------------------
@@ -2717,13 +2731,23 @@
             (up-filter-include cmdid-military -1 -1 monastery-class)
             (up-find-local g: i c: 240)
             (up-remove-objects search-local object-data-class == warship-class)
-            (up-remove-objects search-local object-data-speed <= 70)	;don't retreat rams, etc.
+            ; (up-remove-objects search-local object-data-speed <= 70)	;don't retreat rams, etc.
             (up-get-search-state g-local-total)
             )
 
             (defrule
             (goal g-attack-coordination RETREAT)
             (up-compare-goal g-local-total > 0)
+            (up-compare-goal i != cavalry-class)
+            =>
+            (up-chat-data-to-self "Retreating soldiers class %d" g: i)
+            (up-target-point g-gather-point-x action-move -1 -1)
+            )
+
+            (defrule
+            (goal g-attack-coordination RETREAT)
+            (up-compare-goal g-local-total > 0)
+            (goal i cavalry-class)
             =>
             (up-chat-data-to-self "Retreating soldiers class %d" g: i)
             (up-target-point g-gather-point-x action-move -1 stance-no-attack)
@@ -2735,7 +2759,7 @@
             (up-compare-goal i < 960)
             =>
             (up-modify-goal i c:+ 1)
-            (up-jump-rule -3)
+            (up-jump-rule -4)
             )
 
         (defrule
