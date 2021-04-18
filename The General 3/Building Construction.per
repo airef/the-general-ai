@@ -490,9 +490,6 @@
 	(defrule
 	(goal g-need-gold-camp YES)
 	(up-object-type-count-total c: mining-camp g:< g-desired-num-mining-camp)
-	(or
-		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-		(building-type-count-total mining-camp < 2))
 	(up-pending-objects c: mining-camp == 0)
 	(dropsite-min-distance gold < 255)
 	(can-build-with-escrow mining-camp)
@@ -505,15 +502,13 @@
 	(set-goal g-build-line-resource-type gold)
 	(set-goal g-build-line-dropsite-distance 6)
 	(set-goal g-build-line-enemy-bldg-distance 25)
+	(chat-to-player my-player-number "gold camp")
 	)
 
 	(defrule
 	; (goal g-need-gold-camp NO)
 	(goal g-need-stone-camp YES)
 	(up-object-type-count-total c: mining-camp g:< g-desired-num-mining-camp)
-	(or
-		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-		(building-type-count-total mining-camp < 2))
 	(up-pending-objects c: mining-camp == 0)
 	(dropsite-min-distance stone < 255)
 	(can-build-with-escrow mining-camp)
@@ -526,6 +521,7 @@
 	(set-goal g-build-line-resource-type stone)
 	(set-goal g-build-line-dropsite-distance 6)
 	(set-goal g-build-line-enemy-bldg-distance 25)
+	(chat-to-player my-player-number "stone camp")
 	)
 
 	(defrule
@@ -605,6 +601,7 @@
 	(set-goal g-build-line-resource-type wood)
 	(set-goal g-build-line-dropsite-distance 8)
 	(set-goal g-build-line-enemy-bldg-distance 25)
+	(chat-to-player my-player-number "first wood camp")
 	)
 	
 	(defrule
@@ -623,6 +620,7 @@
 	(set-goal g-build-line-resource-type wood)
 	(set-goal g-build-line-dropsite-distance 15)
 	(set-goal g-build-line-enemy-bldg-distance 25)
+	(chat-to-player my-player-number "second wood camp")
 	)
 
 	(defrule
@@ -642,6 +640,7 @@
 	(set-goal g-build-line-resource-type wood)
 	(set-goal g-build-line-dropsite-distance 8)
 	(set-goal g-build-line-enemy-bldg-distance 25)
+	(chat-to-player my-player-number "later wood camp")
 	)
 
 	(load "The General 3/Functions/Build Line")
@@ -1413,161 +1412,322 @@
 ;	Watch Tower
 ;-----------------
 
-	(load "The General 3/Functions/Reset")
+	#load-if-not-defined SICILIANS-CIV
 
-	;Build watch tower to defend mining camp or lumber camp that is closest to enemy
-	;Prefer building tower near mining camp
-	(defrule
-	(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
-	(up-compare-goal g-watch-tower-line == 0)
-	(can-build-with-escrow watch-tower)
-	(up-pending-objects c: watch-tower < 1)
-	(goal g-place-point-used NO)
-	=>
-	(up-set-target-point g-target-enemy-x)
-	(up-full-reset-search)
-	(up-find-local c: mining-camp c: 40)
-	(up-filter-status c: status-pending c: list-active)
-	(up-find-status-local c: mining-camp c: 40)
-	(up-clean-search search-local object-data-distance search-order-asc)
-	(set-goal g-temp-3 9986)
-	)
+		(load "The General 3/Functions/Reset")
 
-	(defrule
-	(goal g-temp-3 9986)
-	(can-build-with-escrow watch-tower)
-	(up-set-target-object search-local c: 0)
-	=>
-	(up-get-point position-object g-point-x)
-	(up-set-target-point g-target-enemy-x)
-	(up-get-point-distance g-point-x g-target-enemy-x g-temp) ;distance from mining camp to target enemy
-	(up-get-point-distance g-position-self-x g-target-enemy-x g-temp-2) ;distance from TC to target enemy
-	(set-goal g-temp-3 9987)
-	)
+		;Build watch tower to defend mining camp or lumber camp that is closest to enemy
+		;Prefer building tower near mining camp
+		(defrule
+		(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
+		(up-compare-goal g-watch-tower-line == 0)
+		(can-build-with-escrow watch-tower)
+		(up-pending-objects c: watch-tower < 1)
+		(goal g-place-point-used NO)
+		=>
+		(up-set-target-point g-target-enemy-x)
+		(up-full-reset-search)
+		(up-find-local c: mining-camp c: 40)
+		(up-filter-status c: status-pending c: list-active)
+		(up-find-status-local c: mining-camp c: 40)
+		(up-clean-search search-local object-data-distance search-order-asc)
+		(set-goal g-temp-3 9986)
+		)
 
-	(defrule
-	(goal g-temp-3 9987)
-	(can-build-with-escrow watch-tower)
-	(up-set-target-object search-local c: 0)
-	(up-compare-goal g-temp g:<= g-temp-2) ;mining camp is closer to enemy than TC
-	=>
-	(up-get-point position-object g-place-point-x)
-	(up-lerp-tiles g-place-point-x g-point-x c: 3) ;place 3 tiles closer to enemy
-	(up-set-target-point g-place-point-x)
-	(set-goal g-place-point-used YES)
-	(set-strategic-number sn-placement-fail-delta 1)
-	(up-build place-point g-escrow c: watch-tower)
-	)
+		(defrule
+		(goal g-temp-3 9986)
+		(can-build-with-escrow watch-tower)
+		(up-set-target-object search-local c: 0)
+		=>
+		(up-get-point position-object g-point-x)
+		(up-set-target-point g-target-enemy-x)
+		(up-get-point-distance g-point-x g-target-enemy-x g-temp) ;distance from mining camp to target enemy
+		(up-get-point-distance g-position-self-x g-target-enemy-x g-temp-2) ;distance from TC to target enemy
+		(set-goal g-temp-3 9987)
+		)
 
-	;Mining camp isn't a good place for tower, try lumber camp instead
-	(defrule
-	(can-build-with-escrow watch-tower)
-	(or
-		(and
-			(up-compare-goal g-temp g:> g-temp-2)
-			(goal g-temp-3 9987))	;TC is closer to enemy than mining camp
-		(building-type-count mining-camp == 0))
-	=>
-	(up-set-target-point g-target-enemy-x)
-	(up-full-reset-search)
-	(up-find-local c: lumber-camp c: 40)
-	(up-filter-status c: status-pending c: list-active)
-	(up-find-status-local c: lumber-camp c: 40)
-	(up-clean-search search-local object-data-distance search-order-asc)
-	(set-goal g-temp-3 9988)
-	)
+		(defrule
+		(goal g-temp-3 9987)
+		(can-build-with-escrow watch-tower)
+		(up-set-target-object search-local c: 0)
+		(up-compare-goal g-temp g:<= g-temp-2) ;mining camp is closer to enemy than TC
+		=>
+		(up-get-point position-object g-place-point-x)
+		(up-lerp-tiles g-place-point-x g-point-x c: 3) ;place 3 tiles closer to enemy
+		(up-set-target-point g-place-point-x)
+		(set-goal g-place-point-used YES)
+		(set-strategic-number sn-placement-fail-delta 1)
+		(up-build place-point g-escrow c: watch-tower)
+		)
 
-	(defrule
-	(goal g-temp-3 9988)
-	(can-build-with-escrow watch-tower)
-	(up-set-target-object search-local c: 0)
-	=>
-	(up-get-point position-object g-point-x)
-	(up-set-target-point g-target-enemy-x)
-	(up-get-point-distance g-point-x g-target-enemy-x g-temp) ;distance from mining camp to target enemy
-	(up-get-point-distance g-position-self-x g-target-enemy-x g-temp-2) ;distance from TC to target enemy
-	(set-goal g-temp-3 9989)
-	)
+		;Mining camp isn't a good place for tower, try lumber camp instead
+		(defrule
+		(can-build-with-escrow watch-tower)
+		(or
+			(and
+				(up-compare-goal g-temp g:> g-temp-2)
+				(goal g-temp-3 9987))	;TC is closer to enemy than mining camp
+			(building-type-count mining-camp == 0))
+		=>
+		(up-set-target-point g-target-enemy-x)
+		(up-full-reset-search)
+		(up-find-local c: lumber-camp c: 40)
+		(up-filter-status c: status-pending c: list-active)
+		(up-find-status-local c: lumber-camp c: 40)
+		(up-clean-search search-local object-data-distance search-order-asc)
+		(set-goal g-temp-3 9988)
+		)
 
-	(defrule
-	(goal g-temp-3 9989)
-	(can-build-with-escrow watch-tower)
-	(up-set-target-object search-local c: 0)
-	(up-compare-goal g-temp g:<= g-temp-2) ;lumber camp is closer to enemy than TC
-	=>
-	(up-get-point position-object g-place-point-x)
-	(up-lerp-tiles g-place-point-x g-target-enemy-x c: 3) ;place 3 tiles closer to enemy
-	(up-set-target-point g-place-point-x)
-	(set-goal g-place-point-used YES)
-	(set-strategic-number sn-placement-fail-delta 1)
-	(up-build place-point g-escrow c: watch-tower)
-	)
+		(defrule
+		(goal g-temp-3 9988)
+		(can-build-with-escrow watch-tower)
+		(up-set-target-object search-local c: 0)
+		=>
+		(up-get-point position-object g-point-x)
+		(up-set-target-point g-target-enemy-x)
+		(up-get-point-distance g-point-x g-target-enemy-x g-temp) ;distance from mining camp to target enemy
+		(up-get-point-distance g-position-self-x g-target-enemy-x g-temp-2) ;distance from TC to target enemy
+		(set-goal g-temp-3 9989)
+		)
 
-	;Lumber camp isn't a good place for a tower either, build tower at the soldiers' gather point
-	(defrule
-	(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
-	(up-compare-goal g-watch-tower-line == 0)
-	(can-build-with-escrow watch-tower)
-	(up-pending-objects c: watch-tower < 1)
-	(goal g-place-point-used NO)
-	(up-compare-goal g-gather-point-x > -1)
-	(up-compare-goal g-gather-point-y > -1)
-	(current-age-time >= 3)
-	=>
-	(up-copy-point g-place-point-x g-gather-point-x)
-	(up-lerp-tiles g-place-point-x g-target-enemy-x c: 2) ;place 2 tiles closer to enemy
-	(up-set-target-point g-place-point-x)
-	(set-goal g-place-point-used YES)
-	(set-strategic-number sn-placement-fail-delta 1)
-	(up-build place-point g-escrow c: watch-tower)
-	)
+		(defrule
+		(goal g-temp-3 9989)
+		(can-build-with-escrow watch-tower)
+		(up-set-target-object search-local c: 0)
+		(up-compare-goal g-temp g:<= g-temp-2) ;lumber camp is closer to enemy than TC
+		=>
+		(up-get-point position-object g-place-point-x)
+		(up-lerp-tiles g-place-point-x g-target-enemy-x c: 3) ;place 3 tiles closer to enemy
+		(up-set-target-point g-place-point-x)
+		(set-goal g-place-point-used YES)
+		(set-strategic-number sn-placement-fail-delta 1)
+		(up-build place-point g-escrow c: watch-tower)
+		)
 
-	(defrule
-	(goal g-town-under-attack NO)
-	=>
-	(up-assign-builders c: watch-tower c: 2)
-	)
+		;Lumber camp isn't a good place for a tower either, build tower at the soldiers' gather point
+		(defrule
+		(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
+		(up-compare-goal g-watch-tower-line == 0)
+		(can-build-with-escrow watch-tower)
+		(up-pending-objects c: watch-tower < 1)
+		(goal g-place-point-used NO)
+		(up-compare-goal g-gather-point-x > -1)
+		(up-compare-goal g-gather-point-y > -1)
+		(current-age-time >= 3)
+		=>
+		(up-copy-point g-place-point-x g-gather-point-x)
+		(up-lerp-tiles g-place-point-x g-target-enemy-x c: 2) ;place 2 tiles closer to enemy
+		(up-set-target-point g-place-point-x)
+		(set-goal g-place-point-used YES)
+		(set-strategic-number sn-placement-fail-delta 1)
+		(up-build place-point g-escrow c: watch-tower)
+		)
 
-	(defrule
-	(goal g-town-under-attack YES)
-	(unit-type-count 225 == 0)	;dead male builder
-	(unit-type-count 213 == 0)	;dead female builder
-	=>
-	(up-assign-builders c: watch-tower c: 1)
-	)
+		(defrule
+		(goal g-town-under-attack NO)
+		=>
+		(up-assign-builders c: watch-tower c: 2)
+		)
 
-	(defrule
-	(goal g-town-under-attack YES)
-	(or
-		(unit-type-count 225 > 0)	;dead male builder
-		(unit-type-count 213 > 0))	;dead female builder
-	=>
-	(up-assign-builders c: watch-tower c: 0)
-	)
+		(defrule
+		(goal g-town-under-attack YES)
+		(unit-type-count 225 == 0)	;dead male builder
+		(unit-type-count 213 == 0)	;dead female builder
+		=>
+		(up-assign-builders c: watch-tower c: 1)
+		)
 
-	(defrule
-	(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
-	(up-compare-goal g-watch-tower-line > 0)
-	(can-build watch-tower)
-	(up-pending-objects c: watch-tower < 2)
-	(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
-	(goal g-place-control-used NO)
-	=>
-	(up-set-placement-data my-player-number -1 c: 20)
-	(up-modify-sn sn-placement-zone-size c:= 5)
-	(set-strategic-number sn-placement-fail-delta 1)
-	(up-assign-builders c: watch-tower c: 1)
-	(up-build place-control 0 c: watch-tower)
-	(set-goal g-place-control-used YES)
-	;(chat-to-player my-player-number "Build Watch Tower")
-	)
+		(defrule
+		(goal g-town-under-attack YES)
+		(or
+			(unit-type-count 225 > 0)	;dead male builder
+			(unit-type-count 213 > 0))	;dead female builder
+		=>
+		(up-assign-builders c: watch-tower c: 0)
+		)
+
+		(defrule
+		(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
+		(up-compare-goal g-watch-tower-line > 0)
+		(can-build watch-tower)
+		(up-pending-objects c: watch-tower < 2)
+		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+		(goal g-place-control-used NO)
+		=>
+		(up-set-placement-data my-player-number -1 c: 20)
+		(up-modify-sn sn-placement-zone-size c:= 5)
+		(set-strategic-number sn-placement-fail-delta 1)
+		(up-assign-builders c: watch-tower c: 1)
+		(up-build place-control 0 c: watch-tower)
+		(set-goal g-place-control-used YES)
+		;(chat-to-player my-player-number "Build Watch Tower")
+		)
+
+	#end-if
+
+;------------
+;	Donjon
+;------------
+
+	#load-if-defined SICILIANS-CIV
+
+		(load "The General 3/Functions/Reset")
+
+		;Build donjon to defend mining camp or lumber camp that is closest to enemy
+		;Prefer building tower near mining camp
+		(defrule
+		(up-object-type-count-total c: donjon g:< g-desired-num-watch-tower)
+		(building-type-count-total donjon == 0)
+		(can-build-with-escrow donjon)
+		(up-pending-objects c: donjon < 1)
+		(goal g-place-point-used NO)
+		=>
+		(up-set-target-point g-target-enemy-x)
+		(up-full-reset-search)
+		(up-find-local c: mining-camp c: 40)
+		(up-filter-status c: status-pending c: list-active)
+		(up-find-status-local c: mining-camp c: 40)
+		(up-clean-search search-local object-data-distance search-order-asc)
+		(set-goal g-temp-3 9986)
+		)
+
+		(defrule
+		(goal g-temp-3 9986)
+		(can-build-with-escrow donjon)
+		(up-set-target-object search-local c: 0)
+		=>
+		(up-get-point position-object g-point-x)
+		(up-set-target-point g-target-enemy-x)
+		(up-get-point-distance g-point-x g-target-enemy-x g-temp) ;distance from mining camp to target enemy
+		(up-get-point-distance g-position-self-x g-target-enemy-x g-temp-2) ;distance from TC to target enemy
+		(set-goal g-temp-3 9987)
+		)
+
+		(defrule
+		(goal g-temp-3 9987)
+		(can-build-with-escrow donjon)
+		(up-set-target-object search-local c: 0)
+		(up-compare-goal g-temp g:<= g-temp-2) ;mining camp is closer to enemy than TC
+		=>
+		(up-get-point position-object g-place-point-x)
+		(up-lerp-tiles g-place-point-x g-point-x c: 3) ;place 3 tiles closer to enemy
+		(up-set-target-point g-place-point-x)
+		(set-goal g-place-point-used YES)
+		(set-strategic-number sn-placement-fail-delta 1)
+		(up-build place-point g-escrow c: donjon)
+		)
+
+		;Mining camp isn't a good place for tower, try lumber camp instead
+		(defrule
+		(can-build-with-escrow donjon)
+		(or
+			(and
+				(up-compare-goal g-temp g:> g-temp-2)
+				(goal g-temp-3 9987))	;TC is closer to enemy than mining camp
+			(building-type-count mining-camp == 0))
+		=>
+		(up-set-target-point g-target-enemy-x)
+		(up-full-reset-search)
+		(up-find-local c: lumber-camp c: 40)
+		(up-filter-status c: status-pending c: list-active)
+		(up-find-status-local c: lumber-camp c: 40)
+		(up-clean-search search-local object-data-distance search-order-asc)
+		(set-goal g-temp-3 9988)
+		)
+
+		(defrule
+		(goal g-temp-3 9988)
+		(can-build-with-escrow donjon)
+		(up-set-target-object search-local c: 0)
+		=>
+		(up-get-point position-object g-point-x)
+		(up-set-target-point g-target-enemy-x)
+		(up-get-point-distance g-point-x g-target-enemy-x g-temp) ;distance from mining camp to target enemy
+		(up-get-point-distance g-position-self-x g-target-enemy-x g-temp-2) ;distance from TC to target enemy
+		(set-goal g-temp-3 9989)
+		)
+
+		(defrule
+		(goal g-temp-3 9989)
+		(can-build-with-escrow donjon)
+		(up-set-target-object search-local c: 0)
+		(up-compare-goal g-temp g:<= g-temp-2) ;lumber camp is closer to enemy than TC
+		=>
+		(up-get-point position-object g-place-point-x)
+		(up-lerp-tiles g-place-point-x g-target-enemy-x c: 3) ;place 3 tiles closer to enemy
+		(up-set-target-point g-place-point-x)
+		(set-goal g-place-point-used YES)
+		(set-strategic-number sn-placement-fail-delta 1)
+		(up-build place-point g-escrow c: donjon)
+		)
+
+		;Lumber camp isn't a good place for a tower either, build tower at the soldiers' gather point
+		(defrule
+		(up-object-type-count-total c: donjon g:< g-desired-num-watch-tower)
+		(building-type-count-total donjon == 0)
+		(can-build-with-escrow donjon)
+		(up-pending-objects c: donjon < 1)
+		(goal g-place-point-used NO)
+		(up-compare-goal g-gather-point-x > -1)
+		(up-compare-goal g-gather-point-y > -1)
+		(current-age-time >= 3)
+		=>
+		(up-copy-point g-place-point-x g-gather-point-x)
+		(up-lerp-tiles g-place-point-x g-target-enemy-x c: 2) ;place 2 tiles closer to enemy
+		(up-set-target-point g-place-point-x)
+		(set-goal g-place-point-used YES)
+		(set-strategic-number sn-placement-fail-delta 1)
+		(up-build place-point g-escrow c: donjon)
+		)
+
+		(defrule
+		(goal g-town-under-attack NO)
+		=>
+		(up-assign-builders c: donjon c: 2)
+		)
+
+		(defrule
+		(goal g-town-under-attack YES)
+		(unit-type-count 225 == 0)	;dead male builder
+		(unit-type-count 213 == 0)	;dead female builder
+		=>
+		(up-assign-builders c: donjon c: 1)
+		)
+
+		(defrule
+		(goal g-town-under-attack YES)
+		(or
+			(unit-type-count 225 > 0)	;dead male builder
+			(unit-type-count 213 > 0))	;dead female builder
+		=>
+		(up-assign-builders c: donjon c: 0)
+		)
+
+		(defrule
+		(up-object-type-count-total c: donjon g:< g-desired-num-watch-tower)
+		(building-type-count-total donjon > 0)
+		(can-build donjon)
+		(up-pending-objects c: donjon < 2)
+		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
+		(goal g-place-control-used NO)
+		=>
+		(up-set-placement-data my-player-number -1 c: 20)
+		(up-modify-sn sn-placement-zone-size c:= 5)
+		(set-strategic-number sn-placement-fail-delta 1)
+		(up-assign-builders c: donjon c: 1)
+		(up-build place-control 0 c: donjon)
+		(set-goal g-place-control-used YES)
+		;(chat-to-player my-player-number "Build Watch Tower")
+		)
+
+	#end-if
 
 ;-------------------
 ;	Bombard Tower
 ;-------------------
 
 	(defrule
-	(up-object-type-count-total c: bombard-tower g:< g-desired-num-watch-tower)
+	(up-object-type-count-total c: bombard-tower g:< g-desired-num-bombard-tower)
 	(can-build bombard-tower)
 	(up-pending-objects c: bombard-tower < 2)
 	(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)

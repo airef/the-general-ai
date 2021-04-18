@@ -386,7 +386,9 @@
         (up-object-type-count-total c: barracks g:< g-desired-num-barracks)
         (building-type-count-total barracks < 2)
         (goal g-primary-unit-class infantry-class)
-        (up-compare-goal g-primary-unit != my-unique-unit)
+        (or
+            (up-compare-goal g-primary-unit != my-unique-unit)
+            (research-completed 16))	;Anarchy
         =>
         (set-goal g-wood-escrow-type IMMEDIATE)
         )
@@ -410,7 +412,9 @@
         (up-object-type-count-total c: stable g:< g-desired-num-stable)
         (building-type-count-total stable < 2)
         (goal g-primary-unit-class cavalry-class)
-        (up-compare-goal g-primary-unit != my-unique-unit)
+        (or
+            (up-compare-goal g-primary-unit != my-unique-unit)
+            (research-completed 483))	;Marauders
         =>
         (set-goal g-wood-escrow-type IMMEDIATE)
         )
@@ -679,7 +683,7 @@
 	(or
 		(up-compare-goal g-current-age-primary-unit-tech-progress < SECONDARY-COMPLETE)
 		(and
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(up-compare-goal g-current-age-support-unit-tech-progress < SECONDARY-COMPLETE)))
 	=>
 	(set-escrow-percentage wood 30)
@@ -696,7 +700,7 @@
 	(goal g-wood-escrow-type ACCUMULATED)
 	(up-compare-goal g-current-age-primary-unit-tech-progress >= SECONDARY-COMPLETE)
 	(or
-		(goal g-support-unit PENDING)
+		(goal g-support-unit 0)
 		(up-compare-goal g-current-age-support-unit-tech-progress >= SECONDARY-COMPLETE))
 	=>
 	(set-escrow-percentage wood 15)
@@ -722,7 +726,7 @@
 	(or
 		(up-compare-goal g-current-age-primary-unit-tech-progress < SECONDARY-COMPLETE)
 		(and
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(up-compare-goal g-current-age-support-unit-tech-progress < SECONDARY-COMPLETE)))
 	=>
 	(set-escrow-percentage food 30)
@@ -745,7 +749,7 @@
     (up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 	(up-compare-goal g-current-age-primary-unit-tech-progress >= SECONDARY-COMPLETE)
 	(or
-		(goal g-support-unit PENDING)
+		(goal g-support-unit 0)
 		(up-compare-goal g-current-age-support-unit-tech-progress >= SECONDARY-COMPLETE))
 	=>
 	(set-escrow-percentage food 15)
@@ -771,7 +775,7 @@
 	(or
 		(up-compare-goal g-current-age-primary-unit-tech-progress < SECONDARY-COMPLETE)
 		(and
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(up-compare-goal g-current-age-support-unit-tech-progress < SECONDARY-COMPLETE)))
 	=>
 	(set-escrow-percentage gold 30)

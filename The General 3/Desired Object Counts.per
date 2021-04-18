@@ -380,6 +380,18 @@
 			)
 
 		#end-if
+
+		#load-if-defined SICILIANS-CIV
+
+			(defrule
+			(true)
+			=>
+			(up-get-fact unit-type-count-total serjeant-line g-unique-unit-line)
+			(up-get-fact unit-type-count-total donjon-serjeant-line g-temp)
+			(up-modify-goal g-unique-unit-line g:+ g-temp)
+			)
+
+		#end-if
 		
 	;-------------------
 	;	g-siege-class
@@ -411,906 +423,69 @@
 			(defrule
 			(true)
 			=>
-			(set-goal g-primary-unit PENDING)
-			(set-goal g-support-unit PENDING)
+			(set-goal g-primary-unit 0)
+			(set-goal g-support-unit 0)
 			)
 
-		;--------------------------------
-		;	Crush Strategy (FC camels)
-		;--------------------------------
+		;------------------
+		;	Primary Unit
+		;------------------
 
 			(defrule
 			(or
-				(goal g-current-strategy FC-CRUSH)
-				(goal g-current-strategy EARLYC-CAMELS))
-			=>
-			(set-goal g-primary-unit camel)
-			)
-			
-			(defrule
-			(or
-				(goal g-current-strategy FC-CRUSH)
-				(goal g-current-strategy EARLYC-CAMELS))
-			(up-compare-goal g-age-status >= TO-FEUDAL)
-			=>
-			(set-goal g-desired-num-camel 60)
-			(set-goal g-desired-num-military 60)
-			)
-
-		;-------------------------------------------------
-		;	Eagles Revenge Strategy (FC Eagle Warriors)
-		;-------------------------------------------------
-
-			(defrule
-			(or
-				(goal g-current-strategy FC-EAGLES-REVENGE)
-				(goal g-current-strategy EARLYC-EAGLES))
-			=>
-			(set-goal g-primary-unit eagle-warrior)
-			)
-			
-			(defrule
-			(or
-				(goal g-current-strategy FC-EAGLES-REVENGE)
-				(goal g-current-strategy EARLYC-EAGLES))
-			(goal g-age-status SAVE-FOR-CASTLE)
-			(goal g-town-under-attack YES)
-			=>
-			(set-goal g-desired-num-eagle-warrior 30)
-			(set-goal g-desired-num-military 30)
-			)
-			
-			(defrule
-			(or
-				(goal g-current-strategy FC-EAGLES-REVENGE)
-				(goal g-current-strategy EARLYC-EAGLES))
-			(goal g-age-status TO-CASTLE)
-			=>
-			(set-goal g-desired-num-eagle-warrior 30)
-			(set-goal g-desired-num-military 30)
-			)
-
-			(defrule
-			(or
-				(goal g-current-strategy FC-EAGLES-REVENGE)
-				(goal g-current-strategy EARLYC-EAGLES))
-			(up-compare-goal g-age-status >= EARLY-CASTLE)
-			=>
-			(set-goal g-desired-num-eagle-warrior 60)
-			(set-goal g-desired-num-military 60)
-			)
-
-		;---------------------------------
-		;	Krush Strategy (FC Knights)
-		;---------------------------------
-
-			(defrule
-			(or
-				(goal g-current-strategy FC-KRUSH)
-				(goal g-current-strategy EARLYC-KNIGHTS))
-			=>
-			(set-goal g-primary-unit knight)
-			)
-		
-			(defrule
-			(or
-				(goal g-current-strategy FC-KRUSH)
-				(goal g-current-strategy EARLYC-KNIGHTS))
-			(up-compare-goal g-age-status >= TO-FEUDAL)
-			=>
-			(set-goal g-desired-num-knight 60)
-			(set-goal g-desired-num-military 60)
-			)
-
-		;-----------------------------------
-		;	Strongbow Strategy (FC Xbows)
-		;-----------------------------------
-
-			(defrule
-			(or
-				(goal g-current-strategy FC-STRONGBOW)
-				(goal g-current-strategy EARLYC-XBOWS))
-			=>
-			(set-goal g-primary-unit archer)
-			)
-			
-			(defrule
-			(or
-				(goal g-current-strategy FC-STRONGBOW)
-				(goal g-current-strategy EARLYC-XBOWS))
-			(goal g-age-status SAVE-FOR-CASTLE)
-			(goal g-town-under-attack NO)
-			=>
-			(set-goal g-desired-num-archer 5)
-			(set-goal g-desired-num-military 5)
-			)
-			
-			(defrule
-			(or
-				(goal g-current-strategy FC-STRONGBOW)
-				(goal g-current-strategy EARLYC-XBOWS))
-			(goal g-age-status SAVE-FOR-CASTLE)
-			(goal g-town-under-attack YES)
-			=>
-			(set-goal g-desired-num-archer 25)
-			(set-goal g-desired-num-skirmisher 5)
-			(set-goal g-desired-num-military 30)
-			)
-			
-			(defrule
-			(or
-				(goal g-current-strategy FC-STRONGBOW)
-				(goal g-current-strategy EARLYC-XBOWS))
-			(goal g-age-status TO-CASTLE)
-			=>
-			(set-goal g-desired-num-archer 25)
-			(set-goal g-desired-num-skirmisher 5)
-			(set-goal g-desired-num-military 30)
-			)
-
-			(defrule
-			(or
-				(goal g-current-strategy FC-STRONGBOW)
-				(goal g-current-strategy EARLYC-XBOWS))
-			(up-compare-goal g-age-status >= EARLY-CASTLE)
-			=>
-			(set-goal g-desired-num-archer 50)
-			(set-goal g-desired-num-skirmisher 10)
-			(set-goal g-desired-num-military 60)
-			)
-
-		;-------------------------------
-		;	Demon Strategy (FC Monks)
-		;-------------------------------
-
-			(defrule
-			(goal g-current-strategy FC-DEMON)
-			=>
-			(set-goal g-primary-unit monk)
-			)
-			
-			(defrule
-			(goal g-current-strategy FC-DEMON)
-			(up-compare-goal g-age-status >= TO-FEUDAL)
-			=>
-			(set-goal g-desired-num-monk 60)
-			(set-goal g-desired-num-military 20)
-			)
-
-		;--------------------------
-		;	Castle Drop Strategy
-		;--------------------------
-
-			(defrule
-			(goal g-current-strategy FC-CASTLE-DROP)
-			=>
-			(set-goal g-primary-unit my-unique-unit)
-			)
-			
-			(defrule
-			(goal g-current-strategy FC-CASTLE-DROP)
-			(up-compare-goal g-age-status >= TO-FEUDAL)
-			=>
-			(set-goal g-desired-num-unique-unit 60)
-			(set-goal g-desired-num-military 60)
-			)
-
-		;-----------------------
-		;	Mid-Castle Camels
-		;-----------------------
-
-			(defrule
-			(goal g-current-strategy MIDC-CAMELS)
-			=>
-			(set-goal g-primary-unit camel)
-			)
-			
-			(defrule
-			(goal g-current-strategy MIDC-CAMELS)
-			(current-age >= castle-age)
-			=>
-			(set-goal g-desired-num-military 55)
-			(set-goal g-desired-num-camel 55)
-			)
-
-		;-------------------------------
-		;	Mid-Castle Eagle Warriors
-		;-------------------------------
-
-			(defrule
-			(goal g-current-strategy MIDC-EAGLES)
-			=>
-			(set-goal g-primary-unit eagle-warrior)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDC-EAGLES)
-			(current-age >= castle-age)
-			=>
-			(set-goal g-desired-num-military 55)
-			(set-goal g-desired-num-eagle-warrior 55)
-			)
-
-		;------------------------
-		;	Mid-Castle Knights
-		;------------------------
-
-			(defrule
-			(goal g-current-strategy MIDC-KNIGHTS)
-			=>
-			(set-goal g-primary-unit knight)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDC-KNIGHTS)
-			(current-age >= castle-age)
-			=>
-			(set-goal g-desired-num-military 55)
-			(set-goal g-desired-num-knight 55)
-			)
-
-		;----------------------
-		;	Mid-Castle Xbows
-		;----------------------
-
-			(defrule
-			(goal g-current-strategy MIDC-XBOWS)
-			=>
-			(set-goal g-primary-unit archer)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDC-XBOWS)
-			(up-compare-const KNIGHT-AVAILABLE == YES)
-			(current-age >= castle-age)
-			=>
-			(set-goal g-desired-num-military 55)
-			(set-goal g-desired-num-archer 50)
-			(set-goal g-desired-num-knight 5)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDC-XBOWS)
-			(up-compare-const KNIGHT-AVAILABLE == NO)
-			(up-compare-const CAMEL-AVAILABLE == YES)
-			(current-age >= castle-age)
-			=>
-			(set-goal g-desired-num-military 55)
-			(set-goal g-desired-num-archer 50)
-			(set-goal g-desired-num-camel 5)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDC-XBOWS)
-			(up-compare-const EAGLE-WARRIOR-AVAILABLE == YES)
-			(current-age >= castle-age)
-			=>
-			(set-goal g-desired-num-military 55)
-			(set-goal g-desired-num-archer 50)
-			(set-goal g-desired-num-eagle-warrior 5)
-			)
-			
-		;----------------------------
-		;	Mid-Castle Cav Archers
-		;----------------------------
-
-			(defrule
-			(goal g-current-strategy MIDC-CAV-ARCHERS)
-			=>
-			(set-goal g-primary-unit cavalry-archer)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDC-CAV-ARCHERS)
-			(current-age >= castle-age)
-			=>
-			(set-goal g-desired-num-military 55)
-			(set-goal g-desired-num-cavalry-archer 55)
-			)
-
-		;-------------------------------------
-		;	Mid-Castle Circus (Battle Eles)
-		;-------------------------------------
-
-			(defrule
-			(goal g-current-strategy MIDC-CIRCUS)
-			=>
-			(set-goal g-primary-unit battle-elephant)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDC-CIRCUS)
-			(current-age >= castle-age)
-			=>
-			(set-goal g-desired-num-military 55)
-			(set-goal g-desired-num-battle-elephant 55)
-			)
-
-		;-----------------------
-		;	Mid-Castle Unique
-		;-----------------------
-
-			(defrule
-			(goal g-current-strategy MIDC-UNIQUE)
-			=>
-			(set-goal g-primary-unit my-unique-unit)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDC-UNIQUE)
-			(current-age >= castle-age)
-			=>
-			(set-goal g-desired-num-military 55)
-			(set-goal g-desired-num-unique-unit 55)
-			)
-
-		;-----------------------
-		;	Mid-Castle Ranged
-		;-----------------------
-
-			(defrule
-			(goal g-current-strategy MIDC-RANGED)
-			=>
-			(set-goal g-primary-unit archer)
-			(set-goal g-support-unit skirmisher)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDC-RANGED)
-			(current-age >= castle-age)
-			=>
-			(set-goal g-desired-num-military 55)
-			(set-goal g-desired-num-archer 33)
-			(set-goal g-desired-num-skirmisher 22)
-			)
-
-		;----------------------
-		;	Mid-Castle Monks
-		;----------------------
-
-			(defrule
-			(goal g-current-strategy MIDC-MONKS)
-			=>
-			(set-goal g-primary-unit monk)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDC-MONKS)
-			(current-age >= castle-age)
-			=>
-			(set-goal g-desired-num-military 20)
-			(set-goal g-desired-num-monk 55)
-			)
-
-		;--------------------------
-		;	Mid-Castle Swordsmen
-		;--------------------------
-
-			(defrule
-			(goal g-current-strategy MIDC-SWORDS)
+				(goal g-current-strategy DRUSH)
+				(or
+					(goal g-current-strategy FL-LATHER)
+					(or
+						(goal g-current-strategy FI-FARMERTRON)
+						(goal g-current-strategy EARLYI-CHAMPFLOOD))))
 			=>
 			(set-goal g-primary-unit militiaman)
 			)
 
 			(defrule
-			(goal g-current-strategy MIDC-SWORDS)
-			(current-age >= castle-age)
+			(or
+				(goal g-current-strategy MIDF-FULL-MAA)
+				(or
+					(goal g-current-strategy MIDC-SWORDS)
+					(or
+						(goal g-current-strategy MIDI-CHAMPIONS)
+						(goal g-current-strategy LATEI-CHAMPIONS))))
 			=>
-			(set-goal g-desired-num-military 55)
-			(set-goal g-desired-num-militia 55)
+			(set-goal g-primary-unit militiaman)
 			)
 
-		;------------------------
-		;	Mid-Castle Pikemen
-		;------------------------
-
 			(defrule
-			(goal g-current-strategy MIDC-PIKES)
+			(or
+				(goal g-current-strategy MIDC-PIKES)
+				(or
+					(goal g-current-strategy MIDI-HALBS)
+					(or
+						(goal g-current-strategy BOOM-IMPERIAL)
+						(goal g-current-strategy LATEI-TRASHALBS))))
 			=>
 			(set-goal g-primary-unit spearman)
 			)
 
 			(defrule
-			(goal g-current-strategy MIDC-PIKES)
-			(current-age >= castle-age)
-			=>
-			(set-goal g-desired-num-military 55)
-			(set-goal g-desired-num-spearman 55)
-			)
-
-		;----------------------------
-		;	Mid-Castle Skirmishers
-		;----------------------------
-
-			(defrule
-			(goal g-current-strategy MIDC-SKIRMS)
-			=>
-			(set-goal g-primary-unit skirmisher)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDC-SKIRMS)
-			(current-age >= castle-age)
-			=>
-			(set-goal g-desired-num-military 55)
-			(set-goal g-desired-num-skirmisher 55)
-			)
-
-		;--------------------------
-		;	Mid-Castle Light Cav
-		;--------------------------
-
-			(defrule
-			(goal g-current-strategy MIDC-LIGHT)
-			=>
-			(set-goal g-primary-unit scout-cavalry)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDC-LIGHT)
-			(current-age >= castle-age)
-			=>
-			(set-goal g-desired-num-military 55)
-			(set-goal g-desired-num-scout-cavalry 55)
-			)
-
-		;------------------------
-		;	Mid-Castle Lancers
-		;------------------------
-
-			(defrule
-			(goal g-current-strategy MIDC-LANCERS)
-			=>
-			(set-goal g-primary-unit steppe-lancer)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDC-LANCERS)
-			(current-age >= castle-age)
-			=>
-			(set-goal g-desired-num-military 55)
-			(set-goal g-desired-num-steppe-lancer 55)
-			)
-
-		;-------------------------
-		;	Mid-Castle Slingers
-		;-------------------------
-
-			(defrule
-			(goal g-current-strategy MIDC-SLINGERS)
-			=>
-			(set-goal g-primary-unit slinger)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDC-SLINGERS)
-			(current-age >= castle-age)
-			=>
-			(set-goal g-desired-num-military 55)
-			(set-goal g-desired-num-slinger 55)
-			)
-
-		;--------------------------
-		;	Mid-Castle Genitours
-		;--------------------------
-
-			(defrule
-			(goal g-current-strategy MIDC-GENITOURS)
-			=>
-			(set-goal g-primary-unit genitour)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDC-GENITOURS)
-			(current-age >= castle-age)
-			=>
-			(set-goal g-desired-num-military 55)
-			(set-goal g-desired-num-genitour 55)
-			)
-
-		;---------------------------------------------
-		;	Sniper Strategy (Fast Imp Gunpowder)
-		;---------------------------------------------
-
-			(defrule
-			(goal g-current-strategy FI-SNIPER)
-			=>
-			(set-goal g-primary-unit hand-cannoneer)
-			)
-
-			(defrule
-			(goal g-current-strategy FI-SNIPER)
-			(up-compare-goal g-age-status >= TO-IMPERIAL)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-hand-cannoneer 54)
-			)
-			
-		;---------------------------------------------
-		;	Farmertron Strategy (Fast Imp Champions)
-		;---------------------------------------------
-
-			(defrule
-			(goal g-current-strategy FI-FARMERTRON)
-			=>
-			(set-goal g-primary-unit militiaman)
-			)
-
-			(defrule
-			(goal g-current-strategy FI-FARMERTRON)
-			(up-compare-goal g-age-status >= TO-IMPERIAL)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-militia 54)
-			)
-
-		;------------------------------------------------------
-		;	AgeOfStoneWalls Strategy (Fast Imp Elite Eagles)
-		;------------------------------------------------------
-
-			(defrule
-			(goal g-current-strategy FI-AGEOFSTONEWALLS)
+			(or
+				(goal g-current-strategy FL-EYRIES)
+				(or
+					(goal g-current-strategy FC-EAGLES-REVENGE)
+					(or
+						(goal g-current-strategy EARLYC-EAGLES)
+						(or
+							(goal g-current-strategy MIDC-EAGLES)
+							(or
+								(goal g-current-strategy FI-AGEOFSTONEWALLS)
+								(or
+									(goal g-current-strategy EARLYI-EL-DORADO)
+									(or
+										(goal g-current-strategy MIDI-EAGLES)
+										(goal g-current-strategy BOOM-EAGLES))))))))
 			=>
 			(set-goal g-primary-unit eagle-warrior)
 			)
-
-			(defrule
-			(goal g-current-strategy FI-AGEOFSTONEWALLS)
-			(up-compare-goal g-age-status >= TO-IMPERIAL)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-eagle-warrior 54)
-			)
-
-		;---------------------------------------------
-		;	Arbinger Strategy (Early Imp Arbalests)
-		;---------------------------------------------
-
-			(defrule
-			(goal g-current-strategy EARLYI-ARBINGER)
-			=>
-			(set-goal g-primary-unit archer)
-			)
-
-			(defrule
-			(goal g-current-strategy EARLYI-ARBINGER)
-			(up-compare-goal g-age-status >= TO-IMPERIAL)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-archer 54)
-			)
-
-		;--------------------------------------------------
-		;	Camelstorm Strategy (Early Imp Heavy Camels)
-		;--------------------------------------------------
-
-			(defrule
-			(goal g-current-strategy EARLYI-CAMELSTORM)
-			=>
-			(set-goal g-primary-unit camel)
-			)
-
-			(defrule
-			(goal g-current-strategy EARLYI-CAMELSTORM)
-			(up-compare-goal g-age-status >= TO-IMPERIAL)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-camel 54)
-			)
-
-		;-------------------------------------------------
-		;	El Dorado Strategy (Early Imp Elite Eagles)
-		;-------------------------------------------------
-
-			(defrule
-			(goal g-current-strategy EARLYI-EL-DORADO)
-			=>
-			(set-goal g-primary-unit eagle-warrior)
-			)
-
-			(defrule
-			(goal g-current-strategy EARLYI-EL-DORADO)
-			(up-compare-goal g-age-status >= TO-IMPERIAL)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-eagle-warrior 54)
-			)
-
-		;-----------------------------------------------------
-		;	Palastorm Strategy (Early Imp Cavalier/Paladin)
-		;-----------------------------------------------------
-
-			(defrule
-			(goal g-current-strategy EARLYI-PALASTORM)
-			=>
-			(set-goal g-primary-unit knight)
-			)
-
-			(defrule
-			(goal g-current-strategy EARLYI-PALASTORM)
-			(up-compare-goal g-age-status >= TO-IMPERIAL)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-knight 54)
-			)
-
-		;-----------------------------------------------
-		;	Champflood Strategy (Early Imp Champions)
-		;-----------------------------------------------
-
-			(defrule
-			(goal g-current-strategy EARLYI-CHAMPFLOOD)
-			=>
-			(set-goal g-primary-unit militiaman)
-			)
-
-			(defrule
-			(goal g-current-strategy EARLYI-CHAMPFLOOD)
-			(up-compare-goal g-age-status >= TO-IMPERIAL)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-militia 54)
-			)
-
-		;---------------------------------------------------
-		;	Circus Stomp Strategy (Early Imp Battle Eles)
-		;---------------------------------------------------
-
-			(defrule
-			(goal g-current-strategy EARLYI-CIRCUS-STOMP)
-			=>
-			(set-goal g-primary-unit battle-elephant)
-			)
-
-			(defrule
-			(goal g-current-strategy EARLYI-CIRCUS-STOMP)
-			(up-compare-goal g-age-status >= TO-IMPERIAL)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-battle-elephant 54)
-			)
-
-		;------------------------------------
-		;	Early Imp Unique Unit Strategy
-		;------------------------------------
-
-			(defrule
-			(goal g-current-strategy EARLYI-UNIQUE)
-			=>
-			(set-goal g-primary-unit my-unique-unit)
-			)
-
-			(defrule
-			(goal g-current-strategy EARLYI-UNIQUE)
-			(up-compare-goal g-age-status >= TO-IMPERIAL)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-unique-unit 54)
-			)
-
-		;-----------------------
-		;	Mid-Imp Arbalests
-		;-----------------------
-
-			#load-if-not-defined TURKISH-CIV
-
-				(defrule
-				(goal g-current-strategy MIDI-ARBS)
-				=>
-				(set-goal g-primary-unit archer)
-				(set-goal g-support-unit spearman)
-				)
-
-				(defrule
-				(goal g-current-strategy MIDI-ARBS)
-				(current-age == imperial-age)
-				=>
-				(set-goal g-desired-num-military 54)
-				(set-goal g-desired-num-archer 39)
-				(set-goal g-desired-num-spearman 15)
-				)
-
-			#else
-
-				(defrule
-				(goal g-current-strategy MIDI-ARBS)
-				=>
-				(set-goal g-primary-unit archer)
-				(set-goal g-support-unit camel)
-				)
-
-				(defrule
-				(goal g-current-strategy MIDI-ARBS)
-				(current-age == imperial-age)
-				=>
-				(set-goal g-desired-num-military 54)
-				(set-goal g-desired-num-archer 39)
-				(set-goal g-desired-num-camel 15)
-				)
-
-			#end-if
-
-		;--------------------------
-		;	Mid-Imp Heavy Camels
-		;--------------------------
-
-			(defrule
-			(goal g-current-strategy MIDI-CAMELS)
-			=>
-			(set-goal g-primary-unit camel)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDI-CAMELS)
-			(current-age == imperial-age)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-camel 54)
-			)
-
-		;-------------------------
-		;	Mid-Imp Battle Eles
-		;-------------------------
-
-			(defrule
-			(goal g-current-strategy MIDI-CIRCUS)
-			=>
-			(set-goal g-primary-unit battle-elephant)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDI-CIRCUS)
-			(current-age == imperial-age)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-battle-elephant 54)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDI-CIRCUS)
-			(current-age == imperial-age)
-			(up-compare-const BOMBARD-CANNON-AVAILABLE == YES)
-			=>
-			(set-goal g-desired-num-bombard-cannon 5)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDI-CIRCUS)
-			(current-age == imperial-age)
-			(up-compare-const BOMBARD-CANNON-AVAILABLE == NO)
-			=>
-			(set-goal g-desired-num-trebuchet 5)
-			)
-
-		;--------------------------
-		;	Mid-Imp Elite Eagles
-		;--------------------------
-
-			(defrule
-			(goal g-current-strategy MIDI-EAGLES)
-			=>
-			(set-goal g-primary-unit eagle-warrior)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDI-EAGLES)
-			(current-age == imperial-age)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-eagle-warrior 54)
-			)
-
-		;----------------------
-		;	Mid-Imp Paladins
-		;----------------------
-
-			(defrule
-			(goal g-current-strategy MIDI-PALADINS)
-			=>
-			(set-goal g-primary-unit knight)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDI-PALADINS)
-			(current-age == imperial-age)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-knight 54)
-			)
-
-		;-----------------------------
-		;	Mid-Imp Hvy Cav Archers
-		;-----------------------------
-
-			(defrule
-			(goal g-current-strategy MIDI-CAV-ARCHERS)
-			=>
-			(set-goal g-primary-unit cavalry-archer)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDI-CAV-ARCHERS)
-			(current-age == imperial-age)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-cavalry-archer 54)
-			)
-
-		;------------------------------------
-		;	Mid-Imp Elite Battle Elephants
-		;------------------------------------
-
-			(defrule
-			(goal g-current-strategy MIDI-CIRCUS)
-			=>
-			(set-goal g-primary-unit battle-elephant)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDI-CIRCUS)
-			(up-compare-goal g-age-status >= TO-IMPERIAL)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-battle-elephant 54)
-			)
-
-		;-----------------------
-		;	Mid-Imp Champions
-		;-----------------------
-
-			(defrule
-			(goal g-current-strategy MIDI-CHAMPIONS)
-			=>
-			(set-goal g-primary-unit militiaman)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDI-CHAMPIONS)
-			(up-compare-goal g-age-status >= TO-IMPERIAL)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-militia 54)
-			)
-			
-		;--------------------------
-		;	Mid-Imp Unique Units
-		;--------------------------
-
-			(defrule
-			(goal g-current-strategy MIDI-UNIQUE)
-			=>
-			(set-goal g-primary-unit my-unique-unit)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDI-UNIQUE)
-			(current-age == imperial-age)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-unique-unit 54)
-			)
-
-		;-------------------------
-		;	Mid-Imp Halberdiers
-		;-------------------------
-
-			(defrule
-			(goal g-current-strategy MIDI-HALBS)
-			=>
-			(set-goal g-primary-unit spearman)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDI-HALBS)
-			(current-age == imperial-age)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-spearman 54)
-			)
-
-		;--------------------
-		;	Mid-Imp Condos
-		;--------------------
 
 			(defrule
 			(goal g-current-strategy MIDI-CONDOS)
@@ -1319,429 +494,907 @@
 			)
 
 			(defrule
-			(goal g-current-strategy MIDI-CONDOS)
-			(current-age == imperial-age)
+			(or
+				(goal g-current-strategy FL-RANGER)
+				(or
+					(goal g-current-strategy FL-GUERILLA)
+					(or
+						(goal g-current-strategy FC-STRONGBOW)
+						(or
+							(goal g-current-strategy EARLYI-ARBINGER)
+							(or
+								(goal g-current-strategy BOOM-XBOWS)
+								(goal g-current-strategy LATEI-TRASHBOWS))))))
 			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-condottiero 54)
+			(set-goal g-primary-unit archer)
 			)
 
-		;--------------------
-		;	Mid-Imp Skirms
-		;--------------------
+			(defrule
+			(or
+				(goal g-current-strategy MIDF-FULL-ARCHERS)
+				(or
+					(goal g-current-strategy MIDF-FULL-RANGED)
+					(or
+						(goal g-current-strategy EARLYC-XBOWS)
+						(or
+							(goal g-current-strategy MIDC-XBOWS)
+							(or
+								(goal g-current-strategy MIDC-RANGED)
+								(goal g-current-strategy MIDI-ARBS))))))
+			=>
+			(set-goal g-primary-unit archer)
+			)
 
 			(defrule
-			(goal g-current-strategy MIDI-SKIRMS)
+			(or
+				(goal g-current-strategy FL-SKIRMMETA)
+				(or
+					(goal g-current-strategy MIDF-FULL-SKIRMS)
+					(or
+						(goal g-current-strategy MIDC-SKIRMS)
+						(or
+							(goal g-current-strategy MIDI-SKIRMS)
+							(goal g-current-strategy LATEI-TRASHKIRMS)))))
 			=>
 			(set-goal g-primary-unit skirmisher)
 			)
 
 			(defrule
-			(goal g-current-strategy MIDI-SKIRMS)
-			(current-age == imperial-age)
+			(or
+				(goal g-current-strategy MIDC-CAV-ARCHERS)
+				(or
+					(goal g-current-strategy EARLYI-HORDE)
+					(goal g-current-strategy MIDI-CAV-ARCHERS)))
 			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-skirmisher 54)
+			(set-goal g-primary-unit cavalry-archer)
 			)
 
-		;------------------------
-		;	Mid-Imp Cannoneers
-		;------------------------
-
 			(defrule
-			(goal g-current-strategy MIDI-CANNONEERS)
+			(or
+				(goal g-current-strategy FI-SNIPER)
+				(goal g-current-strategy MIDI-CANNONEERS))
 			=>
 			(set-goal g-primary-unit hand-cannoneer)
 			)
 
 			(defrule
-			(goal g-current-strategy MIDI-CANNONEERS)
-			(current-age == imperial-age)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-hand-cannoneer 54)
-			)
-
-		;----------------------
-		;	Mid-Imp Slingers
-		;----------------------
-
-			(defrule
-			(goal g-current-strategy MIDI-SLINGERS)
+			(or
+				(goal g-current-strategy MIDC-SLINGERS)
+				(goal g-current-strategy MIDI-SLINGERS))
 			=>
 			(set-goal g-primary-unit slinger)
 			)
 
 			(defrule
-			(goal g-current-strategy MIDI-SLINGERS)
-			(current-age == imperial-age)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-slinger 54)
-			)
-
-		;-----------------------
-		;	Mid-Imp Genitours
-		;-----------------------
-
-			(defrule
-			(goal g-current-strategy MIDI-GENITOURS)
+			(or
+				(goal g-current-strategy MIDC-GENITOURS)
+				(or
+					(goal g-current-strategy MIDI-GENITOURS)
+					(goal g-current-strategy LATEI-TRASHGENS)))
 			=>
 			(set-goal g-primary-unit genitour)
 			)
 
 			(defrule
-			(goal g-current-strategy MIDI-GENITOURS)
-			(current-age == imperial-age)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-genitour 54)
-			)
-
-		;---------------------
-		;	Mid-Imp Hussars
-		;---------------------
-
-			(defrule
-			(goal g-current-strategy MIDI-HUSSARS)
+			(or
+				(goal g-current-strategy FL-VULTURE)
+				(or
+					(goal g-current-strategy MIDF-FULL-SCOUTS)
+					(or
+						(goal g-current-strategy MIDF-SCOUT-SKIRM)
+						(or
+							(goal g-current-strategy MIDC-LIGHT)
+							(or
+								(goal g-current-strategy MIDI-HUSSARS)
+								(or
+									(goal g-current-strategy LATEI-TRASHUSSARS)
+									(goal g-current-strategy LATEI-HUSSAR)))))))
 			=>
 			(set-goal g-primary-unit scout-cavalry)
 			)
 
 			(defrule
-			(goal g-current-strategy MIDI-HUSSARS)
-			(current-age == imperial-age)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-scout-cavalry 54)
-			)
-
-		;---------------------
-		;	Mid-Imp Lancers
-		;---------------------
-
-			(defrule
-			(goal g-current-strategy MIDI-LANCERS)
-			=>
-			(set-goal g-primary-unit steppe-lancer)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDI-LANCERS)
-			(current-age == imperial-age)
-			=>
-			(set-goal g-desired-num-military 54)
-			(set-goal g-desired-num-steppe-lancer 54)
-			)
-
-		;-------------------
-		;	Mid-Imp Monks
-		;-------------------
-
-			(defrule
-			(goal g-current-strategy MIDI-MONKS)
-			=>
-			(set-goal g-primary-unit monk)
-			)
-
-			(defrule
-			(goal g-current-strategy MIDI-MONKS)
-			(current-age == imperial-age)
-			=>
-			(set-goal g-desired-num-military 25)
-			(set-goal g-desired-num-monk 54)
-			)
-
-		;------------------
-		;	Boom Knights
-		;------------------
-
-			(defrule
-			(goal g-current-strategy BOOM-KNIGHTS)
+			(or
+				(goal g-current-strategy FC-KRUSH)
+				(or
+					(goal g-current-strategy EARLYC-KNIGHTS)
+					(or
+						(goal g-current-strategy MIDC-KNIGHTS)
+						(or
+							(goal g-current-strategy EARLYI-PALASTORM)
+							(or
+								(goal g-current-strategy MIDI-PALADINS)
+								(goal g-current-strategy BOOM-KNIGHTS))))))
 			=>
 			(set-goal g-primary-unit knight)
 			)
 
 			(defrule
-			(goal g-current-strategy BOOM-KNIGHTS)
-			(up-compare-goal g-age-status >= TO-FEUDAL)
-			=>
-			(set-goal g-desired-num-military 30)
-			(set-goal g-desired-num-knight 30)
-			)
-
-		;-----------------
-		;	Boom Camels
-		;-----------------
-
-			(defrule
-			(goal g-current-strategy BOOM-CAMELS)
+			(or
+				(goal g-current-strategy FC-CRUSH)
+				(or
+					(goal g-current-strategy EARLYC-CAMELS)
+					(or
+						(goal g-current-strategy MIDC-CAMELS)
+						(or
+							(goal g-current-strategy EARLYI-CAMELSTORM)
+							(or
+								(goal g-current-strategy MIDI-CAMELS)
+								(goal g-current-strategy BOOM-CAMELS))))))
 			=>
 			(set-goal g-primary-unit camel)
 			)
 
 			(defrule
-			(goal g-current-strategy BOOM-CAMELS)
+			(or
+				(goal g-current-strategy MIDC-CIRCUS)
+				(or
+					(goal g-current-strategy EARLYI-CIRCUS-STOMP)
+					(goal g-current-strategy MIDI-CIRCUS)))
+			=>
+			(set-goal g-primary-unit battle-elephant)
+			)
+
+			(defrule
+			(or
+				(goal g-current-strategy MIDC-LANCERS)
+				(goal g-current-strategy MIDI-LANCERS))
+			=>
+			(set-goal g-primary-unit steppe-lancer)
+			)
+
+			(defrule
+			(or
+				(goal g-current-strategy FC-CASTLE-DROP)
+				(or
+					(goal g-current-strategy MIDC-UNIQUE)
+					(or
+						(goal g-current-strategy EARLYI-UNIQUE)
+						(or
+							(goal g-current-strategy MIDI-UNIQUE)
+							(goal g-current-strategy LATEI-UNIQUE)))))
+			=>
+			(set-goal g-primary-unit my-unique-unit)
+			)
+
+			(defrule
+			(or
+				(goal g-current-strategy FC-DEMON)
+				(or
+					(goal g-current-strategy MIDC-MONKS)
+					(goal g-current-strategy MIDI-MONKS)))
+			=>
+			(set-goal g-primary-unit monk)
+			)
+
+		;--------------------------
+		;	Desired Military Pop
+		;--------------------------
+
+			(defrule
+			(goal g-age-status SAVE-FOR-CASTLE)
+			(goal g-strategy-type FAST-CASTLE)
+			(goal g-town-under-attack NO)
+			=>
+			(set-goal g-desired-num-military 5)
+			)
+			
+			(defrule
+			(current-age == feudal-age)
+			(up-compare-goal g-age-status >= SAVE-FOR-CASTLE)
+			(goal g-strategy-type FAST-CASTLE)
+			(or
+				(goal g-town-under-attack YES)
+				(goal g-age-status TO-CASTLE))
+			=>
+			(set-goal g-desired-num-military 30)
+			)
+
+			(defrule
+			(goal g-age-status EARLY-CASTLE)
+			(up-compare-goal g-primary-unit-class != monastery-class)
+			=>
+			(set-goal g-desired-num-military 60)
+			)
+
+			(defrule
+			(current-age == castle-age)
+			(or
+				(goal g-age-status MID-CASTLE)
+				(goal g-age-status SAVE-FOR-IMPERIAL))
+			(up-compare-goal g-primary-unit-class != monastery-class)
+			=>
+			(set-goal g-desired-num-military 55)
+			)
+
+			(defrule
+			(up-compare-goal g-age-status >= TO-IMPERIAL)
+			(up-compare-goal g-primary-unit-class != monastery-class)
+			=>
+			(set-goal g-desired-num-military 54)
+			)
+
+			(defrule
+			(current-age >= castle-age)
+			(goal g-primary-unit-class monastery-class)
+			=>
+			(set-goal g-desired-num-military 30)
+			)
+
+		;-------------
+		;	Militia
+		;-------------
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit militiaman)
+			(or
+				(up-compare-goal g-age-status >= TO-FEUDAL)
+				(goal g-strategy-type DRUSH))
+			(up-compare-goal g-current-strategy != LATEI-CHAMPIONS)
+			=>
+			(up-modify-goal g-desired-num-militia g:= g-desired-num-military)
+			)
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-current-strategy LATEI-CHAMPIONS)
+			(or
+				(civ-selected burmese)
+				(or
+					(civ-selected malian)
+					(civ-selected mongol)))
+			=>
+			(up-modify-goal g-desired-num-militia g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-militia c:%* 65)
+			(set-goal g-support-unit scout-cavalry)
+			(up-modify-goal g-desired-num-scout-cavalry g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-scout-cavalry c:%* 35)
+			(up-jump-rule 3)
+			)
+
+				(defrule
+				(up-compare-goal g-desired-num-military > 0)
+				(goal g-current-strategy LATEI-CHAMPIONS)
+				(or
+					(civ-selected persian)
+					(or
+						(civ-selected tatars)
+						(civ-selected turkish)))
+				=>
+				(up-modify-goal g-desired-num-militia g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-militia c:%* 65)
+				(set-goal g-support-unit scout-cavalry)
+				(up-modify-goal g-desired-num-scout-cavalry g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-scout-cavalry c:%* 35)
+				(up-jump-rule 2)
+				)
+
+				(defrule
+				(up-compare-goal g-desired-num-military > 0)
+				(goal g-current-strategy LATEI-CHAMPIONS)
+				(or
+					(civ-selected celtic)
+					(or
+						(civ-selected frankish)
+						(or
+							(civ-selected gothic)
+							(civ-selected slavic))))
+				=>
+				(up-modify-goal g-desired-num-militia g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-militia c:%* 65)
+				(set-goal g-support-unit spearman)
+				(up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-spearman c:%* 35)
+				(up-jump-rule 1)
+				)
+
+				(defrule
+				(up-compare-goal g-desired-num-military > 0)
+				(goal g-current-strategy LATEI-CHAMPIONS)
+				=>
+				(up-modify-goal g-desired-num-militia g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-militia c:%* 65)
+				(set-goal g-support-unit skirmisher)
+				(up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-skirmisher c:%* 35)
+				)
+
+		;--------------
+		;	Spearmen
+		;--------------
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit spearman)
+			(up-compare-goal g-age-status >= TO-FEUDAL)
+			(up-compare-goal g-current-strategy != LATEI-TRASHALBS)
+			=>
+			(up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
+			)
+
+			#load-if-not-defined BULGARIANS-CIV
+			#load-if-not-defined BURGUNDIANS-CIV
+			#load-if-not-defined BURMESE-CIV
+			#load-if-not-defined CUMANS-CIV
+			#load-if-not-defined FRANKISH-CIV
+			#load-if-not-defined HUN-CIV
+			#load-if-not-defined MALIAN-CIV
+			#load-if-not-defined MONGOL-CIV
+			#load-if-not-defined PERSIAN-CIV
+			#load-if-not-defined SLAVIC-CIV
+			#load-if-not-defined TATARS-CIV
+			#load-if-not-defined TURKISH-CIV
+
+				(defrule
+				(up-compare-goal g-desired-num-military > 0)
+				(goal g-current-strategy LATEI-TRASHALBS)
+				=>
+				(up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-spearman c:%* 65)
+				(set-goal g-support-unit skirmisher)
+				(up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-skirmisher c:%* 35)
+				)
+
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-current-strategy LATEI-TRASHALBS)
+			(up-compare-goal g-support-unit != skirmisher)
+			=>
+			(up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-spearman c:%* 65)
+			(set-goal g-support-unit scout-cavalry)
+			(up-modify-goal g-desired-num-scout-cavalry g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-scout-cavalry c:%* 35)
+			)
+
+		;--------------------
+		;	Eagle Warriors
+		;--------------------
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit eagle-warrior)
+			(up-compare-goal g-age-status >= SAVE-FOR-CASTLE)
+			(or
+				(goal g-town-under-attack YES)
+				(up-compare-goal g-age-status >= TO-CASTLE))
+			=>
+			(up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+			)
+
+		;-----------------
+		;	Condottieri
+		;-----------------
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit condottiero)
 			(up-compare-goal g-age-status >= TO-FEUDAL)
 			=>
-			(set-goal g-desired-num-military 30)
-			(set-goal g-desired-num-camel 30)
+			(up-modify-goal g-desired-num-condottiero g:= g-desired-num-military)
 			)
 
-		;----------------
-		;	Boom Xbows
-		;----------------
+		;-------------
+		;	Archers
+		;-------------
 
 			(defrule
-			(goal g-current-strategy BOOM-XBOWS)
+			(or
+				(goal g-current-strategy FL-GUERILLA)
+				(or
+					(goal g-current-strategy MIDF-FULL-RANGED)
+					(goal g-current-strategy MIDC-RANGED)))
 			=>
-			(set-goal g-primary-unit archer)
-			)
-
-			(defrule
-			(goal g-current-strategy BOOM-XBOWS)
-			(up-compare-goal g-age-status >= TO-CASTLE)
-			=>
-			(set-goal g-desired-num-military 30)
-			(set-goal g-desired-num-archer 30)
-			)
-
-		;-----------------
-		;	Boom Eagles
-		;-----------------
-
-			(defrule
-			(goal g-current-strategy BOOM-EAGLES)
-			=>
-			(set-goal g-primary-unit eagle-warrior)
+			(up-modify-goal g-desired-num-archer g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-archer c:%* 60)
+			(set-goal g-support-unit skirmisher)
+			(up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-skirmisher c:%* 40)
 			)
 
 			(defrule
-			(goal g-current-strategy BOOM-EAGLES)
-			(up-compare-goal g-age-status >= TO-CASTLE)
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit archer)
+			(up-compare-goal g-current-strategy != FL-GUERILLA)
+			(up-compare-goal g-current-strategy != MIDF-FULL-RANGED)
+			(current-age == feudal-age)
+			(up-compare-goal g-age-status < SAVE-FOR-CASTLE)
 			=>
-			(set-goal g-desired-num-military 30)
-			(set-goal g-desired-num-eagle-warrior 30)
-			(set-goal g-desired-num-monk 2)
-			)
-
-		;-------------------
-		;	Boom Imperial
-		;-------------------
-
-			(defrule
-			(goal g-current-strategy BOOM-IMPERIAL)
-			=>
-			(set-goal g-primary-unit spearman)
+			(up-modify-goal g-desired-num-archer g:= g-desired-num-military)
 			)
 
 			(defrule
-			(goal g-current-strategy BOOM-IMPERIAL)
-			(up-compare-goal g-age-status >= TO-CASTLE)
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit archer)
+			(up-compare-goal g-current-strategy != FL-GUERILLA)
+			(up-compare-goal g-current-strategy != MIDF-FULL-RANGED)
+			(up-compare-goal g-current-strategy != MIDC-RANGED)
+			(up-compare-goal g-age-status >= SAVE-FOR-CASTLE)
+			(up-compare-goal g-age-status < MID-CASTLE)
+			(or
+				(goal g-town-under-attack YES)
+				(up-compare-goal g-age-status >= TO-CASTLE))
 			=>
-			(set-goal g-desired-num-military 10)
-			(set-goal g-desired-num-spearman 10)
-			(set-goal g-desired-num-monk 2)
+			(up-modify-goal g-desired-num-archer g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-archer c:%* 85)
+			(up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-skirmisher c:%* 15)
 			)
 
-		;---------------
-		;	Late Game
-		;---------------
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit archer)
+			(up-compare-goal g-current-strategy != MIDC-RANGED)
+			(current-age == castle-age)
+			(up-compare-goal g-age-status >= MID-CASTLE)
+			(up-compare-const KNIGHT-AVAILABLE == YES)
+			=>
+			(up-modify-goal g-desired-num-archer g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-archer c:%* 90)
+			(up-modify-goal g-desired-num-knight g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-knight c:%* 10)
+			)
 
-			#load-if-defined TURKISH-CIV
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit archer)
+			(up-compare-goal g-current-strategy != MIDC-RANGED)
+			(current-age == castle-age)
+			(up-compare-goal g-age-status >= MID-CASTLE)
+			(up-compare-const EAGLE-WARRIOR-AVAILABLE == YES)
+			=>
+			(up-modify-goal g-desired-num-archer g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-archer c:%* 90)
+			(up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-eagle-warrior c:%* 10)
+			)
 
-				(defrule
-				(goal g-current-strategy LATEI-CHAMPIONS)
-				=>
-				(set-goal g-primary-unit militiaman)
-				(set-goal g-support-unit scout-cavalry)
-				)
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit archer)
+			(up-compare-goal g-current-strategy != MIDC-RANGED)
+			(current-age == castle-age)
+			(up-compare-goal g-age-status >= MID-CASTLE)
+			(up-compare-const KNIGHT-AVAILABLE == NO)
+			(up-compare-const CAMEL-AVAILABLE == YES)
+			=>
+			(up-modify-goal g-desired-num-archer g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-archer c:%* 90)
+			(up-modify-goal g-desired-num-camel g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-camel c:%* 10)
+			)
 
-				(defrule
-				(goal g-current-strategy LATEI-CHAMPIONS)
-				(current-age == imperial-age)
-				=>
-				(set-goal g-desired-num-military 57)
-				(set-goal g-desired-num-militia 35)
-				(set-goal g-desired-num-scout-cavalry 22)
-				)
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit archer)
+			(up-compare-goal g-current-strategy != MIDI-ARBS)
+			(up-compare-goal g-current-strategy != LATEI-TRASHBOWS)
+			(current-age == imperial-age)
+			=>
+			(up-modify-goal g-desired-num-archer g:= g-desired-num-military)
+			)
 
-				(defrule
-				(goal g-current-strategy LATEI-TRASH)
-				=>
-				(set-goal g-primary-unit scout-cavalry)
-				(set-goal g-support-unit spearman)
-				)
-
-				(defrule
-				(goal g-current-strategy LATEI-TRASH)
-				(current-age == imperial-age)
-				=>
-				(set-goal g-desired-num-military 57)
-				(set-goal g-desired-num-scout-cavalry 37)
-				(set-goal g-desired-num-spearman 20)
-				)
-				
-				(defrule
-				(goal g-current-strategy LATEI-UNIQUE)
-				=>
-				(set-goal g-primary-unit my-unique-unit)
-				(set-goal g-support-unit scout-cavalry)
-				)
-
-				(defrule
-				(goal g-current-strategy LATEI-UNIQUE)
-				(current-age == imperial-age)
-				=>
-				(set-goal g-desired-num-military 57)
-				(set-goal g-desired-num-unique-unit 35)
-				(set-goal g-desired-num-scout-cavalry 22)
-				)
-
-			#end-if
-
-			#load-if-defined BURMESE-CIV
-
-				(defrule
-				(goal g-current-strategy LATEI-CHAMPIONS)
-				=>
-				(set-goal g-primary-unit militiaman)
-				(set-goal g-support-unit spearman)
-				)
-
-				(defrule
-				(goal g-current-strategy LATEI-CHAMPIONS)
-				(current-age == imperial-age)
-				=>
-				(set-goal g-desired-num-military 57)
-				(set-goal g-desired-num-militia 35)
-				(set-goal g-desired-num-spearman 22)
-				)
-
-				(defrule
-				(goal g-current-strategy LATEI-TRASH)
-				=>
-				(set-goal g-primary-unit spearman)
-				(set-goal g-support-unit scout-cavalry)
-				)
-
-				(defrule
-				(goal g-current-strategy LATEI-TRASH)
-				(current-age == imperial-age)
-				=>
-				(set-goal g-desired-num-military 57)
-				(set-goal g-desired-num-spearman 37)
-				(set-goal g-desired-num-scout-cavalry 20)
-				)
-				
-				(defrule
-				(goal g-current-strategy LATEI-UNIQUE)
-				=>
-				(set-goal g-primary-unit my-unique-unit)
-				(set-goal g-support-unit scout-cavalry)
-				)
-
-				(defrule
-				(goal g-current-strategy LATEI-UNIQUE)
-				(current-age == imperial-age)
-				=>
-				(set-goal g-desired-num-military 57)
-				(set-goal g-desired-num-unique-unit 35)
-				(set-goal g-desired-num-scout-cavalry 22)
-				)
-
-			#end-if
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-current-strategy LATEI-TRASHBOWS)
+			=>
+			(up-modify-goal g-desired-num-archer g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-archer c:%* 70)
+			(set-goal g-support-unit skirmisher)
+			(up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-skirmisher c:%* 30)
+			)
 
 			#load-if-not-defined TURKISH-CIV
-			#load-if-not-defined BURMESE-CIV
 
 				(defrule
-				(goal g-current-strategy LATEI-CHAMPIONS)
-				=>
-				(set-goal g-primary-unit militiaman)
-				(set-goal g-support-unit skirmisher)
-				)
-
-				(defrule
-				(goal g-current-strategy LATEI-CHAMPIONS)
+				(goal g-current-strategy MIDI-ARBS)
 				(current-age == imperial-age)
 				=>
-				(set-goal g-desired-num-military 57)
-				(set-goal g-desired-num-militia 35)
-				(set-goal g-desired-num-skirmisher 22)
-				)
-
-				(defrule
-				(goal g-current-strategy LATEI-TRASH)
-				=>
-				(set-goal g-primary-unit skirmisher)
 				(set-goal g-support-unit spearman)
+				(up-modify-goal g-desired-num-archer g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-archer c:%* 70)
+				(up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-spearman c:%* 30)
+				)
+
+			#else
+
+				(defrule
+				(goal g-current-strategy MIDI-ARBS)
+				(current-age == imperial-age)
+				=>
+				(up-modify-goal g-desired-num-archer g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-archer c:%* 75)
+				(set-goal g-support-unit camel)
+				(up-modify-goal g-desired-num-camel g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-camel c:%* 25)
+				)
+
+			#end-if
+
+		;-----------------
+		;	Skirmishers
+		;-----------------
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit skirmisher)
+			(up-compare-goal g-age-status >= TO-FEUDAL)
+			=>
+			(up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
+			)
+
+			#load-if-not-defined BERBERS-CIV
+			#load-if-not-defined BULGARIANS-CIV
+			#load-if-not-defined BURGUNDIANS-CIV
+			#load-if-not-defined BURMESE-CIV
+			#load-if-not-defined CUMANS-CIV
+			#load-if-not-defined HUN-CIV
+			#load-if-not-defined INDIAN-CIV
+			#load-if-not-defined MALIAN-CIV
+			#load-if-not-defined MONGOL-CIV
+			#load-if-not-defined PERSIAN-CIV
+			#load-if-not-defined SARACEN-CIV
+			#load-if-not-defined TATARS-CIV
+			#load-if-not-defined TURKISH-CIV
+
+				(defrule
+				(up-compare-goal g-desired-num-military > 0)
+				(goal g-current-strategy LATEI-TRASHKIRMS)
+				=>
+				(up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-skirmisher c:%* 65)
+				(set-goal g-support-unit spearman)
+				(up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-spearman c:%* 35)
+				)
+
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+			#end-if
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-current-strategy LATEI-TRASHKIRMS)
+			(up-compare-goal g-support-unit != spearman)
+			=>
+			(up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-skirmisher c:%* 65)
+			(set-goal g-support-unit scout-cavalry)
+			(up-modify-goal g-desired-num-scout-cavalry g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-scout-cavalry c:%* 35)
+			)
+
+		;---------------------
+		;	Cavalry Archers
+		;---------------------
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit cavalry-archer)
+			(up-compare-goal g-age-status >= TO-FEUDAL)
+			=>
+			(up-modify-goal g-desired-num-cavalry-archer g:= g-desired-num-military)
+			)
+
+		;---------------------
+		;	Hand Cannoneers
+		;---------------------
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit hand-cannoneer)
+			(up-compare-goal g-age-status >= TO-FEUDAL)
+			=>
+			(up-modify-goal g-desired-num-hand-cannoneer g:= g-desired-num-military)
+			)
+
+		;--------------
+		;	Slingers
+		;--------------
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit slinger)
+			(up-compare-goal g-age-status >= TO-FEUDAL)
+			=>
+			(up-modify-goal g-desired-num-slinger g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-slinger c:%* 90)
+			(up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-eagle-warrior c:%* 10)
+			)
+
+		;---------------
+		;	Genitours
+		;---------------
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit genitour)
+			(up-compare-goal g-age-status >= TO-FEUDAL)
+			=>
+			(up-modify-goal g-desired-num-genitour g:= g-desired-num-military)
+			)
+
+		;------------
+		;	Scouts
+		;------------
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit scout-cavalry)
+			(up-compare-goal g-age-status >= TO-FEUDAL)
+			(up-compare-goal g-current-strategy != LATEI-TRASHUSSARS)
+			=>
+			(up-modify-goal g-desired-num-scout-cavalry g:= g-desired-num-military)
+			)
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-current-strategy LATEI-TRASHUSSARS)
+			(or
+				(civ-selected burmese)
+				(or
+					(civ-selected celtic)
+					(civ-selected frankish)))
+			=>
+			(set-goal g-support-unit spearman)
+			(up-modify-goal g-desired-num-scout-cavalry g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-scout-cavalry c:%* 65)
+			(up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-spearman c:%* 35)
+			(up-jump-rule 4)
+			)
+
+				(defrule
+				(up-compare-goal g-desired-num-military > 0)
+				(goal g-current-strategy LATEI-TRASHUSSARS)
+				(or
+					(civ-selected gothic)
+					(or
+						(civ-selected slavic)
+						(civ-selected teutonic)))
+				=>
+				(set-goal g-support-unit spearman)
+				(up-modify-goal g-desired-num-scout-cavalry g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-scout-cavalry c:%* 65)
+				(up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-spearman c:%* 35)
+				(up-jump-rule 3)
 				)
 
 				(defrule
-				(goal g-current-strategy LATEI-TRASH)
-				(current-age == imperial-age)
+				(up-compare-goal g-desired-num-military > 0)
+				(goal g-current-strategy LATEI-TRASHUSSARS)
+				(civ-selected berbers)
 				=>
-				(set-goal g-desired-num-military 57)
-				(set-goal g-desired-num-skirmisher 35)
-				(set-goal g-desired-num-spearman 22)
+				(set-goal g-support-unit genitour)
+				(up-modify-goal g-desired-num-scout-cavalry g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-scout-cavalry c:%* 65)
+				(up-modify-goal g-desired-num-genitour g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-genitour c:%* 35)
+				(up-jump-rule 2)
 				)
-				
+
 				(defrule
-				(goal g-current-strategy LATEI-UNIQUE)
+				(up-compare-goal g-desired-num-military > 0)
+				(goal g-current-strategy LATEI-TRASHUSSARS)
+				(civ-selected persian)
 				=>
-				(set-goal g-primary-unit my-unique-unit)
+				(set-goal g-support-unit archer)
+				(up-modify-goal g-desired-num-scout-cavalry g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-scout-cavalry c:%* 65)
+				(up-modify-goal g-desired-num-archer g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-archer c:%* 35)
+				(up-jump-rule 1)
+				)
+
+				(defrule
+				(up-compare-goal g-desired-num-military > 0)
+				(goal g-current-strategy LATEI-TRASHUSSARS)
+				=>
 				(set-goal g-support-unit skirmisher)
+				(up-modify-goal g-desired-num-scout-cavalry g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-scout-cavalry c:%* 65)
+				(up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-skirmisher c:%* 35)
+				)
+
+		;-------------
+		;	Knights
+		;-------------
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit knight)
+			(up-compare-goal g-age-status >= TO-FEUDAL)
+			=>
+			(up-modify-goal g-desired-num-knight g:= g-desired-num-military)
+			)
+
+		;------------
+		;	Camels
+		;------------
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit camel)
+			(up-compare-goal g-age-status >= TO-FEUDAL)
+			=>
+			(up-modify-goal g-desired-num-camel g:= g-desired-num-military)
+			)
+
+		;-----------------
+		;	Battle Eles
+		;-----------------
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit battle-elephant)
+			(up-compare-goal g-age-status >= TO-FEUDAL)
+			=>
+			(up-modify-goal g-desired-num-battle-elephant g:= g-desired-num-military)
+			)
+
+		;--------------------
+		;	Steppe Lancers
+		;--------------------
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit steppe-lancer)
+			(up-compare-goal g-age-status >= TO-FEUDAL)
+			=>
+			(up-modify-goal g-desired-num-steppe-lancer g:= g-desired-num-military)
+			)
+
+		;------------------
+		;	Unique Units
+		;------------------
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit my-unique-unit)
+			(up-compare-goal g-age-status >= TO-FEUDAL)
+			(up-compare-goal g-current-strategy != LATEI-UNIQUE)
+			=>
+			(up-modify-goal g-desired-num-unique-unit g:= g-desired-num-military)
+			)
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-current-strategy LATEI-UNIQUE)
+			(or
+				(civ-selected berbers)
+				(or
+					(civ-selected burmese)
+					(civ-selected cumans)))
+			=>
+			(up-modify-goal g-desired-num-unique-unit g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-unique-unit c:%* 65)
+			(set-goal g-support-unit scout-cavalry)
+			(up-modify-goal g-desired-num-scout-cavalry g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-scout-cavalry c:%* 35)
+			(up-jump-rule 5)
+			)
+
+				(defrule
+				(up-compare-goal g-desired-num-military > 0)
+				(goal g-current-strategy LATEI-UNIQUE)
+				(or
+					(civ-selected mongol)
+					(or
+						(civ-selected tatars)
+						(civ-selected turkish)))
+				=>
+				(up-modify-goal g-desired-num-unique-unit g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-unique-unit c:%* 65)
+				(set-goal g-support-unit scout-cavalry)
+				(up-modify-goal g-desired-num-scout-cavalry g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-scout-cavalry c:%* 35)
+				(up-jump-rule 4)
 				)
 
 				(defrule
+				(up-compare-goal g-desired-num-military > 0)
 				(goal g-current-strategy LATEI-UNIQUE)
-				(current-age == imperial-age)
+				(or
+					(civ-selected briton)
+					(or
+						(civ-selected celtic)
+						(or
+							(civ-selected chinese)
+							(civ-selected frankish))))
 				=>
-				(set-goal g-desired-num-military 57)
-				(set-goal g-desired-num-unique-unit 35)
-				(set-goal g-desired-num-skirmisher 22)
+				(up-modify-goal g-desired-num-unique-unit g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-unique-unit c:%* 65)
+				(set-goal g-support-unit spearman)
+				(up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-spearman c:%* 35)
+				(up-jump-rule 3)
 				)
 
-			#end-if
-			#end-if
+				(defrule
+				(up-compare-goal g-desired-num-military > 0)
+				(goal g-current-strategy LATEI-UNIQUE)
+				(or
+					(civ-selected gothic)
+					(or
+						(civ-selected korean)
+						(or
+							(civ-selected mayan)
+							(civ-selected portuguese))))
+				=>
+				(up-modify-goal g-desired-num-unique-unit g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-unique-unit c:%* 65)
+				(set-goal g-support-unit spearman)
+				(up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-spearman c:%* 35)
+				(up-jump-rule 2)
+				)
 
-		;-----------------------------
-		;	Late Game Persian Xbows
-		;-----------------------------
+				(defrule
+				(up-compare-goal g-desired-num-military > 0)
+				(goal g-current-strategy LATEI-UNIQUE)
+				(or
+					(civ-selected slavic)
+					(civ-selected vietnamese))
+				=>
+				(up-modify-goal g-desired-num-unique-unit g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-unique-unit c:%* 65)
+				(set-goal g-support-unit spearman)
+				(up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-spearman c:%* 35)
+				(up-jump-rule 1)
+				)
+
+				(defrule
+				(up-compare-goal g-desired-num-military > 0)
+				(goal g-current-strategy LATEI-UNIQUE)
+				=>
+				(up-modify-goal g-desired-num-unique-unit g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-unique-unit c:%* 65)
+				(set-goal g-support-unit skirmisher)
+				(up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
+				(up-modify-goal g-desired-num-skirmisher c:%* 35)
+				)
+
+		;-----------
+		;	Monks
+		;-----------
 
 			(defrule
-			(goal g-current-strategy LATEI-TRASHBOWS)
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit monk)
+			(up-compare-goal g-age-status >= TO-FEUDAL)
 			=>
-			(set-goal g-primary-unit archer)
-			(set-goal g-support-unit skirmisher)
-			)
-
-			(defrule
-			(goal g-current-strategy LATEI-TRASHBOWS)
-			(current-age == imperial-age)
-			=>
-			(set-goal g-desired-num-military 57)
-			(set-goal g-desired-num-archer 38)
-			(set-goal g-desired-num-skirmisher 19)
-			)	
-
-		;---------------------------
-		;	Late Game Hussar Army
-		;---------------------------
-
-			(defrule
-			(goal g-current-strategy LATEI-HUSSAR)
-			=>
-			(set-goal g-primary-unit scout-cavalry)
-			)
-
-			(defrule
-			(goal g-current-strategy LATEI-HUSSAR)
-			(current-age == imperial-age)
-			=>
-			(set-goal g-desired-num-military 57)
-			(set-goal g-desired-num-scout-cavalry 57)
+			(set-goal g-desired-num-monk 25)
 			)
 
 	;----------------
@@ -2606,7 +2259,7 @@
 					(defrule
 					(current-age <= feudal-age)
 					(up-compare-goal g-primary-unit != spearman)
-					(goal g-support-unit PENDING)
+					(goal g-support-unit 0)
 					(goal g-position FLANK)
 					(or
 						(up-compare-goal g-enemy-light-cavalry-count >= 4)
@@ -2626,7 +2279,7 @@
 					(current-age <= feudal-age)
 					(up-compare-goal g-primary-unit != skirmisher)
 					(up-compare-goal g-primary-unit != eagle-warrior)
-					(goal g-support-unit PENDING)
+					(goal g-support-unit 0)
 					(goal g-position FLANK)
 					(or
 						(up-compare-goal g-enemy-foot-archers-count >= 2)
@@ -2642,7 +2295,7 @@
 					(defrule
 					(current-age <= feudal-age)
 					(up-compare-goal g-primary-unit != skirmisher)
-					(goal g-support-unit PENDING)
+					(goal g-support-unit 0)
 					(goal g-position FLANK)
 					(up-compare-goal g-enemy-skirmishers-count >= 3)
 					(up-compare-goal g-primary-enemy-threat != g-enemy-light-cavalry-count)
@@ -2660,7 +2313,7 @@
 					(current-age <= feudal-age)
 					(up-compare-const SCOUT-CAVALRY-AVAILABLE == YES)
 					(up-compare-goal g-primary-unit != scout-cavalry)
-					(goal g-support-unit PENDING)
+					(goal g-support-unit 0)
 					(goal g-position FLANK)
 					(or
 						(up-compare-goal g-enemy-skirmishers-count >= 4)
@@ -2677,7 +2330,7 @@
 					(current-age <= feudal-age)
 					(up-compare-const SCOUT-CAVALRY-AVAILABLE == YES)
 					(up-compare-goal g-primary-unit != scout-cavalry)
-					(goal g-support-unit PENDING)
+					(goal g-support-unit 0)
 					(goal g-position FLANK)
 					(or
 						(up-compare-goal g-enemy-skirmishers-count >= 4)
@@ -2694,7 +2347,7 @@
 					(current-age <= feudal-age)
 					(up-compare-goal g-primary-unit != skirmisher)
 					(up-compare-goal g-primary-unit != eagle-warrior)
-					(goal g-support-unit PENDING)
+					(goal g-support-unit 0)
 					(goal g-position FLANK)
 					(up-compare-goal g-enemy-skirmishers-count >= 3)
 					(up-compare-goal g-primary-enemy-threat != g-enemy-swordsmen-count)
@@ -2708,7 +2361,7 @@
 					(defrule
 					(current-age <= feudal-age)
 					(up-compare-goal g-primary-unit != militiaman)
-					(goal g-support-unit PENDING)
+					(goal g-support-unit 0)
 					(goal g-position FLANK)
 					(up-compare-goal g-enemy-eagle-warrior-count >= 2)
 					(up-compare-goal g-primary-enemy-threat != g-enemy-foot-archers-count)
@@ -2731,7 +2384,7 @@
 							(goal g-primary-unit knight)
 							(goal g-primary-unit steppe-lancer)))
 					(up-compare-const CAMEL-AVAILABLE == YES)
-					(goal g-support-unit PENDING)
+					(goal g-support-unit 0)
 					(goal g-position FLANK)
 					(or
 						(up-compare-goal g-enemy-light-cavalry-count > 3)
@@ -2751,7 +2404,7 @@
 							(goal g-primary-unit knight)
 							(goal g-primary-unit steppe-lancer)))
 					(up-compare-const CAMEL-AVAILABLE == YES)
-					(goal g-support-unit PENDING)
+					(goal g-support-unit 0)
 					(goal g-position FLANK)
 					(or
 						(up-compare-goal g-enemy-camel-count >= 3)
@@ -2769,7 +2422,7 @@
 					(up-compare-goal g-primary-unit != spearman)
 					(up-compare-goal g-primary-unit != camel)
 					(up-compare-const PIKEMAN-AVAILABLE == YES)
-					(goal g-support-unit PENDING)
+					(goal g-support-unit 0)
 					(goal g-position FLANK)
 					(or
 						(up-compare-goal g-enemy-light-cavalry-count >= 6)
@@ -2791,7 +2444,7 @@
 						(current-age >= castle-age)
 						(up-compare-goal g-primary-unit != skirmisher)
 						(up-compare-goal g-primary-unit != eagle-warrior)
-						(goal g-support-unit PENDING)
+						(goal g-support-unit 0)
 						(goal g-position FLANK)
 						(or
 							(up-compare-goal g-enemy-foot-archers-count >= 3)
@@ -2805,7 +2458,7 @@
 						(defrule
 						(current-age >= castle-age)
 						(up-compare-goal g-primary-unit != skirmisher)
-						(goal g-support-unit PENDING)
+						(goal g-support-unit 0)
 						(goal g-position FLANK)
 						(up-compare-goal g-enemy-hand-cannoneer-slinger-count >= 3)
 						(up-compare-goal g-primary-enemy-threat != g-enemy-light-cavalry-count)
@@ -2817,7 +2470,7 @@
 						(defrule
 						(current-age >= castle-age)
 						(up-compare-goal g-primary-unit != skirmisher)
-						(goal g-support-unit PENDING)
+						(goal g-support-unit 0)
 						(goal g-position FLANK)
 						(up-compare-goal g-enemy-skirmishers-count >= 3)
 						(up-compare-goal g-primary-enemy-threat != g-enemy-light-cavalry-count)
@@ -2836,7 +2489,7 @@
 						(current-age >= castle-age)
 						(unit-available genitour)
 						(up-compare-goal g-primary-unit != genitour)
-						(goal g-support-unit PENDING)
+						(goal g-support-unit 0)
 						(goal g-position FLANK)
 						(or
 							(up-compare-goal g-enemy-foot-archers-count >= 3)
@@ -2857,7 +2510,7 @@
 							(unit-available genitour))
 						(up-compare-goal g-primary-unit != scout-cavalry)
 						(up-compare-goal g-primary-unit != skirmisher)
-						(goal g-support-unit PENDING)
+						(goal g-support-unit 0)
 						(goal g-position FLANK)
 						(or
 							(up-compare-goal g-enemy-foot-archers-count >= 6)
@@ -2874,7 +2527,7 @@
 							(unit-available genitour))
 						(up-compare-goal g-primary-unit != scout-cavalry)
 						(up-compare-goal g-primary-unit != skirmisher)
-						(goal g-support-unit PENDING)
+						(goal g-support-unit 0)
 						(goal g-position FLANK)
 						(or
 							(up-compare-goal g-enemy-hand-cannoneer-slinger-count >= 6)
@@ -2894,7 +2547,7 @@
 					(up-compare-goal g-primary-unit != scout-cavalry)
 					(up-compare-goal g-primary-unit != knight)
 					(up-compare-goal g-primary-unit != steppe-lancer)
-					(goal g-support-unit PENDING)
+					(goal g-support-unit 0)
 					(goal g-position FLANK)
 					(or
 						(up-compare-goal g-enemy-skirmishers-count >= 6)
@@ -2909,7 +2562,7 @@
 					(current-age >= castle-age)
 					(up-compare-const SCOUT-CAVALRY-AVAILABLE == YES)
 					(up-compare-goal g-primary-unit != scout-cavalry)
-					(goal g-support-unit PENDING)
+					(goal g-support-unit 0)
 					(goal g-position FLANK)
 					(up-compare-goal g-enemy-monks-count >= 3)
 					(up-compare-const LIGHT-CAVALRY-AVAILABLE == YES)
@@ -2923,7 +2576,7 @@
 					(current-age >= castle-age)
 					(up-compare-goal g-primary-unit != skirmisher)
 					(up-compare-goal g-primary-unit != eagle-warrior)
-					(goal g-support-unit PENDING)
+					(goal g-support-unit 0)
 					(goal g-position FLANK)
 					(up-compare-goal g-enemy-skirmishers-count >= 3)
 					(up-compare-goal g-primary-enemy-threat != g-enemy-swordsmen-count)
@@ -2939,7 +2592,7 @@
 						(defrule
 						(current-age >= castle-age)
 						(up-compare-goal g-primary-unit != militiaman)
-						(goal g-support-unit PENDING)
+						(goal g-support-unit 0)
 						(goal g-position FLANK)
 						(up-compare-goal g-enemy-eagle-warrior-count >= 3)
 						(up-compare-goal g-primary-enemy-threat != g-enemy-foot-archers-count)
@@ -2954,7 +2607,7 @@
 						(defrule
 						(current-age == castle-age)
 						(up-compare-goal g-primary-unit != militiaman)
-						(goal g-support-unit PENDING)
+						(goal g-support-unit 0)
 						(goal g-position FLANK)
 						(up-compare-goal g-enemy-eagle-warrior-count >= 3)
 						(up-compare-goal g-primary-enemy-threat != g-enemy-foot-archers-count)
@@ -2968,7 +2621,7 @@
 						(current-age == imperial-age)
 						(up-compare-goal g-primary-unit != hand-cannoneer)
 						(up-compare-goal g-primary-unit != militiaman)
-						(goal g-support-unit PENDING)
+						(goal g-support-unit 0)
 						(goal g-position FLANK)
 						(up-compare-goal g-enemy-eagle-warrior-count >= 3)
 						(up-compare-goal g-primary-enemy-threat != g-enemy-skirmishers-count)
@@ -3676,9 +3329,11 @@
 		(up-compare-goal g-age-status < LATE-IMPERIAL)
 		(or
 			(up-compare-const BOMBARD-CANNON-AVAILABLE == NO)
-			(and
-				(unit-available bombard-cannon)
-				(building-type-count siege-workshop == 0)))
+			(or
+				(up-research-status c: ri-chemistry < research-complete)
+				(and
+					(unit-available bombard-cannon)
+					(building-type-count siege-workshop == 0))))
 		=>
 		(set-goal g-desired-num-trebuchet 5)
 		)
@@ -3694,9 +3349,11 @@
 		(up-compare-goal g-age-status >= LATE-IMPERIAL)
 		(or
 			(up-compare-const BOMBARD-CANNON-AVAILABLE == NO)
-			(and
-				(unit-available bombard-cannon)
-				(building-type-count siege-workshop == 0)))
+			(or
+				(up-research-status c: ri-chemistry < research-complete)
+				(and
+					(unit-available bombard-cannon)
+					(building-type-count siege-workshop == 0))))
 		=>
 		(set-goal g-desired-num-trebuchet 1)
 		)
@@ -3833,11 +3490,11 @@
 			(goal g-primary-unit eagle-warrior)
 			(goal g-primary-enemy-threat g-enemy-swordsmen-count)
 			(up-compare-goal g-enemy-swordsmen-count >= 7)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-eagle-warrior 0)
 			; (up-modify-goal g-primary-unit g:= g-support-unit)
-			; (set-goal g-support-unit PENDING)
+			; (set-goal g-support-unit 0)
 			)
 
 			;Countered by Spearmen
@@ -3847,7 +3504,7 @@
 			(goal g-primary-unit knight)
 			(goal g-primary-enemy-threat g-enemy-spearmen-count)
 			(up-compare-goal g-enemy-spearmen-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-knight 0)
 			)
@@ -3858,7 +3515,7 @@
 			(goal g-primary-unit camel)
 			(goal g-primary-enemy-threat g-enemy-spearmen-count)
 			(up-compare-goal g-enemy-spearmen-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-camel 0)
 			)
@@ -3869,7 +3526,7 @@
 			(goal g-primary-unit battle-elephant)
 			(goal g-primary-enemy-threat g-enemy-spearmen-count)
 			(up-compare-goal g-enemy-spearmen-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-battle-elephant 0)
 			)
@@ -3880,7 +3537,7 @@
 			(goal g-primary-unit steppe-lancer)
 			(goal g-primary-enemy-threat g-enemy-spearmen-count)
 			(up-compare-goal g-enemy-spearmen-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-steppe-lancer 0)
 			)
@@ -3891,7 +3548,7 @@
 			(goal g-primary-unit cavalry-archer)
 			(goal g-primary-enemy-threat g-enemy-spearmen-count)
 			(up-compare-goal g-enemy-spearmen-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-cavalry-archer 0)
 			)
@@ -3902,7 +3559,7 @@
 			(goal g-primary-unit genitour)
 			(goal g-primary-enemy-threat g-enemy-spearmen-count)
 			(up-compare-goal g-enemy-spearmen-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-genitour 0)
 			)
@@ -3914,7 +3571,7 @@
 			(goal g-primary-unit spearman)
 			(goal g-primary-enemy-threat g-enemy-eagle-warrior-count)
 			(up-compare-goal g-enemy-eagle-warrior-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-spearman 0)
 			)
@@ -3925,7 +3582,7 @@
 			(goal g-primary-unit archer)
 			(goal g-primary-enemy-threat g-enemy-eagle-warrior-count)
 			(up-compare-goal g-enemy-eagle-warrior-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-archer 0)
 			)
@@ -3936,7 +3593,7 @@
 			(goal g-primary-unit cavalry-archer)
 			(goal g-primary-enemy-threat g-enemy-eagle-warrior-count)
 			(up-compare-goal g-enemy-eagle-warrior-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(up-compare-goal g-desired-num-hand-cannoneer > 0)
 			=>
 			(set-goal g-desired-num-cavalry-archer 0)
@@ -3948,7 +3605,7 @@
 			(goal g-primary-unit skirmisher)
 			(goal g-primary-enemy-threat g-enemy-eagle-warrior-count)
 			(up-compare-goal g-enemy-eagle-warrior-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-skirmisher 0)
 			)
@@ -3959,7 +3616,7 @@
 			(goal g-primary-unit monk)
 			(goal g-primary-enemy-threat g-enemy-eagle-warrior-count)
 			(up-compare-goal g-enemy-eagle-warrior-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-monk 0)
 			)
@@ -3971,7 +3628,7 @@
 			(goal g-primary-unit hand-cannoneer)
 			(goal g-primary-enemy-threat g-enemy-condottiero-count)
 			(up-compare-goal g-enemy-condottiero-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-hand-cannoneer 0)
 			)
@@ -3983,7 +3640,7 @@
 			(goal g-primary-unit militiaman)
 			(goal g-primary-enemy-threat g-enemy-foot-archers-count)
 			(up-compare-goal g-enemy-foot-archers-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-militia 0)
 			)
@@ -3994,7 +3651,7 @@
 			(goal g-primary-unit spearman)
 			(goal g-primary-enemy-threat g-enemy-foot-archers-count)
 			(up-compare-goal g-enemy-foot-archers-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-spearman 0)
 			)
@@ -4005,7 +3662,7 @@
 			(goal g-primary-unit archer)
 			(goal g-primary-enemy-threat g-enemy-foot-archers-count)
 			(up-compare-goal g-enemy-foot-archers-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(or
 				(up-compare-goal g-desired-num-skirmisher > 0)
 				(up-compare-goal g-desired-num-genitour > 0))
@@ -4019,7 +3676,7 @@
 			(goal g-primary-unit camel)
 			(goal g-primary-enemy-threat g-enemy-foot-archers-count)
 			(up-compare-goal g-enemy-foot-archers-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-camel 0)
 			)
@@ -4030,7 +3687,7 @@
 			(goal g-primary-unit battle-elephant)
 			(goal g-primary-enemy-threat g-enemy-foot-archers-count)
 			(up-compare-goal g-enemy-foot-archers-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(or
 				(up-compare-goal g-desired-num-scout-cavalry > 0)
 				(up-compare-goal g-desired-num-knight > 0))
@@ -4045,7 +3702,7 @@
 			(goal g-primary-unit militiaman)
 			(goal g-primary-enemy-threat g-enemy-skirmishers-count)
 			(up-compare-goal g-enemy-skirmishers-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(up-compare-goal g-desired-num-eagle-warrior > 0)
 			=>
 			(set-goal g-desired-num-militia 0)
@@ -4057,7 +3714,7 @@
 			(goal g-primary-unit spearman)
 			(goal g-primary-enemy-threat g-enemy-skirmishers-count)
 			(up-compare-goal g-enemy-skirmishers-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-spearman 0)
 			)
@@ -4068,7 +3725,7 @@
 			(goal g-primary-unit archer)
 			(goal g-primary-enemy-threat g-enemy-skirmishers-count)
 			(up-compare-goal g-enemy-skirmishers-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-archer 0)
 			)
@@ -4079,7 +3736,7 @@
 			(goal g-primary-unit cavalry-archer)
 			(goal g-primary-enemy-threat g-enemy-skirmishers-count)
 			(up-compare-goal g-enemy-skirmishers-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-cavalry-archer 0)
 			)
@@ -4090,7 +3747,7 @@
 			(goal g-primary-unit hand-cannoneer)
 			(goal g-primary-enemy-threat g-enemy-skirmishers-count)
 			(up-compare-goal g-enemy-skirmishers-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-hand-cannoneer 0)
 			)
@@ -4101,7 +3758,7 @@
 			(goal g-primary-unit slinger)
 			(goal g-primary-enemy-threat g-enemy-skirmishers-count)
 			(up-compare-goal g-enemy-skirmishers-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-slinger 0)
 			)
@@ -4112,7 +3769,7 @@
 			(goal g-primary-unit camel)
 			(goal g-primary-enemy-threat g-enemy-skirmishers-count)
 			(up-compare-goal g-enemy-skirmishers-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(or
 				(up-compare-goal g-desired-num-scout-cavalry > 0)
 				(up-compare-goal g-desired-num-knight > 0))
@@ -4127,7 +3784,7 @@
 			(goal g-primary-unit militiaman)
 			(goal g-primary-enemy-threat g-enemy-cavalry-archers-count)
 			(up-compare-goal g-enemy-cavalry-archers-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-militia 0)
 			)
@@ -4138,7 +3795,7 @@
 			(goal g-primary-unit spearman)
 			(goal g-primary-enemy-threat g-enemy-cavalry-archers-count)
 			(up-compare-goal g-enemy-cavalry-archers-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-spearman 0)
 			)
@@ -4149,7 +3806,7 @@
 			(goal g-primary-unit archer)
 			(goal g-primary-enemy-threat g-enemy-cavalry-archers-count)
 			(up-compare-goal g-enemy-cavalry-archers-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(or
 				(up-compare-goal g-desired-num-skirmisher > 0)
 				(up-compare-goal g-desired-num-genitour > 0))
@@ -4163,7 +3820,7 @@
 			(goal g-primary-unit battle-elephant)
 			(goal g-primary-enemy-threat g-enemy-cavalry-archers-count)
 			(up-compare-goal g-enemy-cavalry-archers-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-battle-elephant 0)
 			)
@@ -4175,7 +3832,7 @@
 			(goal g-primary-unit militiaman)
 			(goal g-primary-enemy-threat g-enemy-hand-cannoneer-slinger-count)
 			(up-compare-goal g-enemy-hand-cannoneer-slinger-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-militia 0)
 			)
@@ -4186,7 +3843,7 @@
 			(goal g-primary-unit spearman)
 			(goal g-primary-enemy-threat g-enemy-hand-cannoneer-slinger-count)
 			(up-compare-goal g-enemy-hand-cannoneer-slinger-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-spearman 0)
 			)
@@ -4197,7 +3854,7 @@
 			(goal g-primary-unit eagle-warrior)
 			(goal g-primary-enemy-threat g-enemy-hand-cannoneer-slinger-count)
 			(up-compare-goal g-enemy-hand-cannoneer-slinger-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-eagle-warrior 0)
 			)
@@ -4209,7 +3866,7 @@
 			(goal g-primary-unit militiaman)
 			(goal g-primary-enemy-threat g-enemy-light-cavalry-count)
 			(up-compare-goal g-enemy-light-cavalry-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(up-compare-goal g-desired-num-spearman > 0)
 			=>
 			(set-goal g-desired-num-militia 0)
@@ -4221,7 +3878,7 @@
 			(goal g-primary-unit archer)
 			(goal g-primary-enemy-threat g-enemy-light-cavalry-count)
 			(up-compare-goal g-enemy-light-cavalry-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-archer 0)
 			)
@@ -4232,7 +3889,7 @@
 			(goal g-primary-unit skirmisher)
 			(goal g-primary-enemy-threat g-enemy-light-cavalry-count)
 			(up-compare-goal g-enemy-light-cavalry-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-skirmisher 0)
 			)
@@ -4243,7 +3900,7 @@
 			(goal g-primary-unit hand-cannoneer)
 			(goal g-primary-enemy-threat g-enemy-light-cavalry-count)
 			(up-compare-goal g-enemy-light-cavalry-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-hand-cannoneer 0)
 			)
@@ -4254,7 +3911,7 @@
 			(goal g-primary-unit monk)
 			(goal g-primary-enemy-threat g-enemy-light-cavalry-count)
 			(up-compare-goal g-enemy-light-cavalry-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-monk 0)
 			)
@@ -4266,7 +3923,7 @@
 			(goal g-primary-unit militiaman)
 			(goal g-primary-enemy-threat g-enemy-heavy-cavalry-count)
 			(up-compare-goal g-enemy-heavy-cavalry-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(up-compare-goal g-desired-num-spearman > 0)
 			=>
 			(set-goal g-desired-num-militia 0)
@@ -4278,7 +3935,7 @@
 			(goal g-primary-unit archer)
 			(goal g-primary-enemy-threat g-enemy-heavy-cavalry-count)
 			(up-compare-goal g-enemy-heavy-cavalry-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-archer 0)
 			)
@@ -4289,7 +3946,7 @@
 			(goal g-primary-unit skirmisher)
 			(goal g-primary-enemy-threat g-enemy-heavy-cavalry-count)
 			(up-compare-goal g-enemy-heavy-cavalry-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-skirmisher 0)
 			)
@@ -4300,7 +3957,7 @@
 			(goal g-primary-unit hand-cannoneer)
 			(goal g-primary-enemy-threat g-enemy-heavy-cavalry-count)
 			(up-compare-goal g-enemy-heavy-cavalry-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-hand-cannoneer 0)
 			)
@@ -4311,7 +3968,7 @@
 			(goal g-primary-unit scout-cavalry)
 			(goal g-primary-enemy-threat g-enemy-heavy-cavalry-count)
 			(up-compare-goal g-enemy-heavy-cavalry-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-scout-cavalry 0)
 			)
@@ -4322,7 +3979,7 @@
 			(goal g-primary-unit knight)
 			(goal g-primary-enemy-threat g-enemy-heavy-cavalry-count)
 			(up-compare-goal g-enemy-heavy-cavalry-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(up-compare-goal g-desired-num-camel > 0)
 			=>
 			(set-goal g-desired-num-knight 0)
@@ -4334,7 +3991,7 @@
 			(goal g-primary-unit steppe-lancer)
 			(goal g-primary-enemy-threat g-enemy-heavy-cavalry-count)
 			(up-compare-goal g-enemy-heavy-cavalry-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(up-compare-goal g-desired-num-camel > 0)
 			=>
 			(set-goal g-desired-num-steppe-lancer 0)
@@ -4347,7 +4004,7 @@
 			(goal g-primary-unit condottiero)
 			(goal g-primary-enemy-threat g-enemy-camel-count)
 			(up-compare-goal g-enemy-camel-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(up-compare-goal g-desired-num-spearman > 0)
 			=>
 			(set-goal g-desired-num-condottiero 0)
@@ -4359,7 +4016,7 @@
 			(goal g-primary-unit skirmisher)
 			(goal g-primary-enemy-threat g-enemy-camel-count)
 			(up-compare-goal g-enemy-camel-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-skirmisher 0)
 			)
@@ -4370,7 +4027,7 @@
 			(goal g-primary-unit cavalry-archer)
 			(goal g-primary-enemy-threat g-enemy-camel-count)
 			(up-compare-goal g-enemy-camel-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-cavalry-archer 0)
 			)
@@ -4381,7 +4038,7 @@
 			(goal g-primary-unit genitour)
 			(goal g-primary-enemy-threat g-enemy-camel-count)
 			(up-compare-goal g-enemy-camel-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-genitour 0)
 			)
@@ -4392,7 +4049,7 @@
 			(goal g-primary-unit scout-cavalry)
 			(goal g-primary-enemy-threat g-enemy-camel-count)
 			(up-compare-goal g-enemy-camel-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-scout-cavalry 0)
 			)
@@ -4403,7 +4060,7 @@
 			(goal g-primary-unit knight)
 			(goal g-primary-enemy-threat g-enemy-camel-count)
 			(up-compare-goal g-enemy-camel-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-knight 0)
 			)
@@ -4414,7 +4071,7 @@
 			(goal g-primary-unit battle-elephant)
 			(goal g-primary-enemy-threat g-enemy-camel-count)
 			(up-compare-goal g-enemy-camel-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-battle-elephant 0)
 			)
@@ -4425,7 +4082,7 @@
 			(goal g-primary-unit steppe-lancer)
 			(goal g-primary-enemy-threat g-enemy-camel-count)
 			(up-compare-goal g-enemy-camel-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-steppe-lancer 0)
 			)
@@ -4437,7 +4094,7 @@
 			(goal g-primary-unit militiaman)
 			(goal g-primary-enemy-threat g-enemy-elephants-count)
 			(up-compare-goal g-enemy-elephants-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(up-compare-goal g-desired-num-spearman > 0)
 			=>
 			(set-goal g-desired-num-militia 0)
@@ -4449,7 +4106,7 @@
 			(goal g-primary-unit eagle-warrior)
 			(goal g-primary-enemy-threat g-enemy-elephants-count)
 			(up-compare-goal g-enemy-elephants-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(up-compare-goal g-desired-num-spearman > 0)
 			=>
 			(set-goal g-desired-num-eagle-warrior 0)
@@ -4461,7 +4118,7 @@
 			(goal g-primary-unit condottiero)
 			(goal g-primary-enemy-threat g-enemy-elephants-count)
 			(up-compare-goal g-enemy-elephants-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(up-compare-goal g-desired-num-spearman > 0)
 			=>
 			(set-goal g-desired-num-condottiero 0)
@@ -4473,7 +4130,7 @@
 			(goal g-primary-unit scout-cavalry)
 			(goal g-primary-enemy-threat g-enemy-elephants-count)
 			(up-compare-goal g-enemy-elephants-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(up-compare-goal g-desired-num-camel > 0)
 			=>
 			(set-goal g-desired-num-scout-cavalry 0)
@@ -4486,7 +4143,7 @@
 			(goal g-primary-unit spearman)
 			(goal g-primary-enemy-threat g-enemy-field-siege-count)
 			(up-compare-goal g-enemy-field-siege-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(up-compare-goal g-desired-num-eagle-warrior > 0)
 			=>
 			(set-goal g-desired-num-spearman 0)
@@ -4498,7 +4155,7 @@
 			(goal g-primary-unit archer)
 			(goal g-primary-enemy-threat g-enemy-field-siege-count)
 			(up-compare-goal g-enemy-field-siege-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-archer 0)
 			)
@@ -4509,7 +4166,7 @@
 			(goal g-primary-unit skirmisher)
 			(goal g-primary-enemy-threat g-enemy-field-siege-count)
 			(up-compare-goal g-enemy-field-siege-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-skirmisher 0)
 			)
@@ -4520,7 +4177,7 @@
 			(goal g-primary-unit hand-cannoneer)
 			(goal g-primary-enemy-threat g-enemy-field-siege-count)
 			(up-compare-goal g-enemy-field-siege-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-hand-cannoneer 0)
 			)
@@ -4531,7 +4188,7 @@
 			(goal g-primary-unit battle-elephant)
 			(goal g-primary-enemy-threat g-enemy-field-siege-count)
 			(up-compare-goal g-enemy-field-siege-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(up-compare-goal g-desired-num-scout-cavalry > 0)
 			=>
 			(set-goal g-desired-num-battle-elephant 0)
@@ -4544,7 +4201,7 @@
 			(goal g-primary-unit militiaman)
 			(goal g-primary-enemy-threat g-enemy-monks-count)
 			(up-compare-goal g-enemy-monks-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(up-compare-goal g-desired-num-eagle-warrior > 0)
 			=>
 			(set-goal g-desired-num-militia 0)
@@ -4556,7 +4213,7 @@
 			(goal g-primary-unit spearman)
 			(goal g-primary-enemy-threat g-enemy-monks-count)
 			(up-compare-goal g-enemy-monks-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(up-compare-goal g-desired-num-eagle-warrior > 0)
 			=>
 			(set-goal g-desired-num-spearman 0)
@@ -4568,7 +4225,7 @@
 			(goal g-primary-unit knight)
 			(goal g-primary-enemy-threat g-enemy-monks-count)
 			(up-compare-goal g-enemy-monks-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-knight 0)
 			)
@@ -4579,7 +4236,7 @@
 			(goal g-primary-unit camel)
 			(goal g-primary-enemy-threat g-enemy-monks-count)
 			(up-compare-goal g-enemy-monks-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-camel 0)
 			)
@@ -4590,7 +4247,7 @@
 			(goal g-primary-unit battle-elephant)
 			(goal g-primary-enemy-threat g-enemy-monks-count)
 			(up-compare-goal g-enemy-monks-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			=>
 			(set-goal g-desired-num-battle-elephant 0)
 			)
@@ -4601,7 +4258,7 @@
 			(goal g-primary-unit steppe-lancer)
 			(goal g-primary-enemy-threat g-enemy-monks-count)
 			(up-compare-goal g-enemy-monks-count >= 5)
-			(up-compare-goal g-support-unit != PENDING)
+			(up-compare-goal g-support-unit != 0)
 			(up-compare-goal g-desired-num-scout-cavalry > 0)
 			=>
 			(set-goal g-desired-num-steppe-lancer 0)
@@ -4903,7 +4560,7 @@
 		(up-compare-goal g-primary-unit != militiaman)
 		(up-compare-goal g-desired-num-militia > 6)
 		(or
-			(goal g-desired-num-support-unit PENDING)
+			(goal g-desired-num-support-unit 0)
 			(up-compare-goal g-desired-num-militia g:> g-desired-num-support-unit))
 		=>
 		(set-goal g-support-unit militiaman)
@@ -4915,7 +4572,7 @@
 		(up-compare-goal g-primary-unit != spearman)
 		(up-compare-goal g-desired-num-spearman > 6)
 		(or
-			(goal g-desired-num-support-unit PENDING)
+			(goal g-desired-num-support-unit 0)
 			(up-compare-goal g-desired-num-spearman g:> g-desired-num-support-unit))
 		=>
 		(set-goal g-support-unit spearman)
@@ -4927,7 +4584,7 @@
 		(up-compare-goal g-primary-unit != eagle-warrior)
 		(up-compare-goal g-desired-num-eagle-warrior > 6)
 		(or
-			(goal g-desired-num-support-unit PENDING)
+			(goal g-desired-num-support-unit 0)
 			(up-compare-goal g-desired-num-eagle-warrior g:> g-desired-num-support-unit))
 		=>
 		(set-goal g-support-unit eagle-warrior)
@@ -4939,7 +4596,7 @@
 		(up-compare-goal g-primary-unit != condottiero)
 		(up-compare-goal g-desired-num-condottiero > 6)
 		(or
-			(goal g-desired-num-support-unit PENDING)
+			(goal g-desired-num-support-unit 0)
 			(up-compare-goal g-desired-num-condottiero g:> g-desired-num-support-unit))
 		=>
 		(set-goal g-support-unit condottiero)
@@ -4951,7 +4608,7 @@
 		(up-compare-goal g-primary-unit != archer)
 		(up-compare-goal g-desired-num-archer > 6)
 		(or
-			(goal g-desired-num-support-unit PENDING)
+			(goal g-desired-num-support-unit 0)
 			(up-compare-goal g-desired-num-archer g:> g-desired-num-support-unit))
 		=>
 		(set-goal g-support-unit archer)
@@ -4963,7 +4620,7 @@
 		(up-compare-goal g-primary-unit != skirmisher)
 		(up-compare-goal g-desired-num-skirmisher > 6)
 		(or
-			(goal g-desired-num-support-unit PENDING)
+			(goal g-desired-num-support-unit 0)
 			(up-compare-goal g-desired-num-skirmisher g:> g-desired-num-support-unit))
 		=>
 		(set-goal g-support-unit skirmisher)
@@ -4975,7 +4632,7 @@
 		(up-compare-goal g-primary-unit != cavalry-archer)
 		(up-compare-goal g-desired-num-cavalry-archer > 6)
 		(or
-			(goal g-desired-num-support-unit PENDING)
+			(goal g-desired-num-support-unit 0)
 			(up-compare-goal g-desired-num-cavalry-archer g:> g-desired-num-support-unit))
 		=>
 		(set-goal g-support-unit cavalry-archer)
@@ -4987,7 +4644,7 @@
 		(up-compare-goal g-primary-unit != hand-cannoneer)
 		(up-compare-goal g-desired-num-hand-cannoneer > 6)
 		(or
-			(goal g-desired-num-support-unit PENDING)
+			(goal g-desired-num-support-unit 0)
 			(up-compare-goal g-desired-num-hand-cannoneer g:> g-desired-num-support-unit))
 		=>
 		(set-goal g-support-unit hand-cannoneer)
@@ -4999,7 +4656,7 @@
 		(up-compare-goal g-primary-unit != slinger)
 		(up-compare-goal g-desired-num-slinger > 6)
 		(or
-			(goal g-desired-num-support-unit PENDING)
+			(goal g-desired-num-support-unit 0)
 			(up-compare-goal g-desired-num-slinger g:> g-desired-num-support-unit))
 		=>
 		(set-goal g-support-unit slinger)
@@ -5011,7 +4668,7 @@
 		(up-compare-goal g-primary-unit != genitour)
 		(up-compare-goal g-desired-num-genitour > 6)
 		(or
-			(goal g-desired-num-support-unit PENDING)
+			(goal g-desired-num-support-unit 0)
 			(up-compare-goal g-desired-num-genitour g:> g-desired-num-support-unit))
 		=>
 		(set-goal g-support-unit genitour)
@@ -5023,7 +4680,7 @@
 		(up-compare-goal g-primary-unit != scout-cavalry)
 		(up-compare-goal g-desired-num-scout-cavalry > 6)
 		(or
-			(goal g-desired-num-support-unit PENDING)
+			(goal g-desired-num-support-unit 0)
 			(up-compare-goal g-desired-num-scout-cavalry g:> g-desired-num-support-unit))
 		=>
 		(set-goal g-support-unit scout-cavalry)
@@ -5035,7 +4692,7 @@
 		(up-compare-goal g-primary-unit != knight)
 		(up-compare-goal g-desired-num-knight > 6)
 		(or
-			(goal g-desired-num-support-unit PENDING)
+			(goal g-desired-num-support-unit 0)
 			(up-compare-goal g-desired-num-knight g:> g-desired-num-support-unit))
 		=>
 		(set-goal g-support-unit knight)
@@ -5047,7 +4704,7 @@
 		(up-compare-goal g-primary-unit != camel)
 		(up-compare-goal g-desired-num-camel > 6)
 		(or
-			(goal g-desired-num-support-unit PENDING)
+			(goal g-desired-num-support-unit 0)
 			(up-compare-goal g-desired-num-camel g:> g-desired-num-support-unit))
 		=>
 		(set-goal g-support-unit camel)
@@ -5059,7 +4716,7 @@
 		(up-compare-goal g-primary-unit != battle-elephant)
 		(up-compare-goal g-desired-num-battle-elephant > 6)
 		(or
-			(goal g-desired-num-support-unit PENDING)
+			(goal g-desired-num-support-unit 0)
 			(up-compare-goal g-desired-num-battle-elephant g:> g-desired-num-support-unit))
 		=>
 		(set-goal g-support-unit battle-elephant)
@@ -5071,7 +4728,7 @@
 		(up-compare-goal g-primary-unit != steppe-lancer)
 		(up-compare-goal g-desired-num-steppe-lancer > 6)
 		(or
-			(goal g-desired-num-support-unit PENDING)
+			(goal g-desired-num-support-unit 0)
 			(up-compare-goal g-desired-num-steppe-lancer g:> g-desired-num-support-unit))
 		=>
 		(set-goal g-support-unit steppe-lancer)
@@ -5083,7 +4740,7 @@
 		(up-compare-goal g-primary-unit != my-unique-unit)
 		(up-compare-goal g-desired-num-unique-unit > 6)
 		(or
-			(goal g-desired-num-support-unit PENDING)
+			(goal g-desired-num-support-unit 0)
 			(up-compare-goal g-desired-num-unique-unit g:> g-desired-num-support-unit))
 		=>
 		(set-goal g-support-unit my-unique-unit)
@@ -5132,7 +4789,9 @@
 					(civ-selected ethiopian)
 					(or
 						(civ-selected malian)
-						(civ-selected malay)))))
+						(or
+							(civ-selected malay)
+							(civ-selected sicilians))))))
 		=>
 		(up-modify-goal g-desired-num-infantry g:+ g-desired-num-unique-unit)
 		)
@@ -5227,7 +4886,9 @@
 			(civ-selected bulgarians)
 			(or
 				(civ-selected lithuanians)
-				(civ-selected tatars)))
+				(or
+					(civ-selected tatars)
+					(civ-selected burgundians))))
 		=>
 		(up-modify-goal g-desired-num-cavalry g:+ g-desired-num-unique-unit)
 		)
@@ -5959,7 +5620,6 @@
 		(game-time > 30)
 		(up-gaia-type-count-total c: gold > 0)
 		(building-type-count-total lumber-camp > 0)
-		(building-type-count-total mining-camp == 0)
 		(or
 			(and
 				(unit-type-count villager-gold > 1)
@@ -5972,10 +5632,23 @@
 		)
 
 		(defrule
+		(current-age >= feudal-age)
+		(up-gaia-type-count-total c: gold > 0)
+		(building-type-count-total lumber-camp > 0)
+		(or
+			(goal g-town-under-attack YES)
+			(goal g-game-focus DEFENSIVE))
+		(up-compare-goal g-desired-num-gold-vils > 0)
+		(dropsite-min-distance gold < 30)
+		=>
+		(set-goal g-need-gold-camp YES)
+		(up-modify-goal g-desired-num-mining-camp c:+ 1)
+		)
+
+		(defrule
 		(game-time > 30)
 		(up-gaia-type-count-total c: stone > 0)
 		(building-type-count-total lumber-camp > 0)
-		(building-type-count-total mining-camp <= 2)
 		(or
 			(and
 				(unit-type-count villager-stone > 1)
@@ -5985,42 +5658,6 @@
 		=>
 		(set-goal g-need-stone-camp YES)
 		(up-modify-goal g-desired-num-mining-camp c:+ 1)
-		(up-modify-goal g-desired-num-mining-camp c:max 2)
-		)
-
-		(defrule
-		(current-age >= feudal-age)
-		(up-gaia-type-count-total c: gold > 0)
-		(building-type-count-total lumber-camp > 0)
-		(building-type-count-total mining-camp <= 3)
-		(or
-			(goal g-town-under-attack YES)
-			(goal g-game-focus DEFENSIVE))
-		(up-compare-goal g-desired-num-gold-vils > 0)
-		(dropsite-min-distance gold < 30)
-		=>
-		(set-goal g-need-gold-camp YES)
-		(up-modify-goal g-desired-num-mining-camp c:+ 1)
-		(up-modify-goal g-desired-num-mining-camp c:max 3)
-		)
-
-		(defrule
-		(current-age >= castle-age)
-		(up-gaia-type-count-total c: stone > 0)
-		(building-type-count-total lumber-camp > 0)
-		(building-type-count-total mining-camp <= 3)
-		(or
-			(goal g-town-under-attack YES)
-			(goal g-game-focus DEFENSIVE))
-		(up-compare-goal g-desired-num-stone-vils > 0)
-		(or
-			(up-object-type-count-total c: town-center g:< g-desired-num-town-center)
-			(up-object-type-count-total c: castle g:< g-desired-num-castle))
-		(dropsite-min-distance stone < 30)
-		=>
-		(set-goal g-need-stone-camp YES)
-		(up-modify-goal g-desired-num-mining-camp c:+ 1)
-		(up-modify-goal g-desired-num-mining-camp c:max 3)
 		)
 
 		(load "The General 3/Functions/Reset")
@@ -6657,10 +6294,12 @@
 			(or
 				(goal g-current-strategy EARLYI-ARBINGER)
 				(or
-					(goal g-current-strategy MIDI-ARBS)
+					(goal g-current-strategy EARLYI-HORDE)
 					(or
-						(goal g-current-strategy MIDI-CAV-ARCHERS)
-						(goal g-current-strategy LATEI-TRASHBOWS)))))
+						(goal g-current-strategy MIDI-ARBS)
+						(or
+							(goal g-current-strategy MIDI-CAV-ARCHERS)
+							(goal g-current-strategy LATEI-TRASHBOWS))))))
 		=>
 		(up-modify-goal g-desired-num-archery-range c:max 4)
 		)
@@ -7627,7 +7266,7 @@
 		#load-if-defined GOTHIC-CIV
 
 			(defrule
-			(research-completed my-second-unique-research)
+			(research-completed my-unique-research)	;Anarchy
 			(up-compare-goal g-desired-num-unique-unit > 0)
 			=>
 			(up-modify-goal g-desired-num-barracks c:max 1)
@@ -7668,7 +7307,7 @@
 		)
 		#load-if-defined GOTHIC-CIV
 			(defrule
-			(research-completed my-second-unique-research)
+			(research-completed my-unique-research)	;Anarchy
 			=>
 			(up-modify-goal g-temp g:+ g-desired-num-unique-unit)
 			)
@@ -7699,7 +7338,7 @@
 		)
 		#load-if-defined GOTHIC-CIV
 			(defrule
-			(research-completed my-second-unique-research)
+			(research-completed my-unique-research)	;Anarchy
 			(goal g-primary-unit my-unique-unit)
 			=>
 			(up-modify-goal g-temp g:+ g-desired-num-unique-unit)
@@ -7739,7 +7378,7 @@
 		)
 		#load-if-defined GOTHIC-CIV
 			(defrule
-			(research-completed my-second-unique-research)
+			(research-completed my-unique-research)	;Anarchy
 			(goal g-support-unit my-unique-unit)
 			=>
 			(up-modify-goal g-temp-2 g:= g-desired-num-unique-unit)
@@ -8383,7 +8022,7 @@
 		(or
 			(wood-amount > 550)
 			(or
-				(food-amount > 900)
+				(food-amount > 1000)
 				(gold-amount > 500)))
 		(building-type-count-total market == 0)
 		=>
@@ -8395,8 +8034,8 @@
 		(or
 			(wood-amount > 550)
 			(or
-				(food-amount > 1000)
-				(gold-amount > 800)))
+				(food-amount > 1200)
+				(gold-amount > 1000)))
 		(building-type-count-total market == 0)
 		=>
 		(up-modify-goal g-desired-num-market c:max 1)
@@ -8415,14 +8054,6 @@
 			(up-compare-goal g-desired-num-trade-cart > 0))
 		=>
 		(up-modify-goal g-desired-num-market c:max 3)
-		)
-
-		(defrule
-		(or
-			(up-compare-goal g-current-strategy == LATEI-TRASH)
-			(up-compare-goal g-desired-num-trade-cart > 20))
-		=>
-		(up-modify-goal g-desired-num-market c:max 4)
 		)
 
 	;-----------------------------------

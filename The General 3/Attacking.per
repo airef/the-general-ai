@@ -53,6 +53,11 @@
 		(up-modify-goal g-required-attack-num g:= g-desired-num-military)
 		(up-modify-goal g-required-attack-num c:- 5)
 		(up-modify-goal g-required-attack-num c:max 6)
+		)
+
+		(defrule
+		(goal g-attacking NO)
+		=>
 		(up-modify-goal g-stop-attack-num g:= g-desired-num-military)
 		(up-modify-goal g-stop-attack-num c:- 10)
 		(up-modify-goal g-stop-attack-num c:max 4)
@@ -68,7 +73,7 @@
 		=>
 		(set-goal g-required-attack-num 4)
 		(set-goal g-stop-attack-num 2)
-		(up-modify-goal g-stop-attack-num c:+ g-additional-stop-attack-num)
+		(up-modify-goal g-stop-attack-num g:+ g-additional-stop-attack-num)
 		)
 
 	;----------------
@@ -81,7 +86,7 @@
 		=>
 		(set-goal g-required-attack-num 6)
 		(set-goal g-stop-attack-num 4)
-		(up-modify-goal g-stop-attack-num c:+ g-additional-stop-attack-num)
+		(up-modify-goal g-stop-attack-num g:+ g-additional-stop-attack-num)
 		)
 
 	;---------------------------
@@ -126,7 +131,7 @@
 			(goal g-primary-unit-class archery-class)
 			(goal g-primary-unit-class archery-cannon-class))
 		=>
-		(set-goal g-required-attack-num 16)
+		(set-goal g-required-attack-num 14)
 		(set-goal g-stop-attack-num 9)
 		(up-modify-goal g-stop-attack-num g:+ g-additional-stop-attack-num)
 		)
@@ -137,22 +142,23 @@
 			(goal g-attack-status FIRST-CASTLE-ATTACK))
 		(goal g-primary-unit-class monastery-class)
 		=>
-		(set-goal g-required-attack-num 20)
-		(set-goal g-stop-attack-num 12)
+		(set-goal g-required-attack-num 15)
+		(set-goal g-stop-attack-num 10)
 		(up-modify-goal g-stop-attack-num g:+ g-additional-stop-attack-num)
 		)
 
 		(defrule
+		(goal g-attacking NO)
 		(or
 			(goal g-attack-status BEFORE-CASTLE-ATTACKS)
 			(goal g-attack-status FIRST-CASTLE-ATTACK))
 		(players-current-age target-player >= castle-age)
 		=>
-		;(up-modify-goal g-required-attack-num c:+ 2)
 		(up-modify-goal g-stop-attack-num c:+ 2)
 		)
 
 		(defrule
+		(goal g-attacking NO)
 		(up-compare-goal g-target-military-parity < 0)
 		=>
 		(up-modify-goal g-temp g:= g-target-military-parity)
@@ -168,10 +174,10 @@
 		(goal g-position POCKET)
 		=>
 		(up-modify-goal g-required-attack-num c:+ 2)
-		;(up-modify-goal g-stop-attack-num c:+ 2)
 		)
 
 		(defrule
+		(goal g-attacking NO)
 		(or
 			(goal g-attack-status BEFORE-CASTLE-ATTACKS)
 			(goal g-attack-status FIRST-CASTLE-ATTACK))
@@ -205,6 +211,24 @@
 		=>
 		(up-get-fact military-population 0 g-temp)
 		(up-modify-goal g-required-attack-num g:= g-temp)
+		)
+
+		(defrule
+		(goal g-attacking NO)
+		(or
+			(goal g-attack-status BEFORE-CASTLE-ATTACKS)
+			(goal g-attack-status FIRST-CASTLE-ATTACK))
+		(military-population >= 10)
+		(up-compare-goal g-target-military-parity > 0)
+		(or
+			(goal g-target-age-parity WE-ARE-AHEAD)
+			(and
+				(up-compare-goal g-target-military-parity > 5)
+				(or
+					(goal g-target-age-parity WE-ARE-EQUAL)
+					(up-compare-goal g-target-military-parity > 10))))
+		=>
+		(up-get-fact military-population 0 g-temp)
 		(up-modify-goal g-stop-attack-num g:= g-temp)
 		(up-modify-goal g-stop-attack-num c:%* 60)
 		)
@@ -500,6 +524,13 @@
 		=>
 		(up-modify-goal g-required-attack-num c:+ 15)
 		(up-modify-goal g-required-attack-num g:min g-desired-num-military)
+		)
+
+		(defrule
+		(goal g-attacking NO)
+		(players-building-type-count target-player castle > 0)
+		(up-compare-goal g-siege-class < 2)
+		=>
 		(up-modify-goal g-temp g:= g-desired-num-military)
 		(up-modify-goal g-temp c:- 10)
 		(up-modify-goal g-stop-attack-num c:+ 10)
@@ -511,6 +542,7 @@
 	;-----------------------------
 
 		(defrule
+		(goal g-attacking NO)
 		(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS)
 		=>
 		(up-modify-goal g-stop-attack-num g:= g-required-attack-num)
@@ -854,6 +886,28 @@
 	;	Offensive Priorities
 	;--------------------------
 
+		(defrule
+		(true)
+		=>
+		(up-set-offense-priority c: unpacked-trebuchet-class c: 9)
+		(up-set-offense-priority c: siege-weapon-class c: 8)
+		(up-set-offense-priority c: scorpion-class c: 8)
+		(up-set-offense-priority c: villager-class c: 9)
+		(up-set-offense-priority c: castle c: 0)
+		(up-set-offense-priority c: town-center c: 0)
+		(up-set-offense-priority c: tower-class c: 0)
+		)
+
+		(defrule
+		(or
+			(unit-type-count trebuchet-set > 0)
+			(unit-type-count bombard-cannon > 0))
+		=>
+		(up-set-offense-priority c: castle c: 11)
+		(up-set-offense-priority c: town-center c: 9)
+		(up-set-offense-priority c: tower-class c: 4)
+		)
+
 	;--------------------------
 	;	Defensive Priorities
 	;--------------------------
@@ -880,6 +934,8 @@
 		(up-set-defense-priority c: keep c: 20)
 		(up-set-defense-priority c: bombard-tower c: 10)
 		(up-set-defense-priority c: castle c: 5)
+		(up-set-defense-priority c: krepost c: 5)
+		(up-set-defense-priority c: donjon c: 50)
 		(up-jump-rule 1)
 		)
 
@@ -898,6 +954,8 @@
 			(up-set-defense-priority c: keep c: 20)
 			(up-set-defense-priority c: bombard-tower c: 10)
 			(up-set-defense-priority c: castle c: 5)
+			(up-set-defense-priority c: krepost c: 5)
+			(up-set-defense-priority c: donjon c: 50)
 			)
 
 		(defrule
@@ -915,15 +973,15 @@
 		(up-set-defense-priority c: keep c: 1000)
 		(up-set-defense-priority c: bombard-tower c: 2000)
 		(up-set-defense-priority c: castle c: 5000)
-		(up-jump-rule 1)
+		(up-set-defense-priority c: krepost c: 4000)
+		(up-set-defense-priority c: donjon c: 1000)
+		(up-jump-rule 2)
 		)
 
 			(defrule
 			(goal g-attacking YES)
 			(military-population >= 10)
-			(or
-				(population >= 120)
-				(current-age == imperial-age))
+			(population >= 120)
 			(up-compare-goal g-target-pop-parity > 10)
 			=>
 			(up-set-defense-priority c: lumber-camp c: 750)
@@ -935,6 +993,28 @@
 			(up-set-defense-priority c: keep c: 1000)
 			(up-set-defense-priority c: bombard-tower c: 2000)
 			(up-set-defense-priority c: castle c: 5000)
+			(up-set-defense-priority c: krepost c: 4000)
+			(up-set-defense-priority c: donjon c: 1000)
+			(up-jump-rule 1)
+			)
+
+			(defrule
+			(goal g-attacking YES)
+			(military-population >= 10)
+			(current-age == imperial-age)
+			(up-compare-goal g-target-pop-parity > 10)
+			=>
+			(up-set-defense-priority c: lumber-camp c: 750)
+			(up-set-defense-priority c: mining-camp c: 750)
+			(up-set-defense-priority c: mill c: 600)
+			(up-set-defense-priority c: town-center c: 3000)
+			(up-set-defense-priority c: watch-tower c: 1000)
+			(up-set-defense-priority c: guard-tower c: 1000)
+			(up-set-defense-priority c: keep c: 1000)
+			(up-set-defense-priority c: bombard-tower c: 2000)
+			(up-set-defense-priority c: castle c: 5000)
+			(up-set-defense-priority c: krepost c: 4000)
+			(up-set-defense-priority c: donjon c: 1000)
 			)
 
 		(defrule
@@ -950,6 +1030,8 @@
 		(up-set-defense-priority c: keep c: 1500)
 		(up-set-defense-priority c: bombard-tower c: 1000)
 		(up-set-defense-priority c: castle c: 5)
+		(up-set-defense-priority c: krepost c: 5)
+		(up-set-defense-priority c: donjon c: 1500)
 		)
 
 		(defrule
@@ -965,6 +1047,8 @@
 		(up-set-defense-priority c: keep c: 5000)
 		(up-set-defense-priority c: bombard-tower c: 6000)
 		(up-set-defense-priority c: castle c: 10000)
+		(up-set-defense-priority c: krepost c: 8000)
+		(up-set-defense-priority c: donjon c: 3000)
 		)
 
 		(defrule
@@ -1005,7 +1089,7 @@
 		(up-get-projectile-player projectile-watch-tower g-temp)
 		(up-modify-sn sn-focus-player-number g:= g-temp)
 		(up-full-reset-search)
-		(up-find-remote c: watch-tower c: 40)
+		(up-find-remote c: tower-class c: 40)
 		(up-remove-objects search-remote object-data-next-attack <= 0)
 		)
 
@@ -1031,6 +1115,7 @@
 		(timer-triggered t-5-sec)
 		=>
 		(up-set-defense-priority c: watch-tower c: 500)
+		(up-set-defense-priority c: donjon c: 500)
 		)
 
 		;Get soldiers that are targeteting nearby walled tower
@@ -1048,10 +1133,10 @@
 		(up-find-local c: all-units-class c: 240)
 		(up-remove-objects search-local object-data-attack-stance == stance-stand-ground)
 		(up-remove-objects search-local object-data-range > 0)
-		(up-get-search-state g-local-total)
 		(up-remove-objects search-local object-data-target-id g:!= g-temp-2)	;remove soldiers targeting tower with walls around it
 		(up-get-search-state g-local-total)
 		(up-set-defense-priority c: watch-tower c: 20)
+		(up-set-defense-priority c: donjon c: 20)
 		)
 
 		;Retarget these soldiers against wall instead
@@ -1080,10 +1165,10 @@
 		(up-find-local c: all-units-class c: 240)
 		(up-remove-objects search-local object-data-attack-stance == stance-stand-ground)
 		(up-remove-objects search-local object-data-range > 0)
-		(up-get-search-state g-local-total)
 		(up-remove-objects search-local object-data-target-id g:!= g-temp-2)	;remove soldiers targeting tower with walls around it
 		(up-get-search-state g-local-total)
 		(up-set-defense-priority c: watch-tower c: 20)
+		(up-set-defense-priority c: donjon c: 20)
 		)
 
 		;Try to stop these soldiers from targeting the tower

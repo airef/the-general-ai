@@ -99,9 +99,10 @@
 
 	;Resign if team has < 20% pop of enemy team
 	(defrule
+	(up-compare-goal g-resign < DECIDE-TO-RESIGN)
 	(population < FIFTY-PERCENT-POP)
 	(not
-		(player-in-game every-ally))
+		(player-in-game any-ally))
 	(up-get-fact population 0 g-temp)
 	(up-get-fact-sum any-ally population 0 g-temp-2)
 	(up-modify-goal g-temp g:+ g-temp-2)
@@ -113,9 +114,10 @@
 	)
 
 	(defrule
+	(up-compare-goal g-resign < DECIDE-TO-RESIGN)
 	(population < FIFTY-PERCENT-POP)
-	(civilian-population < FIFTEEN-PERCENT-POP)
-	(players-population every-ally < TWENTY-FIVE-PERCENT-POP)
+	(civilian-population < THIRTY-FIVE-PERCENT-POP)
+	(players-population every-ally < THIRTY-FIVE-PERCENT-POP)
 	(players-population any-enemy >= FIFTY-PERCENT-POP)
 	(up-get-fact population 0 g-temp)
 	(up-get-fact-sum any-ally population 0 g-temp-2)

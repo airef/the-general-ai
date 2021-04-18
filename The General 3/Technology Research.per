@@ -55,6 +55,7 @@
 					(up-compare-goal g-current-strategy >= 1201)	;Boom Imperial Strats
 					(up-compare-goal g-current-strategy < 1301))))
 		(can-research-with-escrow ri-double-bit-axe)
+		(up-compare-goal g-age-status >= TO-FEUDAL)
 		=>
 		(release-escrow food)
 		(release-escrow wood)
@@ -120,6 +121,7 @@
 					(up-compare-goal g-current-strategy >= 1201)	;Boom Imperial Strats
 					(up-compare-goal g-current-strategy < 1301))))
 		(up-research-status c: ri-double-bit-axe == research-available)
+		(up-compare-goal g-age-status >= TO-FEUDAL)
 		(building-type-count lumber-camp > 0)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
@@ -792,6 +794,7 @@
         )
 
 		(defrule
+		(current-age == imperial-age)
 		(up-compare-goal g-eco-tech-progress >= ALL-IMPERIAL-COMPLETE)
 		(population >= EIGHTY-PERCENT-POP)
 		(can-research ri-stone-shaft-mining)
@@ -2205,6 +2208,7 @@
 			(or
 				(goal g-primary-unit my-unique-unit)
 				(goal g-support-unit my-unique-unit))
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 			(can-research-with-escrow my-unique-research)
 			=>
 			(release-escrow food)
@@ -2238,6 +2242,7 @@
 
 			(defrule
 			(up-compare-goal g-desired-num-unique-unit > 10)
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 			(can-research my-unique-research)
 			=>
 			(research my-unique-research)
@@ -4369,7 +4374,11 @@
 			(defrule
 			(or
 				(goal g-primary-unit cavalry-archer)
-				(goal g-support-unit cavalry-archer))
+				(or
+					(goal g-support-unit cavalry-archer)
+					(or
+						(goal g-primary-unit genitour)
+						(goal g-support-unit genitour))))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 			(can-research-with-escrow my-second-unique-research)
 			=>
@@ -4381,7 +4390,11 @@
 			(defrule
 			(or
 				(goal g-primary-unit cavalry-archer)
-				(goal g-support-unit cavalry-archer))
+				(or
+					(goal g-support-unit cavalry-archer)
+					(or
+						(goal g-primary-unit genitour)
+						(goal g-support-unit genitour))))
 			(up-research-status c: my-second-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
@@ -4395,7 +4408,11 @@
 			; (taunt-detected TAUNT-PLAYER 246)
 			; (or
 			; 	(goal g-primary-unit cavalry-archer)
-			; 	(goal g-support-unit cavalry-archer))
+			; 	(or
+			; 		(goal g-support-unit cavalry-archer)
+			; 		(or
+			; 			(goal g-primary-unit genitour)
+			; 			(goal g-support-unit genitour))))
 			; (up-research-status c: my-second-unique-research == research-available)
 			; (building-type-count castle > 0)
 			; =>
@@ -4405,7 +4422,11 @@
 			(defrule
 			(or
 				(up-compare-goal g-desired-num-cavalry-archer > 10)
-				(unit-type-count cavalry-archer-line > 15))
+				(or
+					(unit-type-count cavalry-archer-line > 15)
+					(or
+						(up-compare-goal g-desired-num-genitour > 10)
+						(up-compare-goal g-genitour-line > 15))))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 			(can-research my-second-unique-research)
 			=>
@@ -9983,6 +10004,7 @@
 			(or
 				(current-age == castle-age)
 				(up-compare-const BLOCK-PRINTING-AVAILABLE == NO)))
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 		(military-population g:>= g-min-military-pop)
 		(up-compare-goal g-desired-num-monk > 2)
 		(can-research ri-fervor)
@@ -10172,6 +10194,7 @@
 		(defrule
 		(up-compare-goal g-desired-num-monks >= 5)
 		(up-compare-goal g-enemy-monks-count >= 5)
+		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 		(can-research ri-atonement)
 		=>
 		(research ri-atonement)
@@ -10180,6 +10203,7 @@
 		(defrule
 		(up-compare-goal g-desired-num-monks > 0)
 		(up-compare-goal g-enemy-monks-count >= 5)
+		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 		(can-research ri-atonement)
 		=>
 		(research ri-atonement)
@@ -10200,6 +10224,7 @@
 			(research-completed ri-redemption)
 			(research-completed ri-sanctity)
 			(research-completed ri-fervor)
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 			(can-research ri-atonement)
 			=>
 			(research ri-atonement)
@@ -10215,6 +10240,7 @@
 			(research-completed ri-sanctity)
 			(research-completed ri-fervor)
 			(research-completed ri-atonement)
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 			(can-research ri-herbal-medicine)
 			=>
 			(research ri-herbal-medicine)
@@ -10231,6 +10257,7 @@
 			(research-completed ri-fervor)
 			(research-completed ri-atonement)
 			(research-completed ri-herbal-medicine)
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 			(can-research ri-heresy)
 			=>
 			(research ri-heresy)
@@ -10619,15 +10646,10 @@
 
 		(defrule
 		(up-object-type-count-total c: barracks g:< g-desired-num-barracks)
+		(goal g-primary-unit-class infantry-class)
 		(or
-			(and
-				(goal g-primary-unit-class infantry-class)
-				(up-compare-goal g-primary-unit != my-unique-unit))
-			(and
-				(goal g-support-unit-class infantry-class)
-				(up-compare-goal g-support-unit != my-unique-unit)))
-		; (not
-		; 	(can-afford-building barracks))
+			(up-compare-goal g-primary-unit != my-unique-unit)
+			(research-completed 16))	;Anarchy
 		=>
 		(up-setup-cost-data 1 g-food-cost)
 		(up-add-object-cost c: barracks c: 1)
@@ -10637,13 +10659,33 @@
 		; (defrule
 		; (taunt-detected TAUNT-PLAYER 246)
 		; (up-object-type-count-total c: barracks g:< g-desired-num-barracks)
+		; (goal g-primary-unit-class infantry-class)
 		; (or
-		; 	(and
-		; 		(goal g-primary-unit-class infantry-class)
-		; 		(up-compare-goal g-primary-unit != my-unique-unit))
-		; 	(and
-		; 		(goal g-support-unit-class infantry-class)
-		; 		(up-compare-goal g-support-unit != my-unique-unit)))
+		; 	(up-compare-goal g-primary-unit != my-unique-unit)
+		; 	(research-completed 16))	;Anarchy
+		; =>
+		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Saving for Barracks")
+		; )
+
+		(defrule
+		(up-object-type-count-total c: barracks g:< g-desired-num-barracks)
+		(goal g-support-unit-class infantry-class)
+		(or
+			(up-compare-goal g-support-unit != my-unique-unit)
+			(research-completed 16))	;Anarchy
+		=>
+		(up-setup-cost-data 1 g-food-cost)
+		(up-add-object-cost c: barracks c: 1)
+		(up-modify-goal g-max-wood-needed g:max g-wood-cost)
+		)
+
+		; (defrule
+		; (taunt-detected TAUNT-PLAYER 246)
+		; (up-object-type-count-total c: barracks g:< g-desired-num-barracks)
+		; (goal g-support-unit-class infantry-class)
+		; (or
+		; 	(up-compare-goal g-support-unit != my-unique-unit)
+		; 	(research-completed 16))	;Anarchy
 		; =>
 		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Saving for Barracks")
 		; )
@@ -10718,15 +10760,10 @@
 
 		(defrule
 		(up-object-type-count-total c: stable g:< g-desired-num-stable)
+		(goal g-primary-unit-class cavalry-class)
 		(or
-			(and
-				(goal g-primary-unit-class cavalry-class)
-				(up-compare-goal g-primary-unit != my-unique-unit))
-			(and
-				(goal g-support-unit-class cavalry-class)
-				(up-compare-goal g-support-unit != my-unique-unit)))
-		; (not
-		; 	(can-afford-building stable))
+			(up-compare-goal g-primary-unit != my-unique-unit)
+			(research-completed 483))	;Marauders
 		=>
 		(up-setup-cost-data 1 g-food-cost)
 		(up-add-object-cost c: stable c: 1)
@@ -10736,13 +10773,33 @@
 		; (defrule
 		; (taunt-detected TAUNT-PLAYER 246)
 		; (up-object-type-count-total c: stable g:< g-desired-num-stable)
+		; (goal g-primary-unit-class cavalry-class)
 		; (or
-		; 	(and
-		; 		(goal g-primary-unit-class cavalry-class)
-		; 		(up-compare-goal g-primary-unit != my-unique-unit))
-		; 	(and
-		; 		(goal g-support-unit-class cavalry-class)
-		; 		(up-compare-goal g-support-unit != my-unique-unit)))
+		; 	(up-compare-goal g-primary-unit != my-unique-unit)
+		; 	(research-completed 483))	;Marauders
+		; =>
+		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Saving for Stable")
+		; )
+
+		(defrule
+		(up-object-type-count-total c: stable g:< g-desired-num-stable)
+		(goal g-support-unit-class cavalry-class)
+		(or
+			(up-compare-goal g-primary-unit != my-unique-unit)
+			(research-completed 483))	;Marauders
+		=>
+		(up-setup-cost-data 1 g-food-cost)
+		(up-add-object-cost c: stable c: 1)
+		(up-modify-goal g-max-wood-needed g:max g-wood-cost)
+		)
+
+		; (defrule
+		; (taunt-detected TAUNT-PLAYER 246)
+		; (up-object-type-count-total c: stable g:< g-desired-num-stable)
+		; (goal g-support-unit-class cavalry-class)
+		; (or
+		; 	(up-compare-goal g-primary-unit != my-unique-unit)
+		; 	(research-completed 483))	;Marauders
 		; =>
 		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Saving for Stable")
 		; )
@@ -10918,23 +10975,53 @@
 	;	Watch Tower
 	;-----------------
 
-		(defrule
-		(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
-		; (not
-		; 	(can-afford-building watch-tower))
-		=>
-		(up-setup-cost-data 1 g-food-cost)
-		(up-add-object-cost c: watch-tower c: 1)
-		(up-modify-goal g-max-wood-needed g:max g-wood-cost)
-		(up-modify-goal g-max-stone-needed g:max g-stone-cost)
-		)
+		#load-if-not-defined SICILIANS-CIV
 
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 246)
-		; (up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Saving for Tower")
-		; )
+			(defrule
+			(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
+			; (not
+			; 	(can-afford-building watch-tower))
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-object-cost c: watch-tower c: 1)
+			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
+			(up-modify-goal g-max-stone-needed g:max g-stone-cost)
+			)
+
+			; (defrule
+			; (taunt-detected TAUNT-PLAYER 246)
+			; (up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
+			; =>
+			; (chat-to-player THIS-ANY-TAUNT-PLAYER "Saving for Tower")
+			; )
+
+		#end-if
+
+	;------------
+	;	Donjon
+	;------------
+
+		#load-if-defined SICILIANS-CIV
+
+			(defrule
+			(up-object-type-count-total c: donjon g:< g-desired-num-watch-tower)
+			; (not
+			; 	(can-afford-building donjon))
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-object-cost c: donjon c: 1)
+			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
+			(up-modify-goal g-max-stone-needed g:max g-stone-cost)
+			)
+
+			; (defrule
+			; (taunt-detected TAUNT-PLAYER 246)
+			; (up-object-type-count-total c: donjon g:< g-desired-num-watch-tower)
+			; =>
+			; (chat-to-player THIS-ANY-TAUNT-PLAYER "Saving for Donjon")
+			; )
+
+		#end-if
 		
 	;-------------------
 	;	Bombard Tower
@@ -11020,12 +11107,13 @@
 	;-------------------------
 
 		(defrule
-		(true)
+		(up-compare-goal g-constant-train-unit > 0)
 		=>
 		(up-get-indirect-goal g: g-desired-num-constant-train-unit-goal g-desired-num-constant-train-unit)
 		)
 
 		(defrule
+		(up-compare-goal g-constant-train-unit > 0)
 		(up-object-type-count-total g: g-constant-train-unit g:< g-desired-num-constant-train-unit)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
@@ -11037,6 +11125,7 @@
 
 		; (defrule
 		; (taunt-detected TAUNT-PLAYER 246)
+		; (up-compare-goal g-constant-train-unit > 0)
 		; (up-object-type-count-total g: g-constant-train-unit g:< g-desired-num-constant-train-unit)
 		; =>
 		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Saving for constant train unit")

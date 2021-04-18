@@ -196,6 +196,50 @@
 		
 	#end-if
 
+	#load-if-defined BURGUNDIANS-CIV
+			
+		(defrule
+		(goal g-general 0)
+		=>
+		(set-goal g-general GUNDAHARIUS)
+		(up-change-name "General Gundaharius")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 1)
+		=>
+		(set-goal g-general JOHN-THE-FEARLESS)
+		(up-change-name "General John the Fearless")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 2)
+		=>
+		(set-goal g-general ODO-IV)
+		(up-change-name "General Odo IV")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 3)
+		=>
+		(set-goal g-general PHILIP-THE-GOOD)
+		(up-change-name "General Philip the Good")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 4)
+		=>
+		(set-goal g-general RICHARD-THE-JUSTICIAR)
+		(up-change-name "General Richard the Justiciar")
+		(disable-self)
+		)
+		
+	#end-if
+
 	#load-if-defined BURMESE-CIV
 			
 		(defrule
@@ -1300,6 +1344,50 @@
 
 	#end-if
 
+	#load-if-defined SICILIANS-CIV
+			
+		(defrule
+		(goal g-general 0)
+		=>
+		(set-goal g-general BOHEMOND)
+		(up-change-name "General Bohemond")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 1)
+		=>
+		(set-goal g-general FREDERICK-II)
+		(up-change-name "General Frederick II")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 2)
+		=>
+		(set-goal g-general ROBERT-GUISCARD)
+		(up-change-name "General Robert Guiscard")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 3)
+		=>
+		(set-goal g-general ROGER-BOSSO)
+		(up-change-name "General Roger Bosso")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 4)
+		=>
+		(set-goal g-general ROGER-II)
+		(up-change-name "General Roger II")
+		(disable-self)
+		)
+
+	#end-if
+
 	#load-if-defined SLAVIC-CIV
 			
 		(defrule
@@ -1645,6 +1733,48 @@
 			(disable-self)
 			)
 
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(up-compare-goal g-enemy-swordsmen-count >= 8)
+				(or
+					(up-compare-goal g-enemy-spearmen-count >= 8)
+					(or
+						(up-compare-goal g-enemy-eagle-warrior-count >= 6)
+						(up-compare-goal g-enemy-condottiero-count >= 8))))
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(up-compare-goal g-enemy-swordsmen-count < 8)
+			(up-compare-goal g-enemy-spearmen-count < 8)
+			(up-compare-goal g-enemy-eagle-warrior-count < 6)
+			(up-compare-goal g-enemy-condottiero-count < 8)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
+			)
+
 		#end-if
 
 		#load-if-defined BERBERS-CIV
@@ -1675,6 +1805,26 @@
 			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
 			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
 			(disable-self)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
 			)
 
 		#end-if
@@ -1709,6 +1859,26 @@
 			(disable-self)
 			)
 
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
+			)
+
 		#end-if
 
 		#load-if-defined BULGARIANS-CIV
@@ -1739,6 +1909,78 @@
 			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
 			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
 			(disable-self)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
+			)
+
+		#end-if
+
+		#load-if-defined BURGUNDIANS-CIV
+			
+			(defrule
+			(goal g-position FLANK)
+			=>
+			(set-goal g-current-strategy FC-KRUSH)
+			(set-goal g-dark-strategy FC-KRUSH)
+			(set-goal g-early-feudal-strategy FC-KRUSH)
+			(set-goal g-mid-feudal-strategy FC-KRUSH)
+			(set-goal g-early-castle-strategy FC-KRUSH)
+			(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
+			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
+			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
+			(disable-self)
+			)
+
+			(defrule
+			(goal g-position POCKET)
+			=>
+			(set-goal g-current-strategy BOOM-KNIGHTS)
+			(set-goal g-dark-strategy BOOM-KNIGHTS)
+			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
+			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
+			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
+			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
+			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
+			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
+			(disable-self)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
 			)
 
 		#end-if
@@ -1773,6 +2015,26 @@
 			(disable-self)
 			)
 
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHALBS)
+			)
+
 		#end-if
 		
 		#load-if-defined BYZANTINE-CIV
@@ -1805,6 +2067,26 @@
 			(disable-self)
 			)
 
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
+			)
+
 		#end-if
 
 		#load-if-defined CELTIC-CIV
@@ -1835,6 +2117,39 @@
 			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
 			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
 			(disable-self)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(building-type-count castle > 0)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(building-type-count castle == 0)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHALBS)
 			)
 
 		#end-if
@@ -1869,6 +2184,26 @@
 			(disable-self)
 			)
 
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
+			)
+
 		#end-if
 
 		#load-if-defined CUMANS-CIV
@@ -1899,6 +2234,26 @@
 			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
 			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
 			(disable-self)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
 			)
 
 		#end-if
@@ -1933,6 +2288,31 @@
 			(disable-self)
 			)
 
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(building-type-count castle > 0)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(building-type-count castle == 0)
+				(and
+					(unit-type-count trade-cart < 6)
+					(and
+						(up-gaia-type-count c: gold <= 4)
+						(up-compare-goal g-recent-gold-gathered < 50))))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
+			)
+
 		#end-if
 
 		#load-if-defined FRANKISH-CIV
@@ -1963,6 +2343,39 @@
 			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
 			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
 			(disable-self)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(building-type-count castle > 0)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(building-type-count castle == 0)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHALBS)
 			)
 
 		#end-if
@@ -1997,6 +2410,26 @@
 			(disable-self)
 			)
 
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
+			)
+
 		#end-if
 
 		#load-if-defined HUN-CIV
@@ -2009,9 +2442,9 @@
 			(set-goal g-early-feudal-strategy FC-STRONGBOW)
 			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
 			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-CAV-ARCHERS)
+			(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
 			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-CAV-ARCHERS)
+			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
 			(disable-self)
 			)
 
@@ -2027,6 +2460,12 @@
 			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
 			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
 			(disable-self)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
 			)
 
 		#end-if
@@ -2059,6 +2498,39 @@
 			(set-goal g-early-imperial-strategy EARLYI-EL-DORADO)
 			(set-goal g-mid-imperial-strategy MIDI-EAGLES)
 			(disable-self)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(building-type-count castle > 0)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(building-type-count castle == 0)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
 			)
 
 		#end-if
@@ -2093,6 +2565,26 @@
 			(disable-self)
 			)
 
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
+			)
+
 		#end-if
 
 		#load-if-defined ITALIAN-CIV
@@ -2123,6 +2615,26 @@
 			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
 			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
 			(disable-self)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
 			)
 
 		#end-if
@@ -2157,6 +2669,46 @@
 			(disable-self)
 			)
 
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(building-type-count castle > 0)
+			(or
+				(research-completed my-unique-unit-upgrade)
+				(up-compare-goal g-enemy-special-unique-unit-count >= 3))
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(building-type-count castle == 0)
+				(and
+					(up-research-status c: my-unique-unit-upgrade < research-complete)
+					(up-compare-goal g-enemy-special-unique-unit-count < 3)))
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHALBS)
+			)
+
 		#end-if
 
 		#load-if-defined KHMER-CIV
@@ -2187,6 +2739,12 @@
 			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
 			(set-goal g-mid-imperial-strategy MIDI-CIRCUS)
 			(disable-self)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
 			)
 
 		#end-if
@@ -2221,6 +2779,26 @@
 			(disable-self)
 			)
 
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
+			)
+
 		#end-if
 
 		#load-if-defined LITHUANIANS-CIV
@@ -2253,6 +2831,12 @@
 			(disable-self)
 			)
 
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
+			)
+
 		#end-if
 
 		#load-if-defined MAGYAR-CIV
@@ -2283,6 +2867,20 @@
 			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
 			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
 			(disable-self)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(building-type-count castle > 0)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(building-type-count castle == 0)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
 			)
 
 		#end-if
@@ -2317,6 +2915,13 @@
 			(disable-self)
 			)
 
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(up-compare-goal g-late-imperial-strategy != LATEI-CHAMPIONS)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
 		#end-if
 
 		#load-if-defined MALIAN-CIV
@@ -2347,6 +2952,26 @@
 			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
 			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
 			(disable-self)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
 			)
 
 		#end-if
@@ -2381,6 +3006,12 @@
 			(disable-self)
 			)
 
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
+			)
+
 		#end-if
 
 		#load-if-defined MONGOL-CIV
@@ -2411,6 +3042,26 @@
 			(set-goal g-early-imperial-strategy EARLYI-UNIQUE)
 			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
 			(disable-self)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
 			)
 
 		#end-if
@@ -2445,6 +3096,35 @@
 			(disable-self)
 			)
 
+			#load-if-defined DE-AVAILABLE
+			
+				(defrule
+				(goal g-age-status LATE-IMPERIAL)
+				(or
+					(building-type-count castle > 0)
+					(up-research-status c: my-second-unique-research >= research-pending))
+				=>
+				(set-goal g-late-imperial-strategy LATEI-TRASHBOWS)
+				)
+
+				(defrule
+				(goal g-age-status LATE-IMPERIAL)
+				(building-type-count castle == 0)
+				(up-research-status c: my-second-unique-research < research-pending)
+				=>
+				(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
+				)
+
+			#else
+
+				(defrule
+				(goal g-age-status LATE-IMPERIAL)
+				=>
+				(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
+				)
+
+			#end-if
+
 		#end-if
 
 		#load-if-defined PORTUGUESE-CIV
@@ -2475,6 +3155,26 @@
 			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
 			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
 			(disable-self)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
 			)
 
 		#end-if
@@ -2509,6 +3209,94 @@
 			(disable-self)
 			)
 
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
+			)
+
+		#end-if
+
+		#load-if-defined SICILIANS-CIV
+			
+			(defrule
+			(goal g-position FLANK)
+			=>
+			(set-goal g-current-strategy FC-KRUSH)
+			(set-goal g-dark-strategy FC-KRUSH)
+			(set-goal g-early-feudal-strategy FC-KRUSH)
+			(set-goal g-mid-feudal-strategy FC-KRUSH)
+			(set-goal g-early-castle-strategy FC-KRUSH)
+			(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
+			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
+			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
+			(disable-self)
+			)
+
+			(defrule
+			(goal g-position POCKET)
+			=>
+			(set-goal g-current-strategy BOOM-KNIGHTS)
+			(set-goal g-dark-strategy BOOM-KNIGHTS)
+			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
+			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
+			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
+			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
+			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
+			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
+			(disable-self)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(building-type-count castle > 0)
+				(building-type-count donjon > 0))
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(building-type-count castle == 0)
+			(building-type-count donjon == 0)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
+			)
+
 		#end-if
 
 		#load-if-defined SLAVIC-CIV
@@ -2539,6 +3327,26 @@
 			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
 			(set-goal g-mid-imperial-strategy MIDI-CHAMPIONS)
 			(disable-self)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHALBS)
 			)
 
 		#end-if
@@ -2573,6 +3381,26 @@
 			(disable-self)
 			)
 
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
+			)
+
 		#end-if
 
 		#load-if-defined TATARS-CIV
@@ -2586,7 +3414,7 @@
 			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
 			(set-goal g-early-castle-strategy FC-STRONGBOW)
 			(set-goal g-mid-castle-strategy MIDC-CAV-ARCHERS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
+			(set-goal g-early-imperial-strategy EARLYI-HORDE)
 			(set-goal g-mid-imperial-strategy MIDI-CAV-ARCHERS)
 			(disable-self)
 			)
@@ -2603,6 +3431,12 @@
 			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
 			(set-goal g-mid-imperial-strategy MIDI-CAV-ARCHERS)
 			(disable-self)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
 			)
 
 		#end-if
@@ -2637,6 +3471,39 @@
 			(disable-self)
 			)
 
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(building-type-count castle > 0)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(building-type-count castle == 0)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHALBS)
+			)
+
 		#end-if
 
 		#load-if-defined TURKISH-CIV
@@ -2667,6 +3534,12 @@
 			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
 			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
 			(disable-self)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-HUSSAR)
 			)
 
 		#end-if
@@ -2701,6 +3574,26 @@
 			(disable-self)
 			)
 
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(or
+				(unit-type-count trade-cart >= 6)
+				(or
+					(up-gaia-type-count c: gold > 4)
+					(up-compare-goal g-recent-gold-gathered >= 50)))
+			=>
+			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+			)
+
+			(defrule
+			(goal g-age-status LATE-IMPERIAL)
+			(unit-type-count trade-cart < 6)
+			(up-gaia-type-count c: gold <= 4)
+			(up-compare-goal g-recent-gold-gathered < 50)
+			=>
+			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
+			)
+
 		#end-if
 
 		#load-if-defined VIKING-CIV
@@ -2733,121 +3626,11 @@
 			(disable-self)
 			)
 
-		#end-if
-
-	;-------------------
-	;	Late Imperial
-	;-------------------
-
-		#load-if-not-defined AZTEC-CIV
-		#load-if-not-defined CELTIC-CIV
-		#load-if-not-defined ETHIOPIAN-CIV
-		#load-if-not-defined FRANKISH-CIV
-		#load-if-not-defined HUN-CIV
-		#load-if-not-defined INCAN-CIV
-		#load-if-not-defined JAPANESE-CIV
-		#load-if-not-defined KHMER-CIV
-		#load-if-not-defined LITHUANIANS-CIV
-		#load-if-not-defined MAGYAR-CIV
-		#load-if-not-defined MALAY-CIV
-		#load-if-not-defined MAYAN-CIV
-		#load-if-not-defined PERSIAN-CIV
-		#load-if-not-defined TATARS-CIV
-		#load-if-not-defined TEUTONIC-CIV
-		#load-if-not-defined TURKISH-CIV
-		#load-if-not-defined VIKING-CIV
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 3)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 3)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASH)
-			)
-
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-		#end-if
-
-		#load-if-defined AZTEC-CIV
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(up-compare-goal g-enemy-swordsmen-count >= 8)
-				(or
-					(up-compare-goal g-enemy-spearmen-count >= 8)
-					(or
-						(up-compare-goal g-enemy-eagle-warrior-count >= 6)
-						(up-compare-goal g-enemy-condottiero-count >= 8))))
-			(or
-				(unit-type-count trade-cart >= 3)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(up-compare-goal g-enemy-swordsmen-count < 8)
-			(up-compare-goal g-enemy-spearmen-count < 8)
-			(up-compare-goal g-enemy-eagle-warrior-count < 6)
-			(up-compare-goal g-enemy-condottiero-count < 8)
-			(or
-				(unit-type-count trade-cart >= 3)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 3)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASH)
-			)
-
-		#end-if
-
-		#load-if-defined CELTIC-CIV
-
 			(defrule
 			(goal g-age-status LATE-IMPERIAL)
 			(building-type-count castle > 0)
 			(or
-				(unit-type-count trade-cart >= 3)
+				(unit-type-count trade-cart >= 6)
 				(or
 					(up-gaia-type-count c: gold > 4)
 					(up-compare-goal g-recent-gold-gathered >= 50)))
@@ -2859,7 +3642,7 @@
 			(goal g-age-status LATE-IMPERIAL)
 			(building-type-count castle == 0)
 			(or
-				(unit-type-count trade-cart >= 3)
+				(unit-type-count trade-cart >= 6)
 				(or
 					(up-gaia-type-count c: gold > 4)
 					(up-compare-goal g-recent-gold-gathered >= 50)))
@@ -2869,352 +3652,11 @@
 
 			(defrule
 			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 3)
+			(unit-type-count trade-cart < 6)
 			(up-gaia-type-count c: gold <= 4)
 			(up-compare-goal g-recent-gold-gathered < 50)
 			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASH)
-			)
-
-		#end-if
-
-		#load-if-defined ETHIOPIAN-CIV
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle > 0)
-			(or
-				(unit-type-count trade-cart >= 3)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(building-type-count castle == 0)
-				(and
-					(unit-type-count trade-cart < 3)
-					(and
-						(up-gaia-type-count c: gold <= 4)
-						(up-compare-goal g-recent-gold-gathered < 50))))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASH)
-			)
-
-		#end-if
-
-		#load-if-defined FRANKISH-CIV
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle > 0)
-			(or
-				(unit-type-count trade-cart >= 3)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle == 0)
-			(or
-				(unit-type-count trade-cart >= 3)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 3)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASH)
-			)
-
-		#end-if
-
-		#load-if-defined HUN-CIV
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASH)
-			)
-
-		#end-if
-
-		#load-if-defined INCAN-CIV
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle > 0)
-			(or
-				(unit-type-count trade-cart >= 3)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle == 0)
-			(or
-				(unit-type-count trade-cart >= 3)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 3)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASH)
-			)
-
-		#end-if
-
-		#load-if-defined JAPANESE-CIV
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle > 0)
-			(or
-				(research-completed my-unique-unit-upgrade)
-				(up-compare-goal g-enemy-special-unique-unit-count >= 3))
-			(or
-				(unit-type-count trade-cart >= 3)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(building-type-count castle == 0)
-				(and
-					(up-research-status c: my-unique-unit-upgrade < research-complete)
-					(up-compare-goal g-enemy-special-unique-unit-count < 3)))
-			(or
-				(unit-type-count trade-cart >= 3)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 3)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASH)
-			)
-
-		#end-if
-
-		#load-if-defined KHMER-CIV
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASH)
-			)
-
-		#end-if
-
-		#load-if-defined LITHUANIANS-CIV
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASH)
-			)
-
-		#end-if
-
-		#load-if-defined MAGYAR-CIV
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle > 0)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle == 0)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASH)
-			)
-
-		#end-if
-
-		#load-if-defined MALAY-CIV
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-		#end-if
-
-		#load-if-defined MAYAN-CIV
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASH)
-			)
-
-		#end-if
-
-		#load-if-defined PERSIAN-CIV
-
-			#load-if-defined DE-AVAILABLE
-			
-				(defrule
-				(goal g-age-status LATE-IMPERIAL)
-				(or
-					(building-type-count castle > 0)
-					(up-research-status c: my-second-unique-research >= research-pending))
-				=>
-				(set-goal g-late-imperial-strategy LATEI-TRASHBOWS)
-				)
-
-				(defrule
-				(goal g-age-status LATE-IMPERIAL)
-				(building-type-count castle == 0)
-				(up-research-status c: my-second-unique-research < research-pending)
-				=>
-				(set-goal g-late-imperial-strategy LATEI-TRASH)
-				)
-
-			#else
-
-				(defrule
-				(goal g-age-status LATE-IMPERIAL)
-				=>
-				(set-goal g-late-imperial-strategy LATEI-TRASH)
-				)
-
-			#end-if
-		#end-if
-
-		#load-if-defined TATARS-CIV
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-HUSSAR)
-			)
-
-		#end-if
-
-		#load-if-defined TEUTONIC-CIV
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle > 0)
-			(or
-				(unit-type-count trade-cart >= 3)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle == 0)
-			(or
-				(unit-type-count trade-cart >= 3)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 3)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASH)
-			)
-
-		#end-if
-
-		#load-if-defined TURKISH-CIV
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-HUSSAR)
-			)
-
-		#end-if
-
-		#load-if-defined VIKING-CIV
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle > 0)
-			(or
-				(unit-type-count trade-cart >= 3)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle == 0)
-			(or
-				(unit-type-count trade-cart >= 3)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 3)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASH)
+			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
 			)
 
 		#end-if
@@ -3871,7 +4313,7 @@
 		(defrule
 		(current-age == imperial-age)
 		(up-compare-goal g-age-status < LATE-IMPERIAL)
-		(unit-type-count trade-cart < 10)
+		(unit-type-count trade-cart < 6)
 		(or
 			(up-compare-goal g-recent-gold-gathered < 50)
 			(up-gaia-type-count c: gold < 10))
@@ -5844,8 +6286,8 @@
 		(up-full-reset-search)
 		(up-set-target-point g-position-self-x)
 		(up-find-remote c: castle c: 40)
-		(up-find-remote c: watch-tower c: 40)
-		(up-find-remote c: bombard-tower c: 40)
+		(up-find-remote c: krepost c: 40)
+		(up-find-remote c: tower-class c: 40)
 		(up-clean-search search-remote -1 search-order-asc)
 		(up-clean-search search-remote object-data-distance search-order-asc)
 		)
@@ -7063,6 +7505,7 @@
 
 			#load-if-not-defined BRITON-CIV
 			#load-if-not-defined BULGARIANS-CIV
+			#load-if-not-defined BURGUNDIANS-CIV
 			#load-if-not-defined BURMESE-CIV
 			#load-if-not-defined CELTIC-CIV
 			#load-if-not-defined CHINESE-CIV
@@ -7079,6 +7522,7 @@
 			#load-if-not-defined MONGOL-CIV
 			#load-if-not-defined PERSIAN-CIV
 			#load-if-not-defined PORTUGUESE-CIV
+			#load-if-not-defined SICILIANS-CIV
 			#load-if-not-defined SLAVIC-CIV
 			#load-if-not-defined SPANISH-CIV
 			#load-if-not-defined TATARS-CIV
@@ -7108,6 +7552,8 @@
 				(up-jump-rule -1)
 				)
 
+			#end-if
+			#end-if
 			#end-if
 			#end-if
 			#end-if
@@ -8874,22 +9320,15 @@
 		(up-modify-goal g-enemy-monks-count g:%* g-temp-2)
 		)
 
-		(defrule
-		(players-military-population any-enemy > 1)
-		(timer-triggered t-30-sec)
-		=>
-		(chat-to-player my-player-number "238")
-		)
-
 ;-------------------------------------
 ;	GOAL 219: g-constant-train-unit
 ;	GOAL 221: g-desired-num-constant-train-unit-goal
 ;-------------------------------------
 
 	(defrule
-	(up-compare-goal g-constant-train-unit != PENDING)
+	(up-compare-goal g-constant-train-unit != 0)
 	=>
-	(set-goal g-constant-train-unit PENDING)
+	(set-goal g-constant-train-unit 0)
 	)
 
 	(defrule
@@ -12504,6 +12943,57 @@
 
 	#end-if
 
+	#load-if-defined BURGUNDIANS-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-chain-barding >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(up-research-status c: ri-iron-casting >= research-pending)
+		(up-research-status c: ri-husbandry >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(research-completed ri-chain-barding)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(research-completed ri-husbandry)
+		(research-completed ri-iron-casting)
+		(research-completed ri-plate-barding)
+		(research-completed my-unique-unit-upgrade)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
 	#load-if-defined BURMESE-CIV
 		
 		;Required/Priority Castle Age Techs
@@ -14015,6 +14505,59 @@
 
 	#end-if
 
+	#load-if-defined SICILIANS-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-chain-mail >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		(up-research-status c: ri-squires >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(up-research-status c: ri-iron-casting >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(up-research-status c: ri-scale-mail >= research-pending)
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		;Secondary Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(research-completed ri-squires)
+		(research-completed ri-blast-furnace)
+		(research-completed ri-plate-mail)
+		(research-completed my-unique-unit-upgrade)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
 	#load-if-defined SLAVIC-CIV
 		
 		;Required Castle Age Techs
@@ -14554,21 +15097,21 @@
 	)
 
 	(defrule
-	(goal g-primary-unit PENDING)
+	(goal g-primary-unit 0)
 	(current-age == feudal-age)
 	=>
 	(set-goal g-primary-unit-tech-progress ALL-FEUDAL-COMPLETE)
 	)
 
 	(defrule
-	(goal g-primary-unit PENDING)
+	(goal g-primary-unit 0)
 	(current-age == castle-age)
 	=>
 	(set-goal g-primary-unit-tech-progress ALL-CASTLE-COMPLETE)
 	)
 
 	(defrule
-	(goal g-primary-unit PENDING)
+	(goal g-primary-unit 0)
 	(current-age == imperial-age)
 	=>
 	(set-goal g-primary-unit-tech-progress ALL-IMPERIAL-COMPLETE)
@@ -14675,21 +15218,21 @@
 	)
 
 	(defrule
-	(goal g-support-unit PENDING)
+	(goal g-support-unit 0)
 	(current-age == feudal-age)
 	=>
 	(set-goal g-support-unit-tech-progress ALL-FEUDAL-COMPLETE)
 	)
 
 	(defrule
-	(goal g-support-unit PENDING)
+	(goal g-support-unit 0)
 	(current-age == castle-age)
 	=>
 	(set-goal g-support-unit-tech-progress ALL-CASTLE-COMPLETE)
 	)
 
 	(defrule
-	(goal g-support-unit PENDING)
+	(goal g-support-unit 0)
 	(current-age == imperial-age)
 	=>
 	(set-goal g-support-unit-tech-progress ALL-IMPERIAL-COMPLETE)
@@ -15186,7 +15729,9 @@
 	(goal g-game-focus BALANCED)
 	(building-type-count barracks >= 3)
 	(goal g-primary-unit-class infantry-class)
-	(up-compare-goal g-primary-unit != my-unique-unit)
+	(or
+		(up-compare-goal g-primary-unit != my-unique-unit)
+		(research-completed 16))	;Anarchy
 	(up-object-type-count c: town-center g:>= g-desired-num-town-center)
 	=>
 	(up-get-fact building-type-count barracks g-temp)
@@ -15199,13 +15744,25 @@
 	(up-object-type-count-total c: villager g:>= g-total-needed-villagers)
 	(goal g-game-focus BALANCED)
 	(building-type-count barracks >= 2)
+	(goal g-primary-unit-class infantry-class)
 	(or
-		(and
-			(goal g-primary-unit-class infantry-class)
-			(up-compare-goal g-primary-unit != my-unique-unit))
-		(and
-			(goal g-support-unit-class infantry-class)
-			(up-compare-goal g-support-unit != my-unique-unit)))
+		(up-compare-goal g-primary-unit != my-unique-unit)
+		(research-completed 16))	;Anarchy
+	(up-object-type-count c: town-center g:>= g-desired-num-town-center)
+	=>
+	(set-goal g-max-working-barracks 2)
+	)
+
+	(defrule
+	(timer-triggered t-15-sec)
+	(goal g-max-working-barracks 1)
+	(up-object-type-count-total c: villager g:>= g-total-needed-villagers)
+	(goal g-game-focus BALANCED)
+	(building-type-count barracks >= 2)
+	(goal g-support-unit-class infantry-class)
+	(or
+		(up-compare-goal g-support-unit != my-unique-unit)
+		(research-completed 16))	;Anarchy
 	(up-object-type-count c: town-center g:>= g-desired-num-town-center)
 	=>
 	(set-goal g-max-working-barracks 2)
@@ -15374,7 +15931,9 @@
 	(goal g-game-focus BALANCED)
 	(building-type-count stable >= 3)
 	(goal g-primary-unit-class cavalry-class)
-	(up-compare-goal g-primary-unit != my-unique-unit)
+	(or
+		(up-compare-goal g-primary-unit != my-unique-unit)
+		(research-completed 483))	;Marauders
 	(up-object-type-count c: town-center g:>= g-desired-num-town-center)
 	=>
 	(up-get-fact building-type-count stable g-temp)
@@ -15387,13 +15946,25 @@
 	(up-object-type-count-total c: villager g:>= g-total-needed-villagers)
 	(goal g-game-focus BALANCED)
 	(building-type-count stable >= 2)
+	(goal g-primary-unit-class cavalry-class)
 	(or
-		(and
-			(goal g-primary-unit-class cavalry-class)
-			(up-compare-goal g-primary-unit != my-unique-unit))
-		(and
-			(goal g-support-unit-class cavalry-class)
-			(up-compare-goal g-support-unit != my-unique-unit)))
+		(up-compare-goal g-primary-unit != my-unique-unit)
+		(research-completed 483))	;Marauders
+	(up-object-type-count c: town-center g:>= g-desired-num-town-center)
+	=>
+	(set-goal g-max-working-stables 2)
+	)
+
+	(defrule
+	(timer-triggered t-15-sec)
+	(goal g-max-working-stables 1)
+	(up-object-type-count-total c: villager g:>= g-total-needed-villagers)
+	(goal g-game-focus BALANCED)
+	(building-type-count stable >= 2)
+	(goal g-support-unit-class cavalry-class)
+	(or
+		(up-compare-goal g-support-unit != my-unique-unit)
+		(research-completed 483))	;Marauders
 	(up-object-type-count c: town-center g:>= g-desired-num-town-center)
 	=>
 	(set-goal g-max-working-stables 2)
@@ -20189,7 +20760,7 @@
 	(defrule
 	(building-type-count barracks > 0)
 	=>
-	(set-goal g-barracks-next-unit PENDING)
+	(set-goal g-barracks-next-unit 0)
 	(set-goal g-temp 100)   ;used to track the percent trained out of total desired number of the current next unit to be trained. Set to 100% to start.
 	)
 
@@ -20264,7 +20835,7 @@
 	(defrule
 	(building-type-count archery-range > 0)
 	=>
-	(set-goal g-archery-range-next-unit PENDING)
+	(set-goal g-archery-range-next-unit 0)
 	(set-goal g-temp 100)   ;used to track the percent trained out of total desired number of the current next unit to be trained. Set to 100% to start.
 	)
 
@@ -20349,7 +20920,7 @@
 	(defrule
 	(building-type-count stable > 0)
 	=>
-	(set-goal g-stable-next-unit PENDING)
+	(set-goal g-stable-next-unit 0)
 	(set-goal g-temp 100)   ;used to track the percent trained out of total desired number of the current next unit to be trained. Set to 100% to start.
 	)
 
@@ -20439,7 +21010,7 @@
 	(defrule
 	(building-type-count siege-workshop > 0)
 	=>
-	(set-goal g-siege-workshop-next-unit PENDING)
+	(set-goal g-siege-workshop-next-unit 0)
 	(set-goal g-temp 100)   ;used to track the percent trained out of total desired number of the current next unit to be trained. Set to 100% to start.
 	)
 
@@ -20498,7 +21069,7 @@
 	(defrule
 	(building-type-count dock > 0)
 	=>
-	(set-goal g-dock-next-unit PENDING)
+	(set-goal g-dock-next-unit 0)
 	(set-goal g-temp 100)   ;used to track the percent trained out of total desired number of the current next unit to be trained. Set to 100% to start.
 	)
 
