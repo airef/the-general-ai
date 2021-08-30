@@ -1113,6 +1113,13 @@
 		(defrule
 		(taunt-detected TAUNT-PLAYER 245)
 		=>
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Mining Camp max distance: %d" s: sn-mining-camp-max-distance)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Lumber Camp max distance: %d" s: sn-lumber-camp-max-distance)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 245)
+		=>
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Required attack num: %d" g: g-required-attack-num)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Stop attack num: %d" g: g-stop-attack-num)
 		(acknowledge-taunt THIS-ANY-TAUNT-PLAYER 245)
@@ -1437,6 +1444,53 @@
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Target player: %d" g: g-temp)
 		(up-modify-goal g-temp s:= sn-focus-player-number)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Focus player: %d" g: g-temp)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 247)
+		(goal g-team-position SOLO)
+		=>
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "I am alone. :(")
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 247)
+		(goal g-team-position FLANK-NO-POCKET)
+		=>
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "I am playing 2v2.")
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 247)
+		(goal g-team-position FLANK)
+		=>
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "I am flank.")
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 247)
+		(goal g-team-position POCKET)
+		=>
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "I am pocket.")
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 247)
+		(goal g-team-position SUPER-POCKET)
+		=>
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "I am super pocket!")
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 247)
+		(up-compare-goal g-team-partner > 0)
+		=>
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Team partner: %d" g: g-team-partner)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 247)
+		=>
 		(acknowledge-taunt THIS-ANY-TAUNT-PLAYER 247)
 		)
 

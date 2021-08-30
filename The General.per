@@ -1,11 +1,11 @@
-;                              - THE GENERAL V1.1 -
+;                              - THE GENERAL V1.1b -
 ;                                       
 ;                                By  Leif Ericson
 ;				
 ;Settings:
 ;
 ;Game Version:	Userpatch, DE, or Wololo Kingdoms only. Not compatible with 1.0c.
-;Civilizations:	Aztecs or Magyars
+;Civilizations:	Aztecs, Huns, or Magyars
 ;Game Type:		Random Map
 ;Map Type:		Arabia
 ;Map Size:		Any
@@ -61,16 +61,18 @@
 (load "The General 3.1/Resign")
 
 #load-if-not-defined AZTEC-CIV
+#load-if-not-defined HUN-CIV
 #load-if-not-defined MAGYAR-CIV
 
 	(defrule
 	(game-time > 15)
 	=>
-	(chat-to-all "I currently play best with Aztecs or Magyars.")
-	(chat-to-all "If you use versions before 1.1, I can play other civs.")
+	(chat-to-all "I currently play best with Aztecs, Huns, or Magyars.")
+	(chat-to-all "If you use AI versions before 1.1, I can play other civs.")
 	(disable-self)
 	)
 
+#end-if
 #end-if
 #end-if
 
@@ -137,20 +139,23 @@
 (defrule
 (up-pending-placement c: town-center)
 (building-type-count town-center == 1)
+(up-compare-goal g-current-gold-camp-total < 2)
 =>
-(up-modify-sn sn-stone-dropsite-distance c:= 50)
+(up-modify-sn sn-stone-dropsite-distance c:= 200)
 (up-modify-sn sn-gold-dropsite-distance c:= 8)
 (set-strategic-number sn-town-center-placement mining-camp)
-(up-modify-sn sn-mining-camp-max-distance s:= sn-safe-town-size)
+; (up-modify-sn sn-mining-camp-max-distance s:= custom-sn-safe-town-size)
 (set-strategic-number sn-dropsite-separation-distance 8)
 )
 
 (defrule
 (up-pending-placement c: town-center)
-(building-type-count town-center != 1)
+(or
+	(building-type-count town-center != 1)
+	(up-compare-goal g-current-gold-camp-total >= 2))
 =>
 (set-strategic-number sn-town-center-placement lumber-camp)
-(up-modify-sn sn-lumber-camp-max-distance s:= sn-safe-town-size)
+; (up-modify-sn sn-lumber-camp-max-distance s:= sn-safe-town-size)
 (set-strategic-number sn-dropsite-separation-distance 8)
 )
 

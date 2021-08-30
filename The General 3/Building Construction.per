@@ -6,22 +6,485 @@
 ;				      BUILD LINE
 ;=========================<>=========================
 
-	(defrule
-	(true)
-	=>
-	(set-goal g-place-point-used NO)
-	(set-goal g-place-control-used NO)
-	(set-goal g-build-line-bldg 0)
-	(set-goal g-build-line-bldg-foundation 0)
-	(set-goal g-build-line-type PENDING)
-	)
+	;-----------
+	;	Setup
+	;-----------
 
-	(defrule
-	(up-timer-status t-5-sec != timer-running)
-	(up-compare-goal g-mill-construction-rule-id > 0)
-	=>
-	(up-jump-direct g: g-mill-construction-rule-id)
-	)
+		(defrule
+		(true)
+		=>
+		(set-goal g-place-point-used NO)
+		(set-goal g-place-control-used NO)
+		(set-goal g-build-line-bldg 0)
+		(set-goal g-build-line-bldg-foundation 0)
+		(set-goal g-build-line-type PENDING)
+		)
+	
+	;--------------------
+	;	Initial Houses
+	;--------------------
+
+		#load-if-not-defined HUN-CIV
+		#load-if-not-defined CHINESE-CIV
+
+			(load "The General 3.1/Functions/Reset")
+
+			(defrule
+			(can-build house)
+			(building-type-count town-center > 0)
+			(unit-type-count villager >= 2)
+			(building-type-count-total house < 2)
+			=>
+			(up-copy-point g-point-x g-position-self-x)
+			(up-modify-goal g-point-x c:- 6)
+			(up-modify-goal g-point-y c:- 6)
+			(up-copy-point g-point2-x g-point-x)
+			(set-goal g-temp 8943)
+			(up-get-fact building-type-count-total house g-temp-2)
+			(set-goal i 1)
+			)
+
+				;Check if house can be built at this spot and that no villagers are at this spot
+				(defrule
+				(goal g-temp 8943)
+				(up-compare-goal g-temp-2 < 2)	;we have < 2 houses
+				(up-can-build-line 0 g-point-x c: house)
+				(not
+					(up-point-contains g-point2-x c: villager-class))
+				(up-modify-goal g-point2-x c:- 1)
+				(not
+					(up-point-contains g-point2-x c: villager-class))
+				(up-modify-goal g-point2-y c:- 1)
+				(not
+					(up-point-contains g-point2-x c: villager-class))
+				(up-modify-goal g-point2-x c:+ 1)
+				(not
+					(up-point-contains g-point2-x c: villager-class))
+				=>
+				(set-goal g-temp 8944)
+				(up-jump-rule 2)
+				)
+
+				(defrule
+				(goal g-temp 8943)			;can't build house at current spot, try another location
+				(up-compare-goal g-temp-2 < 2)	;we have < 2 houses
+				(up-modify-goal j g:= i)
+				(up-modify-goal j c:mod 2)
+				(goal j 0)					;goal i is even
+				(up-compare-goal i < 25)
+				=>
+				(up-copy-point g-point-x g-position-self-x)
+				(up-modify-goal g-point-x c:- 6)
+				(up-modify-goal g-point-y c:- 6)
+				(up-modify-goal g-temp-3 g:= i)
+				(up-modify-goal g-temp-3 c:/ 2)
+				(up-modify-goal g-point-y g:+ g-temp-3)	;move next point SE one tile each iteration
+				(up-copy-point g-point2-x g-point-x)
+				(up-modify-goal i c:+ 1)
+				(up-jump-rule -2)
+				)
+
+				(defrule
+				(goal g-temp 8943)			;can't build house at current spot, try another location
+				(up-compare-goal g-temp-2 < 2)	;we have < 2 houses
+				(up-modify-goal j g:= i)
+				(up-modify-goal j c:mod 2)
+				(goal j 1)					;goal i is odd
+				(up-compare-goal i < 25)
+				=>
+				(up-copy-point g-point-x g-position-self-x)
+				(up-modify-goal g-point-x c:- 6)
+				(up-modify-goal g-point-y c:- 6)
+				(up-modify-goal g-temp-3 g:= i)
+				(up-modify-goal g-temp-3 c:+ 1)
+				(up-modify-goal g-temp-3 c:/ 2)
+				(up-modify-goal g-point-x g:+ g-temp-3)	;move next point NE one tile each iteration
+				(up-copy-point g-point2-x g-point-x)
+				(up-modify-goal i c:+ 1)
+				(up-jump-rule -3)
+				)
+
+				(defrule
+				(goal g-temp 8944)
+				=>
+				(up-set-target-point g-point-x)
+				(up-full-reset-search)
+				(up-filter-distance c: -1 c: 2)
+				(up-find-local c: villager-class c: 1)
+				(up-get-search-state g-local-total)
+				)
+
+				(defrule
+				(goal g-temp 8944)
+				(up-compare-goal g-local-total == 0)
+				=>
+				(set-goal g-temp 8943)
+				(up-jump-rule -4)
+				)
+
+				(defrule
+				(goal g-temp 8944)
+				(up-compare-goal g-local-total > 0)
+				=>
+				(set-goal g-temp 8945)
+				)
+					
+				(defrule
+				(goal g-temp 8945)
+				(can-build house)
+				; (up-pending-objects c: house < 2)
+				(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
+				(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
+				(up-modify-goal g-food-cost g:- g-wood-cost)
+				(up-compare-goal g-food-cost < 2)
+				(up-compare-goal g-temp-2 < 2)
+				=>
+				(up-build-line g-point-x g-point-x c: house)
+				(set-goal g-temp 8943)
+				(up-modify-goal g-temp-2 c:+ 1)
+				(up-modify-goal i c:+ 5)
+				(up-jump-rule -6)
+				)				
+
+			;Just in case two houses haven't been placed yet, start from right side of TC instead
+			(defrule
+			(can-build house)
+			(building-type-count town-center > 0)
+			(unit-type-count villager >= 2)
+			(building-type-count-total house < 2)
+			=>
+			(up-copy-point g-point-x g-position-self-x)
+			(up-modify-goal g-point-x c:+ 6)
+			(up-modify-goal g-point-y c:+ 6)
+			(up-copy-point g-point2-x g-point-x)
+			(set-goal g-temp 8946)
+			(set-goal i 1)
+			)
+
+				;Check if house can be built at this spot and that no villagers are at this spot
+				(defrule
+				(goal g-temp 8946)
+				(up-compare-goal g-temp-2 < 2)	;we have < 2 houses
+				(up-can-build-line 0 g-point-x c: house)
+				(not
+					(up-point-contains g-point2-x c: villager-class))
+				(up-modify-goal g-point2-x c:- 1)
+				(not
+					(up-point-contains g-point2-x c: villager-class))
+				(up-modify-goal g-point2-y c:- 1)
+				(not
+					(up-point-contains g-point2-x c: villager-class))
+				(up-modify-goal g-point2-x c:+ 1)
+				(not
+					(up-point-contains g-point2-x c: villager-class))
+				=>
+				(set-goal g-temp 8947)
+				(up-jump-rule 2)
+				)
+
+				(defrule
+				(goal g-temp 8946)			;can't build house at current spot, try another location
+				(up-compare-goal g-temp-2 < 2)	;we have < 2 houses
+				(up-modify-goal j g:= i)
+				(up-modify-goal j c:mod 2)
+				(goal j 0)					;goal i is even
+				(up-compare-goal i < 25)
+				=>
+				(up-copy-point g-point-x g-position-self-x)
+				(up-modify-goal g-point-x c:+ 6)
+				(up-modify-goal g-point-y c:+ 6)
+				(up-modify-goal g-temp-3 g:= i)
+				(up-modify-goal g-temp-3 c:/ -2)
+				(up-modify-goal g-point-y g:+ g-temp-3)	;move next point NW one tile each iteration
+				(up-copy-point g-point2-x g-point-x)
+				(up-modify-goal i c:+ 1)
+				(up-jump-rule -2)
+				)
+
+				(defrule
+				(goal g-temp 8946)			;can't build house at current spot, try another location
+				(up-compare-goal g-temp-2 < 2)	;we have < 2 houses
+				(up-modify-goal j g:= i)
+				(up-modify-goal j c:mod 2)
+				(goal j 1)					;goal i is odd
+				(up-compare-goal i < 25)
+				=>
+				(up-copy-point g-point-x g-position-self-x)
+				(up-modify-goal g-point-x c:+ 6)
+				(up-modify-goal g-point-y c:+ 6)
+				(up-modify-goal g-temp-3 g:= i)
+				(up-modify-goal g-temp-3 c:+ 1)
+				(up-modify-goal g-temp-3 c:/ -2)
+				(up-modify-goal g-point-x g:+ g-temp-3)	;move next point SE one tile each iteration
+				(up-copy-point g-point2-x g-point-x)
+				(up-modify-goal i c:+ 1)
+				(up-jump-rule -3)
+				)
+
+				(defrule
+				(goal g-temp 8947)
+				=>
+				(up-set-target-point g-point-x)
+				(up-full-reset-search)
+				(up-filter-distance c: -1 c: 3)
+				(up-find-local c: villager-class c: 1)
+				(up-get-search-state g-local-total)
+				)
+
+				(defrule
+				(goal g-temp 8947)
+				(up-compare-goal g-local-total == 0)
+				=>
+				(set-goal g-temp 8946)
+				(up-jump-rule -4)
+				)
+
+				(defrule
+				(goal g-temp 8947)
+				(up-compare-goal g-local-total != 0)
+				=>
+				(set-goal g-temp 8948)
+				)
+					
+				(defrule
+				(goal g-temp 8948)
+				(can-build house)
+				; (up-pending-objects c: house < 2)
+				(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
+				(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
+				(up-modify-goal g-food-cost g:- g-wood-cost)
+				(up-compare-goal g-food-cost < 2)
+				(up-compare-goal g-temp-2 < 2)
+				=>
+				(up-build-line g-point-x g-point-x c: house)
+				(set-goal g-temp 8946)
+				(up-modify-goal g-temp-2 c:+ 1)
+				(up-modify-goal i c:+ 5)
+				(up-jump-rule -6)
+				)
+
+			#load-if-not-defined INCAN-CIV
+
+				(load "The General 3.1/Functions/Reset")
+
+				(defrule
+				(building-type-count house < 2)
+				; (up-pending-objects c: house < 2)
+				(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
+				(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
+				(up-modify-goal g-food-cost g:- g-wood-cost)
+				(up-compare-goal g-food-cost < 2)
+				=>
+				(up-assign-builders c: house c: 1)
+				)
+
+				(defrule
+				(building-type-count house < 2)
+				(building-type-count-total house >= 2)
+				(game-time > 2)
+				(game-time <= 10)
+				=>
+				(up-assign-builders c: house c: 3)
+				)
+
+				(defrule
+				(building-type-count house < 2)
+				(building-type-count-total house >= 2)
+				(game-time > 10)
+				=>
+				(up-assign-builders c: house c: 1)
+				)
+
+			#end-if
+
+			(load "The General 3.1/Functions/Reset")
+
+			;Assign starting villagers to houses
+			(defrule
+			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
+			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
+			(up-modify-goal g-food-cost g:- g-wood-cost)
+			(up-compare-goal g-food-cost > 0)
+			; (up-pending-objects c: house > 0)
+			(unit-type-count villager >= 3)
+			(game-time < 2)
+			=>
+			(set-goal i 0)
+			(up-full-reset-search)
+			(up-find-local c: villager-class c: 3)
+			(up-set-target-object search-local c: 0)
+			(up-get-object-data object-data-id g-temp)
+			(up-set-target-object search-local c: 1)
+			(up-get-object-data object-data-id g-temp-2)
+			(up-set-target-object search-local c: 2)
+			(up-get-object-data object-data-id g-temp-3)
+			)
+
+			(defrule
+			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
+			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
+			(up-modify-goal g-food-cost g:- g-wood-cost)
+			(up-compare-goal g-food-cost > 0)
+			; (up-pending-objects c: house > 0)
+			(unit-type-count villager >= 3)
+			(up-set-target-by-id g: g-temp)
+			(game-time < 2)
+			=>
+			(up-get-point position-object g-point-x)
+			(up-set-target-point g-point-x)
+			(up-full-reset-search)
+			(up-filter-status c: status-pending c: list-active)
+			(set-strategic-number sn-focus-player-number my-player-number)
+			(up-find-status-remote c: house c: 2)
+			(up-clean-search search-remote object-data-distance search-order-asc)
+			)
+
+			(defrule
+			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
+			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
+			(up-modify-goal g-food-cost g:- g-wood-cost)
+			(up-compare-goal g-food-cost > 0)
+			; (up-pending-objects c: house > 0)
+			(unit-type-count villager >= 3)
+			(up-add-object-by-id search-local g: g-temp)
+			(up-set-target-object search-local c: 0)
+			(up-set-target-object search-remote c: 0)
+			(game-time < 2)
+			=>
+			(up-target-objects 1 action-default -1 -1)
+			)
+
+			(defrule
+			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
+			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
+			(up-modify-goal g-food-cost g:- g-wood-cost)
+			(up-compare-goal g-food-cost > 0)
+			; (up-pending-objects c: house > 0)
+			(unit-type-count villager >= 3)
+			(up-set-target-by-id g: g-temp-2)
+			(game-time < 2)
+			=>
+			(up-get-point position-object g-point-x)
+			(up-set-target-point g-point-x)
+			(up-full-reset-search)
+			(up-filter-status c: status-pending c: list-active)
+			(set-strategic-number sn-focus-player-number my-player-number)
+			(up-find-status-remote c: house c: 2)
+			(up-clean-search search-remote object-data-distance search-order-asc)
+			)
+
+			(defrule
+			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
+			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
+			(up-modify-goal g-food-cost g:- g-wood-cost)
+			(up-compare-goal g-food-cost > 0)
+			; (up-pending-objects c: house > 0)
+			(unit-type-count villager >= 3)
+			(up-add-object-by-id search-local g: g-temp-2)
+			(up-set-target-object search-local c: 0)
+			(up-set-target-object search-remote c: 0)
+			(game-time < 2)
+			=>
+			(up-target-objects 1 action-default -1 -1)
+			)
+
+			(defrule
+			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
+			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
+			(up-modify-goal g-food-cost g:- g-wood-cost)
+			(up-compare-goal g-food-cost > 0)
+			; (up-pending-objects c: house > 0)
+			(unit-type-count villager >= 3)
+			(up-set-target-by-id g: g-temp-3)
+			(game-time < 2)
+			=>
+			(up-get-point position-object g-point-x)
+			(up-set-target-point g-point-x)
+			(up-full-reset-search)
+			(up-filter-status c: status-pending c: list-active)
+			(set-strategic-number sn-focus-player-number my-player-number)
+			(up-find-status-remote c: house c: 2)
+			(up-clean-search search-remote object-data-distance search-order-asc)
+			)
+
+			(defrule
+			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
+			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
+			(up-modify-goal g-food-cost g:- g-wood-cost)
+			(up-compare-goal g-food-cost > 0)
+			; (up-pending-objects c: house > 0)
+			(unit-type-count villager >= 3)
+			(up-add-object-by-id search-local g: g-temp-3)
+			(up-set-target-object search-local c: 0)
+			(up-set-target-object search-remote c: 0)
+			(game-time < 2)
+			=>
+			(up-target-objects 1 action-default -1 -1)
+			)
+
+			;Make sure both starting houses are being built at the same time
+			(defrule
+			(building-type-count house < 2)
+			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
+			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
+			(up-modify-goal g-food-cost g:- g-wood-cost)
+			(up-compare-goal g-food-cost > 1)
+			; (up-pending-objects c: house > 1)
+			(game-time > 4)
+			=>
+			(up-full-reset-search)
+			(up-modify-sn sn-focus-player-number c:= my-player-number)
+			(up-filter-status c: status-pending c: list-active)
+			(up-find-status-remote c: house c: 2)
+			(up-remove-objects search-remote object-data-tasks-count > 0)	;remove houses that are being built
+			)
+
+			(defrule
+			(building-type-count house < 2)
+			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
+			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
+			(up-modify-goal g-food-cost g:- g-wood-cost)
+			(up-compare-goal g-food-cost > 0)
+			; (up-pending-objects c: house > 0)
+			(up-set-target-object search-remote c: 0)
+			(game-time > 4)
+			=>
+			(up-get-point position-object g-point-x)
+			(up-set-target-point g-point-x)
+			(up-reset-search 1 1 0 0)
+			(up-reset-filters)
+			(up-find-local c: villager-class c: 20)
+			(up-clean-search search-local object-data-distance search-order-asc)
+			)
+
+			(defrule
+			(building-type-count house < 2)
+			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
+			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
+			(up-modify-goal g-food-cost g:- g-wood-cost)
+			(up-compare-goal g-food-cost > 0)
+			; (up-pending-objects c: house > 0)
+			(up-set-target-object search-remote c: 0)
+			(up-set-target-object search-local c: 0)
+			(game-time > 4)
+			=>
+			(up-remove-objects search-local object-data-index > 0)
+			(up-target-objects 0 action-default -1 -1)
+			)
+
+		#end-if
+		#end-if
+
+	;----------------------------
+	;	Go to Build Line Mills
+	;----------------------------
+
+		(defrule
+		; (up-timer-status t-5-sec != timer-running)
+		(up-compare-goal g-mill-construction-rule-id > 0)
+		=>
+		(up-jump-direct g: g-mill-construction-rule-id)
+		)
 
 	;-------------
 	;	Wonders
@@ -822,7 +1285,6 @@
 		(goal g-build-line-bldg 0)
 		(up-object-type-count-total c: market g:< g-desired-num-market)
 		(wood-amount g:>= g-wood-cost)	;cost of town center
-		(goal g-desired-num-trade-cart 0)
 		(building-type-count-total market == 0)
 		(can-build-with-escrow market)
 		(up-pending-objects c: market < 1)
@@ -841,7 +1303,6 @@
 		(up-object-type-count-total c: market g:< g-desired-num-market)
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
-		(goal g-desired-num-trade-cart 0)
 		(building-type-count-total market == 0)
 		(can-build-with-escrow market)
 		(up-pending-objects c: market < 1)
@@ -860,9 +1321,7 @@
 		(up-object-type-count-total c: market g:< g-desired-num-market)
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
-		(or
-			(up-compare-goal g-desired-num-trade-cart > 0)
-			(building-type-count-total market >= 1))
+		(building-type-count-total market >= 1)
 		(can-build-with-escrow market)
 		(up-pending-objects c: market < 1)
 		; (building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
@@ -1011,7 +1470,7 @@
 		#load-if-defined SICILIANS-CIV
 
 			(defrule
-			(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
+			(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)	;g-watch-tower-line counts donjons
 			(up-compare-goal g-watch-tower-line > 0)
 			(can-build watch-tower)
 			(up-pending-objects c: watch-tower < 2)
@@ -1048,453 +1507,9 @@
 	;------------
 
 		#load-if-not-defined HUN-CIV
-		#load-if-not-defined CHINESE-CIV
 
 			(load "The General 3.1/Functions/Reset")
-
-			(defrule
-			(can-build house)
-			(building-type-count town-center > 0)
-			(unit-type-count villager >= 2)
-			(building-type-count-total house < 2)
-			=>
-			(up-copy-point g-point-x g-position-self-x)
-			(up-modify-goal g-point-x c:- 6)
-			(up-modify-goal g-point-y c:- 6)
-			(up-copy-point g-point2-x g-point-x)
-			(set-goal g-temp 8943)
-			(up-get-fact building-type-count-total house g-temp-2)
-			(set-goal i 1)
-			)
-
-				;Check if house can be built at this spot and that no villagers are at this spot
-				(defrule
-				(goal g-temp 8943)
-				(up-compare-goal g-temp-2 < 2)	;we have < 2 houses
-				(up-can-build-line 0 g-point-x c: house)
-				(not
-					(up-point-contains g-point2-x c: villager-class))
-				(up-modify-goal g-point2-x c:- 1)
-				(not
-					(up-point-contains g-point2-x c: villager-class))
-				(up-modify-goal g-point2-y c:- 1)
-				(not
-					(up-point-contains g-point2-x c: villager-class))
-				(up-modify-goal g-point2-x c:+ 1)
-				(not
-					(up-point-contains g-point2-x c: villager-class))
-				=>
-				(set-goal g-temp 8944)
-				(up-jump-rule 2)
-				)
-
-				(defrule
-				(goal g-temp 8943)			;can't build house at current spot, try another location
-				(up-compare-goal g-temp-2 < 2)	;we have < 2 houses
-				(up-modify-goal j g:= i)
-				(up-modify-goal j c:mod 2)
-				(goal j 0)					;goal i is even
-				(up-compare-goal i < 25)
-				=>
-				(up-copy-point g-point-x g-position-self-x)
-				(up-modify-goal g-point-x c:- 6)
-				(up-modify-goal g-point-y c:- 6)
-				(up-modify-goal g-temp-3 g:= i)
-				(up-modify-goal g-temp-3 c:/ 2)
-				(up-modify-goal g-point-y g:+ g-temp-3)	;move next point SE one tile each iteration
-				(up-copy-point g-point2-x g-point-x)
-				(up-modify-goal i c:+ 1)
-				(up-jump-rule -2)
-				)
-
-				(defrule
-				(goal g-temp 8943)			;can't build house at current spot, try another location
-				(up-compare-goal g-temp-2 < 2)	;we have < 2 houses
-				(up-modify-goal j g:= i)
-				(up-modify-goal j c:mod 2)
-				(goal j 1)					;goal i is odd
-				(up-compare-goal i < 25)
-				=>
-				(up-copy-point g-point-x g-position-self-x)
-				(up-modify-goal g-point-x c:- 6)
-				(up-modify-goal g-point-y c:- 6)
-				(up-modify-goal g-temp-3 g:= i)
-				(up-modify-goal g-temp-3 c:+ 1)
-				(up-modify-goal g-temp-3 c:/ 2)
-				(up-modify-goal g-point-x g:+ g-temp-3)	;move next point NE one tile each iteration
-				(up-copy-point g-point2-x g-point-x)
-				(up-modify-goal i c:+ 1)
-				(up-jump-rule -3)
-				)
-
-				(defrule
-				(goal g-temp 8944)
-				=>
-				(up-set-target-point g-point-x)
-				(up-full-reset-search)
-				(up-filter-distance c: -1 c: 2)
-				(up-find-local c: villager-class c: 1)
-				(up-get-search-state g-local-total)
-				)
-
-				(defrule
-				(goal g-temp 8944)
-				(up-compare-goal g-local-total == 0)
-				=>
-				(set-goal g-temp 8943)
-				(up-jump-rule -4)
-				)
-
-				(defrule
-				(goal g-temp 8944)
-				(up-compare-goal g-local-total > 0)
-				=>
-				(set-goal g-temp 8945)
-				)
-					
-				(defrule
-				(goal g-temp 8945)
-				(can-build house)
-				; (up-pending-objects c: house < 2)
-				(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
-				(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
-				(up-modify-goal g-food-cost g:- g-wood-cost)
-				(up-compare-goal g-food-cost < 2)
-				(up-compare-goal g-temp-2 < 2)
-				=>
-				(up-build-line g-point-x g-point-x c: house)
-				(set-goal g-temp 8943)
-				(up-modify-goal g-temp-2 c:+ 1)
-				(up-modify-goal i c:+ 5)
-				(up-jump-rule -6)
-				)				
-
-			;Just in case two houses haven't been placed yet, start from right side of TC instead
-			(defrule
-			(can-build house)
-			(building-type-count town-center > 0)
-			(unit-type-count villager >= 2)
-			(building-type-count-total house < 2)
-			=>
-			(up-copy-point g-point-x g-position-self-x)
-			(up-modify-goal g-point-x c:+ 6)
-			(up-modify-goal g-point-y c:+ 6)
-			(up-copy-point g-point2-x g-point-x)
-			(set-goal g-temp 8946)
-			(set-goal i 1)
-			)
-
-				;Check if house can be built at this spot and that no villagers are at this spot
-				(defrule
-				(goal g-temp 8946)
-				(up-compare-goal g-temp-2 < 2)	;we have < 2 houses
-				(up-can-build-line 0 g-point-x c: house)
-				(not
-					(up-point-contains g-point2-x c: villager-class))
-				(up-modify-goal g-point2-x c:- 1)
-				(not
-					(up-point-contains g-point2-x c: villager-class))
-				(up-modify-goal g-point2-y c:- 1)
-				(not
-					(up-point-contains g-point2-x c: villager-class))
-				(up-modify-goal g-point2-x c:+ 1)
-				(not
-					(up-point-contains g-point2-x c: villager-class))
-				=>
-				(set-goal g-temp 8947)
-				(up-jump-rule 2)
-				)
-
-				(defrule
-				(goal g-temp 8946)			;can't build house at current spot, try another location
-				(up-compare-goal g-temp-2 < 2)	;we have < 2 houses
-				(up-modify-goal j g:= i)
-				(up-modify-goal j c:mod 2)
-				(goal j 0)					;goal i is even
-				(up-compare-goal i < 25)
-				=>
-				(up-copy-point g-point-x g-position-self-x)
-				(up-modify-goal g-point-x c:+ 6)
-				(up-modify-goal g-point-y c:+ 6)
-				(up-modify-goal g-temp-3 g:= i)
-				(up-modify-goal g-temp-3 c:/ -2)
-				(up-modify-goal g-point-y g:+ g-temp-3)	;move next point NW one tile each iteration
-				(up-copy-point g-point2-x g-point-x)
-				(up-modify-goal i c:+ 1)
-				(up-jump-rule -2)
-				)
-
-				(defrule
-				(goal g-temp 8946)			;can't build house at current spot, try another location
-				(up-compare-goal g-temp-2 < 2)	;we have < 2 houses
-				(up-modify-goal j g:= i)
-				(up-modify-goal j c:mod 2)
-				(goal j 1)					;goal i is odd
-				(up-compare-goal i < 25)
-				=>
-				(up-copy-point g-point-x g-position-self-x)
-				(up-modify-goal g-point-x c:+ 6)
-				(up-modify-goal g-point-y c:+ 6)
-				(up-modify-goal g-temp-3 g:= i)
-				(up-modify-goal g-temp-3 c:+ 1)
-				(up-modify-goal g-temp-3 c:/ -2)
-				(up-modify-goal g-point-x g:+ g-temp-3)	;move next point SE one tile each iteration
-				(up-copy-point g-point2-x g-point-x)
-				(up-modify-goal i c:+ 1)
-				(up-jump-rule -3)
-				)
-
-				(defrule
-				(goal g-temp 8947)
-				=>
-				(up-set-target-point g-point-x)
-				(up-full-reset-search)
-				(up-filter-distance c: -1 c: 3)
-				(up-find-local c: villager-class c: 1)
-				(up-get-search-state g-local-total)
-				)
-
-				(defrule
-				(goal g-temp 8947)
-				(up-compare-goal g-local-total == 0)
-				=>
-				(set-goal g-temp 8946)
-				(up-jump-rule -4)
-				)
-
-				(defrule
-				(goal g-temp 8947)
-				(up-compare-goal g-local-total != 0)
-				=>
-				(set-goal g-temp 8948)
-				)
-					
-				(defrule
-				(goal g-temp 8948)
-				(can-build house)
-				; (up-pending-objects c: house < 2)
-				(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
-				(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
-				(up-modify-goal g-food-cost g:- g-wood-cost)
-				(up-compare-goal g-food-cost < 2)
-				(up-compare-goal g-temp-2 < 2)
-				=>
-				(up-build-line g-point-x g-point-x c: house)
-				(set-goal g-temp 8946)
-				(up-modify-goal g-temp-2 c:+ 1)
-				(up-modify-goal i c:+ 5)
-				(up-jump-rule -6)
-				)
-
-			#load-if-not-defined INCAN-CIV
-
-				(load "The General 3.1/Functions/Reset")
-
-				(defrule
-				(building-type-count house < 2)
-				; (up-pending-objects c: house < 2)
-				(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
-				(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
-				(up-modify-goal g-food-cost g:- g-wood-cost)
-				(up-compare-goal g-food-cost < 2)
-				=>
-				(up-assign-builders c: house c: 1)
-				)
-
-				(defrule
-				(building-type-count house < 2)
-				(building-type-count-total house >= 2)
-				(game-time > 2)
-				(game-time <= 10)
-				=>
-				(up-assign-builders c: house c: 3)
-				)
-
-				(defrule
-				(building-type-count house < 2)
-				(building-type-count-total house >= 2)
-				(game-time > 10)
-				=>
-				(up-assign-builders c: house c: 1)
-				)
-
-			#end-if
-
-			(load "The General 3.1/Functions/Reset")
-
-			;Assign starting villagers to houses
-			(defrule
-			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
-			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
-			(up-modify-goal g-food-cost g:- g-wood-cost)
-			(up-compare-goal g-food-cost > 0)
-			; (up-pending-objects c: house > 0)
-			(unit-type-count villager >= 3)
-			(game-time < 2)
-			=>
-			(set-goal i 0)
-			(up-full-reset-search)
-			(up-find-local c: villager-class c: 3)
-			(up-set-target-object search-local c: 0)
-			(up-get-object-data object-data-id g-temp)
-			(up-set-target-object search-local c: 1)
-			(up-get-object-data object-data-id g-temp-2)
-			(up-set-target-object search-local c: 2)
-			(up-get-object-data object-data-id g-temp-3)
-			)
-
-			(defrule
-			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
-			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
-			(up-modify-goal g-food-cost g:- g-wood-cost)
-			(up-compare-goal g-food-cost > 0)
-			; (up-pending-objects c: house > 0)
-			(unit-type-count villager >= 3)
-			(up-set-target-by-id g: g-temp)
-			(game-time < 2)
-			=>
-			(up-get-point position-object g-point-x)
-			(up-set-target-point g-point-x)
-			(up-full-reset-search)
-			(up-filter-status c: status-pending c: list-active)
-			(set-strategic-number sn-focus-player-number my-player-number)
-			(up-find-status-remote c: house c: 2)
-			(up-clean-search search-remote object-data-distance search-order-asc)
-			)
-
-			(defrule
-			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
-			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
-			(up-modify-goal g-food-cost g:- g-wood-cost)
-			(up-compare-goal g-food-cost > 0)
-			; (up-pending-objects c: house > 0)
-			(unit-type-count villager >= 3)
-			(up-add-object-by-id search-local g: g-temp)
-			(up-set-target-object search-local c: 0)
-			(up-set-target-object search-remote c: 0)
-			(game-time < 2)
-			=>
-			(up-target-objects 1 action-default -1 -1)
-			)
-
-			(defrule
-			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
-			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
-			(up-modify-goal g-food-cost g:- g-wood-cost)
-			(up-compare-goal g-food-cost > 0)
-			; (up-pending-objects c: house > 0)
-			(unit-type-count villager >= 3)
-			(up-set-target-by-id g: g-temp-2)
-			(game-time < 2)
-			=>
-			(up-get-point position-object g-point-x)
-			(up-set-target-point g-point-x)
-			(up-full-reset-search)
-			(up-filter-status c: status-pending c: list-active)
-			(set-strategic-number sn-focus-player-number my-player-number)
-			(up-find-status-remote c: house c: 2)
-			(up-clean-search search-remote object-data-distance search-order-asc)
-			)
-
-			(defrule
-			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
-			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
-			(up-modify-goal g-food-cost g:- g-wood-cost)
-			(up-compare-goal g-food-cost > 0)
-			; (up-pending-objects c: house > 0)
-			(unit-type-count villager >= 3)
-			(up-add-object-by-id search-local g: g-temp-2)
-			(up-set-target-object search-local c: 0)
-			(up-set-target-object search-remote c: 0)
-			(game-time < 2)
-			=>
-			(up-target-objects 1 action-default -1 -1)
-			)
-
-			(defrule
-			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
-			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
-			(up-modify-goal g-food-cost g:- g-wood-cost)
-			(up-compare-goal g-food-cost > 0)
-			; (up-pending-objects c: house > 0)
-			(unit-type-count villager >= 3)
-			(up-set-target-by-id g: g-temp-3)
-			(game-time < 2)
-			=>
-			(up-get-point position-object g-point-x)
-			(up-set-target-point g-point-x)
-			(up-full-reset-search)
-			(up-filter-status c: status-pending c: list-active)
-			(set-strategic-number sn-focus-player-number my-player-number)
-			(up-find-status-remote c: house c: 2)
-			(up-clean-search search-remote object-data-distance search-order-asc)
-			)
-
-			(defrule
-			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
-			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
-			(up-modify-goal g-food-cost g:- g-wood-cost)
-			(up-compare-goal g-food-cost > 0)
-			; (up-pending-objects c: house > 0)
-			(unit-type-count villager >= 3)
-			(up-add-object-by-id search-local g: g-temp-3)
-			(up-set-target-object search-local c: 0)
-			(up-set-target-object search-remote c: 0)
-			(game-time < 2)
-			=>
-			(up-target-objects 1 action-default -1 -1)
-			)
-
-			;Make sure both starting houses are being built at the same time
-			(defrule
-			(building-type-count house < 2)
-			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
-			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
-			(up-modify-goal g-food-cost g:- g-wood-cost)
-			(up-compare-goal g-food-cost > 1)
-			; (up-pending-objects c: house > 1)
-			(game-time > 4)
-			=>
-			(up-full-reset-search)
-			(up-modify-sn sn-focus-player-number c:= my-player-number)
-			(up-filter-status c: status-pending c: list-active)
-			(up-find-status-remote c: house c: 2)
-			(up-remove-objects search-remote object-data-tasks-count > 0)	;remove houses that are being built
-			)
-
-			(defrule
-			(building-type-count house < 2)
-			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
-			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
-			(up-modify-goal g-food-cost g:- g-wood-cost)
-			(up-compare-goal g-food-cost > 0)
-			; (up-pending-objects c: house > 0)
-			(up-set-target-object search-remote c: 0)
-			(game-time > 4)
-			=>
-			(up-get-point position-object g-point-x)
-			(up-set-target-point g-point-x)
-			(up-reset-search 1 1 0 0)
-			(up-reset-filters)
-			(up-find-local c: villager-class c: 20)
-			(up-clean-search search-local object-data-distance search-order-asc)
-			)
-
-			(defrule
-			(building-type-count house < 2)
-			(up-get-fact building-type-count-total house g-food-cost)	;using g-food-cost merely as a temp goal
-			(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
-			(up-modify-goal g-food-cost g:- g-wood-cost)
-			(up-compare-goal g-food-cost > 0)
-			; (up-pending-objects c: house > 0)
-			(up-set-target-object search-remote c: 0)
-			(up-set-target-object search-local c: 0)
-			(game-time > 4)
-			=>
-			(up-remove-objects search-local object-data-index > 0)
-			(up-target-objects 0 action-default -1 -1)
-			)
-	
+		
 			;get number of additional houses needed (stored in g-temp)
 			(defrule
 			(true)
@@ -1539,7 +1554,10 @@
 			)
 
 		#end-if
-		#end-if
+
+	;----------------------------------------
+	;	Go to Load Build Line Code Section
+	;----------------------------------------
 
 		(defrule
 		(up-compare-goal g-build-line-type != PENDING)
@@ -1547,8 +1565,6 @@
 		=>
 		(up-jump-direct g: g-build-line-rule-id)
 		)
-
-
 
 ;=========================<>=========================
 ;				 LOAD BUILD LINE CODE
@@ -2319,38 +2335,6 @@
 		(up-get-rule-id g-place-control-rule-id)
 		(disable-self)
 		)
-		
-		;Default is to place buildings with up-build-line
-		;Only allow backup place-control rules to run every 10 seconds
-		(defrule
-		(up-timer-status t-5-sec == timer-running)
-		(up-compare-goal g-place-forward-rule-id > 0)
-		=>
-		(up-jump-direct g: g-place-forward-rule-id)
-		)
-	
-	;-------------
-	;	Wonders
-	;-------------
-
-		(defrule
-		(up-object-type-count-total c: wonder g:< g-desired-num-wonder)
-		(can-build-with-escrow wonder)
-		(up-pending-objects c: wonder < 1)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
-		(up-compare-goal g-place-forward-rule-id > 0)
-		=>
-		(up-set-placement-data my-player-number -1 c: -25)
-		(up-modify-sn sn-placement-zone-size c:= 15)
-		(up-assign-builders c: wonder c: 45)
-		(release-escrow wood)
-		(release-escrow gold)
-		(release-escrow stone)
-		(up-build place-control 0 c: wonder)
-		(up-jump-direct g: g-place-forward-rule-id)
-		(up-store-type-name c: wonder)
-		; (up-chat-data-to-player my-player-number CHAT-BUILD-BACKUP-BUILDING c: 7031232)
-		)
 
 	;-----------------
 	;	Town Center
@@ -2380,6 +2364,25 @@
 			(can-afford-building watch-tower))
 		(can-build-with-escrow town-center)
 		(up-pending-objects c: town-center < 2)
+		(building-type-count-total town-center < 3)
+		(up-set-target-object search-local c: 0)
+		=>
+		(up-set-target-point g-position-self-x)
+		(up-get-object-data object-data-distance g-temp)
+		(up-modify-sn sn-lumber-camp-max-distance g:= g-temp)
+		(up-modify-sn sn-lumber-camp-max-distance c:+ 10)
+		(up-modify-sn sn-lumber-camp-max-distance c:max 12)
+		(up-modify-sn sn-lumber-camp-max-distance c:min 24)
+		)
+
+		(defrule
+		(up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+		(or
+			(up-compare-goal g-watch-tower-line g:>= g-desired-num-watch-tower)
+			(can-afford-building watch-tower))
+		(can-build-with-escrow town-center)
+		(up-pending-objects c: town-center < 2)
+		(building-type-count-total town-center >= 3)
 		(up-set-target-object search-local c: 0)
 		=>
 		(up-set-target-point g-position-self-x)
@@ -2422,8 +2425,8 @@
 		(up-get-object-data object-data-distance g-temp)
 		(up-modify-sn sn-mining-camp-max-distance g:= g-temp)
 		(up-modify-sn sn-mining-camp-max-distance c:+ 10)
-		(up-modify-sn sn-mining-camp-max-distance c:max 25)
-		(up-modify-sn sn-mining-camp-max-distance c:min 35)
+		(up-modify-sn sn-mining-camp-max-distance c:max 12)
+		(up-modify-sn sn-mining-camp-max-distance c:min 24)
 		)
 
 		(defrule
@@ -2433,6 +2436,7 @@
 			(can-afford-building watch-tower))
 		(can-build-with-escrow town-center)
 		(building-type-count-total town-center == 1)
+		(up-compare-goal g-current-gold-camp-total < 2)
 		(up-pending-objects c: town-center < 2)
 		=>
 		(set-strategic-number sn-dropsite-separation-distance 8)
@@ -2464,6 +2468,67 @@
 		(build town-center)
 		; (chat-to-player my-player-number CHAT-BUILD-BACKUP-TC-WOOD)
 		)
+
+		(defrule
+		(up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+		(or
+			(up-compare-goal g-watch-tower-line g:>= g-desired-num-watch-tower)
+			(can-afford-building watch-tower))
+		(can-build-with-escrow town-center)
+		(building-type-count-total town-center == 1)
+		(up-compare-goal g-current-gold-camp-total >= 2)
+		(up-pending-objects c: town-center < 2)
+		=>
+		(set-strategic-number sn-dropsite-separation-distance 8)
+		(set-strategic-number sn-town-center-placement lumber-camp)
+		(up-assign-builders c: town-center-foundation c: 4)
+		(release-escrow wood)
+		(release-escrow stone)
+		(build town-center)
+		; (chat-to-player my-player-number CHAT-BUILD-BACKUP-TC-WOOD)
+		)
+
+	;---------------------------------
+	;	Skip Place Control if no TC
+	;---------------------------------
+		
+		;Default is to place buildings with up-build-line
+		;Only allow backup place-control rules to run every 10 seconds
+		; (defrule
+		; (up-timer-status t-5-sec == timer-running)
+		; (up-compare-goal g-place-forward-rule-id > 0)
+		; =>
+		; (up-jump-direct g: g-place-forward-rule-id)
+		; )
+
+		(defrule
+		(building-type-count town-center == 0)	;most of the up-set-placement-data commands below rely on a TC
+		=>
+		(up-jump-direct g: g-place-forward-rule-id)
+		)
+	
+	;-------------
+	;	Wonders
+	;-------------
+
+		(defrule
+		(up-object-type-count-total c: wonder g:< g-desired-num-wonder)
+		(can-build-with-escrow wonder)
+		(up-pending-objects c: wonder < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		=>
+		(up-set-placement-data my-player-number -1 c: -25)
+		(up-modify-sn sn-placement-zone-size c:= 15)
+		(up-assign-builders c: wonder c: 45)
+		(release-escrow wood)
+		(release-escrow gold)
+		(release-escrow stone)
+		(up-build place-control 0 c: wonder)
+		(up-jump-direct g: g-place-forward-rule-id)
+		(up-store-type-name c: wonder)
+		; (up-chat-data-to-player my-player-number CHAT-BUILD-BACKUP-BUILDING c: 7031232)
+		)
+
 		
 	;------------
 	;	Castle
@@ -2474,7 +2539,6 @@
 		(can-build-with-escrow castle)
 		(up-pending-objects c: castle < 1)
 		(building-type-count-total castle == 0)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(up-set-placement-data my-player-number -1 c: 13)
@@ -2492,7 +2556,6 @@
 		(can-build-with-escrow castle)
 		(up-pending-objects c: castle < 1)
 		(building-type-count-total castle > 0)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(up-set-placement-data my-player-number -1 s: custom-sn-peaceful-town-size)
@@ -2516,7 +2579,6 @@
 			(can-build-with-escrow krepost)
 			(up-pending-objects c: krepost < 1)
 			(building-type-count-total krepost == 0)
-			(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 			(up-compare-goal g-place-forward-rule-id > 0)
 			=>
 			(up-set-placement-data my-player-number -1 c: 13)
@@ -2534,7 +2596,6 @@
 			(can-build-with-escrow krepost)
 			(up-pending-objects c: krepost < 1)
 			(building-type-count-total krepost > 0)
-			(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 			(up-compare-goal g-place-forward-rule-id > 0)
 			=>
 			(up-set-placement-data my-player-number -1 s: custom-sn-peaceful-town-size)
@@ -2560,7 +2621,6 @@
 			(goal g-game-focus AGGRESSIVE))
 		(can-build-with-escrow siege-workshop)
 		(up-pending-objects c: siege-workshop < 1)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(up-set-placement-data my-player-number -1 c: 8)
@@ -2583,7 +2643,6 @@
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(can-build-with-escrow university)
 		(up-pending-objects c: university < 1)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(up-set-placement-data my-player-number -1 c: -8)
@@ -2605,7 +2664,6 @@
 		(goal g-primary-unit monk)
 		(can-build-with-escrow monastery)
 		(up-pending-objects c: monastery < 1)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-desired-num-monks >= 3)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
@@ -2625,7 +2683,6 @@
 		(up-object-type-count-total c: university g:>= g-desired-num-university)
 		(can-build-with-escrow monastery)
 		(up-pending-objects c: monastery < 1)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-desired-num-monks >= 3)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
@@ -2656,7 +2713,6 @@
 		(building-type-count-total barracks < 2)
 		(can-build-with-escrow barracks)
 		(up-pending-objects c: barracks < 1)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(set-goal i 573428)
@@ -2694,7 +2750,6 @@
 		(up-compare-goal g-temp g:<= g-temp-3)
 		(can-build-with-escrow barracks)
 		(up-pending-objects c: barracks < 2)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(set-goal i 573428)
@@ -2706,7 +2761,6 @@
 		(goal i 573428)
 		(can-build-with-escrow barracks)
 		(up-pending-objects c: barracks < 1)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
@@ -2722,7 +2776,6 @@
 		(up-object-type-count-total c: barracks g:< g-desired-num-barracks)
 		(can-build barracks)
 		(up-pending-objects c: barracks < 1)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
@@ -2814,7 +2867,6 @@
 			(up-compare-goal g-primary-unit-class != cavalry-class))
 		(can-build-with-escrow archery-range)
 		(up-pending-objects c: archery-range < 1)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(set-goal i 573429)
@@ -2853,7 +2905,6 @@
 		(up-compare-goal g-temp g:<= g-temp-3)
 		(can-build-with-escrow archery-range)
 		(up-pending-objects c: archery-range < 1)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(set-goal i 573429)
@@ -2865,7 +2916,6 @@
 		(goal i 573429)
 		(can-build-with-escrow archery-range)
 		(up-pending-objects c: archery-range < 1)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
@@ -2881,7 +2931,6 @@
 		(up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
 		(can-build archery-range)
 		(up-pending-objects c: archery-range < 1)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
@@ -2924,7 +2973,6 @@
 		(building-type-count-total stable < 2)
 		(can-build-with-escrow stable)
 		(up-pending-objects c: stable < 1)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(set-goal i 573430)
@@ -2940,7 +2988,6 @@
 			(up-compare-goal g-desired-num-archery-range == 0))
 		(can-build-with-escrow stable)
 		(up-pending-objects c: stable < 1)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(set-goal i 573430)
@@ -2978,7 +3025,6 @@
 		(up-compare-goal g-temp g:<= g-temp-3)
 		(can-build-with-escrow stable)
 		(up-pending-objects c: stable < 1)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
@@ -2992,7 +3038,6 @@
 		(goal i 573430)
 		(can-build-with-escrow stable)
 		(up-pending-objects c: stable < 1)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
@@ -3007,7 +3052,6 @@
 		(up-object-type-count-total c: stable g:< g-desired-num-stable)
 		(can-build stable)
 		(up-pending-objects c: stable < 1)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
@@ -3023,9 +3067,11 @@
 	;------------
 
 		(defrule
-		(true)
+		(current-age >= feudal-age)
 		=>
 		(up-assign-builders c: market c: 1)
+		(up-setup-cost-data 1 g-food-cost)
+		(up-add-object-cost c: town-center-foundation c: 1)
 		)
 
 		(defrule
@@ -3038,13 +3084,10 @@
 
 		(defrule
 		(up-object-type-count-total c: market g:< g-desired-num-market)
-		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
-		(goal g-desired-num-trade-cart 0)
+		(wood-amount g:>= g-wood-cost)	;cost of town center
 		(building-type-count-total market == 0)
 		(can-build-with-escrow market)
 		(up-pending-objects c: market < 1)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(up-set-placement-data my-player-number -1 c: -5)
@@ -3060,16 +3103,14 @@
 		(up-object-type-count-total c: market g:< g-desired-num-market)
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
-		(up-compare-goal g-desired-num-trade-cart > 0)
+		(building-type-count-total market == 0)
 		(can-build-with-escrow market)
 		(up-pending-objects c: market < 1)
-		; (building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
-		(set-strategic-number sn-placement-to-center 1)
-		(set-strategic-number sn-placement-zone-size 5)
-		(up-set-placement-data my-player-number -1 c: -128)
-		(set-strategic-number sn-placement-fail-delta 0)
+		(up-set-placement-data my-player-number -1 c: -5)
+		(up-modify-sn sn-placement-zone-size c:= 5)
+		(set-strategic-number sn-placement-fail-delta -1)
 		(up-build place-control g-escrow c: market)
 		(up-jump-direct g: g-place-forward-rule-id)
 		(up-store-type-name c: market)
@@ -3083,7 +3124,6 @@
 		(building-type-count-total market >= 1)
 		(can-build-with-escrow market)
 		(up-pending-objects c: market < 1)
-		; (building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(set-strategic-number sn-placement-to-center 1)
@@ -3122,7 +3162,6 @@
 			(building-type-count-total barracks > 0))
 		(can-build-with-escrow blacksmith)
 		(up-pending-objects c: blacksmith < 1)
-		; (building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
@@ -3142,7 +3181,6 @@
 		(up-object-type-count-total c: bombard-tower g:< g-desired-num-bombard-tower)
 		(can-build bombard-tower)
 		(up-pending-objects c: bombard-tower < 2)
-		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(up-set-placement-data my-player-number -1 c: 20)
@@ -3166,7 +3204,6 @@
 			(up-compare-goal g-watch-tower-line > 0)
 			(can-build watch-tower)
 			(up-pending-objects c: watch-tower < 2)
-			(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 			(up-compare-goal g-place-forward-rule-id > 0)
 			=>
 			(up-set-placement-data my-player-number -1 c: 20)
@@ -3188,11 +3225,10 @@
 		#load-if-defined SICILIANS-CIV
 
 			(defrule
-			(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
+			(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)	;g-watch-tower-line counts donjons
 			(up-compare-goal g-watch-tower-line > 0)
 			(can-build watch-tower)
 			(up-pending-objects c: watch-tower < 2)
-			(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
 			(up-compare-goal g-place-forward-rule-id > 0)
 			=>
 			(up-set-placement-data my-player-number -1 c: 20)
@@ -3275,19 +3311,19 @@
 	;	Siege Workshop
 	;--------------------
 
-		(defrule
-		(up-object-type-count-total c: siege-workshop g:< g-desired-num-siege-workshop)
-		(goal g-game-focus AGGRESSIVE)
-		(can-build-with-escrow siege-workshop)
-		(up-pending-objects c: siege-workshop < 1)
-		(military-population >= 12)
-		(up-compare-goal g-target-military-parity >= 8)
-		(up-compare-goal g-target-pop-parity >= 20)
-		(goal g-attacking YES)
-		=>
-		(up-assign-builders c: siege-workshop c: 2)
-		(up-build place-forward g-escrow c: siege-workshop)
-		)
+		; (defrule
+		; (up-object-type-count-total c: siege-workshop g:< g-desired-num-siege-workshop)
+		; (goal g-game-focus AGGRESSIVE)
+		; (can-build-with-escrow siege-workshop)
+		; (up-pending-objects c: siege-workshop < 1)
+		; (military-population >= 12)
+		; (up-compare-goal g-target-military-parity >= 8)
+		; (up-compare-goal g-target-pop-parity >= 20)
+		; (goal g-attacking YES)
+		; =>
+		; (up-assign-builders c: siege-workshop c: 2)
+		; (up-build place-forward g-escrow c: siege-workshop)
+		; )
 
 ;=========================<>=========================
 ;				     PLACE NORMAL

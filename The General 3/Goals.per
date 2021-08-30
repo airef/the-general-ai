@@ -2258,17 +2258,17 @@
 
 		(defrule
 		(goal g-game-focus PENDING)
-		(goal g-position FLANK)
+		; (goal g-position FLANK)
 		=>
 		(set-goal g-game-focus AGGRESSIVE)
 		)
 
-		(defrule
-		(goal g-game-focus PENDING)
-		(goal g-position POCKET)
-		=>
-		(set-goal g-game-focus BOOM)
-		)
+		; (defrule
+		; (goal g-game-focus PENDING)
+		; (goal g-position POCKET)
+		; =>
+		; (set-goal g-game-focus BOOM)
+		; )
 
 		(defrule
 		(goal g-game-focus PENDING)
@@ -4125,24 +4125,13 @@
 	(up-modify-sn sn-focus-player-number g:= g-team-partner)
 	)
 
-	;If pocket, set g-closest-enemy to the flank's closest enemy
+	;set g-closest-enemy to closest enemy with > 20 villagers
 	(defrule
-	(goal g-position POCKET)
-	(timer-triggered t-10-sec)
-	(players-building-count any-enemy > 0)
-	(up-compare-goal g-team-partner > 0)
-	(up-allied-goal focus-player g-identity == THE-GENERAL)
-	(up-allied-goal focus-player g-position == FLANK)
-	(up-allied-goal focus-player g-closest-enemy g:!= g-closest-enemy)
-	=>
-	(up-get-player-fact focus-player allied-goal g-closest-enemy g-closest-enemy)
-	)
-
-	;Set closest enemy by distance to the enemy's closest building
-	(defrule
-	(nand
-		(up-allied-goal focus-player g-identity == THE-GENERAL)
-		(up-allied-goal focus-player g-position == FLANK))
+	(or
+		(goal g-position FLANK)
+		(nand
+			(up-allied-goal focus-player g-identity == THE-GENERAL)
+			(up-allied-goal focus-player g-position == FLANK)))
 	(timer-triggered t-10-sec)
 	(players-building-count any-enemy > 0)
 	=>
@@ -4150,25 +4139,26 @@
 	)
 
 	(defrule
-	(nand
-		(up-allied-goal focus-player g-identity == THE-GENERAL)
-		(up-allied-goal focus-player g-position == FLANK))
+	(or
+		(goal g-position FLANK)
+		(nand
+			(up-allied-goal focus-player g-identity == THE-GENERAL)
+			(up-allied-goal focus-player g-position == FLANK)))
 	(timer-triggered t-10-sec)
 	(players-building-count any-enemy > 0)
 	(players-civilian-population any-enemy > 20)
 	=>
 	(up-find-player enemy find-closest g-temp)
 	(up-modify-sn sn-focus-player-number g:= g-temp)
-	(up-full-reset-search)
-	(up-find-remote c: town-center c: 1)
-	(up-get-search-state g-local-total)
 	(set-goal i 1)
 	)
 
 		(defrule
-		(nand
-			(up-allied-goal focus-player g-identity == THE-GENERAL)
-			(up-allied-goal focus-player g-position == FLANK))
+		(or
+			(goal g-position FLANK)
+			(nand
+				(up-allied-goal focus-player g-identity == THE-GENERAL)
+				(up-allied-goal focus-player g-position == FLANK)))
 		(timer-triggered t-10-sec)
 		(players-building-count any-enemy > 0)
 		(or
@@ -4184,9 +4174,11 @@
 		)
 
 	(defrule
-	(nand
-		(up-allied-goal focus-player g-identity == THE-GENERAL)
-		(up-allied-goal focus-player g-position == FLANK))
+	(or
+		(goal g-position FLANK)
+		(nand
+			(up-allied-goal focus-player g-identity == THE-GENERAL)
+			(up-allied-goal focus-player g-position == FLANK)))
 	(timer-triggered t-10-sec)
 	(players-building-count any-enemy > 0)
 	(player-in-game focus-player)
@@ -4194,12 +4186,27 @@
 	=>
 	(up-modify-goal g-closest-enemy g:= g-temp)
 	)
+
+	;If pocket and flank is also The General, set g-closest-enemy to the flank's closest enemy
+	(defrule
+	(goal g-position POCKET)
+	(timer-triggered t-10-sec)
+	(players-building-count any-enemy > 0)
+	(up-compare-goal g-team-partner > 0)
+	(up-allied-goal focus-player g-identity == THE-GENERAL)
+	(up-allied-goal focus-player g-position == FLANK)
+	(up-allied-goal focus-player g-closest-enemy g:!= g-closest-enemy)
+	=>
+	(up-get-player-fact focus-player allied-goal g-closest-enemy g-closest-enemy)
+	)
 	
 	;No strong enemies left, pick closest enemy
 	(defrule
-	(nand
-		(up-allied-goal focus-player g-identity == THE-GENERAL)
-		(up-allied-goal focus-player g-position == FLANK))
+	(or
+		(goal g-position FLANK)
+		(nand
+			(up-allied-goal focus-player g-identity == THE-GENERAL)
+			(up-allied-goal focus-player g-position == FLANK)))
 	(timer-triggered t-10-sec)
 	(players-building-count any-enemy > 0)
 	(up-compare-goal g-closest-enemy <= 0)
@@ -6061,7 +6068,7 @@
 			(players-building-type-count any-ally town-center > 0)
 			(player-in-game focus-player)
 			(stance-toward focus-player ally)
-			(up-compare-goal i < 8)
+			(up-compare-goal i <= 8)
 			=>
 			(up-full-reset-search)
 			(up-find-remote c: town-center c: 1)
@@ -6074,7 +6081,7 @@
 			(players-building-type-count any-ally town-center > 0)
 			(player-in-game focus-player)
 			(stance-toward focus-player ally)
-			(up-compare-goal i < 8)
+			(up-compare-goal i <= 8)
 			(up-set-target-object search-remote c: 0)
 			=>
 			(up-get-point position-object g-point-x)
@@ -6089,7 +6096,7 @@
 			(players-building-type-count any-ally town-center > 0)
 			(player-in-game focus-player)
 			(stance-toward focus-player ally)
-			(up-compare-goal i < 8)
+			(up-compare-goal i <= 8)
 			(up-set-target-object search-remote c: 0)
 			(up-compare-goal g-temp g:< g-temp-2)	;less than the lowest distance to an ally pocket found so far
 			(up-compare-goal g-temp > 0)
@@ -6157,7 +6164,7 @@
 			(player-in-game focus-player)
 			(stance-toward focus-player ally)
 			(up-allied-goal focus-player g-position == FLANK)
-			(up-compare-goal i < 8)
+			(up-compare-goal i <= 8)
 			=>
 			(up-full-reset-search)
 			(up-find-remote c: town-center c: 1)
@@ -6171,7 +6178,7 @@
 			(player-in-game focus-player)
 			(stance-toward focus-player ally)
 			(up-allied-goal focus-player g-position == FLANK)
-			(up-compare-goal i < 8)
+			(up-compare-goal i <= 8)
 			(up-set-target-object search-remote c: 0)
 			=>
 			(up-get-point position-object g-point-x)
@@ -6187,7 +6194,7 @@
 			(player-in-game focus-player)
 			(stance-toward focus-player ally)
 			(up-allied-goal focus-player g-position == FLANK)
-			(up-compare-goal i < 8)
+			(up-compare-goal i <= 8)
 			(up-set-target-object search-remote c: 0)
 			(up-compare-goal g-temp g:< g-temp-2)	;less than the lowest distance to an ally flank found so far
 			(up-compare-goal g-temp > 0)
@@ -6200,7 +6207,7 @@
 			(goal g-position POCKET)
 			(player-in-game any-ally)
 			(players-building-type-count any-ally town-center > 0)
-			(up-compare-goal i < 8)
+			(up-compare-goal i <= 8)
 			=>
 			(up-modify-goal i c:+ 1)
 			(up-modify-sn sn-focus-player-number g:= i)

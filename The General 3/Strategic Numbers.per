@@ -92,7 +92,8 @@
     )
 
     (defrule
-    (population > 150)
+    (current-age == imperial-age)
+    (population > 170)
     (goal g-enemy-buildings-in-town 0)
     (or
         (up-compare-sn sn-safe-town-size < 32)
@@ -105,39 +106,39 @@
     (up-modify-sn sn-maximum-town-size c:max 32)
     )
 
-    (load "The General 3.1/Functions/Reset")
+    ; (load "The General 3.1/Functions/Reset")
 
-    (defrule
-    (timer-triggered t-5-sec)
-    (building-type-count town-center > 0)
-    =>
-    (up-set-target-point g-position-self-x)
-    (set-goal g-temp 40)
-    (up-modify-goal g-temp s:max custom-sn-peaceful-town-size)
-    (up-filter-distance c: -1 g: g-temp)    ;only search within 40 tiles or custom-sn-peaceful-town-size, whichever is larger
-    (up-full-reset-search)
-    (up-find-local c: town-center c: 40)
-    (up-find-local c: castle c: 40)
-    (up-find-local c: tower-class c: 40)
-    (up-filter-status c: status-pending c: list-active)
-    (up-find-status-local c: town-center c: 40)
-    (up-find-status-local c: castle c: 40)
-    (up-find-status-local c: tower-class c: 40)
-    (up-clean-search search-local object-data-distance search-order-desc)
-    )
+    ; (defrule
+    ; (timer-triggered t-5-sec)
+    ; (building-type-count town-center > 0)
+    ; =>
+    ; (up-set-target-point g-position-self-x)
+    ; (set-goal g-temp 40)
+    ; (up-modify-goal g-temp s:max custom-sn-peaceful-town-size)
+    ; (up-filter-distance c: -1 g: g-temp)    ;only search within 40 tiles or custom-sn-peaceful-town-size, whichever is larger
+    ; (up-full-reset-search)
+    ; (up-find-local c: town-center c: 40)
+    ; (up-find-local c: castle c: 40)
+    ; (up-find-local c: tower-class c: 40)
+    ; (up-filter-status c: status-pending c: list-active)
+    ; (up-find-status-local c: town-center c: 40)
+    ; (up-find-status-local c: castle c: 40)
+    ; (up-find-status-local c: tower-class c: 40)
+    ; (up-clean-search search-local object-data-distance search-order-desc)
+    ; )
 
-    (defrule
-    (timer-triggered t-5-sec)
-    (building-type-count town-center > 0)
-    (up-set-target-object search-local c: 0)
-    (up-get-object-data object-data-distance g-temp)
-    (up-compare-sn custom-sn-peaceful-town-size g:< g-temp)
-    =>
-    (up-modify-sn custom-sn-peaceful-town-size g:= g-temp)
-    (up-modify-sn custom-sn-peaceful-town-size c:min 40)
-    (up-modify-sn sn-maximum-town-size s:max custom-sn-peaceful-town-size)
-    (up-modify-sn sn-safe-town-size s:max custom-sn-peaceful-town-size)
-    )
+    ; (defrule
+    ; (timer-triggered t-5-sec)
+    ; (building-type-count town-center > 0)
+    ; (up-set-target-object search-local c: 0)
+    ; (up-get-object-data object-data-distance g-temp)
+    ; (up-compare-sn custom-sn-peaceful-town-size g:< g-temp)
+    ; =>
+    ; (up-modify-sn custom-sn-peaceful-town-size g:= g-temp)
+    ; (up-modify-sn custom-sn-peaceful-town-size c:min 40)
+    ; (up-modify-sn sn-maximum-town-size s:max custom-sn-peaceful-town-size)
+    ; (up-modify-sn sn-safe-town-size s:max custom-sn-peaceful-town-size)
+    ; )
 
 ;-------------------------------
 ;   SN-NUMBER-EXPLORE-GROUPS
@@ -426,16 +427,18 @@
 ;---------------------------------
 
     (defrule
-    (strategic-number sn-mining-camp-max-distance < 30)
+    (strategic-number sn-mining-camp-max-distance < 24)
     (building-type-count-total mining-camp > 1)
     =>
-    (up-modify-sn sn-mining-camp-max-distance c:max 30)
+    (set-strategic-number sn-mining-camp-max-distance 24)
+    ; (up-chat-data-to-player my-player-number CHAT-CAMP-MINING-SET-DISTANCE s: sn-mining-camp-max-distance)
     )
 
     (defrule
     (up-compare-sn sn-mining-camp-max-distance s:< custom-sn-peaceful-town-size)
     =>
     (up-modify-sn sn-mining-camp-max-distance s:= custom-sn-peaceful-town-size)
+    ; (up-chat-data-to-player my-player-number CHAT-CAMP-MINING-PEACEFUL-DISTANCE s: sn-mining-camp-max-distance)
     )
 
     (load "The General 3.1/Functions/Reset")
@@ -467,6 +470,7 @@
         =>
         (set-goal g-temp -1)
         (up-modify-sn sn-mining-camp-max-distance c:+ 5)
+        ; (up-chat-data-to-player my-player-number CHAT-CAMP-GOLD-INCREASE-DISTANCE s: sn-mining-camp-max-distance)
         (up-jump-rule -2)
         )
 
@@ -499,6 +503,7 @@
         =>
         (set-goal g-temp -1)
         (up-modify-sn sn-mining-camp-max-distance c:+ 5)
+        ; (up-chat-data-to-player my-player-number CHAT-CAMP-STONE-INCREASE-DISTANCE s: sn-mining-camp-max-distance)
         (up-jump-rule -2)
         )
 
@@ -515,6 +520,7 @@
     (strategic-number sn-mining-camp-max-distance >= SIXTY-PERCENT-MAP-SIZE)
     =>
     (set-strategic-number sn-mining-camp-max-distance HUNDRED-PERCENT-MAP-SIZE)
+    ; (up-chat-data-to-player my-player-number CHAT-CAMP-MINING-MAX-DISTANCE s: sn-mining-camp-max-distance)
     )
 
 ;------------------------------
