@@ -1,0 +1,46 @@
+(defrule
+(true)
+=>
+(set-goal g-current-strategy FC-EAGLES-REVENGE)
+(set-goal g-dark-strategy FC-EAGLES-REVENGE)
+(set-goal g-early-feudal-strategy FC-EAGLES-REVENGE)
+(set-goal g-mid-feudal-strategy FC-EAGLES-REVENGE)
+(set-goal g-early-castle-strategy FC-EAGLES-REVENGE)
+(set-goal g-mid-castle-strategy MIDC-EAGLES)
+(set-goal g-early-imperial-strategy EARLYI-EL-DORADO)
+(set-goal g-mid-imperial-strategy MIDI-EAGLES)
+(disable-self)
+)
+
+(defrule
+(goal g-age-status LATE-IMPERIAL)
+(building-type-count castle > 0)
+(or
+	(unit-type-count trade-cart >= 6)
+	(or
+		(up-gaia-type-count c: gold > 4)
+		(up-compare-goal g-recent-gold-gathered >= 50)))
+=>
+(set-goal g-late-imperial-strategy LATEI-UNIQUE)
+)
+
+(defrule
+(goal g-age-status LATE-IMPERIAL)
+(building-type-count castle == 0)
+(or
+	(unit-type-count trade-cart >= 6)
+	(or
+		(up-gaia-type-count c: gold > 4)
+		(up-compare-goal g-recent-gold-gathered >= 50)))
+=>
+(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+)
+
+(defrule
+(goal g-age-status LATE-IMPERIAL)
+(unit-type-count trade-cart < 6)
+(up-gaia-type-count c: gold <= 4)
+(up-compare-goal g-recent-gold-gathered < 50)
+=>
+(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
+)

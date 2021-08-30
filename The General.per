@@ -1,11 +1,11 @@
-;                              - THE GENERAL V1.0d -
+;                              - THE GENERAL V1.1 -
 ;                                       
 ;                                By  Leif Ericson
 ;				
 ;Settings:
 ;
-;Game Version:	Userpatch, Wololo Kingdoms, or DE only. Not compatible with 1.0c or HD.
-;Civilizations:	All
+;Game Version:	Userpatch, DE, or Wololo Kingdoms only. Not compatible with 1.0c.
+;Civilizations:	Aztecs or Magyars
 ;Game Type:		Random Map
 ;Map Type:		Arabia
 ;Map Size:		Any
@@ -44,21 +44,35 @@
 ;
 ;===============================================================================
 
-(load "The General 3/UserPatchConst")
-(load "The General 3/Game Stats")
-(load "The General 3/Initialization")
-(load "The General 3/Desired Object Counts")
-(load "The General 3/Strategic Numbers")
-(load "The General 3/Goals")
-(load "The General 3/Personality")
-(load "The General 3/Building Construction")
-(load "The General 3/Technology Research")
-(load "The General 3/Escrow")
-(load "The General 3/Unit Training")
-(load "The General 3/Gathering")
-(load "The General 3/Attacking")
-(load "The General 3/DUC")
-(load "The General 3/Resign")
+(load "The General 3.1/UserPatchConst")
+(load "The General 3.1/Game Stats")
+(load "The General 3.1/Initialization")
+(load "The General 3.1/Desired Object Counts")
+(load "The General 3.1/Strategic Numbers")
+(load "The General 3.1/Goals")
+(load "The General 3.1/Personality")
+(load "The General 3.1/Building Construction")
+(load "The General 3.1/Technology Research")
+(load "The General 3.1/Escrow")
+(load "The General 3.1/Unit Training")
+(load "The General 3.1/Gathering")
+(load "The General 3.1/Attacking")
+(load "The General 3.1/DUC")
+(load "The General 3.1/Resign")
+
+#load-if-not-defined AZTEC-CIV
+#load-if-not-defined MAGYAR-CIV
+
+	(defrule
+	(game-time > 15)
+	=>
+	(chat-to-all "I currently play best with Aztecs or Magyars.")
+	(chat-to-all "If you use versions before 1.1, I can play other civs.")
+	(disable-self)
+	)
+
+#end-if
+#end-if
 
 (defrule
 (timer-triggered t-5-sec)

@@ -912,12 +912,6 @@
 	;	Taunt 243 - Villager Data
 	;-------------------------------
 
-		; (defrule
-		; (timer-triggered t-15-sec)
-		; =>
-		; (chat-to-player my-player-number "243")
-		; )
-
 		(defrule
 		(taunt-detected TAUNT-PLAYER 243)
 		=>
@@ -927,10 +921,12 @@
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Desired Food vils: %d" g: g-desired-num-food-vils)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Desired Gold vils: %d" g: g-desired-num-gold-vils)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Desired Stone vils: %d" g: g-desired-num-stone-vils)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Food Gathering %: %d" s: sn-food-gatherer-percentage)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Wood Gathering %: %d" s: sn-wood-gatherer-percentage)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Gold Gathering %: %d" s: sn-gold-gatherer-percentage)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Stone Gathering %: %d" s: sn-stone-gatherer-percentage)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Desired Farms %d" g: g-desired-num-farm)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Usable Farms %d" g: g-usable-farm-count)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Food Gathering Pct: %d" s: sn-food-gatherer-percentage)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Wood Gathering Pct: %d" s: sn-wood-gatherer-percentage)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Gold Gathering Pct: %d" s: sn-gold-gatherer-percentage)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Stone Gathering Pct: %d" s: sn-stone-gatherer-percentage)
 		)
 
 		(defrule
@@ -973,24 +969,14 @@
 		(acknowledge-taunt THIS-ANY-TAUNT-PLAYER 243)
 		)
 
-	;-------------------------------------
-	;	Taunt 244 - Flare Current Sheep
-	;-------------------------------------
+	;--------------------------------------------
+	;	Taunt 244 - Flare Soldier Gather Point
+	;--------------------------------------------
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 244)
-		(up-set-target-by-id g: g-current-sheep-id)
 		=>
-		(up-get-point position-object g-point-x)
-		(up-send-flare g-point-x)
-		)
-
-		(defrule
-		(taunt-detected TAUNT-PLAYER 244)
-		(up-set-target-by-id g: g-next-sheep-id)
-		=>
-		(up-get-point position-object g-point-x)
-		(up-send-flare g-point-x)
+		(up-send-flare g-gather-point-x)
 		)
 
 		(defrule
@@ -1121,6 +1107,7 @@
 		=>
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Max TS: %d" s: sn-maximum-town-size)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Safe TS: %d" s: sn-safe-town-size)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Peaceful TS: %d" s: custom-sn-peaceful-town-size)
 		)
 
 		(defrule
@@ -1697,6 +1684,16 @@
 		=>
 		(chat-to-player this-any-computer "I'm going FULL MAN-AT-ARMS in Feudal.")
 		(chat-to-player this-any-human-ally "I'm going FULL MAN-AT-ARMS in Feudal.")
+		)
+
+		(defrule
+		(or
+			(taunt-detected any-computer 250)
+			(taunt-detected any-human-ally 250))
+		(goal g-current-strategy MIDF-FULL-EAGLES)
+		=>
+		(chat-to-player this-any-computer "I'm going FULL EAGLES in Feudal.")
+		(chat-to-player this-any-human-ally "I'm going FULL EAGLES in Feudal.")
 		)
 
 		(defrule
@@ -2291,7 +2288,7 @@
 		(or
 			(taunt-detected any-computer 250)
 			(taunt-detected any-human-ally 250))
-		(goal g-current-strategy LATEI-HUSSAR)
+		(goal g-current-strategy LATEI-HUSSARS)
 		=>
 		(chat-to-player this-any-computer "I am using hussars to conserve gold.")
 		(chat-to-player this-any-human-ally "I am using hussars to conserve gold.")
@@ -2731,7 +2728,7 @@
 			
 			(defrule
 			(goal g-temp 500)
-			(up-compare-text c: text-william-wallace >= 0)
+			(up-compare-text c: TEXT-WILLIAM-WALLACE >= 0)
 			(goal g-general EDWARD-LONGSHANKS)
 			(game-time g:> g-initial-chat-delay)
 			=>
@@ -3069,5 +3066,22 @@
 
 	#end-if
 
+;=========================<>=========================
+;				RESPOND TO PLAYER CHAT
+;=========================<>=========================
 
+	(defrule
+	(true)
+	=>
+	(up-store-player-chat target-player)
+	)
+
+	(defrule
+	(stance-toward target-player enemy)
+	(up-compare-text c: TEXT-GG == 0)
+	(up-compare-text c: TEXT-GG2 < 0)
+	=>
+	(chat-to-player every-enemy "gg")
+	(disable-self)
+	)
 

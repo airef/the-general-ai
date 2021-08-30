@@ -2,7 +2,7 @@
 
 #load-if-not-defined UP-ALLY-IN-GAME
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	;Resign if we have < 40% of the enemy pop
 	(defrule
@@ -16,31 +16,6 @@
 	=>
 	(set-goal g-resign DECIDE-TO-RESIGN)
 	)
-
-	; ;Impossible to get more villagers, resign.
-	; (defrule
-	; (unit-type-count-total villager == 0)
-	; (or
-	; 	(not
-	; 		(can-afford-unit villager))
-	; 	(building-type-count-total town-center == 0))
-	; ;(building-type-count-total market == 0)
-	; (goal g-resign NO)
-	; =>
-	; (set-goal g-resign DECIDE-TO-RESIGN)
-	; )
-	
-	; ;Impossible to develop if wood can't be gathered
-	; (defrule
-	; (building-type-count-total lumber-camp == 0)
-	; (building-type-count-total town-center == 0)
-	; (not
-	; 	(can-afford-building lumber-camp))
-	; ;(building-type-count-total market == 0)
-	; (goal g-resign NO)
-	; =>
-	; (set-goal g-resign DECIDE-TO-RESIGN)
-	; )
 	
 #end-if
 
@@ -56,8 +31,8 @@
 	(up-compare-goal g-resign < ASK-FOR-RES)
 	(player-in-game any-ally)
 	=>
-	(chat-to-allies "3 No villagers to gather food; no food to train them.")
-	(chat-to-allies "Catch-22. Food please? 11")
+	(chat-to-allies CHAT-REQUEST-FOOD-FOR-VILLAGERS1)
+	(chat-to-allies CHAT-REQUEST-FOOD-FOR-VILLAGERS2)
 	(set-goal g-resign ASK-FOR-RES)
 	(enable-timer t-resign 30)
 	)
@@ -72,8 +47,8 @@
 	(up-compare-goal g-resign < ASK-FOR-RES)
 	(player-in-game any-ally)
 	=>
-	(chat-to-allies "4 Can't build LC or TC. Out of wood and can't gather it.")
-	(chat-to-allies "Catch-22. Wood please? 11")
+	(chat-to-allies CHAT-REQUEST-WOOD-FOR-CAMP2)
+	(chat-to-allies CHAT-REQUEST-WOOD-FOR-CAMP2)
 	(set-goal g-resign ASK-FOR-RES)
 	(enable-timer t-resign 30)
 	)
@@ -92,10 +67,10 @@
 	(tribute-to-player this-any-ally food 100000)
 	(tribute-to-player this-any-ally gold 100000)
 	(tribute-to-player this-any-ally stone 100000)
-	(chat-to-allies "I'm about to be defeated. Keep on without me!")
+	(chat-to-allies CHAT-DEFEATED)
 	)
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	;Resign if team has < 20% pop of enemy team
 	(defrule
@@ -129,76 +104,7 @@
 	(set-goal g-resign DECIDE-TO-RESIGN)
 	)
 	
-	; (defrule
-	; (up-timer-status t-resign == timer-triggered)
-	; (goal g-resign ASK-FOR-RES)
-	; (unit-type-count-total villager == 0)
-	; (not
-	; 	(can-afford-unit villager))
-	; (building-type-count-total market == 0)
-	; =>
-	; (set-goal g-resign DECIDE-TO-RESIGN)
-	; )
-	
-	; (defrule
-	; (up-timer-status t-resign == timer-triggered)
-	; (goal g-resign ASK-FOR-RES)
-	; (building-type-count-total lumber-camp == 0)
-	; (building-type-count-total town-center == 0)
-	; ;(building-type-count-total market == 0)
-	; (not
-	; 	(can-afford-building lumber-camp))
-	; =>
-	; (set-goal g-resign DECIDE-TO-RESIGN)
-	; )
-
-	; ;Impossible to get more villagers, resign.
-	; (defrule
-	; (unit-type-count-total villager == 0)
-	; (building-type-count-total town-center == 0)
-	; (military-population < 5)
-	; ;(building-type-count-total market == 0)
-	; (up-compare-goal g-resign < DECIDE-TO-RESIGN)
-	; =>
-	; (set-goal g-resign DECIDE-TO-RESIGN)
-	; )
-
-	; ;All is lost.
-	; (defrule
-	; (game-time > 600)
-	; (population < 5)
-	; ;(building-type-count-total market == 0)
-	; (up-compare-goal g-resign < DECIDE-TO-RESIGN)
-	; (building-type-count-total town-center == 0)
-	; (not
-	; 	(can-build town-center))
-	; =>
-	; (set-goal g-resign DECIDE-TO-RESIGN)
-	; )
-	
-	; (defrule
-	; (game-time > 600)
-	; (not
-	; 	(player-in-game any-ally))
-	; (unit-type-count villager < 10)
-	; (up-compare-goal g-top-enemy-military-parity <= -50)
-	; ;(building-type-count-total market == 0)
-	; (goal g-resign NO)
-	; =>
-	; (set-goal g-resign DECIDE-TO-RESIGN)
-	; )
-	
 #end-if
-	
-; (defrule
-; (up-compare-goal g-resign >= DECIDE-TO-RESIGN)
-; (or
-; 	(unit-type-count trade-cart > 0)
-; 	(unit-type-count villager > 0))
-; =>
-; (up-delete-objects c: villager-class c: 1000)
-; (up-delete-objects c: trade-cart c: 1000)
-; )
 
 (defrule
 (military-population > 0)
@@ -211,8 +117,8 @@
 (defrule
 (goal g-resign DECIDE-TO-RESIGN)
 =>
-(chat-to-all "Well fought. We shall do battle again another day.")
-(chat-to-all "gg")
+(chat-to-all CHAT-RESIGN)
+(chat-to-all CHAT-GG)
 (set-goal g-resign RESIGN)
 (enable-timer t-resign 5)
 )
@@ -220,8 +126,6 @@
 (defrule
 (up-timer-status t-resign == timer-triggered)
 (goal g-resign RESIGN)
-;(unit-type-count villager == 0)
-;(unit-type-count trade-cart == 0)
 =>
 (resign)
 )

@@ -256,7 +256,6 @@
 			(goal g-attacking YES))
 		(up-object-type-count-total c: battering-ram-line g:< g-desired-num-battering-ram)
 		(up-pending-objects c: battering-ram-line g:< g-max-working-siege-workshops)
-		; (up-research-status c: ri-capped-ram != research-available)
 		(can-train-with-escrow battering-ram-line)
 		=>
 		(up-train g-escrow c: battering-ram-line)
@@ -272,7 +271,6 @@
 		(military-population g:>= g-min-military-pop)
 		(up-object-type-count-total c: battering-ram-line g:< g-desired-num-battering-ram)
 		(up-pending-objects c: battering-ram-line g:< g-max-working-siege-workshops)
-		; (up-research-status c: ri-capped-ram != research-available)
 		(can-train-with-escrow battering-ram-line)
 		=>
 		(up-train g-escrow c: battering-ram-line)
@@ -328,7 +326,6 @@
 		(up-pending-objects c: demolition-ship-line g:< g-max-working-docks)
 		(up-pending-objects c: demolition-raft g:< g-max-working-docks)
 		(up-pending-objects c: demolition-ship-wk g:< g-max-working-docks)
-		; (up-research-status c: ri-war-galley != research-available)
 		(can-train demolition-ship)
 		=>
 		(train demolition-ship)
@@ -340,7 +337,6 @@
 		(up-pending-objects c: fire-ship-line g:< g-max-working-docks)
 		(up-pending-objects c: fire-galley g:< g-max-working-docks)
 		(up-pending-objects c: fire-ship-wk g:< g-max-working-docks)
-		; (up-research-status c: ri-war-galley != research-available)
 		(can-train fire-ship)
 		=>
 		(train fire-ship)
@@ -350,7 +346,6 @@
 		(goal g-dock-next-unit galley-line)
 		(up-object-type-count-total c: galley-line g:< g-desired-num-galley)
 		(up-pending-objects c: galley-line g:< g-max-working-docks)
-		; (up-research-status c: ri-war-galley != research-available)
 		(can-train galley-line)
 		=>
 		(train galley-line)
@@ -624,6 +619,11 @@
 		(up-compare-goal g-desired-num-scout-cavalry > 0)
 		(unit-type-count-total scout-cavalry-line == 0)
 		(can-train-with-escrow scout-cavalry-line)
+		(or
+			(current-age < imperial-age)
+			(or
+				(up-research-status c: ri-light-cavalry >= research-pending)
+				(up-compare-const LIGHT-CAVALRY-AVAILABLE == NO)))
 		=>
 		(up-train g-escrow c: scout-cavalry-line)
 		)
@@ -633,6 +633,11 @@
 		(up-object-type-count-total c: scout-cavalry-line g:< g-desired-num-scout-cavalry)
 		(up-pending-objects c: scout-cavalry-line g:< g-max-working-stables)
 		(can-train scout-cavalry-line)
+		(or
+			(current-age < imperial-age)
+			(or
+				(up-research-status c: ri-light-cavalry >= research-pending)
+				(up-compare-const LIGHT-CAVALRY-AVAILABLE == NO)))
 		=>
 		(train scout-cavalry-line)
 		)
@@ -752,6 +757,11 @@
 		(up-compare-goal g-desired-num-archer > 0)
 		(unit-type-count-total archer-line == 0)
 		(can-train-with-escrow archer-line)
+		(or
+			(current-age < imperial-age)
+			(or
+				(up-research-status c: ri-crossbow >= research-pending)
+				(up-compare-const CROSSBOWMAN-AVAILABLE == NO)))
 		=>
 		(up-train g-escrow c: archer-line)
 		)
@@ -765,6 +775,11 @@
 		(up-object-type-count-total c: archer-line g:< g-desired-num-archer)
 		(up-pending-objects c: archer-line g:< g-max-working-archery-ranges)
 		(can-train archer-line)
+		(or
+			(current-age < imperial-age)
+			(or
+				(up-research-status c: ri-crossbow >= research-pending)
+				(up-compare-const CROSSBOWMAN-AVAILABLE == NO)))
 		=>
 		(train archer-line)
 		)
@@ -797,6 +812,11 @@
 		(up-compare-goal g-desired-num-skirmisher > 0)
 		(up-compare-goal g-skirmisher-line == 0)
 		(can-train-with-escrow skirmisher-line)
+		(or
+			(current-age < imperial-age)
+			(or
+				(up-research-status c: ri-elite-skirmisher >= research-pending)
+				(up-compare-const ELITE-SKIRMISHER-AVAILABLE == NO)))
 		=>
 		(up-train g-escrow c: skirmisher-line)
 		)
@@ -811,6 +831,11 @@
 		(up-pending-objects c: skirmisher-line g:< g-max-working-archery-ranges)
 		(up-pending-objects c: imperial-skirmisher g:< g-max-working-archery-ranges)
 		(can-train skirmisher)
+		(or
+			(current-age < imperial-age)
+			(or
+				(up-research-status c: ri-elite-skirmisher >= research-pending)
+				(up-compare-const ELITE-SKIRMISHER-AVAILABLE == NO)))
 		=>
 		(train skirmisher)
 		)
@@ -867,6 +892,12 @@
 		(up-compare-goal g-desired-num-militia > 0)
 		(unit-type-count-total militiaman-line == 0)
 		(can-train-with-escrow militiaman-line)
+		(or
+			(current-age < imperial-age)
+			(up-research-status c: ri-long-swordsman >= research-pending))
+		(or
+			(current-age < castle-age)
+			(up-research-status c: ri-man-at-arms >= research-pending))
 		=>
 		(up-train g-escrow c: militiaman-line)
 		)
@@ -880,6 +911,12 @@
 		(up-object-type-count-total c: militiaman-line g:< g-desired-num-militia)
 		(up-pending-objects c: militiaman-line g:< g-max-working-barracks)
 		(can-train militiaman-line)
+		(or
+			(current-age < imperial-age)
+			(up-research-status c: ri-long-swordsman >= research-pending))
+		(or
+			(current-age < castle-age)
+			(up-research-status c: ri-man-at-arms >= research-pending))
 		=>
 		(train militiaman-line)
 		)
@@ -888,6 +925,11 @@
 		(up-compare-goal g-desired-num-spearman > 0)
 		(unit-type-count-total spearman-line == 0)
 		(can-train-with-escrow spearman-line)
+		(or
+			(current-age < imperial-age)
+			(or
+				(up-research-status c: ri-pikeman >= research-pending)
+				(up-compare-const PIKEMAN-AVAILABLE == NO)))
 		=>
 		(up-train g-escrow c: spearman-line)
 		)
@@ -901,6 +943,11 @@
 		(up-object-type-count-total c: spearman-line g:< g-desired-num-spearman)
 		(up-pending-objects c: spearman-line g:< g-max-working-barracks)
 		(can-train spearman-line)
+		(or
+			(current-age < imperial-age)
+			(or
+				(up-research-status c: ri-pikeman >= research-pending)
+				(up-compare-const PIKEMAN-AVAILABLE == NO)))
 		=>
 		(train spearman-line)
 		)

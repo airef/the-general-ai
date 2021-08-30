@@ -1,0 +1,33 @@
+(defrule
+(true)
+=>
+(set-goal g-current-strategy FC-KRUSH)
+(set-goal g-dark-strategy FC-KRUSH)
+(set-goal g-early-feudal-strategy FC-KRUSH)
+(set-goal g-mid-feudal-strategy FC-KRUSH)
+(set-goal g-early-castle-strategy FC-KRUSH)
+(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
+(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
+(set-goal g-mid-imperial-strategy MIDI-PALADINS)
+(disable-self)
+)
+
+(defrule
+(goal g-age-status LATE-IMPERIAL)
+(or
+    (unit-type-count trade-cart >= 6)
+    (or
+        (up-gaia-type-count c: gold > 4)
+        (up-compare-goal g-recent-gold-gathered >= 50)))
+=>
+(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+)
+
+(defrule
+(goal g-age-status LATE-IMPERIAL)
+(unit-type-count trade-cart < 6)
+(up-gaia-type-count c: gold <= 4)
+(up-compare-goal g-recent-gold-gathered < 50)
+=>
+(set-goal g-late-imperial-strategy LATEI-TRASHALBS)
+)

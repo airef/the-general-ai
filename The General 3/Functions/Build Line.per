@@ -2,6 +2,8 @@
 ;				        SETUP
 ;=========================<>=========================
 
+	(load "The General 3.1/Functions/Reset")
+
 	(defrule
 	(up-compare-goal g-build-line-bldg != 0)
 	(up-compare-goal g-build-line-bldg != town-center)
@@ -23,27 +25,1290 @@
 	)
 
 	(defrule
-	(or
-		(goal g-build-line-type PLACE-POINT-NORMAL)
-		(or
-			(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
-			(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)))
+	(up-compare-goal g-build-line-expand != YES)
 	=>
 	(set-goal g-build-line-expand YES)
 	)
+
+	(defrule
+	(or
+		(goal g-build-line-bldg palisade-wall)
+		(goal g-build-line-bldg stone-wall-line))
+	=>
+	(set-goal g-build-line-size 0)		;one less than actual size to allow for buildings to be built adjacent to walls
+	)
+
+	(defrule
+	(or
+		(goal g-build-line-bldg watch-tower)
+		(or
+			(goal g-build-line-bldg bombard-tower)
+			(or
+				(goal g-build-line-bldg outpost)
+				; (or
+					; (goal g-build-line-bldg palisade-gate)
+					(goal g-build-line-bldg gate))));)
+	=>
+	(set-goal g-build-line-size 1)
+	)
+
+	(defrule
+	(or
+		(goal g-build-line-bldg house)
+		(or
+			(goal g-build-line-bldg mill)
+			(or
+				(goal g-build-line-bldg mining-camp)
+				(or
+					(goal g-build-line-bldg lumber-camp)
+					(or
+						(goal g-build-line-bldg donjon)
+						(goal g-build-line-bldg farm))))))	;one less than actual size to allow for buildings to be built adjacent to farms
+	=>
+	(set-goal g-build-line-size 2)
+	)
+
+	(defrule
+	(or
+		(goal g-build-line-bldg dock)
+		(or
+			(goal g-build-line-bldg blacksmith)
+			(or
+				(goal g-build-line-bldg monastery)
+				(or
+					(goal g-build-line-bldg barracks)
+					(or
+						(goal g-build-line-bldg archery-range)
+						(or
+							(goal g-build-line-bldg stable)
+							(goal g-build-line-bldg krepost)))))))
+	=>
+	(set-goal g-build-line-size 3)
+	)
+
+	(defrule
+	(or
+		(goal g-build-line-bldg market)
+		(or
+			(goal g-build-line-bldg university)
+			(or
+				(goal g-build-line-bldg siege-workshop)
+				(goal g-build-line-bldg castle))))
+	=>
+	(set-goal g-build-line-size 4)
+	)
+
+	(defrule
+	(goal g-build-line-bldg wonder)
+	=>
+	(set-goal g-build-line-size 5)
+	)
+
+	(defrule
+	(goal g-build-line-bldg town-center)
+	=>
+	(set-goal g-build-line-size 8)	;bigger than actual size to allow space for farms
+	)
+
+	(defrule
+	(up-compare-goal g-build-line-type != BUILD-LINE-POINT-LUMBER-DROPSITE)
+	=>
+	(up-modify-goal g-build-line-min-distance g:= g-build-line-size)
+	(up-modify-goal g-build-line-min-distance c:/ 2)
+	(up-modify-goal g-build-line-min-distance c:+ 5)
+	)
+
+	(defrule
+	(up-compare-goal g-build-line-min-separation != 1)
+	=>
+	(set-goal g-build-line-min-separation 1)
+	)
+
+	(defrule
+	(goal g-build-line-type BUILD-LINE-CONTROL)
+	(or
+		(goal g-town-under-attack YES)
+		(up-compare-goal g-enemy-units-in-town >= 3))
+	(strategic-number sn-placement-to-center == 0)
+	(up-compare-goal g-build-line-control-bldg-distance > 0)
+	(up-compare-goal g-build-line-bldg != watch-tower)
+	(up-compare-goal g-build-line-bldg != bombard-tower)
+	(up-compare-goal g-build-line-bldg != castle)
+	(up-compare-goal g-build-line-bldg != krepost)
+	(up-compare-goal g-build-line-bldg != donjon)
+	=>
+	(up-modify-goal g-build-line-control-bldg-distance c:* -1)
+	)
+
+;=========================<>=========================
+;		             PLACE NORMAL
+;=========================<>=========================
+
+	(load "The General 3.1/Functions/Reset")
+
+	;Initialize loop variables
+	(defrule
+	(goal g-build-line-type BUILD-LINE-NORMAL)
+	(building-type-count town-center > 0)
+	(game-time > 5)
+	=>
+	(set-goal i 0)
+	(set-goal j 0)
+	)
+
+	;Randomize x within custom-sn-peaceful-town-size
+	(defrule
+	(goal g-build-line-type BUILD-LINE-NORMAL)
+	(building-type-count town-center > 0)
+	(game-time > 5)
+	=>
+	(generate-random-number 1000)
+	(up-get-fact random-number 0 g-point-x)
+	(up-modify-goal g-temp s:= custom-sn-peaceful-town-size)
+	(up-modify-goal g-temp c:+ 2)
+	(up-modify-goal g-temp c:* 2)
+	(up-modify-goal g-point-x g:mod g-temp)
+	(up-modify-goal g-point-x s:- custom-sn-peaceful-town-size)
+	)
+
+	;Check if x coordinate is too close to TC
+	(defrule
+	(goal g-build-line-type BUILD-LINE-NORMAL)
+	(building-type-count town-center > 0)
+	(game-time > 5)
+	(up-compare-goal i < 10)
+	(up-modify-goal g-temp g:neg g-build-line-min-distance)
+	(up-compare-goal g-point-x g:>= g-temp)
+	(up-compare-goal g-point-x g:< g-build-line-min-distance)
+	=>
+	(set-goal g-point-x PENDING)
+	(up-modify-goal i c:+ 1)
+	(up-jump-rule -1)
+	)
+
+	;Randomize y within custom-sn-peaceful-town-size
+	(defrule
+	(goal g-build-line-type BUILD-LINE-NORMAL)
+	(building-type-count town-center > 0)
+	(game-time > 5)
+	=>
+	(generate-random-number 1000)
+	(up-get-fact random-number 0 g-point-y)
+	(up-modify-goal g-temp s:= custom-sn-peaceful-town-size)
+	(up-modify-goal g-temp c:+ 2)
+	(up-modify-goal g-temp c:* 2)
+	(up-modify-goal g-point-y g:mod g-temp)
+	(up-modify-goal g-point-y s:- custom-sn-peaceful-town-size)
+	)
+
+	;Check if y coordinate is too close to TC
+	(defrule
+	(goal g-build-line-type BUILD-LINE-NORMAL)
+	(building-type-count town-center > 0)
+	(game-time > 5)
+	(up-compare-goal j < 10)
+	(up-modify-goal g-temp g:neg g-build-line-min-distance)
+	(up-compare-goal g-point-y g:>= g-temp)
+	(up-compare-goal g-point-y g:< g-build-line-min-distance)
+	=>
+	(set-goal g-point-y PENDING)
+	(up-modify-goal j c:+ 1)
+	(up-jump-rule -1)
+	)
+
+	;Set starting point
+	(defrule
+	(goal g-build-line-type BUILD-LINE-NORMAL)
+	(building-type-count town-center > 0)
+	(game-time > 5)
+	(up-compare-goal i < 10)
+	(up-compare-goal j < 10)
+	=>
+	(up-add-point g-point-x g-position-self-x c: 1)
+	(up-copy-point g-build-line-point-x g-point-x)
+	(set-goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+	(set-goal g-build-line-expand-direction NO-DIRECTION)
+	(set-goal g-build-line-zone-radius 0)
+	(set-goal g-build-line-max-zone-radius 10)
+	(set-goal g-build-line-allow-beyond-town NO)
+	)
+
+;=========================<>=========================
+;		            PLACE CONTROL
+;=========================<>=========================
+
+	(load "The General 3.1/Functions/Reset")
+
+	;----------------------------------
+	;	Find primary reference point
+	;----------------------------------
+
+		;Reference is my TC
+		(defrule
+		(goal g-build-line-type BUILD-LINE-CONTROL)
+		(game-time > 5)
+		(goal g-build-line-player my-player-number)
+		(goal g-build-line-control-bldg -1)
+		(building-type-count town-center > 0)
+		=>
+		(up-copy-point g-point-x g-position-self-x)
+		)
+
+		;Reference is another building owned by us
+		(defrule
+		(goal g-build-line-type BUILD-LINE-CONTROL)
+		(game-time > 5)
+		(goal g-build-line-player my-player-number)
+		(up-compare-goal g-build-line-control-bldg != -1)
+		=>
+		(up-full-reset-search)
+		(up-find-local g: g-build-line-control-bldg c: 1)
+		)
+
+		(defrule
+		(goal g-build-line-type BUILD-LINE-CONTROL)
+		(game-time > 5)
+		(goal g-build-line-player my-player-number)
+		(up-compare-goal g-build-line-control-bldg != -1)
+		(up-set-target-object search-local c: 0)
+		=>
+		(up-get-point position-object g-point-x)
+		)
+
+		;Reference is another player's TC
+		(defrule
+		(goal g-build-line-type BUILD-LINE-CONTROL)
+		(game-time > 5)
+		(up-compare-goal g-build-line-player != my-player-number)
+		(goal g-build-line-control-bldg -1)
+		=>
+		(up-modify-sn sn-focus-player-number g:= g-build-line-player)
+		(up-full-reset-search)
+		(up-find-remote c: town-center c: 1)
+		)
+
+		(defrule
+		(goal g-build-line-type BUILD-LINE-CONTROL)
+		(game-time > 5)
+		(up-compare-goal g-build-line-player != my-player-number)
+		(goal g-build-line-control-bldg -1)
+		(up-set-target-object search-remote c: 0)
+		=>
+		(up-get-point position-object g-point-x)
+		)
+
+		;Reference is another player's building
+		(defrule
+		(goal g-build-line-type BUILD-LINE-CONTROL)
+		(game-time > 5)
+		(up-compare-goal g-build-line-player != my-player-number)
+		(up-compare-goal g-build-line-control-bldg != -1)
+		=>
+		(up-modify-sn sn-focus-player-number g:= g-build-line-player)
+		(up-full-reset-search)
+		(up-find-remote g: g-build-line-control-bldg c: 1)
+		)
+
+		(defrule
+		(goal g-build-line-type BUILD-LINE-CONTROL)
+		(game-time > 5)
+		(up-compare-goal g-build-line-player != my-player-number)
+		(up-compare-goal g-build-line-control-bldg != -1)
+		(up-set-target-object search-remote c: 0)
+		=>
+		(up-get-point position-object g-point-x)
+		)
+
+	;-----------------------------------------------------
+	;	Find random point within sn-placement-zone-size
+	;-----------------------------------------------------
+
+		;Randomize x within sn-placement-zone-size
+		(defrule
+		(goal g-build-line-type BUILD-LINE-CONTROL)
+		(game-time > 5)
+		=>
+		(generate-random-number 1000)
+		(up-get-fact random-number 0 g-point2-x)
+		(up-modify-goal g-temp s:= sn-placement-zone-size)
+		(up-modify-goal g-temp c:* 2)
+		(up-modify-goal g-point2-x g:mod g-temp)
+		(up-modify-goal g-point2-x s:- sn-placement-zone-size)
+		)
+
+		;Randomize y within sn-placement-zone-size
+		(defrule
+		(goal g-build-line-type BUILD-LINE-CONTROL)
+		(game-time > 5)
+		=>
+		(generate-random-number 1000)
+		(up-get-fact random-number 0 g-point2-y)
+		(up-modify-goal g-temp s:= sn-placement-zone-size)
+		(up-modify-goal g-temp c:* 2)
+		(up-modify-goal g-point2-y g:mod g-temp)
+		(up-modify-goal g-point2-y s:- sn-placement-zone-size)
+		)
+
+		;Set point
+		(defrule
+		(goal g-build-line-type BUILD-LINE-CONTROL)
+		(game-time > 5)
+		=>
+		(up-add-point g-point-x g-point2-x c: 1)
+		)
+
+	;---------------------------------------------
+	;	Lerp to find center point to build from
+	;---------------------------------------------
+		
+		(defrule
+		(goal g-build-line-type BUILD-LINE-CONTROL)
+		(game-time > 5)
+		(strategic-number sn-placement-to-center == 0)
+		=>
+		(up-lerp-tiles g-point-x g-target-enemy-x g: g-build-line-control-bldg-distance)
+		(up-copy-point g-build-line-point-x g-point-x)
+		(set-goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+		(set-goal g-build-line-expand-direction NO-DIRECTION)
+		(set-goal g-build-line-zone-radius 0)
+		(set-goal g-build-line-max-zone-radius 10)
+		(set-goal g-build-line-allow-beyond-town YES)
+		)
+		
+		(defrule
+		(goal g-build-line-type BUILD-LINE-CONTROL)
+		(game-time > 5)
+		(strategic-number sn-placement-to-center == 1)
+		=>
+		(up-get-point position-center g-point2-x)
+		(up-lerp-tiles g-point-x g-point2-x g: g-build-line-control-bldg-distance)
+		(up-copy-point g-build-line-point-x g-point-x)
+		(set-goal g-build-line-type BUILD-LINE-POINT-NORMAL)		;Use the normal Place Point code since we have calculated
+		(set-goal g-build-line-expand-direction NO-DIRECTION)		;the point to start building from
+		(set-goal g-build-line-zone-radius 0)
+		(set-goal g-build-line-max-zone-radius 10)
+		(set-goal g-build-line-allow-beyond-town YES)
+		)
+
+;=========================<>=========================
+;		         PLACE POINT - NORMAL
+;=========================<>=========================
+
+	(load "The General 3.1/Functions/Reset")
+
+	;Debug chat
+	; (defrule
+	; (goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+	; (up-can-build g-build-line-escrow g: g-build-line-bldg)
+	; =>
+	; (up-chat-data-to-self CHAT-BUILD-POINT-NORMAL g: g-build-line-bldg)
+	; )
+	
+	(defrule
+	(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+	=>
+	(up-modify-goal i g:neg g-build-line-zone-radius)
+	(up-modify-goal j g:neg g-build-line-zone-radius)
+	(set-goal g-build-line-zone-radius 0)
+	)
+	
+	;Store bottom right corner of the available build zone into g-point-x
+	(defrule
+	(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+	(up-can-build g-build-line-escrow g: g-build-line-bldg)
+	(up-compare-goal g-build-line-point-x > -1)
+	(up-compare-goal g-build-line-point-y > -1)
+	=>
+	(up-copy-point g-point-x g-build-line-point-x)
+	(up-modify-goal g-point-x g:+ g-build-line-zone-radius)
+	(up-modify-goal g-point-y g:+ g-build-line-zone-radius)
+	)
+
+		;Search for new building spot if enemy units or buildings are nearby
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(building-type-count town-center > 0)
+		=>
+		(set-strategic-number sn-focus-player-number 1)
+		(up-set-target-point g-point-x)
+		)
+		
+			;Search for enemy units and military buildings
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(building-type-count town-center > 0)
+			(stance-toward focus-player enemy)
+			=>
+			(up-full-reset-search)
+			(up-filter-distance c: -1 c: 12)
+			(up-find-remote c: all-units-class c: 1)
+			(up-reset-filters)
+			(up-filter-distance c: -1 g: g-build-line-enemy-bldg-distance)
+			(up-filter-include cmdid-military-building -1 -1 -1)
+			(up-find-remote c: all-units-class c: 1)
+			)
+			
+			;Search for enemy economic buildings
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(building-type-count town-center > 0)
+			(stance-toward focus-player enemy)
+			=>
+			(up-reset-filters)
+			(up-filter-distance c: -1 g: g-build-line-enemy-bldg-distance)
+			(up-find-remote c: town-center c: 1)
+			(up-get-search-state g-local-total)
+			)
+			
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(building-type-count town-center > 0)
+			(stance-toward focus-player enemy)
+			(up-compare-goal g-remote-total > 0)		;found enemy units or buildings nearby
+			=>
+			(up-jump-rule 10)
+			)
+			
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(building-type-count town-center > 0)
+			(up-compare-sn sn-focus-player-number < 8)
+			=>
+			(up-modify-sn sn-focus-player-number c:+ 1)
+			(up-jump-rule -4)
+			)
+
+		;Make sure no TC is within min distance (square distance, not circular)
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(building-type-count town-center > 0)
+		=>
+		(up-full-reset-search)
+		(up-find-local c: town-center c: 40)
+		(up-copy-point g-point2-x g-point-x)
+		(up-modify-goal g-point2-x g:+ g-build-line-min-distance)
+		(up-modify-goal g-point2-y g:+ g-build-line-min-distance)
+		(up-remove-objects search-local object-data-point-x g:> g-point2-x)
+		(up-remove-objects search-local object-data-point-y g:> g-point2-y)
+		(up-copy-point g-point2-x g-point-x)
+		(up-modify-goal g-point2-x g:- g-build-line-min-distance)
+		(up-modify-goal g-point2-y g:- g-build-line-min-distance)
+		(up-remove-objects search-local object-data-point-x g:<= g-point2-x)
+		(up-remove-objects search-local object-data-point-y g:<= g-point2-y)
+		(up-get-search-state g-local-total)
+		)
+
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(building-type-count town-center > 0)
+		(up-compare-goal g-local-total > 0)
+		=>
+		(up-jump-rule 7)
+		)
+
+		;Make sure building space is available around spot
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(up-compare-goal g-build-line-min-separation >= 1)
+		(building-type-count town-center > 0)
+		=>
+		(up-modify-goal g-temp g:= g-build-line-size)
+		(up-modify-goal g-temp c:z/ 2)
+		(up-modify-goal g-temp c:+ 1)
+		(up-copy-point g-point2-x g-point-x)
+		(up-modify-goal g-point2-x g:- g-temp)
+		(up-modify-goal g-point2-y g:- g-temp)
+		(set-goal g-food-cost 0)	;simply used as a temp goal
+		(set-goal g-wood-cost 0)	;simply used as a temp goal
+		(up-modify-goal g-temp-2 g:= g-build-line-size)
+		(up-modify-goal g-temp-2 c:+ 1)
+		)
+
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(up-compare-goal g-build-line-min-separation >= 1)
+			(building-type-count town-center > 0)
+			(up-compare-goal g-food-cost g:<= g-temp-2)
+			(up-compare-goal g-wood-cost g:<= g-temp-2)
+			(not
+				(up-can-build-line g-build-line-escrow g-point2-x c: palisade-wall))
+			=>
+			(up-jump-rule 5)
+			)
+
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(up-compare-goal g-build-line-min-separation >= 1)
+			(building-type-count town-center > 0)
+			(up-compare-goal g-food-cost g:<= g-temp-2)
+			(up-compare-goal g-wood-cost g:<= g-temp-2)
+			(up-can-build-line g-build-line-escrow g-point2-x c: palisade-wall)
+			=>
+			(up-modify-goal g-food-cost c:+ 1)
+			(up-copy-point g-point2-x g-point-x)
+			(up-modify-goal g-point2-x g:- g-temp)
+			(up-modify-goal g-point2-y g:- g-temp)
+			(up-modify-goal g-point2-x g:+ g-food-cost)
+			(up-modify-goal g-point2-y g:+ g-wood-cost)
+			(up-jump-rule -2)
+			)
+
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(up-compare-goal g-build-line-min-separation >= 1)
+			(building-type-count town-center > 0)
+			(up-compare-goal g-wood-cost g:<= g-temp-2)
+			=>
+			(set-goal g-food-cost 0)
+			(up-modify-goal g-wood-cost c:+ 1)
+			(up-copy-point g-point2-x g-point-x)
+			(up-modify-goal g-point2-x g:- g-temp)
+			(up-modify-goal g-point2-y g:- g-temp)
+			(up-modify-goal g-point2-x g:+ g-food-cost)
+			(up-modify-goal g-point2-y g:+ g-wood-cost)
+			(up-jump-rule -3)
+			)
+
+		;Check if point is within custom-sn-peaceful-town-size
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(building-type-count town-center > 0)
+		(goal g-build-line-allow-beyond-town NO)
+		=>
+		(up-modify-goal g-temp s:= custom-sn-peaceful-town-size)
+		(up-modify-goal g-temp c:+ 2)
+		(up-modify-goal g-temp-2 g:= g-temp)	;g-temp and g-temp-2 now form a point: (custom-sn-peaceful-town-size + 2, custom-sn-peaceful-town-size + 2)
+		(up-copy-point g-point2-x g-position-self-x)
+		(up-copy-point g-point3-x g-position-self-x)
+		(up-add-point g-point2-x g-temp c: -1)	;subtract [custom-sn-peaceful-town-size + 2] from the g-point2-x coordinates
+		(up-add-point g-point3-x g-temp c: 1)	;add [custom-sn-peaceful-town-size + 2] to the g-point3-x coordinates
+		)
+
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(building-type-count town-center > 0)
+		(goal g-build-line-allow-beyond-town NO)
+		(or
+			(up-compare-goal g-point-x g:>= g-point2-x)
+			(up-compare-goal g-point-x g:< g-point3-x))
+		(or
+			(up-compare-goal g-point-y g:>= g-point2-y)
+			(up-compare-goal g-point-y g:< g-point3-y))
+		=>
+		(up-jump-rule 1)
+		)
+	
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(up-compare-goal g-build-line-point-x > -1)
+			(up-compare-goal g-build-line-point-y > -1)
+			(up-point-explored g-point-x != explored-no)
+			(up-can-build-line g-build-line-escrow g-point-x g: g-build-line-bldg-foundation)
+			=>
+			(up-build-line g-point-x g-point-x g: g-build-line-bldg-foundation)
+			(up-jump-rule 6)
+			)
+		
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(up-compare-goal g-build-line-point-x > -1)
+		(up-compare-goal g-build-line-point-y > -1)
+		(up-compare-goal i g:< g-build-line-zone-radius)
+		=>
+		(up-modify-goal i c:+ 1)
+		(up-copy-point g-point-x g-build-line-point-x)
+		(up-modify-goal g-point-x g:- i)
+		(up-modify-goal g-point-y g:- j)
+		(up-bound-point g-point-x g-point-x)
+		(up-jump-rule -14)
+		)
+		
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(up-compare-goal j g:< g-build-line-zone-radius)
+		=>
+		(up-modify-goal j c:+ 1)
+		(up-modify-goal i g:neg g-build-line-zone-radius)
+		(up-copy-point g-point-x g-build-line-point-x)
+		(up-modify-goal g-point-x g:- i)
+		(up-modify-goal g-point-y g:- j)
+		(up-bound-point g-point-x g-point-x)
+		(up-jump-rule -15)
+		)
+		
+		;If expansion away from TC is desired, lerp 1 tile away from TC
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(up-compare-goal g-build-line-point-x > -1)
+		(up-compare-goal g-build-line-point-y > -1)
+		(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
+		(goal g-build-line-expand-direction AWAY-FROM-TC)
+		(building-type-count town-center > 0)
+		=>
+		(up-lerp-tiles g-build-line-point-x g-position-self-x c: -1)
+		(up-bound-point g-build-line-point-x g-build-line-point-x)
+		(up-jump-rule 2)
+		)
+		
+			;If half expansion toward TC is desired, only expand every other zone increase.
+			;Do this by dividing the zone radius by 2, and expand only if the remainder is 0.
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(up-compare-goal g-build-line-point-x > -1)
+			(up-compare-goal g-build-line-point-y > -1)
+			(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
+			=>
+			(up-modify-goal g-temp-2 g:= g-build-line-zone-radius)
+			(up-modify-goal g-temp-2 c:mod 2)
+			)
+			
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(up-compare-goal g-build-line-point-x > -1)
+			(up-compare-goal g-build-line-point-y > -1)
+			(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
+			(goal g-temp-2 0)	;lerp tiles only when remainder is 0
+			(goal g-build-line-expand-direction HALF-TOWARD-TC)
+			(building-type-count town-center > 0)
+			=>
+			(up-lerp-tiles g-build-line-point-x g-position-self-x c: 1)
+			(up-bound-point g-build-line-point-x g-build-line-point-x)
+			)
+		
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(up-compare-goal g-build-line-point-x > -1)
+		(up-compare-goal g-build-line-point-y > -1)
+		(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
+		=>
+		(up-modify-goal g-build-line-zone-radius c:+ 1)
+		(up-modify-goal i g:neg g-build-line-zone-radius)
+		(up-modify-goal j g:neg g-build-line-zone-radius)
+		(up-jump-rule -20)
+		)
+
+;=========================<>=========================
+;		     PLACE POINT - MILL DROPSITE
+;=========================<>=========================
+
+	(load "The General 3.1/Functions/Reset")
+	
+	(defrule
+	(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+	(up-compare-goal g-build-line-resource-type == forage-class)
+	(up-gaia-type-count c: forage-class > 0)
+	(up-can-build g-build-line-escrow g: g-build-line-bldg)
+	(building-type-count town-center > 0)
+	=>
+	(up-full-reset-search)
+	(up-filter-status c: status-resource c: list-active)
+	(up-filter-distance c: -1 g: g-build-line-max-distance)
+	(up-find-resource c: forage-class c: 39)
+	(up-get-search-state g-local-total)
+	(set-goal i 0)
+	(set-goal g-build-line-net-dropsite-distance -500)
+	(set-goal g-build-line-resource-id -1)
+	)
+	
+	(defrule
+	(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+	(up-compare-goal g-build-line-resource-type == deer-class)
+	(up-gaia-type-count c: deer-class > 0)
+	(up-can-build g-build-line-escrow g: g-build-line-bldg)
+	(building-type-count town-center > 0)
+	=>
+	(up-full-reset-search)
+	(up-filter-distance c: -1 g: g-build-line-max-distance)
+	(up-find-resource c: deer-class c: 39)
+	(up-get-search-state g-local-total)
+	(set-goal i 0)
+	(set-goal g-build-line-net-dropsite-distance -500)
+	(set-goal g-build-line-resource-id -1)
+	)
+	
+	(defrule
+	(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+	(up-compare-goal g-build-line-resource-type == shore-fish-class)
+	(up-gaia-type-count c: shore-fish-class > 0)
+	(up-can-build g-build-line-escrow g: g-build-line-bldg)
+	(building-type-count town-center > 0)
+	=>
+	(up-full-reset-search)
+	(up-filter-status c: status-gather c: list-active)
+	(up-filter-distance c: -1 g: g-build-line-max-distance)
+	(up-find-resource c: shore-fish-class c: 39)
+	(up-get-search-state g-local-total)
+	(set-goal i 0)
+	(set-goal g-build-line-net-dropsite-distance -500)
+	(set-goal g-build-line-resource-id -1)
+	)
+	
+	(defrule
+	(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+	(up-compare-goal g-build-line-resource-type == deep-fish-class)
+	(up-gaia-type-count c: deep-fish-class > 0)
+	(up-can-build g-build-line-escrow g: g-build-line-bldg)
+	(building-type-count town-center > 0)
+	=>
+	(up-full-reset-search)
+	(up-filter-status c: status-gather c: list-active)
+	(up-filter-distance c: -1 g: g-build-line-max-distance)
+	(up-find-resource c: deep-fish-class c: 39)
+	(up-get-search-state g-local-total)
+	(set-goal i 0)
+	(set-goal g-build-line-net-dropsite-distance -500)
+	(set-goal g-build-line-resource-id -1)
+	)
+
+			;Find the best mill spot
+			;Get distance from food source to TC and compare it to the distance to the target enemy (or map center on nomad maps)
+			;Best location is the food source that has the highest value in the following formula:
+				;Distance to target enemy minus (3 * distance to town center)
+			(defrule
+			(goal g-map-style NOMAD)
+			(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+			(up-compare-goal g-build-line-resource-type != wood)
+			(up-gaia-type-count g: g-build-line-resource-type > 0)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(building-type-count town-center > 0)
+			(up-set-target-object search-remote g: i)
+			=>
+			(up-set-target-point g-position-self-x)
+			(up-get-object-data object-data-distance g-temp)
+			(up-modify-goal g-temp c:* 3)	;weight the distance to the TC thrice as much as the distance to the map center
+			(up-get-point position-center g-point-x)
+			(up-set-target-point g-point-x)
+			(up-get-object-data object-data-distance g-temp-2)
+			(up-modify-goal g-temp-2 g:- g-temp)
+			)
+
+			(defrule
+			(up-compare-goal g-map-style != NOMAD)
+			(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+			(up-compare-goal g-build-line-resource-type != wood)
+			(up-gaia-type-count g: g-build-line-resource-type > 0)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(building-type-count town-center > 0)
+			(up-set-target-object search-remote g: i)
+			=>
+			(up-set-target-point g-position-self-x)
+			(up-get-object-data object-data-distance g-temp)
+			(up-modify-goal g-temp c:* 3)	;weight the distance to the TC thrice as much as the distance to the target enemy
+			(up-set-target-point g-target-enemy-x)
+			(up-get-object-data object-data-distance g-temp-2)
+			(up-modify-goal g-temp-2 g:- g-temp)
+			)
+
+			;If we found a new best mill location, get the ID of the food source
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+			(up-compare-goal g-build-line-resource-type != wood)
+			(up-gaia-type-count g: g-build-line-resource-type > 0)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(building-type-count town-center > 0)
+			(up-set-target-object search-remote g: i)
+			(up-compare-goal g-build-line-net-dropsite-distance g:< g-temp-2)
+			=>
+			(up-modify-goal g-build-line-net-dropsite-distance g:= g-temp-2)
+			(up-get-object-data object-data-id g-build-line-resource-id)
+			)
+
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+			(up-compare-goal g-build-line-resource-type != wood)
+			(up-gaia-type-count g: g-build-line-resource-type > 0)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(building-type-count town-center > 0)
+			(up-modify-goal i c:+ 1)
+			(up-set-target-object search-remote g: i)
+			(up-compare-goal i < 40)
+			=>
+			(up-jump-rule -4)
+			)
+
+		;Search for new food source if mill or town center is nearby
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+		(up-compare-goal g-build-line-resource-type != wood)
+		(up-gaia-type-count g: g-build-line-resource-type > 0)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(building-type-count town-center > 0)
+		(up-set-target-by-id g: g-build-line-resource-id)
+		=>
+		(up-get-point position-object g-point-x)
+		(up-set-target-point g-point-x)
+		(up-reset-filters)
+		(up-filter-distance c: -1 g: g-build-line-dropsite-distance)
+		(up-reset-search 1 1 0 0)
+		(up-find-local c: mill c: 40)
+		(up-find-local c: town-center c: 40)
+		(up-get-search-state g-local-total)
+		)
+		
+		;Add mills/TCs under construction to search
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+		(up-compare-goal g-build-line-resource-type != wood)
+		(up-gaia-type-count g: g-build-line-resource-type > 0)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(building-type-count town-center > 0)
+		(up-set-target-by-id g: g-build-line-resource-id)
+		=>
+		(up-get-point position-object g-point-x)
+		(up-set-target-point g-point-x)
+		(up-reset-filters)
+		(up-filter-distance c: -1 g: g-build-line-dropsite-distance)
+		(up-filter-status c: status-pending c: list-active)
+		(up-find-status-local c: mill c: 10)
+		(up-find-status-local c: town-center-foundation c: 10)
+		(up-get-search-state g-local-total)
+		)
+
+		;If we found mills or town centers, remove the food source from available dropsite spots and check next possible food source
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+		(up-compare-goal g-build-line-resource-type != wood)
+		(up-gaia-type-count g: g-build-line-resource-type > 0)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(building-type-count town-center > 0)
+		(up-set-target-by-id g: g-build-line-resource-id)
+		(up-compare-goal g-local-total > 0)
+		=>
+		(up-remove-objects search-remote object-data-id g:== g-build-line-resource-id)
+		(set-goal g-build-line-resource-id -1)
+		(set-goal i 0)
+		(set-goal g-build-line-net-dropsite-distance -500)
+		(up-jump-rule -7)
+		)
+
+		;Search for new food source if enemy soldiers are nearby
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+		(up-compare-goal g-build-line-resource-type != wood)
+		(up-gaia-type-count g: g-build-line-resource-type > 0)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(building-type-count town-center > 0)
+		(up-set-target-by-id g: g-build-line-resource-id)
+		=>
+		(set-strategic-number sn-focus-player-number 1)
+		(up-get-search-state g-local-total)
+		)
+		
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+			(up-compare-goal g-build-line-resource-type != wood)
+			(up-gaia-type-count g: g-build-line-resource-type > 0)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(building-type-count town-center > 0)
+			(up-set-target-by-id g: g-build-line-resource-id)
+			(stance-toward focus-player enemy)
+			=>
+			(up-get-point position-object g-point-x)
+			(up-set-target-point g-point-x)
+			(up-reset-filters)
+			(up-filter-distance c: -1 c: 12)
+			(up-find-remote c: all-units-class c: 1)
+			(up-get-search-state g-local-total)
+			)
+			
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+			(up-compare-goal g-build-line-resource-type != wood)
+			(up-gaia-type-count g: g-build-line-resource-type > 0)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(building-type-count town-center > 0)
+			(up-set-target-by-id g: g-build-line-resource-id)
+			(stance-toward focus-player enemy)
+			(up-compare-goal g-remote-last > 0)		;found enemy units nearby gold/stone mine
+			=>
+			(up-remove-objects search-remote object-data-id g:== g-build-line-resource-id)
+			(up-remove-objects search-remote object-data-cmdid == cmdid-military)
+			(set-goal g-build-line-resource-id -1)
+			(set-goal i 0)
+			(set-goal g-build-line-net-dropsite-distance -500)
+			(up-jump-rule -10)
+			)
+			
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+			(up-compare-goal g-build-line-resource-type != wood)
+			(up-gaia-type-count g: g-build-line-resource-type > 0)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(building-type-count town-center > 0)
+			(up-set-target-by-id g: g-build-line-resource-id)
+			(up-compare-sn sn-focus-player-number < 8)
+			=>
+			(up-modify-sn sn-focus-player-number c:+ 1)
+			(up-jump-rule -3)
+			)
+
+		;Search for new food spot if enemy buildings are nearby
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+		(up-compare-goal g-build-line-resource-type != wood)
+		(up-gaia-type-count g: g-build-line-resource-type > 0)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(building-type-count town-center > 0)
+		(up-set-target-by-id g: g-build-line-resource-id)
+		=>
+		(set-strategic-number sn-focus-player-number 1)
+		)
+		
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+			(up-compare-goal g-build-line-resource-type != wood)
+			(up-gaia-type-count g: g-build-line-resource-type > 0)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(building-type-count town-center > 0)
+			(up-set-target-by-id g: g-build-line-resource-id)
+			(stance-toward focus-player enemy)
+			=>
+			(up-get-point position-object g-point-x)
+			(up-set-target-point g-point-x)
+			(up-reset-filters)
+			(up-filter-distance c: -1 g: g-build-line-enemy-bldg-distance)
+			(up-filter-include cmdid-military-building -1 -1 -1)
+			(up-find-remote c: all-units-class c: 1)
+			(up-get-search-state g-local-total)
+			)
+			
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+			(up-compare-goal g-build-line-resource-type != wood)
+			(up-gaia-type-count g: g-build-line-resource-type > 0)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(building-type-count town-center > 0)
+			(up-set-target-by-id g: g-build-line-resource-id)
+			(stance-toward focus-player enemy)
+			(up-compare-goal g-remote-last > 0)		;found enemy units nearby gold/stone mine
+			=>
+			(up-remove-objects search-remote object-data-id g:== g-build-line-resource-id)
+			(up-remove-objects search-remote object-data-cmdid == cmdid-military-building)
+			(set-goal g-build-line-resource-id -1)
+			(set-goal i 0)
+			(set-goal g-build-line-net-dropsite-distance -500)
+			(up-jump-rule -14)
+			)
+		
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+			(up-compare-goal g-build-line-resource-type != wood)
+			(up-gaia-type-count g: g-build-line-resource-type > 0)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(building-type-count town-center > 0)
+			(up-set-target-by-id g: g-build-line-resource-id)
+			(stance-toward focus-player enemy)
+			=>
+			(up-get-point position-object g-point-x)
+			(up-set-target-point g-point-x)
+			(up-reset-filters)
+			(up-filter-distance c: -1 g: g-build-line-enemy-bldg-distance)
+			(up-find-remote c: town-center c: 1)
+			(up-get-search-state g-local-total)
+			)
+			
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+			(up-compare-goal g-build-line-resource-type != wood)
+			(up-gaia-type-count g: g-build-line-resource-type > 0)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(building-type-count town-center > 0)
+			(up-set-target-by-id g: g-build-line-resource-id)
+			(stance-toward focus-player enemy)
+			(up-compare-goal g-remote-last > 0)		;found enemy units nearby gold/stone mine
+			=>
+			(up-remove-objects search-remote object-data-id g:== g-build-line-resource-id)
+			(up-remove-objects search-remote object-data-cmdid == cmdid-civilian-building)
+			(set-goal g-build-line-resource-id -1)
+			(set-goal i 0)
+			(set-goal g-build-line-net-dropsite-distance -500)
+			(up-jump-rule -16)
+			)
+			
+			(defrule
+			(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+			(up-compare-goal g-build-line-resource-type != wood)
+			(up-gaia-type-count g: g-build-line-resource-type > 0)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
+			(building-type-count town-center > 0)
+			(up-set-target-by-id g: g-build-line-resource-id)
+			(up-compare-sn sn-focus-player-number < 8)
+			=>
+			(up-modify-sn sn-focus-player-number c:+ 1)
+			(up-jump-rule -5)
+			)
+			
+	(load "The General 3.1/Functions/Reset")
+	
+	;Get midpoint of gold/stone mines at gold/stone mining location, store in g-build-line-point-x
+	(defrule
+	(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+	(up-compare-goal g-build-line-resource-type == forage-class)
+	(up-gaia-type-count g: g-build-line-resource-type > 0)
+	(up-pending-objects g: g-build-line-bldg == 0)
+	(up-can-build g-build-line-escrow g: g-build-line-bldg)
+	(up-set-target-by-id g: g-build-line-resource-id)
+	=>
+	(up-get-point position-object g-point-x)
+	(up-set-target-point g-point-x)
+	(up-full-reset-search)
+	(up-filter-distance c: -1 c: 4)
+	(up-filter-status c: status-resource c: list-active)
+	(up-find-resource g: g-build-line-resource-type c: 25)
+	(up-get-search-state g-local-total)
+	(set-goal j 0)
+	(up-get-point position-zero g-build-line-point-x)
+	)
+	(defrule
+	(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+	(up-compare-goal g-build-line-resource-type == deer-class)
+	(up-gaia-type-count g: g-build-line-resource-type > 0)
+	(up-pending-objects g: g-build-line-bldg == 0)
+	(up-can-build g-build-line-escrow g: g-build-line-bldg)
+	(up-set-target-by-id g: g-build-line-resource-id)
+	=>
+	(up-get-point position-object g-point-x)
+	(up-set-target-point g-point-x)
+	(up-full-reset-search)
+	(up-filter-distance c: -1 c: 4)
+	(up-find-resource g: g-build-line-resource-type c: 25)
+	(up-get-search-state g-local-total)
+	(set-goal j 0)
+	(up-get-point position-zero g-build-line-point-x)
+	)
+	(defrule
+	(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+	(up-compare-goal g-build-line-resource-type == shore-fish-class)
+	(up-gaia-type-count g: g-build-line-resource-type > 0)
+	(up-pending-objects g: g-build-line-bldg == 0)
+	(up-can-build g-build-line-escrow g: g-build-line-bldg)
+	(up-set-target-by-id g: g-build-line-resource-id)
+	=>
+	(up-get-point position-object g-point-x)
+	(up-set-target-point g-point-x)
+	(up-full-reset-search)
+	(up-filter-distance c: -1 c: 4)
+	(up-filter-status c: status-gather c: list-active)
+	(up-find-resource g: g-build-line-resource-type c: 25)
+	(up-get-search-state g-local-total)
+	(set-goal j 0)
+	(up-get-point position-zero g-build-line-point-x)
+	)
+	(defrule
+	(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+	(up-compare-goal g-build-line-resource-type == deep-fish-class)
+	(up-gaia-type-count g: g-build-line-resource-type > 0)
+	(up-pending-objects g: g-build-line-bldg == 0)
+	(up-can-build g-build-line-escrow g: g-build-line-bldg)
+	(up-set-target-by-id g: g-build-line-resource-id)
+	=>
+	(up-get-point position-object g-point-x)
+	(up-set-target-point g-point-x)
+	(up-full-reset-search)
+	(up-filter-distance c: -1 c: 4)
+	(up-filter-status c: status-gather c: list-active)
+	(up-find-resource g: g-build-line-resource-type c: 25)
+	(up-get-search-state g-local-total)
+	(set-goal j 0)
+	(up-get-point position-zero g-build-line-point-x)
+	)
+	
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+		(up-compare-goal g-build-line-resource-type != wood)
+		(up-gaia-type-count g: g-build-line-resource-type > 0)
+		(up-pending-objects g: g-build-line-bldg == 0)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(building-type-count town-center > 0)
+		(up-set-target-by-id g: g-build-line-resource-id)
+		(up-set-target-object search-remote g: j)
+		(up-compare-goal j g:< g-remote-total)
+		(up-compare-goal j < 25)
+		=>
+		(up-get-point position-object g-point-x)
+		(up-modify-goal g-build-line-point-x g:+ g-point-x)
+		(up-modify-goal g-build-line-point-y g:+ g-point-y)
+		(up-modify-goal j c:+ 1)
+		(up-jump-rule -1)
+		)
+	
+	(defrule
+	(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+	(up-compare-goal g-build-line-resource-type != wood)
+	(up-gaia-type-count g: g-build-line-resource-type > 0)
+	(up-pending-objects g: g-build-line-bldg == 0)
+	(up-can-build g-build-line-escrow g: g-build-line-bldg)
+	(building-type-count town-center > 0)
+	(up-set-target-by-id g: g-build-line-resource-id)
+	(up-compare-goal g-build-line-point-x > -1)
+	(up-compare-goal g-build-line-point-y > -1)
+	=>
+	(up-modify-goal g-build-line-point-x g:/ g-remote-total)
+	(up-modify-goal g-build-line-point-y g:/ g-remote-total)
+	)
+	
+	;Construct mill with up-build-line-point-x
+	;Test constructing mill at midpoint, then slowly test locations further away
+	;in an increasing zone, similar to place-point
+	
+	(load "The General 3.1/Functions/Reset")
+	
+	(defrule
+	(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+	(up-compare-goal g-build-line-resource-type != wood)
+	(up-gaia-type-count g: g-build-line-resource-type > 0)
+	(up-pending-objects g: g-build-line-bldg == 0)
+	=>
+	(up-modify-goal i g:neg g-build-line-zone-radius)
+	(up-modify-goal j g:neg g-build-line-zone-radius)
+	(set-goal g-build-line-zone-radius 0)
+	)
+	
+	;Store bottom right corner of the available build zone into g-point-x
+	(defrule
+	(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+	(up-compare-goal g-build-line-resource-type != wood)
+	(up-pending-objects g: g-build-line-bldg == 0)
+	(up-can-build g-build-line-escrow g: g-build-line-bldg)
+	(up-set-target-by-id g: g-build-line-resource-id)
+	(up-compare-goal g-build-line-point-x > -1)
+	(up-compare-goal g-build-line-point-y > -1)
+	=>
+	(up-copy-point g-point-x g-build-line-point-x)
+	(up-modify-goal g-point-x g:+ g-build-line-zone-radius)
+	(up-modify-goal g-point-y g:+ g-build-line-zone-radius)
+	)
+	
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+		(up-compare-goal g-build-line-resource-type != wood)
+		(up-pending-objects g: g-build-line-bldg == 0)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(up-set-target-by-id g: g-build-line-resource-id)
+		(up-compare-goal g-build-line-point-x > -1)
+		(up-compare-goal g-build-line-point-y > -1)
+		(up-point-explored g-point-x != explored-no)
+		(up-can-build-line g-build-line-escrow g-point-x g: g-build-line-bldg-foundation)
+		=>
+		(up-build-line g-point-x g-point-x g: g-build-line-bldg-foundation)
+		(up-jump-rule 5)
+		)
+		
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+		(up-compare-goal g-build-line-resource-type != wood)
+		(up-pending-objects g: g-build-line-bldg == 0)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(up-set-target-by-id g: g-build-line-resource-id)
+		(up-compare-goal g-build-line-point-x > -1)
+		(up-compare-goal g-build-line-point-y > -1)
+		(up-compare-goal i g:< g-build-line-zone-radius)
+		=>
+		(up-modify-goal i c:+ 1)
+		(up-copy-point g-point-x g-build-line-point-x)
+		(up-modify-goal g-point-x g:- i)
+		(up-modify-goal g-point-y g:- j)
+		(up-bound-point g-point-x g-point-x)
+		(up-jump-rule -2)
+		)
+		
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+		(up-compare-goal g-build-line-resource-type != wood)
+		(up-pending-objects g: g-build-line-bldg == 0)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(up-set-target-by-id g: g-build-line-resource-id)
+		(up-compare-goal j g:< g-build-line-zone-radius)
+		=>
+		(up-modify-goal j c:+ 1)
+		(up-modify-goal i g:neg g-build-line-zone-radius)
+		(up-copy-point g-point-x g-build-line-point-x)
+		(up-modify-goal g-point-x g:- i)
+		(up-modify-goal g-point-y g:- j)
+		(up-bound-point g-point-x g-point-x)
+		(up-jump-rule -3)
+		)
+		
+		;If half expansion toward TC is desired, only expand every other zone increase.
+		;Do this by dividing the zone radius by 2, and expand only if the remainder is 0.
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+		(up-compare-goal g-build-line-resource-type != wood)
+		(up-pending-objects g: g-build-line-bldg == 0)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(up-set-target-by-id g: g-build-line-resource-id)
+		(up-compare-goal g-build-line-point-x > -1)
+		(up-compare-goal g-build-line-point-y > -1)
+		(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
+		=>
+		(up-modify-goal g-temp-2 g:= g-build-line-zone-radius)
+		(up-modify-goal g-temp-2 c:mod 2)
+		)
+		
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+		(up-compare-goal g-build-line-resource-type != wood)
+		(up-pending-objects g: g-build-line-bldg == 0)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(up-set-target-by-id g: g-build-line-resource-id)
+		(up-compare-goal g-build-line-point-x > -1)
+		(up-compare-goal g-build-line-point-y > -1)
+		(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
+		(goal g-temp-2 0)	;lerp tiles only when remainder is 0
+		(goal g-build-line-expand-direction HALF-TOWARD-TC)
+		(building-type-count town-center > -1)
+		=>
+		(up-lerp-tiles g-build-line-point-x g-position-self-x c: 1)
+		(up-bound-point g-build-line-point-x g-build-line-point-x)
+		)
+		
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-MILL-DROPSITE)
+		(up-compare-goal g-build-line-resource-type != wood)
+		(up-pending-objects g: g-build-line-bldg == 0)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(up-set-target-by-id g: g-build-line-resource-id)
+		(up-compare-goal g-build-line-point-x > -1)
+		(up-compare-goal g-build-line-point-y > -1)
+		(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
+		=>
+		(up-modify-goal g-build-line-zone-radius c:+ 1)
+		(up-modify-goal i g:neg g-build-line-zone-radius)
+		(up-modify-goal j g:neg g-build-line-zone-radius)
+		(up-jump-rule -7)
+		)
 
 ;=========================<>=========================
 ;		    PLACE POINT - MINING DROPSITE
 ;=========================<>=========================
 
-	(load "The General 3 Beta DE/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 	
 	(defrule
-	(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+	(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 	(up-compare-goal g-build-line-resource-type != wood)
 	(up-gaia-type-count g: g-build-line-resource-type > 0)
-	; (up-pending-objects g: g-build-line-bldg == 0)
-	(up-can-build g-escrow g: g-build-line-bldg)
+	(up-can-build g-build-line-escrow g: g-build-line-bldg)
 	(building-type-count town-center > 0)
 	=>
 	(up-full-reset-search)
@@ -59,20 +1324,19 @@
 			;Find the best gold/stone mining camp spot
 			;Get distance from gold/stone to TC and compare it to the distance to the target enemy (or map center on nomad maps)
 			;Best location is the gold/stone mine that highest value in the following formula:
-			;Distance to target enemy minus (2 * distance to town center)
+			;Distance to target enemy minus (3 * distance to town center)
 			(defrule
 			(goal g-map-style NOMAD)
-			(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+			(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 			(up-compare-goal g-build-line-resource-type != wood)
 			(up-gaia-type-count g: g-build-line-resource-type > 0)
-			; (up-pending-objects g: g-build-line-bldg == 0)
-			(up-can-build g-escrow g: g-build-line-bldg)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-object search-remote g: i)
 			=>
 			(up-set-target-point g-position-self-x)
 			(up-get-object-data object-data-distance g-temp)
-			(up-modify-goal g-temp c:* 2)	;weight the distance to the TC twice as much as the distance to the map center
+			(up-modify-goal g-temp c:* 3)	;weight the distance to the TC thrice as much as the distance to the map center
 			(up-get-point position-center g-point-x)
 			(up-set-target-point g-point-x)
 			(up-get-object-data object-data-distance g-temp-2)
@@ -81,17 +1345,16 @@
 
 			(defrule
 			(up-compare-goal g-map-style != NOMAD)
-			(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+			(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 			(up-compare-goal g-build-line-resource-type != wood)
 			(up-gaia-type-count g: g-build-line-resource-type > 0)
-			; (up-pending-objects g: g-build-line-bldg == 0)
-			(up-can-build g-escrow g: g-build-line-bldg)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-object search-remote g: i)
 			=>
 			(up-set-target-point g-position-self-x)
 			(up-get-object-data object-data-distance g-temp)
-			(up-modify-goal g-temp c:* 2)	;weight the distance to the TC twice as much as the distance to the target enemy
+			(up-modify-goal g-temp c:* 3)	;weight the distance to the TC thrice as much as the distance to the target enemy
 			(up-set-target-point g-target-enemy-x)
 			(up-get-object-data object-data-distance g-temp-2)
 			(up-modify-goal g-temp-2 g:- g-temp)
@@ -99,11 +1362,10 @@
 
 			;If we found a new best camp location, get the ID of the gold/stone mine
 			(defrule
-			(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+			(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 			(up-compare-goal g-build-line-resource-type != wood)
 			(up-gaia-type-count g: g-build-line-resource-type > 0)
-			; (up-pending-objects g: g-build-line-bldg == 0)
-			(up-can-build g-escrow g: g-build-line-bldg)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-object search-remote g: i)
 			(up-compare-goal g-build-line-net-dropsite-distance g:< g-temp-2)
@@ -113,11 +1375,10 @@
 			)
 
 			(defrule
-			(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+			(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 			(up-compare-goal g-build-line-resource-type != wood)
 			(up-gaia-type-count g: g-build-line-resource-type > 0)
-			; (up-pending-objects g: g-build-line-bldg == 0)
-			(up-can-build g-escrow g: g-build-line-bldg)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-modify-goal i c:+ 1)
 			(up-set-target-object search-remote g: i)
@@ -128,11 +1389,10 @@
 
 		;Search for new gold/stone mine if mining camp or town center is nearby
 		(defrule
-		(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 		(up-compare-goal g-build-line-resource-type != wood)
 		(up-gaia-type-count g: g-build-line-resource-type > 0)
-		; (up-pending-objects g: g-build-line-bldg == 0)
-		(up-can-build g-escrow g: g-build-line-bldg)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
 		(building-type-count town-center > 0)
 		(up-set-target-by-id g: g-build-line-resource-id)
 		=>
@@ -148,11 +1408,10 @@
 		
 		;Add camps/TCs under construction to search
 		(defrule
-		(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 		(up-compare-goal g-build-line-resource-type != wood)
 		(up-gaia-type-count g: g-build-line-resource-type > 0)
-		; (up-pending-objects g: g-build-line-bldg == 0)
-		(up-can-build g-escrow g: g-build-line-bldg)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
 		(building-type-count town-center > 0)
 		(up-set-target-by-id g: g-build-line-resource-id)
 		=>
@@ -168,11 +1427,10 @@
 
 		;If we found mining camps or town centers, remove the gold or stone mine from available dropsite spots and check next possible gold or stone mine
 		(defrule
-		(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 		(up-compare-goal g-build-line-resource-type != wood)
 		(up-gaia-type-count g: g-build-line-resource-type > 0)
-		; (up-pending-objects g: g-build-line-bldg == 0)
-		(up-can-build g-escrow g: g-build-line-bldg)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
 		(building-type-count town-center > 0)
 		(up-set-target-by-id g: g-build-line-resource-id)
 		(up-compare-goal g-local-total > 0)
@@ -186,11 +1444,10 @@
 
 		;Search for new gold/stone mine if enemy soldiers are nearby
 		(defrule
-		(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 		(up-compare-goal g-build-line-resource-type != wood)
 		(up-gaia-type-count g: g-build-line-resource-type > 0)
-		; (up-pending-objects g: g-build-line-bldg == 0)
-		(up-can-build g-escrow g: g-build-line-bldg)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
 		(building-type-count town-center > 0)
 		(up-set-target-by-id g: g-build-line-resource-id)
 		=>
@@ -199,11 +1456,10 @@
 		)
 		
 			(defrule
-			(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+			(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 			(up-compare-goal g-build-line-resource-type != wood)
 			(up-gaia-type-count g: g-build-line-resource-type > 0)
-			; (up-pending-objects g: g-build-line-bldg == 0)
-			(up-can-build g-escrow g: g-build-line-bldg)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-by-id g: g-build-line-resource-id)
 			(stance-toward focus-player enemy)
@@ -218,11 +1474,10 @@
 			)
 			
 			(defrule
-			(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+			(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 			(up-compare-goal g-build-line-resource-type != wood)
 			(up-gaia-type-count g: g-build-line-resource-type > 0)
-			; (up-pending-objects g: g-build-line-bldg == 0)
-			(up-can-build g-escrow g: g-build-line-bldg)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-by-id g: g-build-line-resource-id)
 			(stance-toward focus-player enemy)
@@ -233,16 +1488,14 @@
 			(set-goal g-build-line-resource-id -1)
 			(set-goal i 0)
 			(set-goal g-build-line-net-dropsite-distance -500)
-			; (chat-local-to-self "found enemy units near potential dropsite location")
 			(up-jump-rule -10)
 			)
 			
 			(defrule
-			(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+			(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 			(up-compare-goal g-build-line-resource-type != wood)
 			(up-gaia-type-count g: g-build-line-resource-type > 0)
-			; (up-pending-objects g: g-build-line-bldg == 0)
-			(up-can-build g-escrow g: g-build-line-bldg)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-by-id g: g-build-line-resource-id)
 			(up-compare-sn sn-focus-player-number < 8)
@@ -253,11 +1506,10 @@
 
 		;Search for new gold/stone mine if enemy buildings are nearby
 		(defrule
-		(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 		(up-compare-goal g-build-line-resource-type != wood)
 		(up-gaia-type-count g: g-build-line-resource-type > 0)
-		; (up-pending-objects g: g-build-line-bldg == 0)
-		(up-can-build g-escrow g: g-build-line-bldg)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
 		(building-type-count town-center > 0)
 		(up-set-target-by-id g: g-build-line-resource-id)
 		=>
@@ -265,11 +1517,10 @@
 		)
 		
 			(defrule
-			(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+			(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 			(up-compare-goal g-build-line-resource-type != wood)
 			(up-gaia-type-count g: g-build-line-resource-type > 0)
-			; (up-pending-objects g: g-build-line-bldg == 0)
-			(up-can-build g-escrow g: g-build-line-bldg)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-by-id g: g-build-line-resource-id)
 			(stance-toward focus-player enemy)
@@ -284,11 +1535,10 @@
 			)
 			
 			(defrule
-			(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+			(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 			(up-compare-goal g-build-line-resource-type != wood)
 			(up-gaia-type-count g: g-build-line-resource-type > 0)
-			; (up-pending-objects g: g-build-line-bldg == 0)
-			(up-can-build g-escrow g: g-build-line-bldg)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-by-id g: g-build-line-resource-id)
 			(stance-toward focus-player enemy)
@@ -299,16 +1549,14 @@
 			(set-goal g-build-line-resource-id -1)
 			(set-goal i 0)
 			(set-goal g-build-line-net-dropsite-distance -500)
-			; (chat-local-to-self "found enemy military bldg near potential dropsite location")
 			(up-jump-rule -14)
 			)
 		
 			(defrule
-			(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+			(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 			(up-compare-goal g-build-line-resource-type != wood)
 			(up-gaia-type-count g: g-build-line-resource-type > 0)
-			; (up-pending-objects g: g-build-line-bldg == 0)
-			(up-can-build g-escrow g: g-build-line-bldg)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-by-id g: g-build-line-resource-id)
 			(stance-toward focus-player enemy)
@@ -317,37 +1565,33 @@
 			(up-set-target-point g-point-x)
 			(up-reset-filters)
 			(up-filter-distance c: -1 g: g-build-line-enemy-bldg-distance)
-			(up-filter-include cmdid-civilian-building -1 -1 -1)
-			(up-find-remote c: all-units-class c: 1)
+			(up-find-remote c: town-center c: 1)
 			(up-get-search-state g-local-total)
 			)
 			
 			(defrule
-			(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+			(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 			(up-compare-goal g-build-line-resource-type != wood)
 			(up-gaia-type-count g: g-build-line-resource-type > 0)
-			; (up-pending-objects g: g-build-line-bldg == 0)
-			(up-can-build g-escrow g: g-build-line-bldg)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-by-id g: g-build-line-resource-id)
 			(stance-toward focus-player enemy)
-			(up-compare-goal g-remote-last > 0)		;found enemy units nearby gold/stone mine
+			(up-compare-goal g-remote-last > 0)		;found enemy TC nearby gold/stone mine
 			=>
 			(up-remove-objects search-remote object-data-id g:== g-build-line-resource-id)
 			(up-remove-objects search-remote object-data-cmdid == cmdid-civilian-building)
 			(set-goal g-build-line-resource-id -1)
 			(set-goal i 0)
 			(set-goal g-build-line-net-dropsite-distance -500)
-			; (chat-local-to-self "found enemy economic bldg near potential dropsite location")
 			(up-jump-rule -16)
 			)
 			
 			(defrule
-			(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+			(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 			(up-compare-goal g-build-line-resource-type != wood)
 			(up-gaia-type-count g: g-build-line-resource-type > 0)
-			; (up-pending-objects g: g-build-line-bldg == 0)
-			(up-can-build g-escrow g: g-build-line-bldg)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-by-id g: g-build-line-resource-id)
 			(up-compare-sn sn-focus-player-number < 8)
@@ -356,15 +1600,15 @@
 			(up-jump-rule -5)
 			)
 			
-	(load "The General 3 Beta DE/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 	
 	;Get midpoint of gold/stone mines at gold/stone mining location, store in g-build-line-point-x
 	(defrule
-	(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+	(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 	(up-compare-goal g-build-line-resource-type != wood)
 	(up-gaia-type-count g: g-build-line-resource-type > 0)
 	(up-pending-objects g: g-build-line-bldg == 0)
-	(up-can-build g-escrow g: g-build-line-bldg)
+	(up-can-build g-build-line-escrow g: g-build-line-bldg)
 	(up-set-target-by-id g: g-build-line-resource-id)
 	=>
 	(up-get-point position-object g-point-x)
@@ -379,11 +1623,11 @@
 	)
 	
 		(defrule
-		(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 		(up-compare-goal g-build-line-resource-type != wood)
 		(up-gaia-type-count g: g-build-line-resource-type > 0)
 		(up-pending-objects g: g-build-line-bldg == 0)
-		(up-can-build g-escrow g: g-build-line-bldg)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
 		(building-type-count town-center > 0)
 		(up-set-target-by-id g: g-build-line-resource-id)
 		(up-set-target-object search-remote g: j)
@@ -398,11 +1642,11 @@
 		)
 	
 	(defrule
-	(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+	(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 	(up-compare-goal g-build-line-resource-type != wood)
 	(up-gaia-type-count g: g-build-line-resource-type > 0)
 	(up-pending-objects g: g-build-line-bldg == 0)
-	(up-can-build g-escrow g: g-build-line-bldg)
+	(up-can-build g-build-line-escrow g: g-build-line-bldg)
 	(building-type-count town-center > 0)
 	(up-set-target-by-id g: g-build-line-resource-id)
 	(up-compare-goal g-build-line-point-x > -1)
@@ -416,10 +1660,10 @@
 	;Test constructing camp at midpoint, then slowly test locations further away
 	;in an increasing zone, similar to place-point
 	
-	(load "The General 3 Beta DE/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 	
 	(defrule
-	(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+	(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 	(up-compare-goal g-build-line-resource-type != wood)
 	(up-gaia-type-count g: g-build-line-resource-type > 0)
 	(up-pending-objects g: g-build-line-bldg == 0)
@@ -431,10 +1675,10 @@
 	
 	;Store bottom right corner of the available build zone into g-point-x
 	(defrule
-	(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+	(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 	(up-compare-goal g-build-line-resource-type != wood)
 	(up-pending-objects g: g-build-line-bldg == 0)
-	(up-can-build g-escrow g: g-build-line-bldg)
+	(up-can-build g-build-line-escrow g: g-build-line-bldg)
 	(up-set-target-by-id g: g-build-line-resource-id)
 	(up-compare-goal g-build-line-point-x > -1)
 	(up-compare-goal g-build-line-point-y > -1)
@@ -442,56 +1686,57 @@
 	(up-copy-point g-point-x g-build-line-point-x)
 	(up-modify-goal g-point-x g:+ g-build-line-zone-radius)
 	(up-modify-goal g-point-y g:+ g-build-line-zone-radius)
-	; (up-bound-point g-point-x g-point-x)
 	)
 	
+		;Check if any gold/stone mines would be adjacent to the mining camp
 		(defrule
-		(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 		(up-compare-goal g-build-line-resource-type != wood)
 		(up-pending-objects g: g-build-line-bldg == 0)
-		(up-can-build g-escrow g: g-build-line-bldg)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
 		(up-set-target-by-id g: g-build-line-resource-id)
 		(up-compare-goal g-build-line-point-x > -1)
 		(up-compare-goal g-build-line-point-y > -1)
-		(up-can-build-line g-escrow g-point-x g: g-build-line-bldg-foundation)
+		(up-can-build-line g-build-line-escrow g-point-x g: g-build-line-bldg-foundation)
+		=>
+		(up-set-target-point g-point-x)
+		(up-full-reset-search)
+		(up-filter-distance c: -1 c: 3)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource g: g-build-line-resource-type c: 40)
+		(up-remove-objects search-remote object-data-precise-distance >= 250)
+		(up-get-search-state g-local-total)
+		)
+	
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
+		(up-compare-goal g-build-line-resource-type != wood)
+		(up-pending-objects g: g-build-line-bldg == 0)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(up-set-target-by-id g: g-build-line-resource-id)
+		(up-compare-goal g-build-line-point-x > -1)
+		(up-compare-goal g-build-line-point-y > -1)
+		(up-can-build-line g-build-line-escrow g-point-x g: g-build-line-bldg-foundation)
+		(up-point-explored g-point-x != explored-no)
+		(or
+			(goal g-build-line-bldg town-center)	;allow TCs to be adjacent to gold/stone
+			(goal g-remote-total 0))				;no mines within a tile of possible mining camp
 		=>
 		(up-build-line g-point-x g-point-x g: g-build-line-bldg-foundation)
+		(up-jump-rule 7)
 		)
 		
 		(defrule
-		(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 		(up-compare-goal g-build-line-resource-type != wood)
 		(up-pending-objects g: g-build-line-bldg == 0)
-		(up-can-build g-escrow g: g-build-line-bldg)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
 		(up-set-target-by-id g: g-build-line-resource-id)
 		(up-compare-goal g-build-line-point-x > -1)
 		(up-compare-goal g-build-line-point-y > -1)
-		(not
-			(up-can-build-line g-escrow g-point-x g: g-build-line-bldg-foundation))
 		(up-compare-goal i g:< g-build-line-zone-radius)
-		; (up-compare-goal g-point-x < HUNDRED-PERCENT-MAP-SIZE)
 		=>
 		(up-modify-goal i c:+ 1)
-		(up-copy-point g-point-x g-build-line-point-x)
-		(up-modify-goal g-point-x g:- i)
-		(up-modify-goal g-point-y g:- j)
-		(up-bound-point g-point-x g-point-x)
-		(up-jump-rule -2)
-		)
-		
-		(defrule
-		(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
-		(up-compare-goal g-build-line-resource-type != wood)
-		(up-pending-objects g: g-build-line-bldg == 0)
-		(up-can-build g-escrow g: g-build-line-bldg)
-		(up-set-target-by-id g: g-build-line-resource-id)
-		(not
-			(up-can-build-line g-escrow g-point-x g: g-build-line-bldg-foundation))
-		(up-compare-goal j g:< g-build-line-zone-radius)
-		; (up-compare-goal g-point-y < HUNDRED-PERCENT-MAP-SIZE)
-		=>
-		(up-modify-goal j c:+ 1)
-		(up-modify-goal i g:neg g-build-line-zone-radius)
 		(up-copy-point g-point-x g-build-line-point-x)
 		(up-modify-goal g-point-x g:- i)
 		(up-modify-goal g-point-y g:- j)
@@ -499,37 +1744,48 @@
 		(up-jump-rule -3)
 		)
 		
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
+		(up-compare-goal g-build-line-resource-type != wood)
+		(up-pending-objects g: g-build-line-bldg == 0)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(up-set-target-by-id g: g-build-line-resource-id)
+		(up-compare-goal j g:< g-build-line-zone-radius)
+		=>
+		(up-modify-goal j c:+ 1)
+		(up-modify-goal i g:neg g-build-line-zone-radius)
+		(up-copy-point g-point-x g-build-line-point-x)
+		(up-modify-goal g-point-x g:- i)
+		(up-modify-goal g-point-y g:- j)
+		(up-bound-point g-point-x g-point-x)
+		(up-jump-rule -4)
+		)
+		
 		;If half expansion toward TC is desired, only expand every other zone increase.
 		;Do this by dividing the zone radius by 2, and expand only if the remainder is 0.
 		(defrule
-		(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 		(up-compare-goal g-build-line-resource-type != wood)
 		(up-pending-objects g: g-build-line-bldg == 0)
-		(up-can-build g-escrow g: g-build-line-bldg)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
 		(up-set-target-by-id g: g-build-line-resource-id)
 		(up-compare-goal g-build-line-point-x > -1)
 		(up-compare-goal g-build-line-point-y > -1)
-		(not
-			(up-can-build-line g-escrow g-point-x g: g-build-line-bldg-foundation))
 		(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
-		(goal g-build-line-expand YES)
 		=>
 		(up-modify-goal g-temp-2 g:= g-build-line-zone-radius)
 		(up-modify-goal g-temp-2 c:mod 2)
 		)
 		
 		(defrule
-		(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 		(up-compare-goal g-build-line-resource-type != wood)
 		(up-pending-objects g: g-build-line-bldg == 0)
-		(up-can-build g-escrow g: g-build-line-bldg)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
 		(up-set-target-by-id g: g-build-line-resource-id)
 		(up-compare-goal g-build-line-point-x > -1)
 		(up-compare-goal g-build-line-point-y > -1)
-		(not
-			(up-can-build-line g-escrow g-point-x g: g-build-line-bldg-foundation))
 		(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
-		(goal g-build-line-expand YES)
 		(goal g-temp-2 0)	;lerp tiles only when remainder is 0
 		(goal g-build-line-expand-direction HALF-TOWARD-TC)
 		(building-type-count town-center > -1)
@@ -539,38 +1795,69 @@
 		)
 		
 		(defrule
-		(goal g-build-line-type PLACE-POINT-MINING-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
 		(up-compare-goal g-build-line-resource-type != wood)
 		(up-pending-objects g: g-build-line-bldg == 0)
-		(up-can-build g-escrow g: g-build-line-bldg)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
 		(up-set-target-by-id g: g-build-line-resource-id)
 		(up-compare-goal g-build-line-point-x > -1)
 		(up-compare-goal g-build-line-point-y > -1)
-		(not
-			(up-can-build-line g-escrow g-point-x g: g-build-line-bldg-foundation))
 		(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
-		(goal g-build-line-expand YES)
 		=>
 		(up-modify-goal g-build-line-zone-radius c:+ 1)
 		(up-modify-goal i g:neg g-build-line-zone-radius)
 		(up-modify-goal j g:neg g-build-line-zone-radius)
-		(up-jump-rule -7)
+		(up-jump-rule -8)
+		)
+
+		;If failed to place gold/stone TC, then place wood TC instead
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
+		(up-compare-goal g-build-line-resource-type != wood)
+		(goal g-build-line-bldg town-center)
+		(up-pending-objects g: g-build-line-bldg == 0)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(up-set-target-by-id g: g-build-line-resource-id)
+		(up-compare-goal g-build-line-point-x > -1)
+		(up-compare-goal g-build-line-point-y > -1)
+		(up-compare-goal g-build-line-zone-radius g:>= g-build-line-max-zone-radius)
+		=>		
+		(set-goal g-build-line-dropsite-distance 12)
+		(set-goal g-build-line-enemy-bldg-distance 45)
+		(set-goal g-build-line-max-distance -1)
+		(set-goal g-build-line-expand-direction NO-DIRECTION)
+		)
+		
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
+		(up-compare-goal g-build-line-resource-type != wood)
+		(goal g-build-line-bldg town-center)
+		(up-pending-objects g: g-build-line-bldg == 0)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		(up-set-target-by-id g: g-build-line-resource-id)
+		(up-compare-goal g-build-line-point-x > -1)
+		(up-compare-goal g-build-line-point-y > -1)
+		(up-compare-goal g-build-line-zone-radius g:>= g-build-line-max-zone-radius)
+		=>		
+		(set-goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
+		(set-goal g-build-line-resource-type wood)
+		(set-goal g-build-line-zone-radius 0)
+		(set-goal g-build-line-max-zone-radius 7)
 		)
 
 ;=========================<>=========================
 ;		    PLACE POINT - LUMBER DROPSITE
 ;=========================<>=========================
 
-	(load "The General 3 Beta DE/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	;Find trees within a certain distance from the starting TC
     ;Slowly expand until we have at least 30 trees that are good spots for a dropsite
     ;Then find the tree with the best spot
 	(defrule
-	(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+	(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 	(up-gaia-type-count g: g-build-line-resource-type > 30)
-	; (up-pending-objects g: g-build-line-bldg == 0)
-	(up-can-build g-escrow g: g-build-line-bldg)
+	(up-can-build g-build-line-escrow g: g-build-line-bldg)
 	(building-type-count town-center > 0)
     (game-time >= 3)
 	=>
@@ -581,7 +1868,7 @@
 	)
 
         (defrule
-        (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+        (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
         (goal g-temp-3 44444)
         =>
         (up-set-target-point g-position-self-x)
@@ -691,7 +1978,7 @@
             #end-if
 
             (defrule
-            (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+            (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
             (goal g-temp-3 44443)   ;tree doesn't have forest terrain
             (up-set-target-object search-remote g: i)
             (up-compare-goal i < 40)
@@ -703,7 +1990,7 @@
 
             ;Search for new tree if lumber camp or town center is nearby
             (defrule
-            (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+            (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
             (goal g-temp-3 44444)
             (up-set-target-object search-remote g: i)
             =>
@@ -722,7 +2009,7 @@
 
             ;If we found lumber camps or town centers, move on to next tree
             (defrule
-            (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+            (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
             (goal g-temp-3 44444)
             (up-set-target-object search-remote g: i)
             (up-compare-goal g-local-total > 0)
@@ -733,7 +2020,7 @@
 
             ;If building a wood TC and tree not on elevation 0, move on to next tree
             (defrule
-            (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+            (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 			(goal g-build-line-bldg town-center)
             (goal g-temp-3 44444)
             (up-set-target-object search-remote g: i)
@@ -743,7 +2030,7 @@
             )
 
             (defrule
-            (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+            (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 			(goal g-build-line-bldg town-center)
             (goal g-temp-3 44444)
             (up-set-target-object search-remote g: i)
@@ -755,7 +2042,7 @@
 
             ;Search for new tree if enemy soldiers are nearby
             (defrule
-            (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+            (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
             (goal g-temp-3 44444)
             (up-set-target-object search-remote g: i)
             =>
@@ -764,7 +2051,7 @@
             )
             
                 (defrule
-                (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+                (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
                 (goal g-temp-3 44444)
                 (up-set-target-object search-remote g: i)
                 (stance-toward focus-player enemy)
@@ -773,13 +2060,12 @@
                 (up-set-target-point g-point-x)
                 (up-reset-filters)
                 (up-filter-distance c: -1 c: 12)
-                (up-filter-include cmdid-military -1 -1 -1)
                 (up-find-remote c: all-units-class c: 1)
                 (up-get-search-state g-local-total)
                 )
                 
                 (defrule
-                (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+                (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
                 (goal g-temp-3 44444)
                 (up-set-target-object search-remote g: i)
                 (stance-toward focus-player enemy)
@@ -787,12 +2073,11 @@
                 =>
                 (up-remove-objects search-remote object-data-index g:== i)
                 (up-remove-objects search-remote object-data-cmdid == cmdid-military)
-                ; (chat-local-to-self "found enemy units near potential dropsite location")
                 (up-jump-rule -11)
                 )
                 
                 (defrule
-                (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+                (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
                 (goal g-temp-3 44444)
                 (up-set-target-object search-remote g: i)
                 (up-compare-sn sn-focus-player-number < 8)
@@ -803,7 +2088,7 @@
 
             ;Search for new tree if enemy buildings are nearby
             (defrule
-            (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+            (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
             (goal g-temp-3 44444)
             (up-set-target-object search-remote g: i)
             =>
@@ -812,7 +2097,7 @@
             )
             
                 (defrule
-                (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+                (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
                 (goal g-temp-3 44444)
                 (up-set-target-object search-remote g: i)
                 (stance-toward focus-player enemy)
@@ -827,7 +2112,7 @@
                 )
                 
                 (defrule
-                (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+                (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
                 (goal g-temp-3 44444)
                 (up-set-target-object search-remote g: i)
                 (stance-toward focus-player enemy)
@@ -835,12 +2120,11 @@
                 =>
                 (up-remove-objects search-remote object-data-index g:== i)
                 (up-remove-objects search-remote object-data-cmdid == cmdid-military-building)
-                ; (chat-local-to-self "found enemy bldg near potential dropsite location")
                 (up-jump-rule -15)
                 )
             
                 (defrule
-                (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+                (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
                 (goal g-temp-3 44444)
                 (up-set-target-object search-remote g: i)
                 (stance-toward focus-player enemy)
@@ -855,7 +2139,7 @@
                 )
                 
                 (defrule
-                (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+                (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
                 (goal g-temp-3 44444)
                 (up-set-target-object search-remote g: i)
                 (stance-toward focus-player enemy)
@@ -864,12 +2148,11 @@
                 (up-remove-objects search-remote object-data-index g:== i)
                 (up-remove-objects search-remote object-data-cmdid == cmdid-civilian-building)
                 (up-modify-goal i c:+ 1)
-                ; (chat-local-to-self "found enemy bldg near potential dropsite location")
                 (up-jump-rule -17)
                 )
                 
                 (defrule
-                (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+                (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
                 (goal g-temp-3 44444)
                 (up-set-target-object search-remote g: i)
                 (up-compare-sn sn-focus-player-number < 8)
@@ -879,7 +2162,7 @@
                 )
 
             (defrule
-            (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+            (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
             (or
                 (goal g-temp-3 44443)
                 (goal g-temp-3 44444))
@@ -893,7 +2176,7 @@
 
         ;If we have less than 30 trees left in the remote list, search again at a higher distance
         (defrule
-        (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+        (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
         (or
             (goal g-temp-3 44443)
             (goal g-temp-3 44444))
@@ -917,7 +2200,7 @@
     ;(Distance to target-enemy or map-center) minus (3 * distance to town center)
     ;Track this distance in g-build-line-net-dropsite-distance
     (defrule
-    (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+    (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
     (goal g-temp-3 44444)
     =>
     (set-goal i 0)
@@ -930,7 +2213,7 @@
 
 		(defrule
 		(goal g-map-style NOMAD)
-		(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 		(goal g-temp-3 44444)
         (up-set-target-object search-remote g: i)
 		=>
@@ -945,7 +2228,7 @@
 
 		(defrule
 		(up-compare-goal g-map-style != NOMAD)
-		(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 		(goal g-temp-3 44444)
         (up-set-target-object search-remote g: i)
 		(up-compare-goal g-remote-total >= 10)
@@ -959,7 +2242,7 @@
 		)
 
 		(defrule
-		(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 		(goal g-temp-3 44444)
         (up-set-target-object search-remote g: i)
 		(up-compare-goal g-build-line-net-dropsite-distance g:< g-temp-2)
@@ -969,7 +2252,7 @@
 		)
 
 		(defrule
-		(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 		(goal g-temp-3 44444)
 		(up-compare-goal i < 40)
 		=>
@@ -982,7 +2265,7 @@
 	;Find backup lumber camp location in case placing dropsite by best tree is not possible
 	;Require backup location to be >= 15 tiles away
 	(defrule
-    (goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+    (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
     (goal g-temp-3 44444)
 	(up-set-target-by-id g: g-build-line-resource-id)
     =>
@@ -997,7 +2280,7 @@
 
 		(defrule
 		(goal g-map-style NOMAD)
-		(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 		(goal g-temp-3 44444)
 		(up-set-target-by-id g: g-build-line-resource-id)
         (up-set-target-object search-remote g: i)
@@ -1014,7 +2297,7 @@
 
 		(defrule
 		(up-compare-goal g-map-style != NOMAD)
-		(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 		(goal g-temp-3 44444)
 		(up-set-target-by-id g: g-build-line-resource-id)
         (up-set-target-object search-remote g: i)
@@ -1030,7 +2313,7 @@
 		)
 
 		(defrule
-		(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 		(goal g-temp-3 44444)
 		(up-set-target-by-id g: g-build-line-resource-id)
         (up-set-target-object search-remote g: i)
@@ -1042,7 +2325,7 @@
 		)
 
 		(defrule
-		(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 		(goal g-temp-3 44444)
 		(up-set-target-by-id g: g-build-line-resource-id)
 		(up-compare-goal i < 40)
@@ -1053,14 +2336,13 @@
 		(up-jump-rule -4)
 		)
 
-	(load "The General 3 Beta DE/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 	
 		;Get midpoint of nearby trees at possible lumber camp location, store in g-build-line-point-x
 		(defrule
-		(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 		(up-gaia-type-count g: g-build-line-resource-type > 30)
-		; (up-pending-objects g: g-build-line-bldg == 0)
-		(up-can-build g-escrow g: g-build-line-bldg)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
 		(up-set-target-by-id g: g-build-line-resource-id)
 		=>
 		(up-get-point position-object g-point-x)
@@ -1076,10 +2358,9 @@
 		)
 		
 			(defrule
-			(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+			(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 			(up-gaia-type-count g: g-build-line-resource-type > 30)
-			; (up-pending-objects g: g-build-line-bldg == 0)
-			(up-can-build g-escrow g: g-build-line-bldg)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-by-id g: g-build-line-resource-id)
 			(up-set-target-object search-remote g: j)
@@ -1094,10 +2375,9 @@
 			)
 		
 		(defrule
-		(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 		(up-gaia-type-count g: g-build-line-resource-type > 0)
-		; (up-pending-objects g: g-build-line-bldg == 0)
-		(up-can-build g-escrow g: g-build-line-bldg)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
 		(building-type-count town-center > 0)
 		(up-set-target-by-id g: g-build-line-resource-id)
 		(up-compare-goal g-build-line-point-x > -1)
@@ -1105,19 +2385,18 @@
 		=>
 		(up-modify-goal g-build-line-point-x g:/ g-remote-total)
 		(up-modify-goal g-build-line-point-y g:/ g-remote-total)
-		; (up-send-flare g-build-line-point-x)
 		)
 		
 			;Construct lumber camp with up-build-line-point-x
 			;Test constructing camp at midpoint, then slowly test locations further away
 			;in an increasing zone, similar to place-point
 			
-			(load "The General 3 Beta DE/Functions/Reset")
+			(load "The General 3.1/Functions/Reset")
 		
 			(defrule
-			(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+			(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 			(up-pending-objects g: g-build-line-bldg == 0)
-			(up-can-build g-escrow g: g-build-line-bldg)
+			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(up-set-target-by-id g: g-build-line-resource-id)
 			(up-compare-goal g-build-line-point-x > -1)
 			(up-compare-goal g-build-line-point-y > -1)
@@ -1130,9 +2409,9 @@
 			
 				;Store bottom right corner of the available build zone into g-point-x
 				(defrule
-				(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+				(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 				(up-pending-objects g: g-build-line-bldg == 0)
-				(up-can-build g-escrow g: g-build-line-bldg)
+				(up-can-build g-build-line-escrow g: g-build-line-bldg)
 				(up-set-target-by-id g: g-build-line-resource-id)
 				(up-compare-goal g-build-line-point-x > -1)
 				(up-compare-goal g-build-line-point-y > -1)
@@ -1146,9 +2425,9 @@
 
 					;Check if possible build location is reachable
 					(defrule
-					(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+					(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 					(up-pending-objects g: g-build-line-bldg == 0)
-					(up-can-build g-escrow g: g-build-line-bldg)
+					(up-can-build g-build-line-escrow g: g-build-line-bldg)
 					(up-set-target-by-id g: g-build-line-resource-id)
 					(up-compare-goal g-build-line-point-x > -1)
 					(up-compare-goal g-build-line-point-y > -1)
@@ -1160,13 +2439,13 @@
 					)
 				
 					(defrule
-					(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+					(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 					(up-pending-objects g: g-build-line-bldg == 0)
-					(up-can-build g-escrow g: g-build-line-bldg)
+					(up-can-build g-build-line-escrow g: g-build-line-bldg)
 					(up-set-target-by-id g: g-build-line-resource-id)
 					(up-compare-goal g-build-line-point-x > -1)
 					(up-compare-goal g-build-line-point-y > -1)
-					(up-can-build-line g-escrow g-point-x g: g-build-line-bldg-foundation)
+					(up-can-build-line g-build-line-escrow g-point-x g: g-build-line-bldg-foundation)
 					(up-set-target-object search-local c: 0)
 					(goal g-temp-3 44447)
 					=>
@@ -1175,9 +2454,9 @@
 				
 					;Check if dropsite is near possible build location
 					(defrule
-					(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+					(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 					(up-pending-objects g: g-build-line-bldg == 0)
-					(up-can-build g-escrow g: g-build-line-bldg)
+					(up-can-build g-build-line-escrow g: g-build-line-bldg)
 					(up-set-target-by-id g: g-build-line-resource-id)
 					(up-compare-goal g-build-line-point-x > -1)
 					(up-compare-goal g-build-line-point-y > -1)
@@ -1194,9 +2473,9 @@
 					)
 
 					(defrule
-					(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+					(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 					(up-pending-objects g: g-build-line-bldg == 0)
-					(up-can-build g-escrow g: g-build-line-bldg)
+					(up-can-build g-build-line-escrow g: g-build-line-bldg)
 					(up-set-target-by-id g: g-build-line-resource-id)
 					(up-compare-goal g-build-line-point-x > -1)
 					(up-compare-goal g-build-line-point-y > -1)
@@ -1214,9 +2493,9 @@
 					)
 
 					(defrule
-					(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+					(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 					(up-pending-objects g: g-build-line-bldg == 0)
-					(up-can-build g-escrow g: g-build-line-bldg)
+					(up-can-build g-build-line-escrow g: g-build-line-bldg)
 					(up-set-target-by-id g: g-build-line-resource-id)
 					(up-compare-goal g-build-line-point-x > -1)
 					(up-compare-goal g-build-line-point-y > -1)
@@ -1235,18 +2514,16 @@
 					
 					;If no dropsite nearby, we can reach the location with up-path-distance, there are no issues with hills, and we can build dropsite, build it!
 					(defrule
-					(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+					(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 					(up-pending-objects g: g-build-line-bldg == 0)
-					(up-can-build g-escrow g: g-build-line-bldg)
+					(up-can-build g-build-line-escrow g: g-build-line-bldg)
 					(up-set-target-by-id g: g-build-line-resource-id)
 					(up-compare-goal g-build-line-point-x > -1)
 					(up-compare-goal g-build-line-point-y > -1)
 					(goal g-temp-3 44449)
 					(up-compare-goal g-remote-total >= 3)	;trees nearby
-					(up-can-build-line g-escrow g-point-x g: g-build-line-bldg-foundation)
-					; (or
-					; 	(up-compare-goal g-build-line-bldg != town-center)
-					; 	(up-point-elevation g-point-x g:== g-temp))   ;elevation is same, probably a good place for TC
+					(up-point-explored g-point-x != explored-no)
+					(up-can-build-line g-build-line-escrow g-point-x g: g-build-line-bldg-foundation)
 					=>
 					(set-goal g-temp-3 44450)
 					(up-build-line g-point-x g-point-x g: g-build-line-bldg-foundation)
@@ -1254,42 +2531,31 @@
 				
 					;There are issues building the dropsite here, set goal to allow us to check a new location
 					(defrule
-					(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
-					; (up-pending-objects g: g-build-line-bldg == 0)
-					; (up-can-build g-escrow g: g-build-line-bldg)
-					; (up-set-target-by-id g: g-build-line-resource-id)
-					; (up-compare-goal g-build-line-point-x > -1)
-					; (up-compare-goal g-build-line-point-y > -1)
+					(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 					(up-compare-goal g-temp-3 >= 44446)
 					(up-compare-goal g-temp-3 < 44450)
 					(or
 						(goal g-temp-2 65535)					;we can't reach the tile
 						(or
 							(not
-								(up-can-build-line g-escrow g-point-x g: g-build-line-bldg-foundation))
+								(up-can-build-line g-build-line-escrow g-point-x g: g-build-line-bldg-foundation))
 							(or
 								(up-compare-goal g-local-total > 0) 		;found lumber camp or TC within 4 tiles
 								(up-compare-goal g-remote-total < 3))))
-								; (or
-								; 	(up-compare-goal g-remote-total < 3)	;didn't find trees near spot
-								; 	(and
-								; 		(goal g-build-line-bldg town-center)
-								; 		(up-point-elevation g-point-x g:!= g-temp))))))   ;if elevation isn't the same, avoid placing TC here because there's likely a hill
 					=>
 					(set-goal g-temp-3 44451)
 					)
 					
 					;If we are still inside the build zone, subtract 1 from the x-coordinate and try again
 					(defrule
-					(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+					(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 					(up-pending-objects g: g-build-line-bldg == 0)
-					(up-can-build g-escrow g: g-build-line-bldg)
+					(up-can-build g-build-line-escrow g: g-build-line-bldg)
 					(up-set-target-by-id g: g-build-line-resource-id)
 					(up-compare-goal g-build-line-point-x > -1)
 					(up-compare-goal g-build-line-point-y > -1)
 					(goal g-temp-3 44451)
 					(up-compare-goal i g:< g-build-line-zone-radius)
-					; (up-compare-goal g-point-x < HUNDRED-PERCENT-MAP-SIZE)
 					=>
 					(up-modify-goal i c:+ 1)
 					(up-copy-point g-point-x g-build-line-point-x)
@@ -1303,13 +2569,12 @@
 					;Subtracting 1 from the x-coordinate would be outside the build zone
 					;So, subtract 1 from the y-coordinate if this is inside the build zone and reset x-coordinate to highest possible x-coordinate in build zone
 					(defrule
-					(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+					(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 					(up-pending-objects g: g-build-line-bldg == 0)
-					(up-can-build g-escrow g: g-build-line-bldg)
+					(up-can-build g-build-line-escrow g: g-build-line-bldg)
 					(up-set-target-by-id g: g-build-line-resource-id)
 					(goal g-temp-3 44451)
 					(up-compare-goal j g:< g-build-line-zone-radius)
-					; (up-compare-goal g-point-y < HUNDRED-PERCENT-MAP-SIZE)
 					=>
 					(up-modify-goal j c:+ 1)
 					(up-modify-goal i g:neg g-build-line-zone-radius)
@@ -1324,15 +2589,14 @@
 				;If half expansion toward TC is desired, only expand every other zone increase.
 				;Do this by dividing the zone radius by 2, and expand only if the remainder is 0.
 				(defrule
-				(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+				(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 				(up-pending-objects g: g-build-line-bldg == 0)
-				(up-can-build g-escrow g: g-build-line-bldg)
+				(up-can-build g-build-line-escrow g: g-build-line-bldg)
 				(up-set-target-by-id g: g-build-line-resource-id)
 				(up-compare-goal g-build-line-point-x > -1)
 				(up-compare-goal g-build-line-point-y > -1)
 				(goal g-temp-3 44451)
 				(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
-				(goal g-build-line-expand YES)
 				(goal g-build-line-expand-direction HALF-TOWARD-TC)
 				(building-type-count town-center > 0)
 				=>
@@ -1342,15 +2606,14 @@
 				
 				;Move build line location toward TC if remainder is 0
 				(defrule
-				(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+				(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 				(up-pending-objects g: g-build-line-bldg == 0)
-				(up-can-build g-escrow g: g-build-line-bldg)
+				(up-can-build g-build-line-escrow g: g-build-line-bldg)
 				(up-set-target-by-id g: g-build-line-resource-id)
 				(up-compare-goal g-build-line-point-x > -1)
 				(up-compare-goal g-build-line-point-y > -1)
 				(goal g-temp-3 44451)
 				(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
-				(goal g-build-line-expand YES)
 				(goal g-build-line-expand-direction HALF-TOWARD-TC)
 				(building-type-count town-center > 0)
 				(goal g-temp-2 0)	;lerp tiles only when remainder is 0
@@ -1361,15 +2624,14 @@
 				
 				;Expand zone if we couldn't find an available location in the current build zone
 				(defrule
-				(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+				(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 				(up-pending-objects g: g-build-line-bldg == 0)
-				(up-can-build g-escrow g: g-build-line-bldg)
+				(up-can-build g-build-line-escrow g: g-build-line-bldg)
 				(up-set-target-by-id g: g-build-line-resource-id)
 				(up-compare-goal g-build-line-point-x > -1)
 				(up-compare-goal g-build-line-point-y > -1)
 				(goal g-temp-3 44451)
 				(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
-				(goal g-build-line-expand YES)
 				=>
 				(up-modify-goal g-build-line-zone-radius c:+ 1)
 				(up-modify-goal i g:neg g-build-line-zone-radius)
@@ -1379,17 +2641,16 @@
 				)
 				
 		(defrule
-		(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 		(up-set-target-by-id g: g-build-line-backup-resource-id)
 		(up-compare-goal g-build-line-resource-id g:!= g-build-line-backup-resource-id)
 		(up-pending-objects g: g-build-line-bldg == 0)
-		(up-can-build g-escrow g: g-build-line-bldg)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
 		(up-set-target-by-id g: g-build-line-resource-id)
 		(up-compare-goal g-build-line-point-x > -1)
 		(up-compare-goal g-build-line-point-y > -1)
 		(goal g-temp-3 44451)
 		(up-compare-goal g-build-line-zone-radius g:>= g-build-line-max-zone-radius)
-		(goal g-build-line-expand YES)
 		=>
 		(up-modify-goal g-build-line-resource-id g:= g-build-line-backup-resource-id)	;try again with backup tree location
 		(set-goal g-build-line-zone-radius 0)
@@ -1397,10 +2658,10 @@
 		)
 
 	(defrule
-	(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
+	(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 	(goal g-build-line-bldg lumber-camp)
 	(up-pending-objects c: lumber-camp == 0)
-	(up-can-build g-escrow c: lumber-camp)
+	(up-can-build g-build-line-escrow c: lumber-camp)
 	(up-set-target-by-id g: g-build-line-resource-id)
 	(up-compare-goal g-build-line-point-x > -1)
 	(up-compare-goal g-build-line-point-y > -1)
@@ -1410,74 +2671,6 @@
 		(up-compare-goal g-build-line-resource-id g:== g-build-line-backup-resource-id)
 		(not
 			(up-set-target-by-id g: g-build-line-backup-resource-id)))
-	(goal g-build-line-expand YES)
 	=>
 	(enable-timer t-build-line-lumber-camp 15)
-    ; (up-send-flare g-build-line-point-x)
-	; (up-chat-data-to-all "Max %d" g: g-build-line-max-zone-radius)
-    ; (up-chat-data-to-all "Dist %d" g: g-build-line-max-distance)
-	)
-
-	;If TC not placed, use backup system
-	(defrule
-	(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
-	(goal g-build-line-bldg town-center)
-	(up-pending-objects g: g-build-line-bldg == 0)
-	(up-can-build g-escrow g: g-build-line-bldg)
-	(up-set-target-by-id g: g-build-line-resource-id)
-	(up-compare-goal g-build-line-point-x > -1)
-	(up-compare-goal g-build-line-point-y > -1)
-	(goal g-temp-3 44451)
-	(up-compare-goal g-build-line-zone-radius g:>= g-build-line-max-zone-radius)
-	(or
-		(up-compare-goal g-build-line-resource-id g:== g-build-line-backup-resource-id)
-		(not
-			(up-set-target-by-id g: g-build-line-backup-resource-id)))
-	(goal g-build-line-expand YES)
-	=>
-	(set-goal g-temp-3 44452)
-	)
-
-	(defrule
-	(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
-	(goal g-build-line-bldg town-center)
-	(goal g-temp-3 44452)
-	(can-build-with-escrow town-center)
-	(up-pending-objects c: town-center < 2)
-	=>
-	(up-full-reset-search)
-	(up-set-target-point g-position-self-x)
-	(up-find-local c: town-center c: 240)
-	(up-find-local c: lumber-camp c: 240)
-	(up-clean-search search-local object-data-distance search-order-desc)
-	)
-
-	(defrule
-	(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
-	(goal g-build-line-bldg town-center)
-	(goal g-temp-3 44452)
-	(can-build-with-escrow town-center)
-	(up-pending-objects c: town-center < 2)
-	(up-set-target-object search-local c: 0)
-	=>
-	(up-set-target-point g-position-self-x)
-	(up-get-object-data object-data-distance g-temp)
-	(up-modify-sn sn-lumber-camp-max-distance g:= g-temp)
-	(up-modify-sn sn-lumber-camp-max-distance c:+ 10)
-	)
-
-	(defrule
-	(goal g-build-line-type PLACE-POINT-LUMBER-DROPSITE)
-	(goal g-build-line-bldg town-center)
-	(goal g-temp-3 44452)
-	(can-build-with-escrow town-center)
-	(up-pending-objects c: town-center < 2)
-	=>
-	(set-strategic-number sn-dropsite-separation-distance 8)
-	(set-strategic-number sn-town-center-placement lumber-camp)
-	(up-assign-builders c: town-center-foundation c: 4)
-	(release-escrow wood)
-	(release-escrow stone)
-	(build town-center)
-	(chat-to-player my-player-number "Build Town Center with wood backup rules")
 	)

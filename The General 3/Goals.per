@@ -1,6 +1,6 @@
 
 
-    (load "The General 3/Functions/Reset")
+    (load "The General 3.1/Functions/Reset")
 
 ;-----------------------
 ;	GOAL 1: g-general
@@ -1705,1959 +1705,223 @@
 		;Select the starting strategy. This will eventually be different according to the general, but for now it's just based on civ and flank/pocket
 		#load-if-defined AZTEC-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-EAGLES-REVENGE)
-			(set-goal g-dark-strategy FC-EAGLES-REVENGE)
-			(set-goal g-early-feudal-strategy FC-EAGLES-REVENGE)
-			(set-goal g-mid-feudal-strategy FC-EAGLES-REVENGE)
-			(set-goal g-early-castle-strategy FC-EAGLES-REVENGE)
-			(set-goal g-mid-castle-strategy MIDC-EAGLES)
-			(set-goal g-early-imperial-strategy EARLYI-EL-DORADO)
-			(set-goal g-mid-imperial-strategy MIDI-EAGLES)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-EAGLES)
-			(set-goal g-dark-strategy BOOM-EAGLES)
-			(set-goal g-early-feudal-strategy BOOM-EAGLES)
-			(set-goal g-mid-feudal-strategy BOOM-EAGLES)
-			(set-goal g-early-castle-strategy BOOM-EAGLES)
-			(set-goal g-mid-castle-strategy BOOM-EAGLES)
-			(set-goal g-early-imperial-strategy EARLYI-EL-DORADO)
-			(set-goal g-mid-imperial-strategy MIDI-EAGLES)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(up-compare-goal g-enemy-swordsmen-count >= 8)
-				(or
-					(up-compare-goal g-enemy-spearmen-count >= 8)
-					(or
-						(up-compare-goal g-enemy-eagle-warrior-count >= 6)
-						(up-compare-goal g-enemy-condottiero-count >= 8))))
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(up-compare-goal g-enemy-swordsmen-count < 8)
-			(up-compare-goal g-enemy-spearmen-count < 8)
-			(up-compare-goal g-enemy-eagle-warrior-count < 6)
-			(up-compare-goal g-enemy-condottiero-count < 8)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
-			)
+			(load "The General 3.1/Strats/Aztecs")
 
 		#end-if
 
 		#load-if-defined BERBERS-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-KRUSH)
-			(set-goal g-dark-strategy FC-KRUSH)
-			(set-goal g-early-feudal-strategy FC-KRUSH)
-			(set-goal g-mid-feudal-strategy FC-KRUSH)
-			(set-goal g-early-castle-strategy FC-KRUSH)
-			(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
-			)
+			(load "The General 3.1/Strats/Berbers")
 
 		#end-if
 
 		#load-if-defined BRITON-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-ARBINGER)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
-			)
+			(load "The General 3.1/Strats/Britons")
 
 		#end-if
 
 		#load-if-defined BULGARIANS-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-KRUSH)
-			(set-goal g-dark-strategy FC-KRUSH)
-			(set-goal g-early-feudal-strategy FC-KRUSH)
-			(set-goal g-mid-feudal-strategy FC-KRUSH)
-			(set-goal g-early-castle-strategy FC-KRUSH)
-			(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
-			)
+			(load "The General 3.1/Strats/Bulgarians")
 
 		#end-if
 
 		#load-if-defined BURGUNDIANS-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-KRUSH)
-			(set-goal g-dark-strategy FC-KRUSH)
-			(set-goal g-early-feudal-strategy FC-KRUSH)
-			(set-goal g-mid-feudal-strategy FC-KRUSH)
-			(set-goal g-early-castle-strategy FC-KRUSH)
-			(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
-			)
+			(load "The General 3.1/Strats/Burgundians")
 
 		#end-if
 
 		#load-if-defined BURMESE-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-KRUSH)
-			(set-goal g-dark-strategy FC-KRUSH)
-			(set-goal g-early-feudal-strategy FC-KRUSH)
-			(set-goal g-mid-feudal-strategy FC-KRUSH)
-			(set-goal g-early-castle-strategy FC-KRUSH)
-			(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-CIRCUS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-CIRCUS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHALBS)
-			)
+			(load "The General 3.1/Strats/Burmese")
 
 		#end-if
 		
 		#load-if-defined BYZANTINE-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-ARBINGER)
-			(set-goal g-mid-imperial-strategy MIDI-ARBS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
-			)
+			(load "The General 3.1/Strats/Byzantines")
 
 		#end-if
 
 		#load-if-defined CELTIC-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-UNIQUE)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle > 0)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle == 0)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHALBS)
-			)
+			(load "The General 3.1/Strats/Celts")
 
 		#end-if
 
 		#load-if-defined CHINESE-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-ARBINGER)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
-			)
+			(load "The General 3.1/Strats/Chinese")
 
 		#end-if
 
 		#load-if-defined CUMANS-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-CAV-ARCHERS)
-			(set-goal g-early-imperial-strategy EARLYI-UNIQUE)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
-			)
+			(load "The General 3.1/Strats/Cumans")
 
 		#end-if
 
 		#load-if-defined ETHIOPIAN-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-ARBINGER)
-			(set-goal g-mid-imperial-strategy MIDI-ARBS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle > 0)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(building-type-count castle == 0)
-				(and
-					(unit-type-count trade-cart < 6)
-					(and
-						(up-gaia-type-count c: gold <= 4)
-						(up-compare-goal g-recent-gold-gathered < 50))))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
-			)
+			(load "The General 3.1/Strats/Ethiopians")
 
 		#end-if
 
 		#load-if-defined FRANKISH-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-KRUSH)
-			(set-goal g-dark-strategy FC-KRUSH)
-			(set-goal g-early-feudal-strategy FC-KRUSH)
-			(set-goal g-mid-feudal-strategy FC-KRUSH)
-			(set-goal g-early-castle-strategy FC-KRUSH)
-			(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle > 0)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle == 0)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHALBS)
-			)
+			(load "The General 3.1/Strats/Franks")
 
 		#end-if
 
 		#load-if-defined GOTHIC-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-ARBINGER)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
-			)
+			(load "The General 3.1/Strats/Goths")
 
 		#end-if
 
 		#load-if-defined HUN-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
-			)
+			(load "The General 3.1/Strats/Huns")
 
 		#end-if
 
 		#load-if-defined INCAN-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-ARBINGER)
-			(set-goal g-mid-imperial-strategy MIDI-ARBS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-EAGLES)
-			(set-goal g-dark-strategy BOOM-EAGLES)
-			(set-goal g-early-feudal-strategy BOOM-EAGLES)
-			(set-goal g-mid-feudal-strategy BOOM-EAGLES)
-			(set-goal g-early-castle-strategy BOOM-EAGLES)
-			(set-goal g-mid-castle-strategy BOOM-EAGLES)
-			(set-goal g-early-imperial-strategy EARLYI-EL-DORADO)
-			(set-goal g-mid-imperial-strategy MIDI-EAGLES)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle > 0)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle == 0)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
-			)
+			(load "The General 3.1/Strats/Incas")
 
 		#end-if
 
 		#load-if-defined INDIAN-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-CAMELSTORM)
-			(set-goal g-mid-imperial-strategy MIDI-CAMELS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-CAMELS)
-			(set-goal g-dark-strategy BOOM-CAMELS)
-			(set-goal g-early-feudal-strategy BOOM-CAMELS)
-			(set-goal g-mid-feudal-strategy BOOM-CAMELS)
-			(set-goal g-early-castle-strategy BOOM-CAMELS)
-			(set-goal g-mid-castle-strategy BOOM-CAMELS)
-			(set-goal g-early-imperial-strategy EARLYI-CAMELSTORM)
-			(set-goal g-mid-imperial-strategy MIDI-CAMELS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
-			)
+			(load "The General 3.1/Strats/Indians")
 
 		#end-if
 
 		#load-if-defined ITALIAN-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-ARBINGER)
-			(set-goal g-mid-imperial-strategy MIDI-ARBS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
-			)
+			(load "The General 3.1/Strats/Italians")
 
 		#end-if
 
 		#load-if-defined JAPANESE-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-ARBINGER)
-			(set-goal g-mid-imperial-strategy MIDI-ARBS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle > 0)
-			(or
-				(research-completed my-unique-unit-upgrade)
-				(up-compare-goal g-enemy-special-unique-unit-count >= 3))
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(building-type-count castle == 0)
-				(and
-					(up-research-status c: my-unique-unit-upgrade < research-complete)
-					(up-compare-goal g-enemy-special-unique-unit-count < 3)))
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHALBS)
-			)
+			(load "The General 3.1/Strats/Japanese")
 
 		#end-if
 
 		#load-if-defined KHMER-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-KRUSH)
-			(set-goal g-dark-strategy FC-KRUSH)
-			(set-goal g-early-feudal-strategy FC-KRUSH)
-			(set-goal g-mid-feudal-strategy FC-KRUSH)
-			(set-goal g-early-castle-strategy FC-KRUSH)
-			(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-CIRCUS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-CIRCUS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
-			)
+			(load "The General 3.1/Strats/Khmer")
 
 		#end-if
 
 		#load-if-defined KOREAN-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-ARBINGER)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
-			)
+			(load "The General 3.1/Strats/Koreans")
 
 		#end-if
 
 		#load-if-defined LITHUANIANS-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
-			)
+			(load "The General 3.1/Strats/Lithuanians")
 
 		#end-if
 
 		#load-if-defined MAGYAR-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-KRUSH)
-			(set-goal g-dark-strategy FC-KRUSH)
-			(set-goal g-early-feudal-strategy FC-KRUSH)
-			(set-goal g-mid-feudal-strategy FC-KRUSH)
-			(set-goal g-early-castle-strategy FC-KRUSH)
-			(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle > 0)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle == 0)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
-			)
+			(load "The General 3.1/Strats/Magyars")
 
 		#end-if
 
 		#load-if-defined MALAY-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-ARBINGER)
-			(set-goal g-mid-imperial-strategy MIDI-ARBS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-CIRCUS-STOMP)
-			(set-goal g-mid-imperial-strategy MIDI-CIRCUS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(up-compare-goal g-late-imperial-strategy != LATEI-CHAMPIONS)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
+			(load "The General 3.1/Strats/Malay")
 
 		#end-if
 
 		#load-if-defined MALIAN-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-ARBINGER)
-			(set-goal g-mid-imperial-strategy MIDI-ARBS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
-			)
+			(load "The General 3.1/Strats/Malians")
 
 		#end-if
 
 		#load-if-defined MAYAN-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-ARBINGER)
-			(set-goal g-mid-imperial-strategy MIDI-ARBS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-EAGLES)
-			(set-goal g-dark-strategy BOOM-EAGLES)
-			(set-goal g-early-feudal-strategy BOOM-EAGLES)
-			(set-goal g-mid-feudal-strategy BOOM-EAGLES)
-			(set-goal g-early-castle-strategy BOOM-EAGLES)
-			(set-goal g-mid-castle-strategy BOOM-EAGLES)
-			(set-goal g-early-imperial-strategy EARLYI-EL-DORADO)
-			(set-goal g-mid-imperial-strategy MIDI-EAGLES)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
-			)
+			(load "The General 3.1/Strats/Mayans")
 
 		#end-if
 
 		#load-if-defined MONGOL-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-CAV-ARCHERS)
-			(set-goal g-early-imperial-strategy EARLYI-UNIQUE)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-UNIQUE)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
-			)
+			(load "The General 3.1/Strats/Mongols")
 
 		#end-if
 
 		#load-if-defined PERSIAN-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-KRUSH)
-			(set-goal g-dark-strategy FC-KRUSH)
-			(set-goal g-early-feudal-strategy FC-KRUSH)
-			(set-goal g-mid-feudal-strategy FC-KRUSH)
-			(set-goal g-early-castle-strategy FC-KRUSH)
-			(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			#load-if-defined DE-AVAILABLE
-			
-				(defrule
-				(goal g-age-status LATE-IMPERIAL)
-				(or
-					(building-type-count castle > 0)
-					(up-research-status c: my-second-unique-research >= research-pending))
-				=>
-				(set-goal g-late-imperial-strategy LATEI-TRASHBOWS)
-				)
-
-				(defrule
-				(goal g-age-status LATE-IMPERIAL)
-				(building-type-count castle == 0)
-				(up-research-status c: my-second-unique-research < research-pending)
-				=>
-				(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
-				)
-
-			#else
-
-				(defrule
-				(goal g-age-status LATE-IMPERIAL)
-				=>
-				(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
-				)
-
-			#end-if
+			(load "The General 3.1/Strats/Persians")
 
 		#end-if
 
 		#load-if-defined PORTUGUESE-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-KRUSH)
-			(set-goal g-dark-strategy FC-KRUSH)
-			(set-goal g-early-feudal-strategy FC-KRUSH)
-			(set-goal g-mid-feudal-strategy FC-KRUSH)
-			(set-goal g-early-castle-strategy FC-KRUSH)
-			(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
-			)
+			(load "The General 3.1/Strats/Portuguese")
 
 		#end-if
 
 		#load-if-defined SARACEN-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-ARBINGER)
-			(set-goal g-mid-imperial-strategy MIDI-ARBS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-CAMELSTORM)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
-			)
+			(load "The General 3.1/Strats/Saracens")
 
 		#end-if
 
 		#load-if-defined SICILIANS-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-KRUSH)
-			(set-goal g-dark-strategy FC-KRUSH)
-			(set-goal g-early-feudal-strategy FC-KRUSH)
-			(set-goal g-mid-feudal-strategy FC-KRUSH)
-			(set-goal g-early-castle-strategy FC-KRUSH)
-			(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(building-type-count castle > 0)
-				(building-type-count donjon > 0))
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle == 0)
-			(building-type-count donjon == 0)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
-			)
+			(load "The General 3.1/Strats/Sicilians")
 
 		#end-if
 
 		#load-if-defined SLAVIC-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-CHAMPFLOOD)
-			(set-goal g-mid-imperial-strategy MIDI-CHAMPIONS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-CHAMPIONS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHALBS)
-			)
+			(load "The General 3.1/Strats/Slavs")
 
 		#end-if
 
 		#load-if-defined SPANISH-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-KRUSH)
-			(set-goal g-dark-strategy FC-KRUSH)
-			(set-goal g-early-feudal-strategy FC-KRUSH)
-			(set-goal g-mid-feudal-strategy FC-KRUSH)
-			(set-goal g-early-castle-strategy FC-KRUSH)
-			(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
-			)
+			(load "The General 3.1/Strats/Spanish")
 
 		#end-if
 
 		#load-if-defined TATARS-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-CAV-ARCHERS)
-			(set-goal g-early-imperial-strategy EARLYI-HORDE)
-			(set-goal g-mid-imperial-strategy MIDI-CAV-ARCHERS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-CAV-ARCHERS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
-			)
+			(load "The General 3.1/Strats/Tatars")
 
 		#end-if
 
 		#load-if-defined TEUTONIC-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle > 0)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle == 0)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHALBS)
-			)
+			(load "The General 3.1/Strats/Teutons")
 
 		#end-if
 
 		#load-if-defined TURKISH-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-UNIQUE)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-HUSSAR)
-			)
+			(load "The General 3.1/Strats/Turks")
 
 		#end-if
 
 		#load-if-defined VIETNAMESE-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-ARBINGER)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
-			)
+			(load "The General 3.1/Strats/Vietnamese")
 
 		#end-if
 
 		#load-if-defined VIKING-CIV
 			
-			(defrule
-			(goal g-position FLANK)
-			=>
-			(set-goal g-current-strategy FC-STRONGBOW)
-			(set-goal g-dark-strategy FC-STRONGBOW)
-			(set-goal g-early-feudal-strategy FC-STRONGBOW)
-			(set-goal g-mid-feudal-strategy FC-STRONGBOW)
-			(set-goal g-early-castle-strategy FC-STRONGBOW)
-			(set-goal g-mid-castle-strategy MIDC-XBOWS)
-			(set-goal g-early-imperial-strategy EARLYI-ARBINGER)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-position POCKET)
-			=>
-			(set-goal g-current-strategy BOOM-KNIGHTS)
-			(set-goal g-dark-strategy BOOM-KNIGHTS)
-			(set-goal g-early-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-feudal-strategy BOOM-KNIGHTS)
-			(set-goal g-early-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-mid-castle-strategy BOOM-KNIGHTS)
-			(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-			(disable-self)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle > 0)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-UNIQUE)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(building-type-count castle == 0)
-			(or
-				(unit-type-count trade-cart >= 6)
-				(or
-					(up-gaia-type-count c: gold > 4)
-					(up-compare-goal g-recent-gold-gathered >= 50)))
-			=>
-			(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-			)
-
-			(defrule
-			(goal g-age-status LATE-IMPERIAL)
-			(unit-type-count trade-cart < 6)
-			(up-gaia-type-count c: gold <= 4)
-			(up-compare-goal g-recent-gold-gathered < 50)
-			=>
-			(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
-			)
+			(load "The General 3.1/Strats/Vikings")
 
 		#end-if
 
@@ -3669,119 +1933,95 @@
 		(current-age == dark-age)
 		(up-compare-goal g-current-strategy g:!= g-dark-strategy)
 		=>
+		(up-modify-goal g-previous-strategy g:= g-current-strategy)
 		(up-modify-goal g-current-strategy g:= g-dark-strategy)
+		(up-modify-goal g-next-strategy g:= g-early-feudal-strategy)
+		(up-modify-goal g-previous-support-unit g:= g-support-unit)
+		(set-goal g-support-unit 0)
 		)
 
 		(defrule
-		(up-compare-goal g-age-status >= EARLY-FEUDAL)
+		(up-compare-goal g-age-status == EARLY-FEUDAL)
 		(up-compare-goal g-current-strategy g:!= g-early-feudal-strategy)
 		=>
+		(up-modify-goal g-previous-strategy g:= g-current-strategy)
 		(up-modify-goal g-current-strategy g:= g-early-feudal-strategy)
+		(up-modify-goal g-next-strategy g:= g-mid-feudal-strategy)
+		(up-modify-goal g-previous-support-unit g:= g-support-unit)
+		(set-goal g-support-unit 0)
 		)
 
 		(defrule
+		(current-age == feudal-age)
 		(up-compare-goal g-age-status >= MID-FEUDAL)
 		(up-compare-goal g-current-strategy g:!= g-mid-feudal-strategy)
 		=>
+		(up-modify-goal g-previous-strategy g:= g-current-strategy)
 		(up-modify-goal g-current-strategy g:= g-mid-feudal-strategy)
+		(up-modify-goal g-next-strategy g:= g-early-castle-strategy)
+		(up-modify-goal g-previous-support-unit g:= g-support-unit)
+		(set-goal g-support-unit 0)
 		)
 
 		(defrule
-		(up-compare-goal g-age-status >= EARLY-CASTLE)
+		(up-compare-goal g-age-status == EARLY-CASTLE)
 		(up-compare-goal g-current-strategy g:!= g-early-castle-strategy)
 		=>
+		(up-modify-goal g-previous-strategy g:= g-current-strategy)
 		(up-modify-goal g-current-strategy g:= g-early-castle-strategy)
+		(up-modify-goal g-next-strategy g:= g-mid-castle-strategy)
+		(up-modify-goal g-previous-support-unit g:= g-support-unit)
+		(set-goal g-support-unit 0)
 		)
 
 		(defrule
+		(current-age == castle-age)
 		(up-compare-goal g-age-status >= MID-CASTLE)
 		(up-compare-goal g-current-strategy g:!= g-mid-castle-strategy)
 		=>
+		(up-modify-goal g-previous-strategy g:= g-current-strategy)
 		(up-modify-goal g-current-strategy g:= g-mid-castle-strategy)
+		(up-modify-goal g-next-strategy g:= g-early-imperial-strategy)
+		(up-modify-goal g-previous-support-unit g:= g-support-unit)
+		(set-goal g-support-unit 0)
 		)
 
 		(defrule
-		(up-compare-goal g-age-status >= EARLY-IMPERIAL)
+		(up-compare-goal g-age-status == EARLY-IMPERIAL)
 		(up-compare-goal g-current-strategy g:!= g-early-imperial-strategy)
 		=>
+		(up-modify-goal g-previous-strategy g:= g-current-strategy)
 		(up-modify-goal g-current-strategy g:= g-early-imperial-strategy)
+		(up-modify-goal g-next-strategy g:= g-mid-imperial-strategy)
+		(up-modify-goal g-previous-support-unit g:= g-support-unit)
+		(set-goal g-support-unit 0)
 		)
 
 		(defrule
-		(up-compare-goal g-age-status >= MID-IMPERIAL)
+		(up-compare-goal g-age-status == MID-IMPERIAL)
 		(up-compare-goal g-current-strategy g:!= g-mid-imperial-strategy)
 		=>
+		(up-modify-goal g-previous-strategy g:= g-current-strategy)
 		(up-modify-goal g-current-strategy g:= g-mid-imperial-strategy)
+		(up-modify-goal g-next-strategy g:= g-mid-imperial-strategy)	;Mid-Imp is our last planned strategy (hopefully we don't have to go to late imp)
+		(up-modify-goal g-previous-support-unit g:= g-support-unit)
 		)
 
 		(defrule
-		(up-compare-goal g-age-status >= LATE-IMPERIAL)
+		(up-compare-goal g-age-status == LATE-IMPERIAL)
 		(up-compare-goal g-current-strategy g:!= g-late-imperial-strategy)
 		=>
+		(up-modify-goal g-previous-strategy g:= g-current-strategy)
 		(up-modify-goal g-current-strategy g:= g-late-imperial-strategy)
-		)
-
-	;--------------------------------
-	;	Switch to Counter Strategy
-	;--------------------------------
-
-		(defrule
-		(or
-			(goal g-current-strategy FC-STRONGBOW)
-			(or
-				(goal g-current-strategy EARLYC-XBOWS)
-				(or
-					(goal g-current-strategy MIDC-XBOWS)
-					(or
-						(goal g-current-strategy MIDC-CAV-ARCHERS)
-						(goal g-current-strategy MIDC-RANGED)))))
-		(up-compare-goal g-enemy-skirmishers-count > 10)
-		(up-compare-goal g-target-military-parity < 0)
-		(up-compare-const KNIGHT-AVAILABLE == YES)
-		(building-type-count stable > 0)
-		=>
-		(set-goal g-early-castle-strategy EARLYC-KNIGHTS)
-		(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
+		(up-modify-goal g-next-strategy g:= g-late-imperial-strategy)
+		(up-modify-goal g-previous-support-unit g:= g-support-unit)
 		)
 
 		(defrule
-		(or
-			(goal g-current-strategy FC-STRONGBOW)
-			(or
-				(goal g-current-strategy EARLYC-XBOWS)
-				(or
-					(goal g-current-strategy MIDC-XBOWS)
-					(goal g-current-strategy MIDC-RANGED))))
-		(up-compare-goal g-enemy-skirmishers-count > 10)
-		(up-compare-goal g-target-military-parity < 0)
-		(up-compare-const EAGLE-WARRIOR-AVAILABLE == YES)
-		(building-type-count barracks > 0)
+		(up-compare-goal g-previous-strategy < 101)
 		=>
-		(set-goal g-early-castle-strategy EARLYC-EAGLES)
-		(set-goal g-mid-castle-strategy MIDC-EAGLES)
+		(up-modify-goal g-previous-strategy g:= g-current-strategy)
 		)
-
-		#load-if-defined INDIAN-CIV
-
-			(defrule
-			(or
-				(goal g-current-strategy FC-STRONGBOW)
-				(or
-					(goal g-current-strategy EARLYC-XBOWS)
-					(or
-						(goal g-current-strategy MIDC-XBOWS)
-						(or
-							(goal g-current-strategy MIDC-CAV-ARCHERS)
-							(goal g-current-strategy MIDC-RANGED)))))
-			(up-compare-goal g-enemy-skirmishers-count > 12)
-			(up-compare-goal g-target-military-parity < 0)
-			(building-type-count stable > 0)
-			=>
-			(set-goal g-early-castle-strategy EARLYC-CAMELS)
-			(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
-			)
-
-		#end-if
 
 ;--------------------------------
 ;	GOAL 3: g-initial-strategy
@@ -3798,7 +2038,7 @@
 ;	GOAL 4: g-game-focus
 ;--------------------------
 
-    (load "The General 3/Functions/Reset")
+    (load "The General 3.1/Functions/Reset")
 
 	;What the AI is current focused on
 
@@ -3829,7 +2069,6 @@
 			(building-type-count-total town-center == 0)
 			=>
 			(set-goal g-game-focus REBUILD)
-			; (chat-to-player my-player-number "Focusing on rebuild - no TC")
 			)
 
 			;If top enemy military pop and total pop are both more than twice our military and total pop, time to rebuild
@@ -3854,7 +2093,6 @@
 						(goal g-map-style NO))))
 			=>
 			(set-goal g-game-focus REBUILD)
-			; (chat-to-player my-player-number "Focusing on rebuild - really bad situation")
 			)
 
 		#end-if
@@ -3955,88 +2193,9 @@
 		(set-goal g-game-focus DEFENSIVE)
 		)
 
-		; (defrule
-		; (goal g-game-focus PENDING)
-		; (building-type-count castle == 0)
-		; (or
-		; 	(goal g-town-under-attack YES)
-		; 	(up-compare-goal g-enemy-units-in-town >= 5))
-		; (military-population g:< g-min-military-pop)
-		; (or
-		; 	(up-compare-goal g-attacker-military-parity < 0)
-		; 	(up-compare-goal g-enemy-units-in-town >= 15))
-		; (nor
-		; 	(goal g-age-status SAVE-FOR-CASTLE)
-		; 	(goal g-age-status SAVE-FOR-IMPERIAL))
-		; =>
-		; (set-goal g-game-focus DEFENSIVE)
-		; ; (chat-to-player my-player-number "Focusing on defense 1")
-		; )
-
-		; (defrule
-		; (goal g-game-focus PENDING)
-		; (building-type-count castle == 0)
-		; (or
-		; 	(goal g-town-under-attack YES)
-		; 	(up-compare-goal g-enemy-units-in-town >= 5))
-		; (military-population g:>= g-min-military-pop)
-		; (or
-		; 	(up-compare-goal g-attacker-military-parity < -15)
-		; 	(up-compare-goal g-enemy-units-in-town >= 25))
-		; (nor
-		; 	(goal g-age-status SAVE-FOR-CASTLE)
-		; 	(goal g-age-status SAVE-FOR-IMPERIAL))
-		; =>
-		; (set-goal g-game-focus DEFENSIVE)
-		; ; (chat-to-player my-player-number "Focusing on defense 2")
-		; )
-
-		; (defrule
-		; (goal g-game-focus PENDING)
-		; (building-type-count castle > 0)
-		; (or
-		; 	(goal g-town-under-attack YES)
-		; 	(up-compare-goal g-enemy-units-in-town >= 5))
-		; (military-population g:< g-min-military-pop)
-		; (or
-		; 	(up-compare-goal g-attacker-military-parity < -5)
-		; 	(up-compare-goal g-enemy-units-in-town >= 25))
-		; (nor
-		; 	(goal g-age-status SAVE-FOR-CASTLE)
-		; 	(goal g-age-status SAVE-FOR-IMPERIAL))
-		; =>
-		; (set-goal g-game-focus DEFENSIVE)
-		; ; (chat-to-player my-player-number "Focusing on defense 3")
-		; )
-
-		; ;Focus on defending if we expect to be attacked soon and don't have enough defensive numbers
-		; (defrule
-		; (goal g-game-focus PENDING)
-		; (building-type-count castle == 0)
-		; (goal g-town-under-attack NO)
-		; (military-population g:< g-min-military-pop)
-		; (up-compare-goal g-target-military-parity < -15)
-		; (nor
-		; 	(goal g-age-status SAVE-FOR-CASTLE)
-		; 	(goal g-age-status SAVE-FOR-IMPERIAL))
-		; =>
-		; (set-goal g-game-focus DEFENSIVE)
-		; ; (chat-to-player my-player-number "Focusing on defense")
-		; )
-
 	;----------
 	;	Boom
 	;----------
-
-		; ;Boom if town was relocated and we have low civilian pop
-		; (defrule
-		; (goal g-game-focus PENDING)
-		; (goal g-town-relocated YES)
-		; (civilian-population <= FORTY-PERCENT-POP)
-		; =>
-		; (set-goal g-game-focus BOOM)
-		; ; (chat-to-player my-player-number "Focusing on booming - recover from relocation")
-		; )
 
 		;Boom if we fell behind in population and we have a strong ally
 		(defrule
@@ -4048,7 +2207,6 @@
 		(players-population any-ally >= EIGHTY-PERCENT-POP)		;we have a stronger ally that can support us
 		=>
 		(set-goal g-game-focus BOOM)
-		; (chat-to-player my-player-number "Focusing on booming - recover from enemy attacks or bad start")
 		)
 
 		;Boom if we fell behind in both military and economy
@@ -4067,9 +2225,9 @@
 		(defrule
 		(goal g-game-focus PENDING)
 		(goal g-position FLANK)
-		(up-compare-goal g-target-military-parity > 0)
+		(up-compare-goal g-target-military-parity > 10)
 		(up-compare-goal g-target-pop-parity g:> g-target-military-parity)	;also ahead in civilian pop
-		(up-compare-goal g-target-pop-parity > 10)
+		(up-compare-goal g-target-pop-parity > 20)
 		(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)
 		(up-compare-goal g-age-status >= MID-CASTLE)
 		(up-timer-status t-first-attack != timer-running)
@@ -4080,64 +2238,6 @@
 	;----------------
 	;	Aggressive
 	;----------------
-
-		; ;Focus on military training if we have age and pop superiority
-		; (defrule
-		; (goal g-game-focus PENDING)
-		; (goal g-target-age-parity WE-ARE-AHEAD)
-		; (goal g-position FLANK)
-		; (or
-		; 	(and
-		; 		(civilian-population >= TWENTY-PERCENT-POP)
-		; 		(and
-		; 			(civilian-population < FORTY-PERCENT-POP)
-		; 			(up-compare-goal g-target-pop-parity >= 8)))
-		; 	(and
-		; 		(civilian-population >= FORTY-PERCENT-POP)
-		; 		(up-compare-goal g-target-pop-parity >= 20)))
-		; (military-population >= FIVE-PERCENT-POP)
-		; =>
-		; (set-goal g-game-focus AGGRESSIVE)
-		; ; (chat-to-player my-player-number "Focus on military - we have age and pop advantage over target")
-		; )
-
-		; ;Focus on military training if we have military superiority but fell behind on population
-		; ;Our enemy is outbooming us and we need to play aggressively to win
-		; (defrule
-		; (goal g-game-focus PENDING)
-		; (goal g-position FLANK)
-		; (up-compare-goal g-target-age-parity != WE-ARE-BEHIND)
-		; (military-population >= TEN-PERCENT-POP)
-		; (military-population < FIFTEEN-PERCENT-POP)
-		; (up-compare-goal g-target-military-parity >= 10)
-		; (up-compare-goal g-target-pop-parity <= -5)
-		; =>
-		; (set-goal g-game-focus AGGRESSIVE)
-		; ; (chat-to-player my-player-number "Focus on military - we are being outboomed")
-		; )
-
-		; ;Focus on military training if we have a large military superiority
-		; (defrule
-		; (goal g-game-focus PENDING)
-		; (goal g-position FLANK)
-		; (up-compare-goal g-target-age-parity != WE-ARE-BEHIND)
-		; (military-population >= TEN-PERCENT-POP)
-		; (military-population < TWENTY-FIVE-PERCENT-POP)
-		; (up-compare-goal g-target-military-parity >= 15)
-		; =>
-		; (set-goal g-game-focus AGGRESSIVE)
-		; ; (chat-to-player my-player-number "Focus on military - we have military advantage")
-		; )
-
-		; (defrule
-		; (goal g-game-focus PENDING)
-		; (military-population >= TWENTY-FIVE-PERCENT-POP)
-		; (up-compare-goal g-target-military-parity >= TWENTY-PERCENT-POP)
-		; (up-compare-goal g-target-military-parity >= 20)
-		; =>
-		; (set-goal g-game-focus AGGRESSIVE)
-		; ; (chat-to-player my-player-number "Focus on military - we have military advantage")
-		; )
 
 		;Focus on military if boom is complete
 		(defrule
@@ -4180,7 +2280,7 @@
 ;	GOAL 5: g-age-status
 ;----------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 		(defrule
 		(true)
@@ -4211,7 +2311,6 @@
 		(current-age-time > 5)	;wait until g-required-num-villager is set
 		=>
 		(set-goal g-age-status SAVE-FOR-FEUDAL)
-		; (chat-local-to-self "Save for Feudal Age")
 		)
 
 		(defrule
@@ -4244,7 +2343,6 @@
 		(current-age-time > 5)	;wait until g-required-num-villager is set
 		=>
 		(set-goal g-age-status SAVE-FOR-CASTLE)
-		; (chat-local-to-self "Save for Castle Age")
 		)
 
 		(defrule
@@ -4317,7 +2415,6 @@
 		(or
 			(up-compare-goal g-recent-gold-gathered < 50)
 			(up-gaia-type-count c: gold < 10))
-		; (unit-type-count villager >= 80)
 		=>
 		(set-goal g-age-status LATE-IMPERIAL)
 		)
@@ -4343,7 +2440,7 @@
 ;	GOAL 6: g-team-position
 ;-----------------------------
 
-    (load "The General 3/Functions/Reset")
+    (load "The General 3.1/Functions/Reset")
 
 	;Determines the position within the team
 
@@ -4389,7 +2486,7 @@
 		)
 
 		#load-if-defined UP-POCKET-POSITION
-			;If pocket, determine if we are "super-pocket". This is when a pocket player is in between two other pocket players.
+			;If pocket, determine if we are super-pocket. This is when a pocket player is in between two other pocket players.
 			(defrule
 			(game-time > 10)
 			=>
@@ -4428,7 +2525,7 @@
 ;		Also g-enemy-units-in-town
 ;----------------------------------------
 
-    (load "The General 3/Functions/Reset")
+    (load "The General 3.1/Functions/Reset")
 
 	;Determines if the town is under attack, helps request assistance from allies
 
@@ -4447,12 +2544,12 @@
 		(not
 			(stance-toward focus-player ally))	;self is also considered an ally, so this rule won't count our own buildings
 		=>
-		(up-modify-goal g-temp s:= sn-safe-town-size)
+		(up-modify-goal g-temp s:= custom-sn-peaceful-town-size)
 		(up-modify-goal g-temp c:min 40)
-		(up-modify-goal g-temp c:%* 125)	;increase distance to search for enemy buildings by 125% because sn-safe-town-size...
+		(up-modify-goal g-temp c:%* 125)	;increase distance to search for enemy buildings by 125% because custom-sn-peaceful-town-size...
 		(up-full-reset-search)				;...is measured as a square around the TC, not a circle
 		(up-set-target-point g-position-self-x)	
-		(up-filter-distance c: -1 g: g-temp)	;search for buildings within sn-safe-town-size
+		(up-filter-distance c: -1 g: g-temp)	;search for buildings within custom-sn-peaceful-town-size
 		(up-find-remote c: building-class c: 40)
 		(up-find-remote c: tower-class c: 40)
 		(up-filter-status c: status-pending c: list-active)	;find buildings and towers under construction
@@ -4467,7 +2564,7 @@
 		(not
 			(stance-toward focus-player ally))
 		=>
-		(up-modify-goal g-temp s:= sn-safe-town-size)
+		(up-modify-goal g-temp s:= custom-sn-peaceful-town-size)
 		(up-modify-goal g-temp c:min 40)
 		(up-modify-goal g-temp c:%* 125)	
 		(up-full-reset-search)
@@ -4496,7 +2593,7 @@
 	=>
 	(disable-timer t-town-under-attack)
 	(set-goal g-town-under-attack YES)
-	(chat-to-player my-player-number "town under attack")
+	; (chat-to-player my-player-number CHAT-TOWN-UNDER-ATTACK)
 	)
 
 	(defrule
@@ -4512,7 +2609,7 @@
 	=>
 	(enable-timer t-town-under-attack 10)
 	(set-goal g-town-under-attack PENDING)
-	(chat-to-player my-player-number "wait to see if town is safe")
+	; (chat-to-player my-player-number CHAT-CHECK-TOWN-IS-SAFE)
 	)
 
 	(defrule
@@ -4529,14 +2626,14 @@
 	=>
 	(disable-timer t-town-under-attack)
 	(set-goal g-town-under-attack NO)
-	(chat-to-player my-player-number "town is safe")
+	; (chat-to-player my-player-number CHAT-TOWN-IS-SAFE)
 	)
 
 ;-----------------------------------------------
 ;	GOAL 12: g-target-military-parity
 ;-----------------------------------------------
 
-    (load "The General 3/Functions/Reset")
+    (load "The General 3.1/Functions/Reset")
 
 	;The difference between our military pop and the military pop of the target player, > 0 means we have superiority
 
@@ -4557,7 +2654,7 @@
 ;	GOAL 13: g-target-pop-parity
 ;-----------------------------------------------
 
-    (load "The General 3/Functions/Reset")
+    (load "The General 3.1/Functions/Reset")
 
 	;The difference between our total pop and the total pop of the target player, > 0 means we have superiority
 
@@ -4578,7 +2675,7 @@
 ;	GOAL 14: g-top-enemy-military-parity
 ;-----------------------------------------------
 
-    (load "The General 3/Functions/Reset")
+    (load "The General 3.1/Functions/Reset")
 
 	;The difference between our military pop and the highest military pop of any enemy, > 0 means we have superiority
 
@@ -4594,7 +2691,7 @@
 ;	GOAL 15: g-top-enemy-pop-parity
 ;-----------------------------------------------
 
-    (load "The General 3/Functions/Reset")
+    (load "The General 3.1/Functions/Reset")
 
 	;The difference between our total pop and the highest total pop of any enemy, > 0 means we have superiority
 
@@ -4610,7 +2707,7 @@
 ;	GOAL 16: g-team-military-parity
 ;-------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	;The difference between our team's military pop and the total military pop of all our enemies, > 0 means we have superiority
 
@@ -4628,7 +2725,7 @@
 ;	GOAL 17: g-team-pop-parity
 ;-------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	;The difference between our team's total pop and the total pop of all our enemies, > 0 means we have superiority
 
@@ -4646,7 +2743,7 @@
 ;	GOAL 18: g-attacker-military-parity
 ;-----------------------------------------------
 
-    (load "The General 3/Functions/Reset")
+    (load "The General 3.1/Functions/Reset")
 
 	;The difference between our military pop and the military pop of the enemy attacking us, > 0 means we have superiority, 999 means we aren't under attack
 
@@ -4671,7 +2768,7 @@
 ;	GOAL 19: g-attacker-pop-parity
 ;-----------------------------------------------
 
-    (load "The General 3/Functions/Reset")
+    (load "The General 3.1/Functions/Reset")
 
 	;The difference between our total pop and the total pop of the enemy attacking us, > 0 means we have superiority, 999 means we aren't under attack
 
@@ -4695,7 +2792,7 @@
 ;	GOAL 20: g-target-age-parity
 ;----------------------------------
 
-    (load "The General 3/Functions/Reset")
+    (load "The General 3.1/Functions/Reset")
 
 	;Determines whether we are ahead or behind in age, compared to our target enemy
 
@@ -4728,7 +2825,7 @@
 ;	GOAL 21: g-top-enemy-age-parity
 ;----------------------------------
 
-    (load "The General 3/Functions/Reset")
+    (load "The General 3.1/Functions/Reset")
 
 	;Determines whether we are ahead or behind in age, compared to our target enemy
 
@@ -4761,7 +2858,7 @@
 ;	GOAL 23: g-scouting-status
 ;--------------------------------
 
-    (load "The General 3/Functions/Reset")
+    (load "The General 3.1/Functions/Reset")
 
 	;Find necessary resources first
 	(defrule
@@ -4813,10 +2910,9 @@
 	(up-gaia-type-count-total c: stone > 0)
 	=>
 	(set-goal g-scouting-status SCOUT-TOWN)
-	; (chat-local-to-self "found resources, finish scouting town")
 	)
 
-    (load "The General 3/Functions/Reset")
+    (load "The General 3.1/Functions/Reset")
 
 	;Once necessary resources are found, find the rest if possible
 	;Only require a certain percentage of the expected resources to be explored
@@ -4874,93 +2970,108 @@
 	(up-gaia-type-count-total c: gold g:>= g-temp)
 	(up-gaia-type-count-total c: stone g:>= g-temp-2)
 	=>
-	(set-goal g-scouting-status LURE-DEER)
-	(chat-local-to-self "All resources found")
-	)
-
-	;If no deer to lure or we don't have time to lure deer, move on to finding enemy
-	(defrule
-	(game-time s:> sn-home-exploration-time)
-	(goal g-scouting-status LURE-DEER)
-	(up-timer-status t-deer-luring == timer-disabled)
-	(up-compare-goal g-game-focus != BOOM)
-	=>
-	(disable-timer t-deer-luring)
-	(enable-timer t-deer-luring 120)
-	)
-	
-	(defrule
-	(goal g-deer-current-count 0)
-	(goal g-scouting-status LURE-DEER)
-	(goal g-current-deer-id PENDING)
-	=>
-	(set-goal g-scouting-status FIND-ENEMY)
-	; (chat-local-to-self "no deer left to lure, scout enemy")
-	)
-	
-	(defrule
-	(or
-		(game-time s:> sn-home-exploration-time)
-		(not 
-			(up-set-target-by-id g: g-scout1-id)))
-	(up-compare-goal g-game-focus != BOOM)
-	(or
-		(up-compare-goal g-strategy-type < FAST-CASTLE)
-		(or
-			(unit-type-count villager >= 28)
-			(up-compare-goal g-age-status >= TO-FEUDAL)))
-	(goal g-scouting-status LURE-DEER)
-	(goal g-current-deer-id PENDING)
-	=>
-	(set-goal g-scouting-status FIND-ENEMY)
-	; (chat-local-to-self "finish luring current deer (if any), and scout enemy")
-	)
-	
-	(defrule
-	(or
-		(game-time s:> sn-home-exploration-time)
-		(not 
-			(up-set-target-by-id g: g-scout1-id)))
-	(up-compare-goal g-game-focus != BOOM)
-	(or
-		(up-compare-goal g-strategy-type < FAST-CASTLE)
-		(or
-			(unit-type-count villager >= 28)
-			(up-compare-goal g-age-status >= TO-FEUDAL)))
-	(goal g-scouting-status LURE-DEER)
-	(timer-triggered t-deer-luring)
-	=>
-	(set-goal g-scouting-status FIND-ENEMY)
-	(set-goal g-deer-luring-status PENDING)
-	(set-goal g-current-deer-id PENDING)
-	; (chat-local-to-self "taking too long to lure deer, scout enemy")
+	(set-goal g-scouting-status ALL-RESOURCES-FOUND)
 	)
 
 	(defrule
-	(or
-		(goal g-scouting-status FIND-ENEMY)
-		(not
-			(up-set-target-by-id g: g-scout1-id)))
-	(game-time > 10)
+	(goal g-duc-scouting STOP-DUC-SCOUTING)
+	(up-compare-goal g-scouting-status < ALL-RESOURCES-FOUND)
+	=>
+	(set-goal g-scouting-status ALL-RESOURCES-FOUND)
+	)
+
+	(load "The General 3.1/Functions/Reset")
+
+	(defrule
+	(up-compare-goal g-scouting-status >= ALL-RESOURCES-FOUND)
+	(up-compare-goal g-scouting-status != PUSH-DEER)
+	(up-compare-goal g-scouting-status != FIND-ENEMY)
+	(up-compare-goal g-scouting-status != RESCOUT-ENEMY)
+	(up-compare-goal g-scouting-status != AUTO-SCOUT)
 	=>
 	(set-goal g-scouting-status AUTO-SCOUT)
 	)
 
+	;If no deer to push or we don't have time to push deer, move on to finding enemy
+	(defrule
+	(game-time s:> sn-home-exploration-time)
+	(current-age == dark-age)
+	(up-set-target-by-id g: g-scout1-id)
+	(up-compare-goal g-scouting-status >= ALL-RESOURCES-FOUND)
+	(up-compare-goal g-scouting-status != PUSH-DEER)
+	(up-compare-goal g-current-deer-count > 0)
+	=>
+	(set-goal g-scouting-status PUSH-DEER)
+	)
+
+	(load "The General 3.1/Functions/Reset")
+	
+	(defrule
+	(goal g-scouting-status PUSH-DEER)
+	(or
+		(not 
+			(up-set-target-by-id g: g-scout1-id))
+		(goal g-current-deer-count 0))
+	=>
+	(set-goal g-scouting-status AUTO-SCOUT)
+	)
+	
+	(defrule
+	(goal g-scouting-status PUSH-DEER)
+	(up-compare-goal g-game-focus != BOOM)
+	(or
+		(up-compare-goal g-strategy-type < FAST-CASTLE)
+		(current-age == feudal-age))
+	(up-modify-goal g-temp s:= sn-home-exploration-time)
+	(up-modify-goal g-temp c:+ 120)
+	(or
+		(game-time g:> g-temp)
+		(or
+			(unit-type-count villager >= 28)
+			(up-compare-goal g-age-status >= TO-FEUDAL)))
+	=>
+	(set-goal g-scouting-status AUTO-SCOUT)
+	(set-goal g-deer-pushing-status PENDING)
+	(set-goal g-current-deer-id PENDING)
+	)
+
 	;Scout enemy
 	(defrule
+	(timer-triggered t-30-sec)
 	(goal g-scouting-status AUTO-SCOUT)
-	; (up-research-status c: castle-age == research-pending)
-	(current-age >= feudal-age)
+	(current-age == feudal-age)
 	(up-compare-goal g-attack-status <= FIRST-CASTLE-ATTACK)
+	(up-compare-sn sn-number-explore-groups > 0)
+	=>
+	(up-get-point position-flank g-point-x)
+	)
+
+	(defrule
+	(timer-triggered t-30-sec)
+	(goal g-scouting-status AUTO-SCOUT)
+	(current-age == feudal-age)
+	(up-compare-goal g-attack-status <= FIRST-CASTLE-ATTACK)
+	(up-compare-sn sn-number-explore-groups > 0)
+	(up-point-explored g-point-x == explored-no)
 	=>
 	(up-send-scout group-type-land-explore scout-flank)
-	(disable-self)
 	)
 
 	;Scout for market placement
 	(defrule
 	(goal g-scouting-status AUTO-SCOUT)
 	(military-population >= TEN-PERCENT-POP)
+	(up-compare-sn sn-number-explore-groups > 0)
+	=>
+	(up-get-point position-corner g-point-x)
+	(disable-self)
+	)
+
+	(defrule
+	(goal g-scouting-status AUTO-SCOUT)
+	(military-population >= TEN-PERCENT-POP)
+	(up-compare-sn sn-number-explore-groups > 0)
+	(up-point-explored g-point-x == explored-no)
 	=>
 	(up-send-scout group-type-land-explore scout-corner)
 	(disable-self)
@@ -4970,7 +3081,7 @@
 ;	GOAL 24: g-scouting-distance
 ;----------------------------------
 
-    (load "The General 3/Functions/Reset")
+    (load "The General 3.1/Functions/Reset")
 
 	;Initialize g-scouting-distance
 	(defrule
@@ -5027,28 +3138,10 @@
 	(or
 		(civ-selected mongol)
 		(players-civ any-ally mongol))
-	;(up-compare-goal g-sheep-found-count < 6)
-	;(up-compare-const MIN-SHEEP >= 8)
 	=>
 	(up-modify-goal g-temp g:= g-scouting-distance)
 	(up-modify-goal g-temp c:- 9)
 	)
-
-	; (defrule
-	; (up-compare-goal g-scout1-id > 0)
-	; (or
-	; 	(up-compare-goal g-scout2-id <= 0)	;we don't have a second scout
-	; 	(up-compare-goal g-scouting-distance >= 15))
-	; (or
-	; 	(civ-selected mongol)
-	; 	(players-civ any-ally mongol))
-	; (or
-	; 	(up-compare-goal g-sheep-found-count >= 6)
-	; 	(up-compare-const MIN-SHEEP < 8))
-	; =>
-	; (up-modify-goal g-temp g:= g-scouting-distance)
-	; (up-modify-goal g-temp c:- 9)
-	; )
 
 	(defrule
 	(up-compare-goal g-scout1-id > 0)
@@ -5058,28 +3151,10 @@
 	(nor
 		(civ-selected mongol)
 		(players-civ any-ally mongol))
-	;(up-compare-goal g-sheep-found-count < 6)
-	;(up-compare-const MIN-SHEEP >= 8)
 	=>
 	(up-modify-goal g-temp g:= g-scouting-distance)
 	(up-modify-goal g-temp c:- 4)
 	)
-
-	; (defrule
-	; (up-compare-goal g-scout1-id > 0)
-	; (or
-	; 	(up-compare-goal g-scout2-id <= 0)	;we don't have a second scout
-	; 	(up-compare-goal g-scouting-distance >= 15))
-	; (nor
-	; 	(civ-selected mongol)
-	; 	(players-civ any-ally mongol))
-	; (or
-	; 	(up-compare-goal g-sheep-found-count >= 6)
-	; 	(up-compare-const MIN-SHEEP < 8))
-	; =>
-	; (up-modify-goal g-temp g:= g-scouting-distance)
-	; (up-modify-goal g-temp c:- 4)
-	; )
 
 	(defrule
 	(up-compare-goal g-scout1-id > 0)
@@ -5094,7 +3169,6 @@
 	=>
 	(disable-timer t-scout-distance-increase)
 	(up-modify-goal g-scouting-distance c:+ 1)
-	;(up-chat-data-to-self "Scouting Distance: %d" g: g-scouting-distance)
 	(up-set-timer c: t-scout-distance-increase g: g-temp)	;timer length will increase as g-scouting-distance increases
 	)
 
@@ -5109,10 +3183,10 @@
 
 ;-----------------------------------
 ;	GOAL 37: g-boar-found-count
-;	GOAL 38: g-boar-current-count
+;	GOAL 38: g-current-boar-count
 ;-----------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(or
@@ -5120,7 +3194,7 @@
 		(current-age == dark-age))
 	=>
 	(set-goal i 0)
-	(set-goal g-boar-current-count 0)
+	(set-goal g-current-boar-count 0)
 	(up-set-target-point g-position-self-x)
 	)
 
@@ -5137,8 +3211,8 @@
 	(up-get-object-data object-data-point-y g-point-y)
 	(up-point-explored g-point-x != explored-no)
 	=>
-	(up-modify-goal g-boar-current-count c:+ 1)
-	(up-modify-goal g-boar-found-count g:max g-boar-current-count)
+	(up-modify-goal g-current-boar-count c:+ 1)
+	(up-modify-goal g-boar-found-count g:max g-current-boar-count)
 	)
 
 	(defrule
@@ -5153,10 +3227,10 @@
 
 ;-----------------------------------
 ;	GOAL 39: g-deer-found-count
-;	GOAL 40: g-deer-current-count
+;	GOAL 40: g-current-deer-count
 ;-----------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(or
@@ -5164,7 +3238,7 @@
 		(current-age == dark-age))
 	=>
 	(set-goal i 0)
-	(set-goal g-deer-current-count 0)
+	(set-goal g-current-deer-count 0)
 	(up-set-target-point g-position-self-x)
 	)
 
@@ -5181,8 +3255,8 @@
 		(up-get-object-data object-data-point-y g-point-y)
 		(up-point-explored g-point-x != explored-no)
 		=>
-		(up-modify-goal g-deer-current-count c:+ 1)
-		(up-modify-goal g-deer-found-count g:max g-deer-current-count)
+		(up-modify-goal g-current-deer-count c:+ 1)
+		(up-modify-goal g-deer-found-count g:max g-current-deer-count)
 		)
 
 		(defrule
@@ -5199,13 +3273,12 @@
 ;	GOAL 44: g-min-forest-distance
 ;------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(or
 		(resource-found wood)
 		(up-gaia-type-count-total c: wood >= 40))
-	;(up-compare-goal g-desired-num-wood-vils > 0)
 	(building-type-count town-center > 0)
 	(building-type-count-total lumber-camp == 0)
 	(goal g-min-forest-distance PENDING)
@@ -5215,7 +3288,6 @@
 	(up-find-resource c: wood c: 40)
 	(up-clean-search search-remote object-data-distance search-order-asc)
 	(up-get-search-state g-local-total)
-	;(up-chat-data-to-self "Trees found: %d" g: g-remote-total)
 	)
 
 	(defrule
@@ -5226,7 +3298,6 @@
 	)
 
 		(defrule
-		;(up-compare-goal g-desired-num-wood-vils > 0)
 		(building-type-count town-center > 0)
 		(building-type-count-total lumber-camp == 0)
 		(up-compare-goal g-remote-total >= 40)
@@ -5281,14 +3352,6 @@
 		(up-modify-goal i c:+ 1)
 		(up-jump-rule -4)
 		)
-		
-	(defrule
-	;(building-type-count-total lumber-camp > 0)
-	(up-compare-goal g-min-forest-distance > 0)
-	=>
-	(up-chat-data-to-self "Forest distance: %d" g: g-min-forest-distance)
-	(disable-self)
-	)
 
 ;-------------------------
 ;	GOAL 46: g-position
@@ -5320,7 +3383,7 @@
 ;	GOAL 57: g-scout3-id	(if sheep, sheep are set as scouts in the section for goals 33 and 34 below)
 ;----------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	;find potential scouts
 	(defrule
@@ -5352,7 +3415,6 @@
 	(up-set-target-object search-local c: 0)
 	=>
 	(up-get-object-data object-data-id g-scout1-id)
-	(up-chat-data-to-self "Scout ID 1: %d" g: g-scout1-id)
 	)
 
 	;Set second unit found as Scout 2
@@ -5364,7 +3426,6 @@
 	(up-set-target-object search-local c: 1)
 	=>
 	(up-get-object-data object-data-id g-scout2-id)
-	(up-chat-data-to-self "Scout ID 2: %d" g: g-scout2-id)
 	)
 
 	;Set third unit found as Scout 3
@@ -5376,22 +3437,16 @@
 	(up-set-target-object search-local c: 2)
 	=>
 	(up-get-object-data object-data-id g-scout3-id)
-	(up-chat-data-to-self "Scout ID 3: %d" g: g-scout3-id)
 	)
 	
-	(defrule
-	(goal g-temp 47)
-	=>
-	(set-goal g-temp 0)
-	)
+	(load "The General 3.1/Functions/Reset")
 
 	;Set sheep as scout 2
 	(defrule
 	(not
 		(up-set-target-by-id g: g-scout2-id))
-	;(unit-type-count livestock-class > 0)
-	(up-compare-goal g-scouting-distance <= 21)
-	(up-compare-goal g-sheep-current-count >= 3)
+	(up-compare-goal g-scouting-distance <= 22)
+	(up-compare-goal g-current-sheep-count >= 3)
 	(or
 		(goal g-scouting-status FIND-RESOURCES)
 		(goal g-scouting-status SCOUT-TOWN))
@@ -5411,28 +3466,24 @@
 	(not
 		(up-set-target-by-id g: g-scout2-id))
 	(unit-type-count livestock-class > 0)
-	(up-compare-goal g-local-total > 0)
 	(up-set-target-object search-local c: 0)
 	(up-object-data object-data-class == livestock-class)
-	(up-compare-goal g-scouting-distance <= 23)
-	(up-compare-goal g-sheep-current-count > 2)
+	(up-compare-goal g-scouting-distance <= 25)
+	(up-compare-goal g-current-sheep-count >= 3)
 	(or
 		(goal g-scouting-status FIND-RESOURCES)
 		(goal g-scouting-status SCOUT-TOWN))
 	=>
 	(up-get-object-data object-data-id g-scout2-id)
-	(up-set-target-by-id g: g-scout2-id)
 	(up-target-point 0 action-stop -1 -1)
-	; (chat-local-to-self "set sheep as scout 2")
 	)
 
 	;Set sheep as scout 3
 	(defrule
 	(not
 		(up-set-target-by-id g: g-scout3-id))
-	;(unit-type-count livestock-class > 0)
-	(up-compare-goal g-scouting-distance <= 21)
-	(up-compare-goal g-sheep-current-count >= 3)
+	(up-compare-goal g-scouting-distance <= 22)
+	(up-compare-goal g-current-sheep-count >= 4)
 	(or
 		(goal g-scouting-status FIND-RESOURCES)
 		(goal g-scouting-status SCOUT-TOWN))
@@ -5455,16 +3506,14 @@
 	(up-compare-goal g-local-total > 0)
 	(up-set-target-object search-local c: 0)
 	(up-object-data object-data-class == livestock-class)
-	(up-compare-goal g-scouting-distance <= 20)
-	(up-compare-goal g-sheep-current-count > 2)
+	(up-compare-goal g-scouting-distance <= 22)
+	(up-compare-goal g-current-sheep-count >= 3)
 	(or
 		(goal g-scouting-status FIND-RESOURCES)
 		(goal g-scouting-status SCOUT-TOWN))
 	=>
 	(up-get-object-data object-data-id g-scout3-id)
-	(up-set-target-by-id g: g-scout3-id)
 	(up-target-point 0 action-stop -1 -1)
-	; (chat-local-to-self "set sheep as scout 3")
 	)
 
 	;Scout 1 died, set to -2 (not -1 because Scout 1 won't be used after initial scout is dead)
@@ -5474,7 +3523,6 @@
 		(up-set-target-by-id g: g-scout1-id))
 	=>
 	(set-goal g-scout1-id -2)
-	; (chat-local-to-self "Scout 1 died")
 	)
 
 	;Scout 2 died, set to -1 (to allow a new unit to be Scout 2)
@@ -5484,7 +3532,6 @@
 		(up-set-target-by-id g: g-scout2-id))
 	=>
 	(set-goal g-scout2-id PENDING)
-	; (chat-local-to-self "Scout 2 died")
 	)
 
 	;Scout 3 died, set to -1 (to allow a new unit to be Scout 3)
@@ -5494,7 +3541,6 @@
 		(up-set-target-by-id g: g-scout3-id))
 	=>
 	(set-goal g-scout3-id PENDING)
-	; (chat-local-to-self "Scout 3 died")
 	)
 
 	;Stop sheep exploring
@@ -5503,15 +3549,14 @@
 	(up-set-target-by-id g: g-scout2-id)
 	(up-object-data object-data-class == livestock-class)
 	(or
-		(up-compare-goal g-scouting-distance > 23)
+		(up-compare-goal g-scouting-distance > 25)
     	(or
-			(up-compare-goal g-sheep-current-count <= 2)
+			(up-compare-goal g-current-sheep-count <= 2)
 			(nor
         		(goal g-scouting-status FIND-RESOURCES)
        			(goal g-scouting-status SCOUT-TOWN))))
 	=>
 	(set-goal g-scout2-id PENDING)
-	; (chat-local-to-self "Stop sheep exploring, scout 2")
 	)
 
 	(defrule
@@ -5519,15 +3564,14 @@
 	(up-set-target-by-id g: g-scout3-id)
 	(up-object-data object-data-class == livestock-class)
 	(or
-		(up-compare-goal g-scouting-distance > 20)
+		(up-compare-goal g-scouting-distance > 22)
     	(or
-			(up-compare-goal g-sheep-current-count <= 2)
+			(up-compare-goal g-current-sheep-count <= 3)
 			(nor
         		(goal g-scouting-status FIND-RESOURCES)
        			(goal g-scouting-status SCOUT-TOWN))))
 	=>
 	(set-goal g-scout3-id PENDING)
-	; (chat-local-to-self "Stop sheep exploring, scout 3")
 	)
 
 	;No Scout Unit
@@ -5554,25 +3598,23 @@
 ;	GOAL 115: g-sheep-gather-y
 ;--------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	;Get coordinates for sheep gather point
 	(defrule
 	(building-type-count town-center == 1)
-	(game-time < 600)
 	=>
 	(up-copy-point g-sheep-gather-x g-position-self-x)
 	(up-modify-goal g-sheep-gather-x c:- 4)
-	(up-modify-goal g-sheep-gather-y c:+ 1)
 	(disable-self)
 	)
 
 ;-------------------------------------
 ;	GOAL 33: g-sheep-found-count
-;	GOAL 34: g-sheep-current-count
+;	GOAL 34: g-current-sheep-count
 ;-------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(or
@@ -5583,32 +3625,18 @@
 	(up-find-local c: livestock-class c: 20)
 	(up-get-search-state g-local-total)
 	(up-modify-goal g-temp g:= g-local-total)
-	(up-modify-goal g-temp g:- g-sheep-current-count)
+	(up-modify-goal g-temp g:- g-current-sheep-count)
 	(up-modify-goal g-temp c:max 0)
 	(up-modify-goal g-sheep-found-count g:+ g-temp)
-	(up-modify-goal g-sheep-current-count g:= g-local-total)
+	(up-modify-goal g-current-sheep-count g:= g-local-total)
 	)
 
-;---------------------------------------------
+;---------------------------------
 ;	GOAL 35: g-current-sheep-id
 ;	GOAL 36: g-next-sheep-id
-;---------------------------------------------
+;---------------------------------
 
-	(load "The General 3/Functions/Reset")
-
-	; (defrule
-	; (up-set-target-by-id g: g-current-sheep-id)
-	; (up-object-data object-data-class == scout-cavalry-class)
-	; =>
-	; ; (chat-local-to-self "scout is current sheep")
-	; )
-
-	; (defrule
-	; (up-set-target-by-id g: g-next-sheep-id)
-	; (up-object-data object-data-class == scout-cavalry-class)
-	; =>
-	; ; (chat-local-to-self "scout is next sheep")
-	; )
+	(load "The General 3.1/Functions/Reset")
 
 	;If we don't have a sheep currently being gathered, set next sheep as the current sheep
 	(defrule
@@ -5619,12 +3647,12 @@
 	=>
 	(up-modify-goal g-current-sheep-id g:= g-next-sheep-id)
 	(set-goal g-next-sheep-id PENDING)
-	;(chat-local-to-self "next sheep to current")
 	)
 
 	;If we still don't have a current sheep set to gather, find one
 	(defrule
 	(building-type-count town-center == 1)
+	(up-compare-goal g-current-sheep-count > 0)
 	(or
 		(not
 			(up-set-target-by-id g: g-current-sheep-id))
@@ -5660,7 +3688,6 @@
 	(up-object-data object-data-class == livestock-class)
 	=>
 	(up-get-object-data object-data-id g-current-sheep-id)
-	;(up-chat-data-to-self "Current sheep: %d" g: g-current-sheep-id)
 	)
 
 	;Set next sheep to gather
@@ -5693,7 +3720,6 @@
 	(up-object-data object-data-class == livestock-class)
 	=>
 	(up-get-object-data object-data-id g-next-sheep-id)
-	;(up-chat-data-to-self "Next sheep: %d" g: g-next-sheep-id)
 	)
 
 	(defrule
@@ -5717,7 +3743,6 @@
 	(up-remove-objects search-local object-data-class != livestock-class)	;remove scouts 2 or 3 if they aren't sheep
 	(up-remove-objects search-local object-data-id g:== g-current-sheep-id)
 	(up-get-search-state g-local-total)
-	;(chat-local-to-self "next sheep is far, search again")
 	)
 
 	(defrule
@@ -5728,7 +3753,6 @@
 	(up-object-data object-data-class == livestock-class)
 	=>
 	(up-get-object-data object-data-id g-next-sheep-id)
-	;(up-chat-data-to-self "Next sheep: %d" g: g-next-sheep-id)
 	)
 
 	(defrule
@@ -5736,7 +3760,6 @@
 	(up-compare-goal g-next-sheep-id g:== g-scout2-id)
 	=>
 	(set-goal g-scout2-id PENDING)
-	; (chat-local-to-self "scout 2 is next sheep, reset scout 2")
 	)
 
 	(defrule
@@ -5744,11 +3767,11 @@
 	(up-compare-goal g-next-sheep-id g:== g-scout3-id)
 	=>
 	(set-goal g-scout3-id PENDING)
-	; (chat-local-to-self "scout 3 is next sheep, reset scout 3")
 	)
 
 	;If sheep scouts are set as the currently gathered sheep or sheep to be gathered next, reset their scout ID
 	(defrule
+	(up-compare-goal g-scout2-id != PENDING)
 	(or
 		(up-compare-goal g-current-sheep-id g:== g-scout2-id)
 		(up-compare-goal g-next-sheep-id g:== g-scout2-id))
@@ -5757,6 +3780,7 @@
 	)
 
 	(defrule
+	(up-compare-goal g-scout3-id != PENDING)
 	(or
 		(up-compare-goal g-current-sheep-id g:== g-scout3-id)
 		(up-compare-goal g-next-sheep-id g:== g-scout3-id))
@@ -5777,7 +3801,6 @@
 				(up-object-data object-data-hitpoints == 7))))
 	=>
 	(set-goal g-current-sheep-id PENDING)
-	;(chat-local-to-self "reset currently gathering sheep")
 	)
 
 	(defrule
@@ -5794,22 +3817,13 @@
 				(up-object-data object-data-hitpoints == 0))))
 	=>
 	(set-goal g-next-sheep-id PENDING)
-	;(chat-local-to-self "reset next gathering sheep")
 	)
-
-	(defrule
-	(true)
-	=>
-	(set-goal g-temp -1)
-	)
-
-
 
 ;---------------------------------------
 ;	GOAL 151: g-true-housing-headroom
 ;---------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	;True housing headroom takes headroom buildings in progress
 	;into account.
@@ -5821,14 +3835,12 @@
 					(defrule
 					(true)
 					=>
-					;(up-get-fact building-type-count-total town-center g-temp)	;using total causes AI to get housed
 					(up-get-fact building-type-count town-center g-temp)
 					(up-modify-goal g-temp c:* 5)
 					(up-modify-goal g-true-housing-headroom g:= g-temp)
 					(up-get-fact building-type-count-total house g-temp)
 					(up-modify-goal g-temp c:* 5)
 					(up-modify-goal g-true-housing-headroom g:+ g-temp)
-					;(up-get-fact building-type-count-total castle g-temp)
 					(up-get-fact building-type-count castle g-temp)		;using total causes AI to get housed
 					(up-modify-goal g-temp c:* 20)
 					(up-modify-goal g-true-housing-headroom g:+ g-temp)
@@ -5836,7 +3848,6 @@
 					(up-modify-goal g-true-housing-headroom g:- g-temp)
 					(up-get-fact resource-amount amount-queued-count g-temp)
 					(up-modify-goal g-true-housing-headroom g:- g-temp)
-					;(up-chat-data-to-all "Headroom: %d" g: g-true-housing-headroom)
 					)
 				#end-if
 			#end-if
@@ -5847,14 +3858,12 @@
 		(defrule
 		(true)
 		=>
-		;(up-get-fact building-type-count-total town-center g-temp)	;using total causes AI to get housed
 		(up-get-fact building-type-count town-center g-temp)
 		(up-modify-goal g-temp c:* 10)
 		(up-modify-goal g-true-housing-headroom g:= g-temp)
 		(up-get-fact building-type-count-total house g-temp)
 		(up-modify-goal g-temp c:* 5)
 		(up-modify-goal g-true-housing-headroom g:+ g-temp)
-		;(up-get-fact building-type-count-total castle g-temp)
 		(up-get-fact building-type-count castle g-temp)		;using total causes AI to get housed
 		(up-modify-goal g-temp c:* 20)
 		(up-modify-goal g-true-housing-headroom g:+ g-temp)
@@ -5862,7 +3871,6 @@
 		(up-modify-goal g-true-housing-headroom g:- g-temp)
 		(up-get-fact resource-amount amount-queued-count g-temp)
 		(up-modify-goal g-true-housing-headroom g:- g-temp)
-		;(up-chat-data-to-all "Headroom: %d" g: g-true-housing-headroom)
 		)
 	#end-if
 
@@ -5870,14 +3878,12 @@
 		(defrule
 		(true)
 		=>
-		;(up-get-fact building-type-count-total town-center g-temp)	;using total causes AI to get housed
 		(up-get-fact building-type-count town-center g-temp)
 		(up-modify-goal g-temp c:* 5)
 		(up-modify-goal g-true-housing-headroom g:= g-temp)
 		(up-get-fact building-type-count-total house g-temp)
 		(up-modify-goal g-temp c:* 10)
 		(up-modify-goal g-true-housing-headroom g:+ g-temp)
-		;(up-get-fact building-type-count-total castle g-temp)
 		(up-get-fact building-type-count castle g-temp)		;using total causes AI to get housed
 		(up-modify-goal g-temp c:* 20)
 		(up-modify-goal g-true-housing-headroom g:+ g-temp)
@@ -5885,7 +3891,6 @@
 		(up-modify-goal g-true-housing-headroom g:- g-temp)
 		(up-get-fact resource-amount amount-queued-count g-temp)
 		(up-modify-goal g-true-housing-headroom g:- g-temp)
-		;(up-chat-data-to-all "Headroom: %d" g: g-true-housing-headroom)
 		)
 	#end-if
 
@@ -5894,14 +3899,12 @@
 		(defrule
 		(true)
 		=>
-		;(up-get-fact building-type-count-total town-center g-temp)	;using total causes AI to get housed
 		(up-get-fact building-type-count town-center g-temp)
 		(up-modify-goal g-temp c:* 5)
 		(up-modify-goal g-true-housing-headroom g:= g-temp)
 		(up-get-fact building-type-count-total house g-temp)
 		(up-modify-goal g-temp c:* 5)
 		(up-modify-goal g-true-housing-headroom g:+ g-temp)
-		;(up-get-fact building-type-count-total castle g-temp)
 		(up-get-fact building-type-count castle g-temp)		;using total causes AI to get housed
 		(up-modify-goal g-temp c:* 20)
 		(up-modify-goal g-true-housing-headroom g:+ g-temp)
@@ -5926,7 +3929,6 @@
 		(up-modify-goal g-true-housing-headroom g:- g-temp)
 		(up-get-fact resource-amount amount-queued-count g-temp)
 		(up-modify-goal g-true-housing-headroom g:- g-temp)
-		;(up-chat-data-to-all "Headroom: %d" g: g-true-housing-headroom)
 		)
 					
 	#end-if
@@ -5947,12 +3949,12 @@
 ;	GOAL 153: g-far-boar
 ;--------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	;Find furthest boar
 	(defrule
 	(goal g-far-boar NO)
-	(up-compare-goal g-boar-current-count > 0)
+	(up-compare-goal g-current-boar-count > 0)
 	=>
 	(up-full-reset-search)
 	(up-set-target-point g-position-self-x)
@@ -5966,13 +3968,12 @@
 
 	;If boar is further than 24 tiles, set g-far-boar
 	(defrule
-	(up-compare-goal g-boar-current-count > 0)
+	(up-compare-goal g-current-boar-count > 0)
 	(up-set-target-object search-remote c: 0)
 	(up-get-object-data object-data-distance g-temp)
 	(up-compare-goal g-temp >= NEAR-BOAR-HUNT-DISTANCE)
 	=>
 	(set-goal g-far-boar YES)
-	; (chat-to-player my-player-number "boar is far :(")
 	(disable-self)
 	)
 
@@ -5980,49 +3981,35 @@
 ;	GOAL 154: g-boar-hunting-conditions-met
 ;------------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(up-compare-goal g-boar-hunting-conditions-met != NO)
 	(or
-		(unit-type-count villager < NEAR-BOAR-HUNTING-VILS-NEEDED)
-		(and
-			(goal g-far-boar YES)
-			(unit-type-count villager < FAR-BOAR-HUNTING-VILS-NEEDED)))
+		(unit-type-count villager < 10)
+		(or
+			(goal g-current-boar-count 0)
+			(and
+				(up-research-status c: ri-loom < research-pending)
+				(or
+					(cc-players-unit-type-count 0 elephant > 0)
+					(cc-players-unit-type-count 0 rhino > 0)))))
 	=>
 	(set-goal g-boar-hunting-conditions-met NO)
-	; (chat-local-to-self "reset boar hunting conditions")
 	)
 
 	(defrule
+	(up-compare-goal g-boar-hunting-conditions-met != YES)
+	; (dropsite-min-distance live-boar <= MAX-BOAR-HUNT-DISTANCE)
+	(unit-type-count villager >= 10)
+	(up-compare-goal g-current-boar-count > 0)
 	(or
-		(goal g-boar-hunting-conditions-met NO)
-		(goal g-boar-hunting-conditions-met NEAR-BOAR-VILS-MET))
-	(dropsite-min-distance live-boar <= MAX-BOAR-HUNT-DISTANCE)
-	(goal g-far-boar YES)
-	(unit-type-count villager >= FAR-BOAR-HUNTING-VILS-NEEDED)
-	(up-compare-goal g-boar-current-count > 0)
+		(up-research-status c: ri-loom >= research-pending)
+		(and
+			(cc-players-unit-type-count 0 elephant == 0)
+			(cc-players-unit-type-count 0 rhino == 0)))
 	=>
-	(set-goal g-boar-hunting-conditions-met FAR-BOAR-VILS-MET)
-	; (chat-local-to-self "have enough vils for far boar")
-	)
-
-	(defrule
-	(goal g-boar-hunting-conditions-met FAR-BOAR-VILS-MET)
-	(up-research-status c: ri-loom >= research-pending)
-	=>
-	(set-goal g-boar-hunting-conditions-met LOOM-RESEARCHED)
-	; (chat-local-to-self "have loom for far boar")
-	)
-
-	(defrule
-	(up-compare-goal g-boar-hunting-conditions-met != NEAR-BOAR-VILS-MET)
-	(goal g-far-boar NO)
-	(unit-type-count villager >= NEAR-BOAR-HUNTING-VILS-NEEDED)
-	(up-compare-goal g-boar-current-count > 0)
-	=>
-	(set-goal g-boar-hunting-conditions-met NEAR-BOAR-VILS-MET)
-	; (chat-local-to-self "near boar hunting conditions met")
+	(set-goal g-boar-hunting-conditions-met YES)
 	)
 
 ;-------------------------------
@@ -6077,6 +4064,40 @@
 	(set-goal g-strategy-type FAST-IMPERIAL)
 	)
 
+;----------------------------------
+;	GOAL 192: g-attack-objective
+;----------------------------------
+
+	(defrule
+	(up-compare-goal g-attack-objective != ATTACK-TARGET-ENEMY)
+	=>
+	(set-goal g-attack-objective ATTACK-TARGET-ENEMY)
+	)
+
+;---------------------------------------------
+;	GOAL 193: g-save-for-support-unit-techs
+;---------------------------------------------
+
+	(defrule
+	(goal g-save-for-support-unit-techs YES)
+	=>
+	(set-goal g-save-for-support-unit-techs NO)			;Reset each pass
+	)
+
+	(defrule
+	(up-compare-goal g-current-age-primary-unit-tech-progress >= PRIORITY-COMPLETE)
+	(or
+		(and
+			(unit-type-count villager >= 70)
+			(or
+				(building-type-count-total town-center >= 2)
+				(up-compare-goal g-desired-num-town-center < 2)))
+		(up-object-type-count g: g-support-unit > 8))
+	(military-population g:>= g-min-military-pop)
+	=>
+	(set-goal g-save-for-support-unit-techs YES)
+	)
+
 ;-------------------------------
 ;	GOAL 194: g-closest-enemy
 ;-------------------------------
@@ -6085,7 +4106,7 @@
 	;If pocket, set closest enemy to same player as nearby flank.
 	;If pocket and team partner isn't a General AI, use same technique as flank players.
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(timer-triggered t-10-sec)
@@ -6115,7 +4136,6 @@
 	(up-allied-goal focus-player g-closest-enemy g:!= g-closest-enemy)
 	=>
 	(up-get-player-fact focus-player allied-goal g-closest-enemy g-closest-enemy)
-	(up-chat-data-to-self "Matching flank target: %d" g: g-closest-enemy)
 	)
 
 	;Set closest enemy by distance to the enemy's closest building
@@ -6135,9 +4155,7 @@
 		(up-allied-goal focus-player g-position == FLANK))
 	(timer-triggered t-10-sec)
 	(players-building-count any-enemy > 0)
-	;(or
-		(players-civilian-population any-enemy > 20)
-	;	(players-building-type-count any-enemy town-center > 0))
+	(players-civilian-population any-enemy > 20)
 	=>
 	(up-find-player enemy find-closest g-temp)
 	(up-modify-sn sn-focus-player-number g:= g-temp)
@@ -6156,9 +4174,7 @@
 		(or
 			(not 
 				(player-in-game focus-player))
-			;(or
-				(players-civilian-population focus-player <= 20))
-			;	(goal g-remote-total 0)))	;didn't find town center
+			(players-civilian-population focus-player <= 20))
 		(up-compare-goal i < 8)
 		=>
 		(up-modify-goal i c:+ 1)
@@ -6174,9 +4190,7 @@
 	(timer-triggered t-10-sec)
 	(players-building-count any-enemy > 0)
 	(player-in-game focus-player)
-	;(players-building-count focus-player > 0)
 	(players-civilian-population focus-player > 20)
-	;(up-compare-goal g-remote-total > 0)	;found enemy TC
 	=>
 	(up-modify-goal g-closest-enemy g:= g-temp)
 	)
@@ -6204,19 +4218,19 @@
 	(up-get-player-fact this-any-enemy player-number 0 g-closest-enemy)
 	)
 
-	(defrule
-	(players-building-count any-enemy > 0)
-	(up-compare-goal g-closest-enemy <= 0)
-	(timer-triggered t-10-sec)
-	=>
-	(chat-to-all "Closest enemy not set properly, warn Leif!")
-	)
+	; (defrule
+	; (players-building-count any-enemy > 0)
+	; (up-compare-goal g-closest-enemy <= 0)
+	; (timer-triggered t-10-sec)
+	; =>
+	; (chat-to-all CHAT-CLOSEST-ENEMY-BUG)
+	; )
 
 ;-------------------------------------------------
 ;	GOAL 195: g-closest-enemy-building-distance
 ;-------------------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(players-building-count any-enemy > 0)
@@ -6249,7 +4263,6 @@
 	(up-set-target-object search-remote c: 0)
 	=>
 	(up-get-object-data object-data-distance g-closest-enemy-building-distance)
-	;(up-chat-data-to-self "Enemy dist: %d" g: g-closest-enemy-building-distance)
 	)
 
 ;-------------------------------------------------
@@ -6272,7 +4285,6 @@
 			(stance-toward focus-player enemy))
 		=>
 		(up-jump-rule 2)
-		;(up-chat-data-to-self "skip p%d" s: sn-focus-player-number)
 		)
 		
 		(defrule
@@ -6282,12 +4294,11 @@
 		(player-in-game focus-player)
 		(stance-toward focus-player enemy)
 		=>
-		;(up-chat-data-to-all "P%d" s: sn-focus-player-number)
 		(up-full-reset-search)
 		(up-set-target-point g-position-self-x)
 		(up-find-remote c: castle c: 40)
 		(up-find-remote c: krepost c: 40)
-		(up-find-remote c: tower-class c: 40)
+		(up-find-remote c: bombard-tower c: 40)
 		(up-clean-search search-remote -1 search-order-asc)
 		(up-clean-search search-remote object-data-distance search-order-asc)
 		)
@@ -6346,14 +4357,7 @@
 ;	GOALS 202-216: Enemy Unit Counts
 ;--------------------------------------
 
-	(load "The General 3/Functions/Reset")
-
-	; (defrule
-	; (timer-triggered t-10-sec)
-	; (players-building-count target-player > 0)
-	; =>
-	; (up-modify-goal g-previous-enemy-visible-military-count g:= g-counted-enemy-military-pop)
-	; )
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(true)
@@ -6388,1457 +4392,6 @@
 	(up-modify-flag g-enemy-special-unique-unit-flag c:- MAMELUKE-FLAG)
 	(up-modify-flag g-enemy-special-unique-unit-flag c:- TEUTONIC-KNIGHT-FLAG)
 	)
-
-	#load-if-defined OLD-CODE-DONT-USE
-
-		;---------------
-		;	Swordsmen
-		;---------------
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: militiaman-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: militiaman-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: woad-raider-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: woad-raider-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: berserk-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: berserk-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: shotel-warrior c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: shotel-warrior c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: karambit-warrior c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: karambit-warrior c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: foot-konnik-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: foot-konnik-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: throwing-axeman-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: throwing-axeman-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: gbeto c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-swordsmen-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: gbeto c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-		;--------------
-		;	Spearmen
-		;--------------
-
-			(load "The General 3/Functions/Reset")
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: spearman-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-spearmen-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: spearman-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: kamayuk c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-spearmen-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: kamayuk c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-		;--------------------
-		;	Eagle Warriors
-		;--------------------
-
-			(load "The General 3/Functions/Reset")
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: eagle-warrior c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-eagle-warrior-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: eagle-warrior c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-		;------------------
-		;	Condottieros
-		;------------------
-
-			(load "The General 3/Functions/Reset")
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: condottiero c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-condottiero-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: condottiero c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-		;------------------
-		;	Foot Archers
-		;------------------
-
-			(load "The General 3/Functions/Reset")
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: archer-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-foot-archers-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: archer-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: longbowman-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-foot-archers-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: longbowman-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: chu-ko-nu-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-foot-archers-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: chu-ko-nu-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: plumed-archer-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-foot-archers-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: plumed-archer-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: janissary-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-foot-archers-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: janissary-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: rattan-archer c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-foot-archers-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: rattan-archer c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-		;-----------------
-		;	Skirmishers
-		;-----------------
-
-			(load "The General 3/Functions/Reset")
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: skirmisher-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-skirmishers-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: skirmisher-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: genitour c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-skirmishers-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: genitour c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-		;---------------------
-		;	Cavalry Archers
-		;---------------------
-
-			(load "The General 3/Functions/Reset")
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: cavalry-archer-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-cavalry-archers-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: cavalry-archer-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: arambai c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-cavalry-archers-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: arambai c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: war-wagon-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-cavalry-archers-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: war-wagon-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: mangudai-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-cavalry-archers-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: mangudai-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: conquistador-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-cavalry-archers-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: conquistador-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			#load-if-defined DE-AVAILABLE
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				=>
-				(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-				(up-full-reset-search)
-				(up-find-remote c: kipchak-line c: 40)
-				(up-get-search-state g-local-total)
-				)
-
-					(defrule
-					(timer-triggered t-10-sec)
-					(players-building-count target-player > 0)
-					(up-compare-goal g-remote-total > 0)
-					=>
-					(up-modify-goal g-enemy-cavalry-archers-count g:+ g-remote-total)
-					(up-reset-search 1 1 0 1)
-					(up-find-remote c: kipchak-line c: 40)
-					(up-get-search-state g-local-total)
-					(up-jump-rule -1)
-					)
-
-			#end-if
-
-		;---------------------
-		;	Hand Cannoneers
-		;---------------------
-
-			(load "The General 3/Functions/Reset")
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: hand-cannoneer c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-hand-cannoneer-slinger-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: hand-cannoneer c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: slinger c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-hand-cannoneer-slinger-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: slinger c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-		;-------------------
-		;	Heavy Cavalry
-		;-------------------
-
-			(load "The General 3/Functions/Reset")
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: knight-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: knight-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: tarkan-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: tarkan-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: boyar c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: boyar c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			#load-if-defined DE-AVAILABLE
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				=>
-				(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-				(up-full-reset-search)
-				(up-find-remote c: konnik-line c: 40)
-				(up-get-search-state g-local-total)
-				)
-
-					(defrule
-					(timer-triggered t-10-sec)
-					(players-building-count target-player > 0)
-					(up-compare-goal g-remote-total > 0)
-					=>
-					(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-remote-total)
-					(up-reset-search 1 1 0 1)
-					(up-find-remote c: konnik-line c: 40)
-					(up-get-search-state g-local-total)
-					(up-jump-rule -1)
-					)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				=>
-				(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-				(up-full-reset-search)
-				(up-find-remote c: krepost-konnik-line c: 40)
-				(up-get-search-state g-local-total)
-				)
-
-					(defrule
-					(timer-triggered t-10-sec)
-					(players-building-count target-player > 0)
-					(up-compare-goal g-remote-total > 0)
-					=>
-					(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-remote-total)
-					(up-reset-search 1 1 0 1)
-					(up-find-remote c: krepost-konnik-line c: 40)
-					(up-get-search-state g-local-total)
-					(up-jump-rule -1)
-					)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				=>
-				(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-				(up-full-reset-search)
-				(up-find-remote c: keshik-line c: 40)
-				(up-get-search-state g-local-total)
-				)
-
-					(defrule
-					(timer-triggered t-10-sec)
-					(players-building-count target-player > 0)
-					(up-compare-goal g-remote-total > 0)
-					=>
-					(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-remote-total)
-					(up-reset-search 1 1 0 1)
-					(up-find-remote c: keshik-line c: 40)
-					(up-get-search-state g-local-total)
-					(up-jump-rule -1)
-					)
-
-			#end-if
-			
-		;-------------------
-		;	Light Cavalry
-		;-------------------
-
-			(load "The General 3/Functions/Reset")
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: scout-cavalry-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-light-cavalry-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: scout-cavalry-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: magyar-huszar c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-light-cavalry-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: magyar-huszar c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			#load-if-defined DE-AVAILABLE
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				=>
-				(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-				(up-full-reset-search)
-				(up-find-remote c: steppe-lancer-line c: 40)
-				(up-get-search-state g-local-total)
-				)
-
-					(defrule
-					(timer-triggered t-10-sec)
-					(players-building-count target-player > 0)
-					(up-compare-goal g-remote-total > 0)
-					=>
-					(up-modify-goal g-enemy-light-cavalry-count g:+ g-remote-total)
-					(up-reset-search 1 1 0 1)
-					(up-find-remote c: steppe-lancer-line c: 40)
-					(up-get-search-state g-local-total)
-					(up-jump-rule -1)
-					)
-
-			#end-if
-
-		;------------
-		;	Camels
-		;------------
-
-			(load "The General 3/Functions/Reset")
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: camel-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-camel-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: camel-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-		;---------------
-		;	Elephants
-		;---------------
-
-			(load "The General 3/Functions/Reset")
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: war-elephant-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-elephants-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: war-elephant-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: battle-elephant c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-elephants-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: battle-elephant c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-		;-----------------
-		;	Field Siege
-		;-----------------
-
-			(load "The General 3/Functions/Reset")
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: mangonel-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-field-siege-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: mangonel-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: mangonel-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-field-siege-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: mangonel-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: scorpion-line c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-field-siege-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: scorpion-line c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: organ-gun c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-field-siege-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: organ-gun c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-		;-----------
-		;	Monks
-		;-----------
-
-			(load "The General 3/Functions/Reset")
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: monk c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-monks-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: monk c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: missionary c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-monks-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: missionary c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-		;------------------
-		;	Unique Units
-		;------------------
-
-			(load "The General 3/Functions/Reset")
-
-			#load-if-not-defined BRITON-CIV
-			#load-if-not-defined BULGARIANS-CIV
-			#load-if-not-defined BURGUNDIANS-CIV
-			#load-if-not-defined BURMESE-CIV
-			#load-if-not-defined CELTIC-CIV
-			#load-if-not-defined CHINESE-CIV
-			#load-if-not-defined CUMANS-CIV
-			#load-if-not-defined ETHIOPIAN-CIV
-			#load-if-not-defined FRANKISH-CIV
-			#load-if-not-defined HUN-CIV
-			#load-if-not-defined INCAN-CIV
-			#load-if-not-defined KOREAN-CIV
-			#load-if-not-defined MAGYAR-CIV
-			#load-if-not-defined MALAY-CIV
-			#load-if-not-defined MALIAN-CIV
-			#load-if-not-defined MAYAN-CIV
-			#load-if-not-defined MONGOL-CIV
-			#load-if-not-defined PERSIAN-CIV
-			#load-if-not-defined PORTUGUESE-CIV
-			#load-if-not-defined SICILIANS-CIV
-			#load-if-not-defined SLAVIC-CIV
-			#load-if-not-defined SPANISH-CIV
-			#load-if-not-defined TATARS-CIV
-			#load-if-not-defined TURKISH-CIV
-			#load-if-not-defined VIETNAMESE-CIV
-			#load-if-not-defined VIKING-CIV
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			=>
-			(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-			(up-full-reset-search)
-			(up-find-remote c: my-unique-unit c: 40)
-			(up-get-search-state g-local-total)
-			)
-
-				(defrule
-				(timer-triggered t-10-sec)
-				(players-building-count target-player > 0)
-				(up-compare-goal g-remote-total > 0)
-				=>
-				(up-modify-goal g-enemy-special-unique-unit-count g:+ g-remote-total)
-				(up-reset-search 1 1 0 1)
-				(up-find-remote c: my-unique-unit c: 40)
-				(up-get-search-state g-local-total)
-				(up-jump-rule -1)
-				)
-
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-			#end-if
-
-		;Total Visible Enemy Units
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-goal g-counted-enemy-military-pop g:= g-enemy-swordsmen-count)
-		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-spearmen-count)
-		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-eagle-warrior-count)
-		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-condottiero-count)
-		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-foot-archers-count)
-		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-skirmishers-count)
-		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-cavalry-archers-count)
-		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-hand-cannoneer-slinger-count)
-		)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		=>
-		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-light-cavalry-count)
-		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-heavy-cavalry-count)
-		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-camel-count)
-		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-elephants-count)
-		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-field-siege-count)
-		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-special-unique-unit-count)
-		(up-modify-goal g-counted-enemy-military-pop g:+ g-enemy-monks-count)
-		)
-
-		;Modify enemy unit counts to adjust for unseen units
-
-		(load "The General 3/Functions/Reset")
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		(players-military-population target-player > 0)
-		=>
-		(up-modify-goal g-temp g:= g-counted-enemy-military-pop)
-		(up-get-player-fact target-player military-population 0 g-temp-2)
-		(up-modify-goal g-temp-2 g:%/ g-temp)
-		)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		;(players-military-population target-player > 0)
-		(up-compare-goal g-temp-2 <= 200) ;at least 50% of enemy military is visible
-		=>
-		(up-modify-goal g-enemy-swordsmen-count g:%* g-temp-2)
-		(up-modify-goal g-enemy-spearmen-count g:%* g-temp-2)
-		(up-modify-goal g-enemy-eagle-warrior-count g:%* g-temp-2)
-		(up-modify-goal g-enemy-condottiero-count g:%* g-temp-2)
-		(up-modify-goal g-enemy-foot-archers-count g:%* g-temp-2)
-		(up-modify-goal g-enemy-skirmishers-count g:%* g-temp-2)
-		(up-modify-goal g-enemy-cavalry-archers-count g:%* g-temp-2)
-		(up-modify-goal g-enemy-hand-cannoneer-slinger-count g:%* g-temp-2)
-		(up-modify-goal g-enemy-light-cavalry-count g:%* g-temp-2)
-		(up-modify-goal g-enemy-heavy-cavalry-count g:%* g-temp-2)
-		(up-modify-goal g-enemy-camel-count g:%* g-temp-2)
-		(up-modify-goal g-enemy-elephants-count g:%* g-temp-2)
-		(up-modify-goal g-enemy-field-siege-count g:%* g-temp-2)
-		)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		(players-military-population target-player > 0)
-		(up-compare-goal g-temp-2 <= 200) ;at least 50% of enemy military is visible
-		=>
-		(up-modify-goal g-enemy-special-unique-unit-count g:%* g-temp-2)
-		(up-modify-goal g-enemy-monks-count g:%* g-temp-2)
-		)
-
-		;If less than 50% enemy military is visible, use players-unit-type-count instead of DUC search
-
-		;Swordsmen, Spearmen, eagle warriors, and condottieros
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		(players-military-population target-player > 0)
-		(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
-		=>
-		(up-get-player-fact target-player unit-type-count militiaman-line g-enemy-swordsmen-count)
-		(up-get-player-fact target-player unit-type-count woad-raider-line g-temp)
-		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count berserk-line g-temp)
-		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count shotel-warrior g-temp)
-		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count elite-shotel-warrior g-temp)
-		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count karambit-warrior g-temp)
-		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
-		)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		(players-military-population target-player > 0)
-		(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
-		=>
-		(up-get-player-fact target-player unit-type-count elite-karambit-warrior g-temp)
-		(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count spearman-line g-enemy-spearmen-count)
-		(up-get-player-fact target-player unit-type-count kamayuk g-temp)
-		(up-modify-goal g-enemy-spearmen-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count elite-kamayuk g-temp)
-		(up-modify-goal g-enemy-spearmen-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count eagle-warrior-line g-enemy-eagle-warrior-count)
-		(up-get-player-fact target-player unit-type-count heavy-eagle-warrior g-temp)
-		(up-modify-goal g-enemy-eagle-warrior-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count condottiero g-enemy-condottiero-count)
-		)
-
-		;Archers, skirmishers, and hand-cannoneer-slinger
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		(players-military-population target-player > 0)
-		(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
-		=>
-		(up-get-player-fact target-player unit-type-count archer-line g-enemy-foot-archers-count)
-		(up-get-player-fact target-player unit-type-count longbowman-line g-temp)
-		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count chu-ko-nu-line g-temp)
-		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count plumed-archer-line g-temp)
-		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count janissary-line g-temp)
-		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count rattan-archer g-temp)
-		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
-		)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		(players-military-population target-player > 0)
-		(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
-		=>
-		(up-get-player-fact target-player unit-type-count elite-rattan-archer g-temp)
-		(up-modify-goal g-enemy-foot-archers-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count skirmisher-line g-enemy-skirmishers-count)
-		(up-get-player-fact target-player unit-type-count imperial-skirmisher g-temp)
-		(up-modify-goal g-enemy-skirmishers-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count genitour g-temp)
-		(up-modify-goal g-enemy-skirmishers-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count elite-genitour g-temp)
-		(up-modify-goal g-enemy-skirmishers-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count hand-cannoneer g-enemy-hand-cannoneer-slinger-count)
-		(up-get-player-fact target-player unit-type-count slinger g-temp)
-		(up-modify-goal g-enemy-hand-cannoneer-slinger-count g:+ g-temp)
-		)
-
-		;Cavalry Archers, Camels, Battle Elephants, and Monks
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		(players-military-population target-player > 0)
-		(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
-		=>
-		(up-get-player-fact target-player unit-type-count cavalry-archer-line g-enemy-cavalry-archers-count)
-		(up-get-player-fact target-player unit-type-count arambai g-temp)
-		(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count elite-arambai g-temp)
-		(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count war-wagon-line g-temp)
-		(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count monk g-enemy-monks-count)
-		(up-get-player-fact target-player unit-type-count missionary g-temp)
-		(up-modify-goal g-enemy-monks-count g:+ g-temp)
-		)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		(players-military-population target-player > 0)
-		(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
-		=>
-		(up-get-player-fact target-player unit-type-count mangudai-line g-temp)
-		(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count conquistador-line g-temp)
-		(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count camel-line g-enemy-camel-count)
-		(up-get-player-fact target-player unit-type-count imperial-camel g-temp)
-		(up-modify-goal g-enemy-camel-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count battle-elephant g-enemy-elephants-count)
-		(up-get-player-fact target-player unit-type-count elite-battle-elephant g-temp)
-		(up-modify-goal g-enemy-elephants-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count war-elephant-line g-temp)
-		(up-modify-goal g-enemy-elephants-count g:+ g-temp)
-		)
-
-		;Cavalry and Field Siege
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		(players-military-population target-player > 0)
-		(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
-		=>
-		(up-get-player-fact target-player unit-type-count scout-cavalry-line g-enemy-light-cavalry-count)
-		(up-get-player-fact target-player unit-type-count magyar-huszar g-temp)
-		(up-modify-goal g-enemy-light-cavalry-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count elite-magyar-huszar g-temp)
-		(up-modify-goal g-enemy-light-cavalry-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count knight-line g-enemy-heavy-cavalry-count)
-		(up-get-player-fact target-player unit-type-count tarkan-line g-temp)
-		(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count boyar g-temp)
-		(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
-		)
-
-		(defrule
-		(timer-triggered t-10-sec)
-		(players-building-count target-player > 0)
-		(players-military-population target-player > 0)
-		(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
-		=>
-		(up-get-player-fact target-player unit-type-count elite-boyar g-temp)
-		(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count mangonel-line g-enemy-field-siege-count)
-		(up-get-player-fact target-player unit-type-count scorpion-line g-temp)
-		(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count organ-gun g-temp)
-		(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
-		(up-get-player-fact target-player unit-type-count elite-organ-gun g-temp)
-		(up-modify-goal g-enemy-field-siege-count g:+ g-temp)
-		)
-
-		#load-if-defined DE-AVAILABLE
-
-			(defrule
-			(timer-triggered t-10-sec)
-			(players-building-count target-player > 0)
-			(players-military-population target-player > 0)
-			(up-compare-goal g-temp-2 > 200) ;less than 50% of enemy military is visible
-			=>
-			(up-get-player-fact target-player unit-type-count foot-konnik-line g-temp)
-			(up-modify-goal g-enemy-swordsmen-count g:+ g-temp)
-			(up-get-player-fact target-player unit-type-count kipchak-line g-temp)
-			(up-modify-goal g-enemy-cavalry-archers-count g:+ g-temp)
-			(up-get-player-fact target-player unit-type-count steppe-lancer-line g-temp)
-			(up-modify-goal g-enemy-light-cavalry-count g:+ g-temp)
-			(up-get-player-fact target-player unit-type-count konnik-line g-temp)
-			(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
-			(up-get-player-fact target-player unit-type-count krepost-konnik-line g-temp)
-			(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
-			(up-get-player-fact target-player unit-type-count keshik-line g-temp)
-			(up-modify-goal g-enemy-heavy-cavalry-count g:+ g-temp)
-			)
-
-		#end-if
-	#end-if	;Old Code
-
-
 
 	;Get enemy numbers of each soldier type.
 	;The target player is intentionally double-counted, except if only one enemy is alive. This prioritizes countering the target enemy over other players.
@@ -9183,32 +5736,6 @@
 	;--------------------------------
 	;	Scale By Number of Enemies
 	;--------------------------------
-
-		(defrule
-		(players-military-population any-enemy > 1)
-		=>
-		(up-modify-goal g-previous-seen-enemy-military-pop g:= g-seen-enemy-military-pop)
-		)
-	
-		(defrule
-		(players-military-population any-enemy > 1)
-		=>
-		(up-modify-goal g-seen-enemy-military-pop g:= g-enemy-swordsmen-count)
-		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-spearmen-count)
-		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-eagle-warrior-count)
-		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-condottiero-count)
-		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-foot-archers-count)
-		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-skirmishers-count)
-		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-cavalry-archers-count)
-		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-hand-cannoneer-slinger-count)
-		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-light-cavalry-count)
-		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-heavy-cavalry-count)
-		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-camel-count)
-		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-elephants-count)
-		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-field-siege-count)
-		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-special-unique-unit-count)
-		(up-modify-goal g-seen-enemy-military-pop g:+ g-enemy-monks-count)
-		)
 	
 		;Divide results by number of enemies to scale it to the army size of one player
 		(defrule
@@ -9258,14 +5785,14 @@
 		(up-modify-goal g-enemy-monks-count c:max 0)
 		)
 
-		;Calculate average enemy military pop
+		;Calculate average enemy military pop (g-temp-3)
 		(defrule
 		(players-military-population any-enemy > 1)
 		(player-in-game any-enemy)
 		=>
-		(up-get-fact-sum any-enemy military-population 0 g-average-enemy-military-pop)
+		(up-get-fact-sum any-enemy military-population 0 g-temp-3)
 		(up-get-fact players-in-game enemy g-temp-2)
-		(up-modify-goal g-average-enemy-military-pop g:/ g-temp-2)
+		(up-modify-goal g-temp-3 g:/ g-temp-2)
 		)
 
 		;Cap military numbers at average enemy military population (enemy player unit counts can sometimes go way too high)
@@ -9291,8 +5818,8 @@
 
 		(defrule
 		(players-military-population any-enemy > 1)
-		(up-compare-goal g-temp g:> g-average-enemy-military-pop)
-		(up-modify-goal g-temp-2 g:= g-average-enemy-military-pop)
+		(up-compare-goal g-temp g:> g-temp-3)
+		(up-modify-goal g-temp-2 g:= g-temp-3)
 		(up-modify-goal g-temp-2 g:%/ g-temp)
 		=>
 		(up-modify-goal g-enemy-swordsmen-count g:%* g-temp-2)
@@ -9311,8 +5838,8 @@
 
 		(defrule
 		(players-military-population any-enemy > 1)
-		(up-compare-goal g-temp g:> g-average-enemy-military-pop)
-		(up-modify-goal g-temp-2 g:= g-average-enemy-military-pop)
+		(up-compare-goal g-temp g:> g-temp-3)
+		(up-modify-goal g-temp-2 g:= g-temp-3)
 		(up-modify-goal g-temp-2 g:%/ g-temp)
 		=>
 		(up-modify-goal g-enemy-field-siege-count g:%* g-temp-2)
@@ -9415,7 +5942,6 @@
 	(current-age >= castle-age)
 	(up-compare-goal g-desired-num-trade-cart > 0)
 	(up-object-type-count-total c: trade-cart g:< g-desired-num-trade-cart)
-	;(up-object-type-count-total c: villager g:>= g-desired-num-villager)
 	(research-completed ri-caravan)
 	(goal g-town-under-attack NO)
 	=>
@@ -9485,7 +6011,6 @@
 			(game-time >= 600)))
 	=>
 	(set-goal g-team-partner PENDING)
-	; (chat-to-player my-player-number "Team Partner is dead")
 	)
 
 	;2 Player team
@@ -9496,13 +6021,12 @@
 	(players-building-type-count any-ally town-center > 0)
 	=>
 	(up-find-player ally find-closest g-team-partner)
-	(up-chat-data-to-self "Team Partner: %d" g: g-team-partner)
 	(up-modify-sn sn-focus-player-number g:= g-team-partner)
 	(up-get-focus-fact allied-goal g-identity g-team-partner-identity)
 	)
 
 	;3+ player team (Flank)
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(or
@@ -9537,7 +6061,6 @@
 			(players-building-type-count any-ally town-center > 0)
 			(player-in-game focus-player)
 			(stance-toward focus-player ally)
-			;(up-allied-goal focus-player g-position == POCKET)
 			(up-compare-goal i < 8)
 			=>
 			(up-full-reset-search)
@@ -9551,7 +6074,6 @@
 			(players-building-type-count any-ally town-center > 0)
 			(player-in-game focus-player)
 			(stance-toward focus-player ally)
-			;(up-allied-goal focus-player g-position == POCKET)
 			(up-compare-goal i < 8)
 			(up-set-target-object search-remote c: 0)
 			=>
@@ -9567,7 +6089,6 @@
 			(players-building-type-count any-ally town-center > 0)
 			(player-in-game focus-player)
 			(stance-toward focus-player ally)
-			;(up-allied-goal focus-player g-position == POCKET)
 			(up-compare-goal i < 8)
 			(up-set-target-object search-remote c: 0)
 			(up-compare-goal g-temp g:< g-temp-2)	;less than the lowest distance to an ally pocket found so far
@@ -9595,13 +6116,12 @@
 		(players-building-type-count any-ally town-center > 0)
 		(goal i 8)
 		=>
-		(up-chat-data-to-all "Team Partner: %d" g: g-team-partner)
 		(up-modify-sn sn-focus-player-number g:= g-team-partner)
 		(up-get-focus-fact allied-goal g-identity g-team-partner-identity)
 		)
 	
 	;3+ player team (Pocket)
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(or
@@ -9694,7 +6214,6 @@
 		(players-building-type-count any-ally town-center > 0)
 		(goal i 8)
 		=>
-		(up-chat-data-to-all "Team Partner: %d" g: g-team-partner)
 		(up-modify-sn sn-focus-player-number g:= g-team-partner)
 		(up-get-focus-fact allied-goal g-identity g-team-partner-identity)
 		)
@@ -9725,15 +6244,17 @@
 	;Loom
 	(defrule
 	(up-research-status c: ri-loom < research-complete)
-	(goal g-far-boar YES)
-	(up-modify-goal g-temp c:= FAR-BOAR-HUNTING-VILS-NEEDED)
-	(up-modify-goal g-temp c:- 1)
-	(up-object-type-count-total c: villager g:>= g-temp)
+	(or
+		(players-military-population any-enemy > 1)
+		(or
+			(cc-players-unit-type-count 0 elephant > 0)
+			(cc-players-unit-type-count 0 rhino > 0)))
+	(up-object-type-count-total c: villager >= 10)
 	=>
 	(set-goal g-allow-queued-villagers NO)
 	)
 
-	;Next Age
+	;Loom or Next Age
 	(defrule
 	(up-modify-goal g-temp g:= g-required-num-villager)
 	(up-modify-goal g-temp c:- 1)
@@ -9994,7 +6515,7 @@
 ;	GOAL 242: g-militia-tech-progress
 ;---------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(current-age >= feudal-age)
@@ -12121,17 +8642,32 @@
 			)
 
 		#else
+			#load-if-defined SICILIANS-CIV
 
-			(defrule
-			(current-age == imperial-age)
-			(goal g-knight-tech-progress PRIORITY-IMPERIAL-COMPLETE)
-			(or
-				(research-completed ri-paladin)
-				(up-compare-const PALADIN-AVAILABLE == NO))
-			=>
-			(set-goal g-knight-tech-progress SECONDARY-IMPERIAL-COMPLETE)
-			)
+				(defrule
+				(current-age == imperial-age)
+				(goal g-knight-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+				(or
+					(research-completed ri-paladin)
+					(up-compare-const PALADIN-AVAILABLE == NO))
+				(up-research-status c: my-unique-research >= research-pending)
+				=>
+				(set-goal g-knight-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+				)
 
+			#else
+
+				(defrule
+				(current-age == imperial-age)
+				(goal g-knight-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+				(or
+					(research-completed ri-paladin)
+					(up-compare-const PALADIN-AVAILABLE == NO))
+				=>
+				(set-goal g-knight-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+				)
+
+			#end-if
 		#end-if
 	#end-if
 	
@@ -15632,7 +12168,7 @@
 ;	GOAL 262: g-max-working-town-centers
 ;------------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(up-compare-goal g-age-status >= MID-CASTLE)
@@ -15656,17 +12192,6 @@
 	(up-modify-goal g-max-working-town-centers g:= g-temp)
 	)
 
-	; (defrule
-	; (or
-	; 	(military-population g:< g-min-military-pop)
-	; 	(up-compare-goal g-current-age-primary-unit-tech-progress < SECONDARY-COMPLETE))
-	; (goal g-game-focus AGGRESSIVE)
-	; =>
-	; (up-modify-goal g-max-working-town-centers c:max 2)
-	; (up-get-fact building-type-count town-center g-temp)
-	; (up-modify-goal g-max-working-town-centers g:min g-temp)
-	; )
-
 	(defrule
 	(goal g-age-status SAVE-FOR-IMPERIAL)
 	(up-compare-goal g-game-focus != BOOM)
@@ -15681,7 +12206,7 @@
 ;	GOAL 263: g-max-working-markets
 ;-------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(up-get-fact building-type-count market g-temp)
@@ -15694,7 +12219,7 @@
 ;	GOAL 264: g-max-working-monasteries
 ;-----------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(up-get-fact building-type-count monastery g-temp)
@@ -15707,7 +12232,7 @@
 ;	GOAL 265: g-max-working-barracks
 ;--------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(true)
@@ -15805,7 +12330,7 @@
 ;	GOAL 266: g-max-working-archery-range
 ;-------------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(current-age >= feudal-age)
@@ -15909,7 +12434,7 @@
 ;	GOAL 267: g-max-working-stables
 ;-------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(current-age >= feudal-age)
@@ -16007,7 +12532,7 @@
 ;	GOAL 268: g-max-working-siege-workshops
 ;---------------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	#load-if-defined CUMANS-CIV
 	
@@ -16106,7 +12631,7 @@
 ;	GOAL 269: g-max-working-castles
 ;-------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(current-age >= castle-age)
@@ -16185,7 +12710,7 @@
 ;	GOAL 270: g-max-working-docks
 ;-----------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(up-get-fact building-type-count dock g-temp)
@@ -16198,7 +12723,7 @@
 ;	GOAL 271: g-villager-training
 ;-----------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(up-object-type-count-total c: villager g:>= g-desired-num-villager)
@@ -16249,6 +12774,7 @@
 	)
 
 	(defrule
+	(up-object-type-count-total c: villager g:< g-desired-num-villager)
 	(up-compare-goal g-game-focus != BOOM)
 	(up-compare-goal g-game-focus != REBUILD)
 	(up-compare-goal g-target-pop-parity g:> g-target-military-parity)	;We have more villagers than opponent
@@ -16257,48 +12783,10 @@
 	(set-goal g-villager-training LIMITED-TRAIN-WITH-ESCROW)
 	)
 
-	; (defrule
-	; (goal g-villager-training TRAIN-WITH-ESCROW)
-	; (or
-	; 	(goal g-game-focus AGGRESSIVE)
-	; 	(unit-type-count villager >= 50))
-	; (military-population g:< g-min-military-pop)
-	; =>
-	; (set-goal g-villager-training LIMITED-TRAIN-WITH-ESCROW)
-	; )
-
-	; (defrule
-	; (goal g-villager-training TRAIN-WITH-ESCROW)
-	; (goal g-game-focus AGGRESSIVE)
-	; (or
-	; 	(goal g-attack-status BEFORE-FEUDAL-ATTACKS)
-	; 	(goal g-attack-status BEFORE-CASTLE-ATTACKS))
-	; =>
-	; (set-goal g-villager-training LIMITED-TRAIN-WITH-ESCROW)
-	; )
-
-	; (defrule
-	; (up-compare-goal g-villager-training > TRAIN-WITHOUT-ESCROW)	;train with escrow or limited train with escrow
-	; (goal g-game-focus DEFENSIVE)
-	; =>
-	; (set-goal g-villager-training TRAIN-WITHOUT-ESCROW)
-	; )
-
-	; (defrule
-	; (unit-type-count villager >= 30)
-	; (goal g-game-focus BOOM)
-	; (up-research-status c: ri-wheel-barrow == research-available)
-	; (up-compare-goal g-age-status != SAVE-FOR-CASTLE)
-	; =>
-	; (set-goal g-villager-training TRAIN-WITHOUT-ESCROW)
-	; )
-
 	#load-if-defined UP-GAME-WK
 
 		(defrule
 		(up-compare-goal g-villager-training > OFF)
-		; (up-compare-goal g-game-focus != DEFENSIVE)	;Uncomment these conditions when FC strats can defend in Feudal
-		; (up-compare-goal g-game-focus != REBUILD)
 		(goal g-strategy-type FAST-CASTLE)
 		(up-compare-goal g-current-strategy != FC-EAGLES-REVENGE)	;strategies that can train
 		(up-compare-goal g-current-strategy != FC-STRONGBOW)		;rush unit in feudal
@@ -16330,8 +12818,6 @@
 
 		(defrule
 		(up-compare-goal g-villager-training > OFF)
-		; (up-compare-goal g-game-focus != DEFENSIVE)	;Uncomment these conditions when FC strats can defend in Feudal
-		; (up-compare-goal g-game-focus != REBUILD)
 		(goal g-strategy-type FAST-CASTLE)
 		(up-compare-goal g-current-strategy != FC-STRONGBOW)
 		(up-modify-goal g-temp g:= g-required-num-villager)
@@ -16452,7 +12938,12 @@
 
 	#end-if
 
-
+	(defrule
+	(up-compare-goal g-villager-training > OFF)
+	(up-object-type-count-total c: villager g:>= g-desired-num-villager)
+	=>
+	(set-goal g-villager-training OFF)
+	)
 
 
 ;--------------------------------------
@@ -16762,7 +13253,7 @@
 ;	GOAL 297: g-total-decaying-hunt-food
 ;------------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	(defrule
 	(dropsite-min-distance hunting < 10)
@@ -16770,11 +13261,15 @@
 	=>
 	(up-full-reset-search)
 	(up-set-target-point g-position-self-x)
-	(up-filter-distance c: -1 c: 10)
+	(up-filter-distance c: -1 c: 12)
 	(up-filter-status c: status-gather c: list-inactive)
-	(up-find-resource c: boar-class c: 10)
-	(up-find-resource c: deer-class c: 10)
+	(up-find-resource c: boar-class c: 20)
+	(up-find-resource c: deer-class c: 20)
+	(up-filter-status c: status-gather c: list-active)	;just in case the decaying animals are in list-active instead (they shouldn't be)
+	(up-find-resource c: boar-class c: 20)
+	(up-find-resource c: deer-class c: 20)
 	(up-remove-objects search-remote object-data-carry <= 0)
+	(up-clean-search search-remote -1 search-order-asc)	;remove duplicates
 	(set-goal i 0)
 	(set-goal g-total-decaying-hunt-food 0)
 	)
@@ -16784,12 +13279,34 @@
 		(building-type-count town-center > 0)
 		(up-set-target-object search-remote g: i)
 		(up-compare-goal i < 20)
+		(up-object-data object-data-class == boar-class)
 		(up-get-object-data object-data-carry g-temp)
 		=>
 		(up-modify-goal g-total-decaying-hunt-food g:+ g-temp)
 		(up-modify-goal i c:+ 1)
 		(up-jump-rule -1)
 		)
+
+		(defrule
+		(dropsite-min-distance hunting < 10)
+		(building-type-count town-center > 0)
+		(up-set-target-object search-remote g: i)
+		(up-compare-goal i < 20)
+		(up-object-data object-data-class == deer-class)
+		(up-get-object-data object-data-carry g-temp)
+		(up-modify-goal g-temp c:/ 3)
+		=>
+		(up-modify-goal g-total-decaying-hunt-food g:+ g-temp)
+		(up-modify-goal i c:+ 1)
+		(up-jump-rule -2)
+		)
+
+	(defrule
+	(dropsite-min-distance hunting > 6)
+	(up-compare-goal g-total-decaying-hunt-food != 0)
+	=>
+	(set-goal g-total-decaying-hunt-food 0)
+	)
 
 ;--------------------------------------
 ;	GOAL 308: g-primary-enemy-threat
@@ -20472,7 +16989,7 @@
 ;	GOALS 310-313: Recent Resources Gathered 
 ;----------------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	;Track how many resources are gathered in 120 seconds
 	(defrule
@@ -20480,17 +16997,12 @@
 	=>
 	(up-modify-goal g-temp g:= g-total-food-gathered)
 	(up-get-fact resource-amount amount-food-total g-total-food-gathered)
-	;(up-chat-data-to-self "Total food: %d" g: g-total-food-gathered)
 	(up-modify-goal g-recent-food-gathered g:= g-total-food-gathered)
 	(up-modify-goal g-recent-food-gathered g:- g-temp)
-	;(up-chat-data-to-self "Recent food: %d" g: g-recent-food-gathered)
-
 	(up-modify-goal g-temp g:= g-total-wood-gathered)
 	(up-get-fact resource-amount amount-wood-total g-total-wood-gathered)
-	;(up-chat-data-to-self "Total wood: %d" g: g-total-wood-gathered)
 	(up-modify-goal g-recent-wood-gathered g:= g-total-wood-gathered)
 	(up-modify-goal g-recent-wood-gathered g:- g-temp)
-	;(up-chat-data-to-self "Recent wood: %d" g: g-recent-wood-gathered)
 	)
 
 	(defrule
@@ -20498,260 +17010,21 @@
 	=>
 	(up-modify-goal g-temp g:= g-total-stone-gathered)
 	(up-get-fact resource-amount amount-stone-total g-total-stone-gathered)
-	;(up-chat-data-to-self "Total stone: %d" g: g-total-stone-gathered)
 	(up-modify-goal g-recent-stone-gathered g:= g-total-stone-gathered)
 	(up-modify-goal g-recent-stone-gathered g:- g-temp)
-	;(up-chat-data-to-self "Recent stone: %d" g: g-recent-stone-gathered)
-
 	(up-modify-goal g-temp g:= g-total-gold-gathered)
 	(up-get-fact resource-amount amount-gold-total g-total-gold-gathered)
-	;(up-chat-data-to-self "Total gold: %d" g: g-total-gold-gathered)
 	(up-modify-goal g-recent-gold-gathered g:= g-total-gold-gathered)
 	(up-modify-goal g-recent-gold-gathered g:- g-temp)
-	;(up-chat-data-to-self "Recent gold: %d" g: g-recent-gold-gathered)
 	)
 
-;------------------------------------------------------
-;					GARRISON INSIDE
-;	GOAL 326: g-previous-garrisonable-building-count
-;------------------------------------------------------
 
-	(load "The General 3/Functions/Reset")
-
-	;Calculate attacking army parity
-	;Adjust for knights and skirmishers
-	(defrule
-	(true)
-	=>
-	(up-get-fact enemy-units-in-town 0 g-temp)
-	(up-get-fact unit-type-in-town knight-line g-temp-2)
-	(up-modify-goal g-temp-2 c:/ 2)
-	(up-modify-goal g-temp g:+ g-temp-2)			;treat enemy knights as 1.5 soldiers
-	(up-get-fact soldier-count 0 g-temp-3)
-	(up-get-fact unit-type-count knight-line g-temp-2)
-	(up-modify-goal g-temp-2 c:/ 2)
-	(up-modify-goal g-temp-3 g:+ g-temp-2)			;treat own knights as 1.5 soldiers
-	)
-
-	(defrule
-	(up-compare-goal g-primary-unit != archer)
-	(up-compare-goal g-primary-unit != cavalry-archer)
-	(up-compare-goal g-primary-unit != hand-cannoneer)
-	(up-compare-goal g-primary-unit != slinger)
-	=>
-	(up-get-fact unit-type-in-town skirmisher-line g-temp-2)
-	(up-modify-goal g-temp-2 c:/ 2)
-	(up-modify-goal g-temp g:- g-temp-2)			;treat enemy skirmishers as 0.5 soldiers
-	)
-
-	;Garrison new units inside buildings
-	(defrule
-	(goal g-town-under-attack YES)
-	(goal g-gather-inside NO)
-	(up-compare-goal g-enemy-units-in-town >= 6)
-	(soldier-count < 12)
-	(or
-		(up-compare-goal g-enemy-units-in-town >= 25)
-		(soldier-count < 8))
-	(up-compare-goal g-temp g:> g-temp-3)	;Enemy outnumbers us
-	=>
-	(set-goal g-gather-inside YES)
-	(up-gather-inside c: monastery c: 1)
-	(up-gather-inside c: barracks c: 1)
-	(up-gather-inside c: archery-range c: 1)
-	(up-gather-inside c: stable c: 1)
-	(up-gather-inside c: siege-workshop c: 1)
-	(up-gather-inside c: castle c: 1)
-	; (chat-local-to-self "outnumbered - garrison in mil bldgs")
-	; (up-chat-data-to-self "Enemy count: %d" g: g-temp)
-	; (up-chat-data-to-self "Soldier count: %d" g: g-temp-3)
-	)
-	
-	;Set new buildings to also garrison units
-	;Check if new garrisonable building exists, if so, set gather point
-	(defrule
-	(true)
-	=>
-	(up-get-fact building-type-count monastery g-temp)
-	(up-get-fact building-type-count barracks g-temp-2)
-	(up-modify-goal g-temp g:+ g-temp-2)
-	(up-get-fact building-type-count archery-range g-temp-2)
-	(up-modify-goal g-temp g:+ g-temp-2)
-	(up-get-fact building-type-count stable g-temp-2)
-	(up-modify-goal g-temp g:+ g-temp-2)
-	(up-get-fact building-type-count siege-workshop g-temp-2)
-	(up-modify-goal g-temp g:+ g-temp-2)
-	(up-get-fact building-type-count castle g-temp-2)
-	(up-modify-goal g-temp g:+ g-temp-2)
-	)
-
-	(defrule
-	(up-compare-goal g-temp g:!= g-previous-garrisonable-building-count)	;the number of garrisonable buildings has changed, reset gather points
-	(goal g-gather-inside YES)
-	=>
-	(up-gather-inside c: monastery c: 1)
-	(up-gather-inside c: barracks c: 1)
-	(up-gather-inside c: archery-range c: 1)
-	(up-gather-inside c: stable c: 1)
-	(up-gather-inside c: siege-workshop c: 1)
-	(up-gather-inside c: castle c: 1)
-	)
-
-	;Ungarrison
-
-	;Calculate attacking army parity
-	;Adjust for knights and skirmishers
-	(defrule
-	(true)
-	=>
-	(up-get-fact enemy-units-in-town 0 g-temp)
-	(up-get-fact unit-type-in-town knight-line g-temp-2)
-	(up-modify-goal g-temp-2 c:/ 2)
-	(up-modify-goal g-temp g:+ g-temp-2)			;treat enemy knights as 1.5 soldiers
-	(up-get-fact soldier-count 0 g-temp-3)
-	(up-get-fact unit-type-count knight-line g-temp-2)
-	(up-modify-goal g-temp-2 c:/ 2)
-	(up-modify-goal g-temp-3 g:+ g-temp-2)			;treat own knights as 1.5 soldiers
-	)
-
-	(defrule
-	(up-compare-goal g-primary-unit != archer)
-	(up-compare-goal g-primary-unit != cavalry-archer)
-	(up-compare-goal g-primary-unit != hand-cannoneer)
-	(up-compare-goal g-primary-unit != slinger)
-	=>
-	(up-get-fact unit-type-in-town skirmisher-line g-temp-2)
-	(up-modify-goal g-temp-2 c:/ 2)
-	(up-modify-goal g-temp g:- g-temp-2)			;treat enemy skirmishers as 0.5 soldiers
-	)
-
-	(defrule
-	(goal g-gather-inside YES)
-	(or
-		(goal g-town-under-attack NO)
-		(or
-			(up-compare-goal g-enemy-units-in-town < 6)
-			(up-compare-goal g-temp g:<= g-temp-3)))	;Enemy no longer outnumbers us
-	=>
-	(set-goal g-gather-inside NO)
-	(up-gather-inside c: barracks c: 0)
-	(up-gather-inside c: archery-range c: 0)
-	(up-gather-inside c: stable c: 0)
-	(up-gather-inside c: siege-workshop c: 0)
-	(up-gather-inside c: castle c: 0)
-	(up-gather-inside c: monastery c: 0)
-	; (chat-local-to-self "Ungarrison - not outnumbered")
-	; (up-chat-data-to-self "Enemy count: %d" g: g-temp)
-	; (up-chat-data-to-self "Soldier count: %d" g: g-temp-3)
-	)
-
-	(defrule
-	(goal g-gather-inside YES)
-	(or
-		(soldier-count >= 12)
-		(and
-			(up-compare-goal g-enemy-units-in-town < 25)
-			(soldier-count >= 8)))
-	=>
-	(set-goal g-gather-inside NO)
-	(up-gather-inside c: barracks c: 0)
-	(up-gather-inside c: archery-range c: 0)
-	(up-gather-inside c: stable c: 0)
-	(up-gather-inside c: siege-workshop c: 0)
-	(up-gather-inside c: castle c: 0)
-	(up-gather-inside c: monastery c: 0)
-	; (chat-local-to-self "have enough soldiers - ungarrison")
-	)
-	
-	(defrule
-	(goal g-gather-inside YES)
-	(up-unit-type-in-town c: skirmisher-line > 5)
-	(or
-		(unit-type-count scout-cavalry-line >= 4)
-		(and
-			(up-unit-type-in-town c: skirmisher-line < 10)
-			(unit-type-count scout-cavalry-line >= 2)))
-	=>
-	(up-ungarrison c: stable)
-	)
-
-	(defrule
-	(goal g-gather-inside YES)
-	(up-unit-type-in-town c: skirmisher-line > 5)
-	(or
-		(up-compare-goal g-eagle-scout-line >= 4)
-		(and
-			(up-unit-type-in-town c: skirmisher-line < 10)
-			(up-compare-goal g-eagle-scout-line >= 2)))
-	=>
-	(up-ungarrison c: barracks)
-	)
-
-	(defrule
-	(goal g-gather-inside YES)
-	(up-unit-type-in-town c: knight-line > 3)
-	(up-unit-type-in-town c: knight-line < 12)
-	(or
-		(unit-type-count spearman-line >= 6)
-		(and
-			(up-unit-type-in-town c: knight-line < 7)
-			(unit-type-count spearman-line >= 4)))
-	=>
-	(up-ungarrison c: barracks)
-	)
-
-	(defrule
-	(goal g-gather-inside YES)
-	(up-unit-type-in-town c: knight-line > 3)
-	(up-unit-type-in-town c: knight-line < 12)
-	(or
-		(up-compare-goal g-camel-line >= 5)
-		(and
-			(up-unit-type-in-town c: knight-line < 7)
-			(up-compare-goal g-camel-line >= 3)))
-	=>
-	(up-ungarrison c: stable)
-	)
-
-	#load-if-defined SARACEN-CIV
-
-		(defrule
-		(goal g-gather-inside YES)
-		(up-unit-type-in-town c: knight-line > 3)
-		(up-unit-type-in-town c: knight-line < 12)
-		(or
-			(up-compare-goal g-unique-unit-line >= 5)
-			(and
-				(up-unit-type-in-town c: knight-line < 7)
-				(up-compare-goal g-unique-unit-line >= 3)))
-		=>
-		(up-ungarrison c: castle)
-		)
-		
-	#end-if
-
-	;Re-calculate number of garrisonable buildings for next pass
-	(defrule
-	(true)
-	=>
-	(up-get-fact building-type-count monastery g-previous-garrisonable-building-count)
-	(up-get-fact building-type-count barracks g-temp)
-	(up-modify-goal g-previous-garrisonable-building-count g:+ g-temp)
-	(up-get-fact building-type-count archery-range g-temp)
-	(up-modify-goal g-previous-garrisonable-building-count g:+ g-temp)
-	(up-get-fact building-type-count stable g-temp)
-	(up-modify-goal g-previous-garrisonable-building-count g:+ g-temp)
-	(up-get-fact building-type-count siege-workshop g-temp)
-	(up-modify-goal g-previous-garrisonable-building-count g:+ g-temp)
-	(up-get-fact building-type-count castle g-temp)
-	(up-modify-goal g-previous-garrisonable-building-count g:+ g-temp)
-	)
 
 ;------------------------------------
-;	GOAL 330: g-barracks-next-unit
+;	GOAL 321: g-barracks-next-unit
 ;------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	;This goal controls which unit from the building we want to train next. If multiple units from the same building should be trained,
 	;pick the soldier type that has the smallest percent of trained units out of the total desired number of units, because that is the
@@ -20823,10 +17096,10 @@
 	#end-if
 
 ;-----------------------------------------
-;	GOAL 331: g-archery-range-next-unit
+;	GOAL 322: g-archery-range-next-unit
 ;-----------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	;This goal controls which unit from the building we want to train next. If multiple units from the same building should be trained,
 	;pick the soldier type that has the smallest percent of trained units out of the total desired number of units, because that is the
@@ -20908,10 +17181,10 @@
 	)
 
 ;----------------------------------
-;	GOAL 332: g-stable-next-unit
+;	GOAL 323: g-stable-next-unit
 ;----------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	;This goal controls which unit from the building we want to train next. If multiple units from the same building should be trained,
 	;pick the soldier type that has the smallest percent of trained units out of the total desired number of units, because that is the
@@ -20998,10 +17271,10 @@
 	#end-if
 
 ;------------------------------------------
-;	GOAL 333: g-siege-workshop-next-unit
+;	GOAL 324: g-siege-workshop-next-unit
 ;------------------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	;This goal controls which unit from the building we want to train next. If multiple units from the same building should be trained,
 	;pick the soldier type that has the smallest percent of trained units out of the total desired number of units, because that is the
@@ -21057,10 +17330,10 @@
 	)
 
 ;--------------------------------
-;	GOAL 334: g-dock-next-unit
+;	GOAL 325: g-dock-next-unit
 ;--------------------------------
 
-	(load "The General 3/Functions/Reset")
+	(load "The General 3.1/Functions/Reset")
 
 	;This goal controls which unit from the building we want to train next. If multiple units from the same building should be trained,
 	;pick the soldier type that has the smallest percent of trained units out of the total desired number of units, because that is the
@@ -21193,39 +17466,420 @@
 
 	#end-if
 
-;--------------------------------
-;	GOAL 346: g-countering-cap
-;--------------------------------
+;------------------------------------------------------
+;					GARRISON INSIDE
+;	GOAL 326: g-previous-garrisonable-building-count
+;------------------------------------------------------
 
-	;Max number of enemy soldiers to counter
-	;Once this number of soldiers is reached, countering sensitivity is capped at 100%
+	(load "The General 3.1/Functions/Reset")
 
+	;Calculate attacking army parity
+	;Adjust for knights and skirmishers
 	(defrule
-	(current-age == feudal-age)
+	(true)
 	=>
-	(set-goal g-countering-cap 5)
-	(set-goal g-temp 100)
-	(up-modify-sn sn-countering-preference c:max 1)			;adjust according to sn-countering-preference (% factor between 1 and infinity)
-	(up-modify-goal g-temp s:%/ sn-countering-preference)	
-	(up-modify-goal g-countering-cap g:%* g-temp)
+	(up-get-fact enemy-units-in-town 0 g-temp)
+	(up-get-fact unit-type-in-town knight-line g-temp-2)
+	(up-modify-goal g-temp-2 c:/ 2)
+	(up-modify-goal g-temp g:+ g-temp-2)			;treat enemy knights as 1.5 soldiers
+	(up-get-fact soldier-count 0 g-temp-3)
+	(up-get-fact unit-type-count knight-line g-temp-2)
+	(up-modify-goal g-temp-2 c:/ 2)
+	(up-modify-goal g-temp-3 g:+ g-temp-2)			;treat own knights as 1.5 soldiers
 	)
 
 	(defrule
-	(current-age == castle-age)
+	(up-compare-goal g-primary-unit != archer)
+	(up-compare-goal g-primary-unit != cavalry-archer)
+	(up-compare-goal g-primary-unit != hand-cannoneer)
+	(up-compare-goal g-primary-unit != slinger)
 	=>
-	(set-goal g-countering-cap 20)
-	(set-goal g-temp 100)
-	(up-modify-sn sn-countering-preference c:max 1)			;adjust according to sn-countering-preference (% factor between 1 and infinity)
-	(up-modify-goal g-temp s:%/ sn-countering-preference)	
-	(up-modify-goal g-countering-cap g:%* g-temp)
+	(up-get-fact unit-type-in-town skirmisher-line g-temp-2)
+	(up-modify-goal g-temp-2 c:/ 2)
+	(up-modify-goal g-temp g:- g-temp-2)			;treat enemy skirmishers as 0.5 soldiers
+	)
+
+	;Garrison new units inside buildings
+	(defrule
+	(goal g-town-under-attack YES)
+	(goal g-gather-inside NO)
+	(up-compare-goal g-enemy-units-in-town >= 6)
+	(soldier-count < 12)
+	(or
+		(up-compare-goal g-enemy-units-in-town >= 25)
+		(soldier-count < 8))
+	(up-compare-goal g-temp g:> g-temp-3)	;Enemy outnumbers us
+	=>
+	(set-goal g-gather-inside YES)
+	(up-gather-inside c: monastery c: 1)
+	(up-gather-inside c: barracks c: 1)
+	(up-gather-inside c: archery-range c: 1)
+	(up-gather-inside c: stable c: 1)
+	(up-gather-inside c: siege-workshop c: 1)
+	(up-gather-inside c: castle c: 1)
+	)
+	
+	;Set new buildings to also garrison units
+	;Check if new garrisonable building exists, if so, set gather point
+	(defrule
+	(true)
+	=>
+	(up-get-fact building-type-count monastery g-temp)
+	(up-get-fact building-type-count barracks g-temp-2)
+	(up-modify-goal g-temp g:+ g-temp-2)
+	(up-get-fact building-type-count archery-range g-temp-2)
+	(up-modify-goal g-temp g:+ g-temp-2)
+	(up-get-fact building-type-count stable g-temp-2)
+	(up-modify-goal g-temp g:+ g-temp-2)
+	(up-get-fact building-type-count siege-workshop g-temp-2)
+	(up-modify-goal g-temp g:+ g-temp-2)
+	(up-get-fact building-type-count castle g-temp-2)
+	(up-modify-goal g-temp g:+ g-temp-2)
 	)
 
 	(defrule
-	(current-age == imperial-age)
+	(up-compare-goal g-temp g:!= g-previous-garrisonable-building-count)	;the number of garrisonable buildings has changed, reset gather points
+	(goal g-gather-inside YES)
 	=>
-	(set-goal g-countering-cap 35)
-	(set-goal g-temp 100)
-	(up-modify-sn sn-countering-preference c:max 1)			;adjust according to sn-countering-preference (% factor between 1 and infinity)
-	(up-modify-goal g-temp s:%/ sn-countering-preference)	
-	(up-modify-goal g-countering-cap g:%* g-temp)
+	(up-gather-inside c: monastery c: 1)
+	(up-gather-inside c: barracks c: 1)
+	(up-gather-inside c: archery-range c: 1)
+	(up-gather-inside c: stable c: 1)
+	(up-gather-inside c: siege-workshop c: 1)
+	(up-gather-inside c: castle c: 1)
 	)
+
+	;Ungarrison
+
+	;Calculate attacking army parity
+	;Adjust for knights and skirmishers
+	(defrule
+	(true)
+	=>
+	(up-get-fact enemy-units-in-town 0 g-temp)
+	(up-get-fact unit-type-in-town knight-line g-temp-2)
+	(up-modify-goal g-temp-2 c:/ 2)
+	(up-modify-goal g-temp g:+ g-temp-2)			;treat enemy knights as 1.5 soldiers
+	(up-get-fact soldier-count 0 g-temp-3)
+	(up-get-fact unit-type-count knight-line g-temp-2)
+	(up-modify-goal g-temp-2 c:/ 2)
+	(up-modify-goal g-temp-3 g:+ g-temp-2)			;treat own knights as 1.5 soldiers
+	)
+
+	(defrule
+	(up-compare-goal g-primary-unit != archer)
+	(up-compare-goal g-primary-unit != cavalry-archer)
+	(up-compare-goal g-primary-unit != hand-cannoneer)
+	(up-compare-goal g-primary-unit != slinger)
+	=>
+	(up-get-fact unit-type-in-town skirmisher-line g-temp-2)
+	(up-modify-goal g-temp-2 c:/ 2)
+	(up-modify-goal g-temp g:- g-temp-2)			;treat enemy skirmishers as 0.5 soldiers
+	)
+
+	(defrule
+	(goal g-gather-inside YES)
+	(or
+		(goal g-town-under-attack NO)
+		(or
+			(up-compare-goal g-enemy-units-in-town < 6)
+			(up-compare-goal g-temp g:<= g-temp-3)))	;Enemy no longer outnumbers us
+	=>
+	(set-goal g-gather-inside NO)
+	(up-gather-inside c: barracks c: 0)
+	(up-gather-inside c: archery-range c: 0)
+	(up-gather-inside c: stable c: 0)
+	(up-gather-inside c: siege-workshop c: 0)
+	(up-gather-inside c: castle c: 0)
+	(up-gather-inside c: monastery c: 0)
+	)
+
+	(defrule
+	(goal g-gather-inside YES)
+	(or
+		(soldier-count >= 12)
+		(and
+			(up-compare-goal g-enemy-units-in-town < 25)
+			(soldier-count >= 8)))
+	=>
+	(set-goal g-gather-inside NO)
+	(up-gather-inside c: barracks c: 0)
+	(up-gather-inside c: archery-range c: 0)
+	(up-gather-inside c: stable c: 0)
+	(up-gather-inside c: siege-workshop c: 0)
+	(up-gather-inside c: castle c: 0)
+	(up-gather-inside c: monastery c: 0)
+	)
+	
+	(defrule
+	(goal g-gather-inside YES)
+	(up-unit-type-in-town c: skirmisher-line > 5)
+	(or
+		(unit-type-count scout-cavalry-line >= 4)
+		(and
+			(up-unit-type-in-town c: skirmisher-line < 10)
+			(unit-type-count scout-cavalry-line >= 2)))
+	=>
+	(up-ungarrison c: stable)
+	)
+	
+	(defrule
+	(goal g-gather-inside YES)
+	(up-unit-type-in-town c: skirmisher-line > 5)
+	(or
+		(unit-type-count knight-line >= 4)
+		(and
+			(up-unit-type-in-town c: skirmisher-line < 10)
+			(unit-type-count knight-line >= 2)))
+	=>
+	(up-ungarrison c: stable)
+	)
+
+	(defrule
+	(goal g-gather-inside YES)
+	(up-unit-type-in-town c: skirmisher-line > 5)
+	(or
+		(up-compare-goal g-eagle-scout-line >= 4)
+		(and
+			(up-unit-type-in-town c: skirmisher-line < 10)
+			(up-compare-goal g-eagle-scout-line >= 2)))
+	=>
+	(up-ungarrison c: barracks)
+	)
+
+	(defrule
+	(goal g-gather-inside YES)
+	(up-unit-type-in-town c: knight-line > 3)
+	(up-unit-type-in-town c: knight-line < 12)
+	(or
+		(unit-type-count spearman-line >= 6)
+		(and
+			(up-unit-type-in-town c: knight-line < 7)
+			(unit-type-count spearman-line >= 4)))
+	=>
+	(up-ungarrison c: barracks)
+	)
+
+	(defrule
+	(goal g-gather-inside YES)
+	(up-unit-type-in-town c: knight-line > 3)
+	(up-unit-type-in-town c: knight-line < 12)
+	(or
+		(up-compare-goal g-camel-line >= 5)
+		(and
+			(up-unit-type-in-town c: knight-line < 7)
+			(up-compare-goal g-camel-line >= 3)))
+	=>
+	(up-ungarrison c: stable)
+	)
+
+	#load-if-defined SARACEN-CIV
+
+		(defrule
+		(goal g-gather-inside YES)
+		(up-unit-type-in-town c: knight-line > 3)
+		(up-unit-type-in-town c: knight-line < 12)
+		(or
+			(up-compare-goal g-unique-unit-line >= 5)
+			(and
+				(up-unit-type-in-town c: knight-line < 7)
+				(up-compare-goal g-unique-unit-line >= 3)))
+		=>
+		(up-ungarrison c: castle)
+		)
+		
+	#end-if
+
+	;Re-calculate number of garrisonable buildings for next pass
+	(defrule
+	(true)
+	=>
+	(up-get-fact building-type-count monastery g-previous-garrisonable-building-count)
+	(up-get-fact building-type-count barracks g-temp)
+	(up-modify-goal g-previous-garrisonable-building-count g:+ g-temp)
+	(up-get-fact building-type-count archery-range g-temp)
+	(up-modify-goal g-previous-garrisonable-building-count g:+ g-temp)
+	(up-get-fact building-type-count stable g-temp)
+	(up-modify-goal g-previous-garrisonable-building-count g:+ g-temp)
+	(up-get-fact building-type-count siege-workshop g-temp)
+	(up-modify-goal g-previous-garrisonable-building-count g:+ g-temp)
+	(up-get-fact building-type-count castle g-temp)
+	(up-modify-goal g-previous-garrisonable-building-count g:+ g-temp)
+	)
+
+;-----------------------------------
+;	GOAL 329: g-usable-farm-count
+;-----------------------------------
+
+	(load "The General 3.1/Functions/Reset")
+
+	(defrule
+	(building-type-count farm == 0)
+	(up-compare-goal g-usable-farm-count > 0)
+	=>
+	(set-goal g-usable-farm-count 0)
+	)
+
+	(defrule
+	(building-type-count farm > 0)
+	=>
+	(up-full-reset-search)
+	(up-find-local c: farm c: 240)
+	(set-goal i 0)
+	(up-get-search-state g-local-total)
+	(up-modify-goal g-usable-farm-count g:= g-local-total)
+	)
+
+		(defrule
+		(building-type-count farm > 0)
+		(up-compare-goal i g:< g-local-total)
+		(up-set-target-object search-local g: i)
+		=>
+		(up-get-point position-object g-point-x)
+		(up-set-target-point g-point-x)
+		(set-strategic-number sn-focus-player-number my-player-number)
+		(up-reset-search 0 0 1 1)
+		(up-reset-filters)
+		(up-filter-distance c: -1 c: 12)
+		(up-find-remote c: town-center c: 20)
+		(up-find-remote c: mill c: 20)
+		(up-get-search-state g-local-total)
+		)
+
+		(defrule
+		(building-type-count farm > 0)
+		(up-compare-goal i g:< g-local-total)
+		(up-set-target-object search-local g: i)
+		(goal g-remote-total 0)
+		=>
+		(up-modify-goal g-usable-farm-count c:- 1)
+		)
+
+		(defrule
+		(building-type-count farm > 0)
+		(up-compare-goal i g:< g-local-total)
+		(up-set-target-object search-local g: i)
+		=>
+		(up-modify-goal i c:+ 1)
+		(up-jump-rule -3)
+		)
+
+;-----------------------------------------
+;	GOAL 330: g-usable-farm-count-total
+;-----------------------------------------
+
+	(load "The General 3.1/Functions/Reset")
+
+	(defrule
+	(building-type-count-total farm > 0)
+	=>
+	(up-get-fact building-type-count farm g-temp)
+	(up-get-fact building-type-count-total farm g-temp-2)
+	(up-modify-goal g-temp-2 g:- g-temp)
+	(up-modify-goal g-usable-farm-count-total g:= g-usable-farm-count)
+	(up-modify-goal g-usable-farm-count-total g:+ g-temp-2)
+	)
+
+;-----------------------------------------
+;	GOAL 331: g-current-gold-camp-total
+;-----------------------------------------
+
+	(load "The General 3.1/Functions/Reset")
+	
+	(defrule
+	(building-type-count-total mining-camp > 0)
+	=>
+	(up-full-reset-search)
+	(up-find-local c: mining-camp c: 100)
+	(up-filter-status c: status-pending c: list-active)
+	(up-find-status-local c: mining-camp c: 5)
+	(up-clean-search search-local -1 search-order-asc)	;remove duplicates just in case
+	(up-get-search-state g-local-total)
+	(set-goal i 0)
+	(set-goal g-current-gold-camp-total 0)
+	)
+
+		(defrule
+		(building-type-count-total mining-camp > 0)
+		(up-compare-goal i g:< g-local-total)
+		(up-set-target-object search-local g: i)
+		=>
+		(up-get-point position-object g-point-x)
+		(up-set-target-point g-point-x)
+		(up-reset-search 0 0 1 1)
+		(up-reset-filters)
+		(up-filter-distance c: -1 c: 6)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: gold c: 1)
+		(up-get-search-state g-local-total)
+		)
+
+		(defrule
+		(building-type-count-total mining-camp > 0)
+		(up-compare-goal i g:< g-local-total)
+		(up-set-target-object search-local g: i)
+		(up-compare-goal g-remote-total > 0)            ;gold mines found
+		=>
+		(up-modify-goal g-current-gold-camp-total c:+ 1)
+		)
+
+		(defrule
+		(building-type-count-total mining-camp > 0)
+		(up-compare-goal i g:< g-local-total)
+		(up-set-target-object search-local g: i)
+		=>
+		(up-modify-goal i c:+ 1)
+		(up-jump-rule -3)
+		)
+
+;-----------------------------------------
+;	GOAL 332: g-current-stone-camp-total
+;-----------------------------------------
+
+	(load "The General 3.1/Functions/Reset")
+	
+	(defrule
+	(building-type-count-total mining-camp > 0)
+	=>
+	(up-full-reset-search)
+	(up-find-local c: mining-camp c: 100)
+	(up-filter-status c: status-pending c: list-active)
+	(up-find-status-local c: mining-camp c: 5)
+	(up-clean-search search-local -1 search-order-asc)	;remove duplicates just in case
+	(up-get-search-state g-local-total)
+	(set-goal i 0)
+	(set-goal g-current-stone-camp-total 0)
+	)
+
+		(defrule
+		(building-type-count-total mining-camp > 0)
+		(up-compare-goal i g:< g-local-total)
+		(up-set-target-object search-local g: i)
+		=>
+		(up-get-point position-object g-point-x)
+		(up-set-target-point g-point-x)
+		(up-reset-search 0 0 1 1)
+		(up-reset-filters)
+		(up-filter-distance c: -1 c: 6)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: stone c: 1)
+		(up-get-search-state g-local-total)
+		)
+
+		(defrule
+		(building-type-count-total mining-camp > 0)
+		(up-compare-goal i g:< g-local-total)
+		(up-set-target-object search-local g: i)
+		(up-compare-goal g-remote-total > 0)            ;stone mines found
+		=>
+		(up-modify-goal g-current-stone-camp-total c:+ 1)
+		)
+
+		(defrule
+		(building-type-count-total mining-camp > 0)
+		(up-compare-goal i g:< g-local-total)
+		(up-set-target-object search-local g: i)
+		=>
+		(up-modify-goal i c:+ 1)
+		(up-jump-rule -3)
+		)

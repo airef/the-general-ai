@@ -1,0 +1,42 @@
+(defrule
+(true)
+=>
+(set-goal g-current-strategy FC-KRUSH)
+(set-goal g-dark-strategy FC-KRUSH)
+(set-goal g-early-feudal-strategy FC-KRUSH)
+(set-goal g-mid-feudal-strategy FC-KRUSH)
+(set-goal g-early-castle-strategy FC-KRUSH)
+(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
+(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
+(set-goal g-mid-imperial-strategy MIDI-PALADINS)
+(disable-self)
+)
+
+#load-if-defined DE-AVAILABLE
+
+    (defrule
+    (goal g-age-status LATE-IMPERIAL)
+    (or
+        (building-type-count castle > 0)
+        (up-research-status c: my-second-unique-research >= research-pending))
+    =>
+    (set-goal g-late-imperial-strategy LATEI-TRASHBOWS)
+    )
+
+    (defrule
+    (goal g-age-status LATE-IMPERIAL)
+    (building-type-count castle == 0)
+    (up-research-status c: my-second-unique-research < research-pending)
+    =>
+    (set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
+    )
+
+#else
+
+    (defrule
+    (goal g-age-status LATE-IMPERIAL)
+    =>
+    (set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
+    )
+
+#end-if

@@ -1,0 +1,96 @@
+(defrule
+(up-compare-goal g-desired-num-military > 0)
+(goal g-current-strategy LATEI-CHAMPIONS)
+=>
+(up-modify-goal g-desired-num-militia g:= g-desired-num-military)
+(up-modify-goal g-desired-num-militia c:%* 65)
+(set-goal g-support-unit skirmisher)
+(up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
+(up-modify-goal g-desired-num-skirmisher c:%* 35)
+)
+
+(defrule
+(up-compare-goal g-desired-num-military > 0)
+(goal g-current-strategy LATEI-TRASHALBS)
+=>
+(up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
+(up-modify-goal g-desired-num-spearman c:%* 65)
+(set-goal g-support-unit skirmisher)
+(up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
+(up-modify-goal g-desired-num-skirmisher c:%* 35)
+)
+
+(defrule
+(up-compare-goal g-desired-num-military > 0)
+(goal g-primary-unit archer)
+(up-compare-goal g-current-strategy != FL-GUERILLA)
+(up-compare-goal g-current-strategy != MIDF-FULL-RANGED)
+(up-compare-goal g-current-strategy != MIDC-RANGED)
+(up-compare-goal g-age-status >= SAVE-FOR-CASTLE)
+(up-compare-goal g-age-status < MID-CASTLE)
+(or
+    (goal g-town-under-attack YES)
+    (up-compare-goal g-age-status >= TO-CASTLE))
+=>
+(up-modify-goal g-desired-num-archer g:= g-desired-num-military)
+(up-modify-goal g-desired-num-archer c:%* 85)
+(up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
+(up-modify-goal g-desired-num-skirmisher c:%* 15)
+)
+
+(defrule
+(up-compare-goal g-desired-num-military > 0)
+(goal g-primary-unit archer)
+(up-compare-goal g-current-strategy != MIDC-RANGED)
+(current-age == castle-age)
+(up-compare-goal g-age-status >= MID-CASTLE)
+=>
+(up-modify-goal g-desired-num-archer g:= g-desired-num-military)
+(up-modify-goal g-desired-num-archer c:%* 90)
+(up-modify-goal g-desired-num-knight g:= g-desired-num-military)
+(up-modify-goal g-desired-num-knight c:%* 10)
+)
+
+(defrule
+(goal g-current-strategy MIDI-ARBS)
+(current-age == imperial-age)
+=>
+(up-modify-goal g-desired-num-archer g:= g-desired-num-military)
+(up-modify-goal g-desired-num-archer c:%* 80)
+(set-goal g-support-unit militiaman)
+(up-modify-goal g-desired-num-militia g:= g-desired-num-military)
+(up-modify-goal g-desired-num-militia c:%* 20)
+)
+
+(defrule
+(up-compare-goal g-desired-num-military > 0)
+(goal g-current-strategy LATEI-TRASHKIRMS)
+=>
+(up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
+(up-modify-goal g-desired-num-skirmisher c:%* 65)
+(set-goal g-support-unit spearman)
+(up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
+(up-modify-goal g-desired-num-spearman c:%* 35)
+)
+
+(defrule
+(up-compare-goal g-desired-num-military > 0)
+(goal g-current-strategy LATEI-TRASHUSSARS)
+=>
+(up-modify-goal g-desired-num-scout-cavalry g:= g-desired-num-military)
+(up-modify-goal g-desired-num-scout-cavalry c:%* 65)
+(set-goal g-support-unit skirmisher)
+(up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
+(up-modify-goal g-desired-num-skirmisher c:%* 35)
+)
+
+(defrule
+(up-compare-goal g-desired-num-military > 0)
+(goal g-current-strategy LATEI-UNIQUE)
+=>
+(up-modify-goal g-desired-num-unique-unit g:= g-desired-num-military)
+(up-modify-goal g-desired-num-unique-unit c:%* 65)
+(set-goal g-support-unit skirmisher)
+(up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
+(up-modify-goal g-desired-num-skirmisher c:%* 35)
+)
