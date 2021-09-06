@@ -2584,7 +2584,9 @@
 		)
 
 	(defrule
-	(town-under-attack)
+	(or
+		(town-under-attack)
+		(up-compare-goal g-enemy-units-in-town >= 4))
 	(goal g-attacking NO)
 	(up-compare-goal g-town-under-attack != YES)
 	(or
@@ -17530,12 +17532,10 @@
 	;Garrison new units inside buildings if we are attacked and outnumbered
 	(defrule
 	(goal g-gather-inside NO)
+	(goal g-attacking NO)
 	(goal g-town-under-attack YES)
 	(up-compare-goal g-enemy-units-in-town >= 6)
-	(soldier-count < 12)
-	(or
-		(up-compare-goal g-enemy-units-in-town >= 25)
-		(soldier-count < 8))
+	(soldier-count < 8)
 	(up-compare-goal g-temp g:> g-temp-2)	;Enemy outnumbers us
 	=>
 	(set-goal g-gather-inside YES)
@@ -17589,12 +17589,10 @@
 	)
 	
 	(defrule
+	(goal g-attacking NO)
 	(goal g-town-under-attack YES)
 	(up-compare-goal g-enemy-units-in-town >= 6)
-	(soldier-count < 12)
-	(or
-		(up-compare-goal g-enemy-units-in-town >= 25)
-		(soldier-count < 8))
+	(soldier-count < 8)
 	(up-compare-goal g-temp g:> g-temp-2)	;Enemy outnumbers us
 	=>
 	(up-jump-rule 1)

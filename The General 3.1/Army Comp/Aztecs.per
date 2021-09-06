@@ -124,13 +124,52 @@
             (up-compare-goal g-enemy-light-cavalry-count > 8)
             (or
                 (up-compare-goal g-enemy-heavy-cavalry-count > 5)
-                (or
-                    (up-compare-goal g-enemy-elephants-count > 3)
-                    (and
-                        (up-compare-goal g-enemy-special-unique-unit-count > 5)
-                        (up-compare-flag g-enemy-special-unique-unit-flag == LEITIS-FLAG)))))
+                (up-compare-goal g-enemy-elephants-count > 3)))
         =>
         (set-goal g-support-unit spearman)
+        )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
+        (or
+            (goal g-support-unit 0)
+            (goal g-support-unit skirmisher))
+        (goal g-position FLANK)
+        (military-population < 12)
+        (up-compare-goal g-enemy-special-unique-unit-count > 5)
+        (up-compare-flag g-enemy-special-unique-unit-flag == LEITIS-FLAG)
+        =>
+        (set-goal g-support-unit spearman)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
+        (goal g-support-unit 0)
+        (goal g-position FLANK)
+        (or
+            (up-compare-goal g-enemy-swordsmen-count > 6)
+            (population >= 75))
+        =>
+        (set-goal g-support-unit archer)
+        )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
+        (goal g-support-unit 0)
+        (goal g-position FLANK)
+        (or
+            (up-compare-goal g-enemy-special-unique-unit-count > 6)
+            (and
+                (up-compare-goal g-enemy-special-unique-unit-count > 3)
+                (military-population < 12)))
+        (or
+            (up-compare-flag g-enemy-special-unique-unit-flag == CATAPHRACT-FLAG)
+            (or
+                (up-compare-flag g-enemy-special-unique-unit-flag == TEUTONIC-KNIGHT-FLAG)
+                (up-compare-flag g-enemy-special-unique-unit-flag == JAGUAR-WARRIOR-FLAG)))
+        =>
+        (set-goal g-support-unit archer)
         )
 
         (defrule
@@ -223,36 +262,6 @@
         (up-compare-goal g-enemy-eagle-warrior-count > 8)
         =>
         (set-goal g-support-unit militiaman)
-        )
-
-        (defrule
-        (up-compare-goal g-desired-num-military > 0)
-        (goal g-current-strategy MIDC-EAGLES)
-        (goal g-support-unit 0)
-        (goal g-position FLANK)
-        (or
-            (up-compare-goal g-enemy-swordsmen-count > 6)
-            (population >= 75))
-        =>
-        (set-goal g-support-unit archer)
-        )
-        (defrule
-        (up-compare-goal g-desired-num-military > 0)
-        (goal g-current-strategy MIDC-EAGLES)
-        (goal g-support-unit 0)
-        (goal g-position FLANK)
-        (or
-            (up-compare-goal g-enemy-special-unique-unit-count > 6)
-            (and
-                (up-compare-goal g-enemy-special-unique-unit-count > 3)
-                (military-population < 12)))
-        (or
-            (up-compare-flag g-enemy-special-unique-unit-flag == CATAPHRACT-FLAG)
-            (or
-                (up-compare-flag g-enemy-special-unique-unit-flag == TEUTONIC-KNIGHT-FLAG)
-                (up-compare-flag g-enemy-special-unique-unit-flag == JAGUAR-WARRIOR-FLAG)))
-        =>
-        (set-goal g-support-unit archer)
         )
 
         ;Modify unit counts
