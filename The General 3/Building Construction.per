@@ -475,6 +475,142 @@
 		#end-if
 		#end-if
 
+	;-----------------
+	;	First Tower
+	;-----------------
+
+		; #load-if-not-defined SICILIANS-CIV
+
+		; 	(load "The General 3.1/Functions/Reset")
+
+		; 	(defrule
+		; 	(goal g-town-under-attack NO)
+		; 	=>
+		; 	(up-assign-builders c: watch-tower c: 2)
+		; 	)
+
+		; 	(defrule
+		; 	(goal g-town-under-attack YES)
+		; 	(unit-type-count 225 == 0)	;dead male builder
+		; 	(unit-type-count 213 == 0)	;dead female builder
+		; 	=>
+		; 	(up-assign-builders c: watch-tower c: 1)
+		; 	)
+
+		; 	(defrule
+		; 	(goal g-town-under-attack YES)
+		; 	(or
+		; 		(unit-type-count 225 > 0)	;dead male builder
+		; 		(unit-type-count 213 > 0))	;dead female builder
+		; 	=>
+		; 	(up-assign-builders c: watch-tower c: 0)
+		; 	)
+
+		; 	;Build watch tower near soldier gather point. Prefer to build by mining camp, lumber camp, or mill if they are nearby.
+		; 	(defrule
+		; 	(up-compare-goal g-watch-tower-line g:< g-desired-num-watch-tower)
+		; 	(up-compare-goal g-watch-tower-line == 0)
+		; 	(can-build-with-escrow watch-tower)
+		; 	(up-pending-objects c: watch-tower < 1)
+		; 	(goal g-place-point-used NO)
+		; 	(up-compare-goal g-gather-point-x > 0)
+		; 	(up-point-distance g-gather-point-x g-position-self-x > 5)
+		; 	=>
+		; 	(up-set-target-point g-gather-point-x)
+		; 	(up-full-reset-search)
+		; 	(up-filter-distance c: -1 c: 12)
+		; 	(up-find-local c: mining-camp c: 40)
+		; 	(up-find-local c: lumber-camp c: 40)
+		; 	(up-find-local c: mill c: 40)
+		; 	(up-set-target-point g-target-enemy-x)
+		; 	(up-clean-search search-local object-data-distance search-order-asc)
+		; 	(set-goal g-temp-3 9986)
+		; 	)
+			
+		; 	;No dropsite nearby, decide to build near g-gather-point-x
+		; 	(defrule
+		; 	(goal g-temp-3 9986)
+		; 	(can-build-with-escrow watch-tower)
+		; 	(not
+		; 		(up-set-target-object search-local c: 0))
+		; 	=>
+		; 	(set-goal g-temp-3 9988)
+		; 	)
+			
+		; 	;Dropsite nearby, check if it's closer than g-gather-point-x
+		; 	(defrule
+		; 	(goal g-temp-3 9986)
+		; 	(can-build-with-escrow watch-tower)
+		; 	(up-set-target-object search-local c: 0)
+		; 	=>
+		; 	(up-get-point position-object g-point-x)
+		; 	(up-set-target-point g-target-enemy-x)
+		; 	(up-get-point-distance g-point-x g-target-enemy-x g-temp) ;distance from dropsite to target enemy
+		; 	(up-modify-goal g-temp c:- 8)							  ;prefer dropsite even if it's further away from enemy
+		; 	(up-get-point-distance g-gather-point-x g-target-enemy-x g-temp-2) ;distance from soldier gather point to target enemy
+		; 	(set-goal g-temp-3 9987)
+		; 	)
+			
+		; 	;If dropsite is closer, build near dropsite
+		; 	(defrule
+		; 	(goal g-temp-3 9987)
+		; 	(can-build-with-escrow watch-tower)
+		; 	(up-set-target-object search-local c: 0)
+		; 	(up-compare-goal g-temp g:<= g-temp-2)
+		; 	=>
+		; 	(up-copy-point g-build-line-point-x g-point-x)
+		; 	(up-lerp-tiles g-build-line-point-x g-target-enemy-x c: 2)
+		; 	(set-goal g-build-line-bldg watch-tower)
+		; 	(set-goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+		; 	(chat-to-player my-player-number CHAT-BUILD-TOWER-BY-DROPSITE)
+		; 	(up-send-flare g-build-line-point-x)
+		; 	)
+
+		; 	;Dropsite isn't closer, build near g-gather-point-x
+		; 	(defrule
+		; 	(goal g-temp-3 9987)
+		; 	(can-build-with-escrow watch-tower)
+		; 	(up-set-target-object search-local c: 0)
+		; 	(up-compare-goal g-temp g:> g-temp-2)
+		; 	=>
+		; 	(set-goal g-temp-3 9988)
+		; 	)
+			
+		; 	;Build near g-target-point-x
+		; 	(defrule
+		; 	(goal g-temp-3 9988)
+		; 	(can-build-with-escrow watch-tower)
+		;	(up-compare-goal g-place-control-rule-id > 0)
+		; 	=>
+		; 	(up-copy-point g-build-line-point-x g-gather-point-x)
+		; 	(up-lerp-tiles g-build-line-point-x g-target-enemy-x c: 3)
+		; 	(set-goal g-build-line-bldg watch-tower)
+		; 	(set-goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+		; 	(chat-to-player my-player-number CHAT-BUILD-TOWER-BY-GATHER-POINT)
+		; 	(up-jump-direct g: g-place-control-rule-id)
+		; 	)
+
+		; 	(defrule
+		; 	(goal g-build-line-bldg watch-tower)
+		; 	(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
+		; 	=>
+		; 	(set-goal g-build-line-enemy-bldg-distance 10)
+		; 	(set-goal g-build-line-zone-radius 0)
+		; 	(set-goal g-build-line-max-zone-radius 4)
+		; 	(set-goal g-build-line-escrow with-escrow)
+		; 	(set-goal g-build-line-allow-beyond-town YES)
+		; 	(set-goal g-build-line-expand-direction NO-DIRECTION)
+		; 	)
+
+		; 	(defrule
+		; 	(up-compare-goal g-build-line-type != PENDING)
+		; 	(up-compare-goal g-build-line-rule-id > 0)
+		; 	=>
+		; 	(up-jump-direct g: g-build-line-rule-id)
+		; 	)
+
+		; #end-if
+
 	;----------------------------
 	;	Go to Build Line Mills
 	;----------------------------
@@ -517,7 +653,7 @@
 
 		(defrule
 		(up-compare-goal g-build-line-type != PENDING)
-		(up-compare-goal g-build-line-rule-id >= 0)
+		(up-compare-goal g-build-line-rule-id > 0)
 		=>
 		(up-jump-direct g: g-build-line-rule-id)
 		)
@@ -623,7 +759,7 @@
 
 		(defrule
 		(up-compare-goal g-build-line-type != PENDING)
-		(up-compare-goal g-build-line-rule-id >= 0)
+		(up-compare-goal g-build-line-rule-id > 0)
 		=>
 		(up-jump-direct g: g-build-line-rule-id)
 		)
@@ -673,7 +809,7 @@
 
 		(defrule
 		(up-compare-goal g-build-line-type != PENDING)
-		(up-compare-goal g-build-line-rule-id >= 0)
+		(up-compare-goal g-build-line-rule-id > 0)
 		=>
 		(up-jump-direct g: g-build-line-rule-id)
 		)
@@ -725,7 +861,7 @@
 
 			(defrule
 			(up-compare-goal g-build-line-type != PENDING)
-			(up-compare-goal g-build-line-rule-id >= 0)
+			(up-compare-goal g-build-line-rule-id > 0)
 			=>
 			(up-jump-direct g: g-build-line-rule-id)
 			)
@@ -765,7 +901,7 @@
 
 		(defrule
 		(up-compare-goal g-build-line-type != PENDING)
-		(up-compare-goal g-build-line-rule-id >= 0)
+		(up-compare-goal g-build-line-rule-id > 0)
 		=>
 		(up-jump-direct g: g-build-line-rule-id)
 		)
@@ -802,7 +938,7 @@
 
 		(defrule
 		(up-compare-goal g-build-line-type != PENDING)
-		(up-compare-goal g-build-line-rule-id >= 0)
+		(up-compare-goal g-build-line-rule-id > 0)
 		=>
 		(up-jump-direct g: g-build-line-rule-id)
 		)
@@ -861,7 +997,7 @@
 
 		(defrule
 		(up-compare-goal g-build-line-type != PENDING)
-		(up-compare-goal g-build-line-rule-id >= 0)
+		(up-compare-goal g-build-line-rule-id > 0)
 		=>
 		(up-jump-direct g: g-build-line-rule-id)
 		)
@@ -956,7 +1092,7 @@
 
 		(defrule
 		(up-compare-goal g-build-line-type != PENDING)
-		(up-compare-goal g-build-line-rule-id >= 0)
+		(up-compare-goal g-build-line-rule-id > 0)
 		=>
 		(up-jump-direct g: g-build-line-rule-id)
 		)
@@ -1122,7 +1258,7 @@
 
 		(defrule
 		(up-compare-goal g-build-line-type != PENDING)
-		(up-compare-goal g-build-line-rule-id >= 0)
+		(up-compare-goal g-build-line-rule-id > 0)
 		=>
 		(up-jump-direct g: g-build-line-rule-id)
 		)
@@ -1256,7 +1392,7 @@
 
 		(defrule
 		(up-compare-goal g-build-line-type != PENDING)
-		(up-compare-goal g-build-line-rule-id >= 0)
+		(up-compare-goal g-build-line-rule-id > 0)
 		=>
 		(up-jump-direct g: g-build-line-rule-id)
 		)
@@ -1295,7 +1431,6 @@
 		(set-goal g-build-line-control-bldg-distance -7)
 		(up-modify-sn sn-placement-zone-size c:= 5)
 		(set-strategic-number sn-placement-to-center 1)
-		(set-strategic-number sn-placement-fail-delta -1)
 		)
 
 		(defrule
@@ -1313,7 +1448,6 @@
 		(set-goal g-build-line-control-bldg-distance -7)
 		(up-modify-sn sn-placement-zone-size c:= 5)
 		(set-strategic-number sn-placement-to-center 1)
-		(set-strategic-number sn-placement-fail-delta -1)
 		)
 
 		(defrule
@@ -1346,7 +1480,7 @@
 
 		(defrule
 		(up-compare-goal g-build-line-type != PENDING)
-		(up-compare-goal g-build-line-rule-id >= 0)
+		(up-compare-goal g-build-line-rule-id > 0)
 		=>
 		(up-jump-direct g: g-build-line-rule-id)
 		)
@@ -1385,7 +1519,7 @@
 
 		(defrule
 		(up-compare-goal g-build-line-type != PENDING)
-		(up-compare-goal g-build-line-rule-id >= 0)
+		(up-compare-goal g-build-line-rule-id > 0)
 		=>
 		(up-jump-direct g: g-build-line-rule-id)
 		)
@@ -1419,7 +1553,7 @@
 
 		(defrule
 		(up-compare-goal g-build-line-type != PENDING)
-		(up-compare-goal g-build-line-rule-id >= 0)
+		(up-compare-goal g-build-line-rule-id > 0)
 		=>
 		(up-jump-direct g: g-build-line-rule-id)
 		)
@@ -1456,7 +1590,7 @@
 
 			(defrule
 			(up-compare-goal g-build-line-type != PENDING)
-			(up-compare-goal g-build-line-rule-id >= 0)
+			(up-compare-goal g-build-line-rule-id > 0)
 			=>
 			(up-jump-direct g: g-build-line-rule-id)
 			)
@@ -1495,7 +1629,7 @@
 
 			(defrule
 			(up-compare-goal g-build-line-type != PENDING)
-			(up-compare-goal g-build-line-rule-id >= 0)
+			(up-compare-goal g-build-line-rule-id > 0)
 			=>
 			(up-jump-direct g: g-build-line-rule-id)
 			)
@@ -1561,7 +1695,7 @@
 
 		(defrule
 		(up-compare-goal g-build-line-type != PENDING)
-		(up-compare-goal g-build-line-rule-id >= 0)
+		(up-compare-goal g-build-line-rule-id > 0)
 		=>
 		(up-jump-direct g: g-build-line-rule-id)
 		)
@@ -1579,7 +1713,7 @@
 
 	(defrule
 	(goal g-build-line-type PENDING)
-	(up-compare-goal g-mill-construction-rule-id >= 0)
+	(up-compare-goal g-mill-construction-rule-id > 0)
 	=>
 	(up-jump-direct g: g-mill-construction-rule-id)
 	)
@@ -1588,7 +1722,7 @@
 	(up-compare-goal g-build-line-type != PENDING)
 	=>
 	(up-store-type-name g: g-build-line-bldg)
-	; (up-chat-data-to-self CHAT-BUILD-LINE c: 7031232)
+	(up-chat-data-to-self CHAT-BUILD-LINE c: 7031232)
 	)
 
 	(load "The General 3.1/Functions/Build Line")
@@ -1673,7 +1807,7 @@
 	
 		(defrule
 		(goal g-build-line-type PENDING)
-		(up-compare-goal g-mc-construction-rule-id >= 0)
+		(up-compare-goal g-mc-construction-rule-id > 0)
 		=>
 		(up-jump-direct g: g-mc-construction-rule-id)
 		)
@@ -1710,7 +1844,7 @@
 		(set-goal g-build-line-zone-radius 0)
 		(set-goal g-build-line-max-zone-radius 6)
 		(set-goal g-build-line-resource-type gold)
-		(set-goal g-build-line-dropsite-distance 6)
+		(set-goal g-build-line-dropsite-distance 7)
 		(set-goal g-build-line-enemy-bldg-distance 25)
 		; (chat-to-player my-player-number CHAT-CAMP-GOLD)
 		)
@@ -1863,7 +1997,7 @@
 		(up-object-type-count-total c: mining-camp g:< g-desired-num-mining-camp)
 		(goal g-build-line-bldg mining-camp)
 		(population <= FIFTY-PERCENT-POP)
-		(building-type-count-total mining-camp < 4)
+		(building-type-count-total mining-camp < 3)
 		=>
 		(set-goal g-build-line-max-distance 40)
 		)
@@ -1873,7 +2007,7 @@
 		(goal g-build-line-bldg mining-camp)
 		(or
 			(population >= FIFTY-PERCENT-POP)
-			(building-type-count-total mining-camp >= 4))
+			(building-type-count-total mining-camp >= 3))
 		=>
 		(set-goal g-build-line-max-distance 255)
 		)
@@ -1881,7 +2015,7 @@
 		(defrule
 		(goal g-build-line-type PENDING)
 		(up-object-type-count-total c: mining-camp g:>= g-desired-num-mining-camp)
-		(up-compare-goal g-lc-construction-rule-id >= 0)
+		(up-compare-goal g-lc-construction-rule-id > 0)
 		=>
 		(up-jump-direct g: g-stone-camp-construction-rule-id)
 		)
@@ -1934,7 +2068,7 @@
 	
 		(defrule
 		(goal g-build-line-type PENDING)
-		(up-compare-goal g-lc-construction-rule-id >= 0)
+		(up-compare-goal g-lc-construction-rule-id > 0)
 		=>
 		(up-jump-direct g: g-lc-construction-rule-id)
 		)
@@ -2032,7 +2166,7 @@
 	
 		(defrule
 		(goal g-build-line-type PENDING)
-		(up-compare-goal g-place-point-rule-id >= 0)
+		(up-compare-goal g-place-point-rule-id > 0)
 		=>
 		(up-jump-direct g: g-place-point-rule-id)
 		)
@@ -2063,6 +2197,13 @@
 	;-----------------
 	;	Watch Tower
 	;-----------------
+
+		; (defrule
+		; (up-timer-status t-10-sec == timer-running)
+		; (up-compare-goal g-place-control-rule-id > 0)
+		; =>
+		; (up-jump-direct g: g-place-control-rule-id)
+		; )
 
 		#load-if-not-defined SICILIANS-CIV
 
@@ -2131,6 +2272,7 @@
 			(up-get-point position-object g-point-x)
 			(up-set-target-point g-target-enemy-x)
 			(up-get-point-distance g-point-x g-target-enemy-x g-temp) ;distance from dropsite to target enemy
+			(up-modify-goal g-temp c:- 8)							  ;prefer dropsite even if it's further away from enemy
 			(up-get-point-distance g-gather-point-x g-target-enemy-x g-temp-2) ;distance from soldier gather point to target enemy
 			(set-goal g-temp-3 9987)
 			)
@@ -2140,14 +2282,17 @@
 			(goal g-temp-3 9987)
 			(can-build-with-escrow watch-tower)
 			(up-set-target-object search-local c: 0)
-			(up-compare-goal g-temp g:< g-temp-2)
+			(up-compare-goal g-temp g:<= g-temp-2)
+			(up-compare-goal g-place-control-rule-id > 0)
 			=>
-			(up-lerp-tiles g-point-x g-target-enemy-x c: 5)
+			(up-lerp-tiles g-point-x g-target-enemy-x c: 2)
 			(up-copy-point g-place-point-x g-point-x)
 			(up-set-target-point g-place-point-x)
 			(set-goal g-place-point-used YES)
 			(set-strategic-number sn-placement-fail-delta 1)
 			(up-build place-point g-escrow c: watch-tower)
+			; (chat-to-player my-player-number CHAT-BUILD-TOWER-BY-DROPSITE)
+			(up-send-flare g-place-point-x)
 			(up-jump-direct g: g-place-control-rule-id)
 			)
 
@@ -2156,7 +2301,7 @@
 			(goal g-temp-3 9987)
 			(can-build-with-escrow watch-tower)
 			(up-set-target-object search-local c: 0)
-			(up-compare-goal g-temp g:>= g-temp-2)
+			(up-compare-goal g-temp g:> g-temp-2)
 			=>
 			(set-goal g-temp-3 9988)
 			)
@@ -2165,13 +2310,15 @@
 			(defrule
 			(goal g-temp-3 9988)
 			(can-build-with-escrow watch-tower)
+			(up-compare-goal g-place-control-rule-id > 0)
 			=>
 			(up-copy-point g-place-point-x g-gather-point-x)
-			(up-lerp-tiles g-place-point-x g-target-enemy-x c: 2)
+			(up-lerp-tiles g-place-point-x g-target-enemy-x c: 3)
 			(up-set-target-point g-place-point-x)
 			(set-goal g-place-point-used YES)
 			(set-strategic-number sn-placement-fail-delta 1)
 			(up-build place-point g-escrow c: watch-tower)
+			; (chat-to-player my-player-number CHAT-BUILD-TOWER-BY-GATHER-POINT)
 			(up-jump-direct g: g-place-control-rule-id)
 			)
 
@@ -2503,6 +2650,7 @@
 
 		(defrule
 		(building-type-count town-center == 0)	;most of the up-set-placement-data commands below rely on a TC
+		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
 		(up-jump-direct g: g-place-forward-rule-id)
 		)
@@ -2622,8 +2770,33 @@
 		(can-build-with-escrow siege-workshop)
 		(up-pending-objects c: siege-workshop < 1)
 		(up-compare-goal g-place-forward-rule-id > 0)
+		(up-compare-goal g-game-focus != DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: 8)
+		)
+
+		(defrule
+		(up-object-type-count-total c: siege-workshop g:< g-desired-num-siege-workshop)
+		(or
+			(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
+			(goal g-game-focus AGGRESSIVE))
+		(can-build-with-escrow siege-workshop)
+		(up-pending-objects c: siege-workshop < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		(goal g-game-focus DEFENSIVE)
+		=>
+		(up-set-placement-data my-player-number -1 c: -8)
+		)
+
+		(defrule
+		(up-object-type-count-total c: siege-workshop g:< g-desired-num-siege-workshop)
+		(or
+			(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
+			(goal g-game-focus AGGRESSIVE))
+		(can-build-with-escrow siege-workshop)
+		(up-pending-objects c: siege-workshop < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		=>
 		(up-modify-sn sn-placement-zone-size c:= 5)
 		(set-strategic-number sn-placement-fail-delta 0)
 		(up-assign-builders c: siege-workshop c: 1)
@@ -2762,8 +2935,27 @@
 		(can-build-with-escrow barracks)
 		(up-pending-objects c: barracks < 1)
 		(up-compare-goal g-place-forward-rule-id > 0)
+		(up-compare-goal g-game-focus != DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
+		)
+
+		(defrule
+		(goal i 573428)
+		(can-build-with-escrow barracks)
+		(up-pending-objects c: barracks < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		(goal g-game-focus DEFENSIVE)
+		=>
+		(up-set-placement-data my-player-number -1 c: -8)
+		)
+
+		(defrule
+		(goal i 573428)
+		(can-build-with-escrow barracks)
+		(up-pending-objects c: barracks < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		=>
 		(up-modify-sn sn-placement-zone-size c:= 5)
 		(set-strategic-number sn-placement-fail-delta 0)
 		(up-assign-builders c: barracks c: 1)
@@ -2777,8 +2969,27 @@
 		(can-build barracks)
 		(up-pending-objects c: barracks < 1)
 		(up-compare-goal g-place-forward-rule-id > 0)
+		(up-compare-goal g-game-focus != DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
+		)
+
+		(defrule
+		(up-object-type-count-total c: barracks g:< g-desired-num-barracks)
+		(can-build barracks)
+		(up-pending-objects c: barracks < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		(goal g-game-focus DEFENSIVE)
+		=>
+		(up-set-placement-data my-player-number -1 c: -8)
+		)
+
+		(defrule
+		(up-object-type-count-total c: barracks g:< g-desired-num-barracks)
+		(can-build barracks)
+		(up-pending-objects c: barracks < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		=>
 		(up-modify-sn sn-placement-zone-size c:= 5)
 		(set-strategic-number sn-placement-fail-delta 0)
 		(up-assign-builders c: barracks c: 1)
@@ -2917,8 +3128,27 @@
 		(can-build-with-escrow archery-range)
 		(up-pending-objects c: archery-range < 1)
 		(up-compare-goal g-place-forward-rule-id > 0)
+		(up-compare-goal g-game-focus != DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
+		)
+
+		(defrule
+		(goal i 573429)
+		(can-build-with-escrow archery-range)
+		(up-pending-objects c: archery-range < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		(goal g-game-focus DEFENSIVE)
+		=>
+		(up-set-placement-data my-player-number -1 c: -8)
+		)
+
+		(defrule
+		(goal i 573429)
+		(can-build-with-escrow archery-range)
+		(up-pending-objects c: archery-range < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		=>
 		(up-modify-sn sn-placement-zone-size c:= 5)
 		(set-strategic-number sn-placement-fail-delta 0)
 		(up-assign-builders c: archery-range c: 1)
@@ -2932,8 +3162,27 @@
 		(can-build archery-range)
 		(up-pending-objects c: archery-range < 1)
 		(up-compare-goal g-place-forward-rule-id > 0)
+		(up-compare-goal g-game-focus != DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
+		)
+
+		(defrule
+		(up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
+		(can-build archery-range)
+		(up-pending-objects c: archery-range < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		(goal g-game-focus DEFENSIVE)
+		=>
+		(up-set-placement-data my-player-number -1 c: -8)
+		)
+
+		(defrule
+		(up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
+		(can-build archery-range)
+		(up-pending-objects c: archery-range < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		=>
 		(up-modify-sn sn-placement-zone-size c:= 5)
 		(set-strategic-number sn-placement-fail-delta 0)
 		(up-assign-builders c: archery-range c: 1)
@@ -3027,11 +3276,29 @@
 		(up-pending-objects c: stable < 1)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
+		(set-goal i 573430)
+		(up-store-type-name c: stable)
+		; (up-chat-data-to-player my-player-number CHAT-BUILD-BACKUP-BUILDING c: 7031232)
+		)
+
+		(defrule
+		(goal i 573430)
+		(can-build-with-escrow stable)
+		(up-pending-objects c: stable < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		(up-compare-goal g-game-focus != DEFENSIVE)
+		=>
 		(up-set-placement-data my-player-number -1 c: 5)
-		(up-modify-sn sn-placement-zone-size c:= 5)
-		(set-strategic-number sn-placement-fail-delta 0)
-		(up-build place-control g-escrow c: stable)
-		(up-jump-direct g: g-place-forward-rule-id)
+		)
+
+		(defrule
+		(goal i 573430)
+		(can-build-with-escrow stable)
+		(up-pending-objects c: stable < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		(goal g-game-focus DEFENSIVE)
+		=>
+		(up-set-placement-data my-player-number -1 c: -8)
 		)
 
 		(defrule
@@ -3040,7 +3307,6 @@
 		(up-pending-objects c: stable < 1)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
-		(up-set-placement-data my-player-number -1 c: 5)
 		(up-modify-sn sn-placement-zone-size c:= 5)
 		(set-strategic-number sn-placement-fail-delta 0)
 		(up-build place-control g-escrow c: stable)
@@ -3053,8 +3319,27 @@
 		(can-build stable)
 		(up-pending-objects c: stable < 1)
 		(up-compare-goal g-place-forward-rule-id > 0)
+		(up-compare-goal g-game-focus != DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
+		)
+
+		(defrule
+		(up-object-type-count-total c: stable g:< g-desired-num-stable)
+		(can-build stable)
+		(up-pending-objects c: stable < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		(goal g-game-focus DEFENSIVE)
+		=>
+		(up-set-placement-data my-player-number -1 c: -8)
+		)
+
+		(defrule
+		(up-object-type-count-total c: stable g:< g-desired-num-stable)
+		(can-build stable)
+		(up-pending-objects c: stable < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		=>
 		(up-modify-sn sn-placement-zone-size c:= 5)
 		(set-strategic-number sn-placement-fail-delta 0)
 		(up-assign-builders c: stable c: 1)
@@ -3084,33 +3369,50 @@
 
 		(defrule
 		(up-object-type-count-total c: market g:< g-desired-num-market)
-		(wood-amount g:>= g-wood-cost)	;cost of town center
+		(or
+			(wood-amount g:>= g-wood-cost)	;cost of town center
+			(and
+				(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
+				(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)))
 		(building-type-count-total market == 0)
 		(can-build-with-escrow market)
 		(up-pending-objects c: market < 1)
 		(up-compare-goal g-place-forward-rule-id > 0)
+		(up-compare-goal g-game-focus != DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: -5)
-		(up-modify-sn sn-placement-zone-size c:= 5)
-		(set-strategic-number sn-placement-fail-delta -1)
-		(up-build place-control g-escrow c: market)
-		(up-jump-direct g: g-place-forward-rule-id)
-		(up-store-type-name c: market)
-		; (up-chat-data-to-player my-player-number CHAT-BUILD-BACKUP-BUILDING c: 7031232)
 		)
 
 		(defrule
 		(up-object-type-count-total c: market g:< g-desired-num-market)
-		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+		(or
+			(wood-amount g:>= g-wood-cost)	;cost of town center
+			(and
+				(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
+				(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)))
+		(building-type-count-total market == 0)
+		(can-build-with-escrow market)
+		(up-pending-objects c: market < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		(goal g-game-focus DEFENSIVE)
+		=>
+		(up-set-placement-data my-player-number -1 c: -8)
+		)
+
+		(defrule
+		(up-object-type-count-total c: market g:< g-desired-num-market)
+		(or
+			(wood-amount g:>= g-wood-cost)	;cost of town center
+			(and
+				(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
+				(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)))
 		(building-type-count-total market == 0)
 		(can-build-with-escrow market)
 		(up-pending-objects c: market < 1)
 		(up-compare-goal g-place-forward-rule-id > 0)
 		=>
-		(up-set-placement-data my-player-number -1 c: -5)
 		(up-modify-sn sn-placement-zone-size c:= 5)
-		(set-strategic-number sn-placement-fail-delta -1)
+		(set-strategic-number sn-placement-fail-delta 0)
 		(up-build place-control g-escrow c: market)
 		(up-jump-direct g: g-place-forward-rule-id)
 		(up-store-type-name c: market)
@@ -3163,8 +3465,37 @@
 		(can-build-with-escrow blacksmith)
 		(up-pending-objects c: blacksmith < 1)
 		(up-compare-goal g-place-forward-rule-id > 0)
+		(up-compare-goal g-game-focus != DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
+		)
+
+		(defrule
+		(up-object-type-count-total c: blacksmith g:< g-desired-num-blacksmith)
+		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
+		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+		(or
+			(goal g-desired-num-barracks 0)
+			(building-type-count-total barracks > 0))
+		(can-build-with-escrow blacksmith)
+		(up-pending-objects c: blacksmith < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		(goal g-game-focus DEFENSIVE)
+		=>
+		(up-set-placement-data my-player-number -1 c: -8)
+		)
+
+		(defrule
+		(up-object-type-count-total c: blacksmith g:< g-desired-num-blacksmith)
+		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
+		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+		(or
+			(goal g-desired-num-barracks 0)
+			(building-type-count-total barracks > 0))
+		(can-build-with-escrow blacksmith)
+		(up-pending-objects c: blacksmith < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		=>
 		(up-modify-sn sn-placement-zone-size c:= 5)
 		(set-strategic-number sn-placement-fail-delta 0)
 		(up-build place-control g-escrow c: blacksmith)
@@ -3281,9 +3612,31 @@
 			; (up-pending-objects c: house g:< g-temp)
 			(up-compare-goal g-temp-3 g:< g-temp)
 			(game-time > 5)
+			(up-compare-goal g-game-focus != DEFENSIVE)
 			=>
 			(up-set-placement-data my-player-number -1 c: 5)
 			(set-strategic-number sn-placement-fail-delta 0)
+			)
+
+			(defrule
+			(up-object-type-count-total c: house g:< g-desired-num-house)
+			(can-build-with-escrow house)
+			; (up-pending-objects c: house g:< g-temp)
+			(up-compare-goal g-temp-3 g:< g-temp)
+			(game-time > 5)
+			(goal g-game-focus DEFENSIVE)
+			=>
+			(up-set-placement-data my-player-number -1 c: -5)
+			(set-strategic-number sn-placement-fail-delta 0)
+			)
+
+			(defrule
+			(up-object-type-count-total c: house g:< g-desired-num-house)
+			(can-build-with-escrow house)
+			; (up-pending-objects c: house g:< g-temp)
+			(up-compare-goal g-temp-3 g:< g-temp)
+			(game-time > 5)
+			=>
 			(set-strategic-number sn-placement-zone-size 5)
 			(up-build place-control g-escrow c: house)
 			(up-store-type-name c: house)

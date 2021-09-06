@@ -2546,7 +2546,7 @@
 		=>
 		(up-modify-goal g-temp s:= custom-sn-peaceful-town-size)
 		(up-modify-goal g-temp c:min 40)
-		(up-modify-goal g-temp c:%* 125)	;increase distance to search for enemy buildings by 125% because custom-sn-peaceful-town-size...
+		(up-modify-goal g-temp c:%* 150)	;increase distance to search for enemy buildings by 150% because custom-sn-peaceful-town-size...
 		(up-full-reset-search)				;...is measured as a square around the TC, not a circle
 		(up-set-target-point g-position-self-x)	
 		(up-filter-distance c: -1 g: g-temp)	;search for buildings within custom-sn-peaceful-town-size
@@ -2566,7 +2566,7 @@
 		=>
 		(up-modify-goal g-temp s:= custom-sn-peaceful-town-size)
 		(up-modify-goal g-temp c:min 40)
-		(up-modify-goal g-temp c:%* 125)	
+		(up-modify-goal g-temp c:%* 150)	
 		(up-full-reset-search)
 		(up-set-target-point g-position-self-x)
 		(up-filter-distance c: -1 g: g-temp)
@@ -4305,7 +4305,7 @@
 		(up-set-target-point g-position-self-x)
 		(up-find-remote c: castle c: 40)
 		(up-find-remote c: krepost c: 40)
-		(up-find-remote c: bombard-tower c: 40)
+		(up-find-remote c: tower-class c: 40)
 		(up-clean-search search-remote -1 search-order-asc)
 		(up-clean-search search-remote object-data-distance search-order-asc)
 		)
@@ -17480,19 +17480,22 @@
 
 	(load "The General 3.1/Functions/Reset")
 
+	;g-temp = enemy military power inside town
+	;g-temp-2 = own military power
+
 	;Calculate attacking army parity
 	;Adjust for knights and skirmishers
 	(defrule
 	(true)
 	=>
 	(up-get-fact enemy-units-in-town 0 g-temp)
-	(up-get-fact unit-type-in-town knight-line g-temp-2)
-	(up-modify-goal g-temp-2 c:/ 2)
-	(up-modify-goal g-temp g:+ g-temp-2)			;treat enemy knights as 1.5 soldiers
-	(up-get-fact soldier-count 0 g-temp-3)
-	(up-get-fact unit-type-count knight-line g-temp-2)
-	(up-modify-goal g-temp-2 c:/ 2)
-	(up-modify-goal g-temp-3 g:+ g-temp-2)			;treat own knights as 1.5 soldiers
+	(up-get-fact unit-type-in-town knight-line g-temp-3)
+	(up-modify-goal g-temp-3 c:/ 2)
+	(up-modify-goal g-temp g:+ g-temp-3)			;treat enemy knights as 1.5 soldiers
+	(up-get-fact soldier-count 0 g-temp-2)
+	(up-get-fact unit-type-count knight-line g-temp-3)
+	(up-modify-goal g-temp-3 c:/ 2)
+	(up-modify-goal g-temp-2 g:+ g-temp-3)			;treat own knights as 1.5 soldiers
 	)
 
 	(defrule
@@ -17501,21 +17504,39 @@
 	(up-compare-goal g-primary-unit != hand-cannoneer)
 	(up-compare-goal g-primary-unit != slinger)
 	=>
-	(up-get-fact unit-type-in-town skirmisher-line g-temp-2)
-	(up-modify-goal g-temp-2 c:/ 2)
-	(up-modify-goal g-temp g:- g-temp-2)			;treat enemy skirmishers as 0.5 soldiers
+	(up-get-fact unit-type-in-town skirmisher-line g-temp-3)
+	(up-modify-goal g-temp-3 c:/ 2)
+	(up-modify-goal g-temp g:- g-temp-3)			;treat enemy skirmishers as 0.5 soldiers
 	)
 
-	;Garrison new units inside buildings
+	;Garrison new units inside buildings if we have small military
 	(defrule
-	(goal g-town-under-attack YES)
 	(goal g-gather-inside NO)
+	(goal g-attacking NO)
+	(or
+		(up-compare-goal g-enemy-units-in-town >= 4)
+		(goal g-enemy-units-in-town 0))
+	(soldier-count < 5)
+	=>
+	(set-goal g-gather-inside YES)
+	(up-gather-inside c: monastery c: 1)
+	(up-gather-inside c: barracks c: 1)
+	(up-gather-inside c: archery-range c: 1)
+	(up-gather-inside c: stable c: 1)
+	(up-gather-inside c: siege-workshop c: 1)
+	(up-gather-inside c: castle c: 1)
+	)
+
+	;Garrison new units inside buildings if we are attacked and outnumbered
+	(defrule
+	(goal g-gather-inside NO)
+	(goal g-town-under-attack YES)
 	(up-compare-goal g-enemy-units-in-town >= 6)
 	(soldier-count < 12)
 	(or
 		(up-compare-goal g-enemy-units-in-town >= 25)
 		(soldier-count < 8))
-	(up-compare-goal g-temp g:> g-temp-3)	;Enemy outnumbers us
+	(up-compare-goal g-temp g:> g-temp-2)	;Enemy outnumbers us
 	=>
 	(set-goal g-gather-inside YES)
 	(up-gather-inside c: monastery c: 1)
@@ -17531,21 +17552,21 @@
 	(defrule
 	(true)
 	=>
-	(up-get-fact building-type-count monastery g-temp)
-	(up-get-fact building-type-count barracks g-temp-2)
-	(up-modify-goal g-temp g:+ g-temp-2)
-	(up-get-fact building-type-count archery-range g-temp-2)
-	(up-modify-goal g-temp g:+ g-temp-2)
-	(up-get-fact building-type-count stable g-temp-2)
-	(up-modify-goal g-temp g:+ g-temp-2)
-	(up-get-fact building-type-count siege-workshop g-temp-2)
-	(up-modify-goal g-temp g:+ g-temp-2)
-	(up-get-fact building-type-count castle g-temp-2)
-	(up-modify-goal g-temp g:+ g-temp-2)
+	(up-get-fact building-type-count monastery g-temp-3)
+	(up-get-fact building-type-count barracks g-temp-4)
+	(up-modify-goal g-temp-3 g:+ g-temp-4)
+	(up-get-fact building-type-count archery-range g-temp-4)
+	(up-modify-goal g-temp-3 g:+ g-temp-4)
+	(up-get-fact building-type-count stable g-temp-4)
+	(up-modify-goal g-temp-3 g:+ g-temp-4)
+	(up-get-fact building-type-count siege-workshop g-temp-4)
+	(up-modify-goal g-temp-3 g:+ g-temp-4)
+	(up-get-fact building-type-count castle g-temp-4)
+	(up-modify-goal g-temp-3 g:+ g-temp-4)
 	)
 
 	(defrule
-	(up-compare-goal g-temp g:!= g-previous-garrisonable-building-count)	;the number of garrisonable buildings has changed, reset gather points
+	(up-compare-goal g-temp-3 g:!= g-previous-garrisonable-building-count)	;the number of garrisonable buildings has changed, reset gather points
 	(goal g-gather-inside YES)
 	=>
 	(up-gather-inside c: monastery c: 1)
@@ -17557,66 +17578,45 @@
 	)
 
 	;Ungarrison
-
-	;Calculate attacking army parity
-	;Adjust for knights and skirmishers
 	(defrule
-	(true)
-	=>
-	(up-get-fact enemy-units-in-town 0 g-temp)
-	(up-get-fact unit-type-in-town knight-line g-temp-2)
-	(up-modify-goal g-temp-2 c:/ 2)
-	(up-modify-goal g-temp g:+ g-temp-2)			;treat enemy knights as 1.5 soldiers
-	(up-get-fact soldier-count 0 g-temp-3)
-	(up-get-fact unit-type-count knight-line g-temp-2)
-	(up-modify-goal g-temp-2 c:/ 2)
-	(up-modify-goal g-temp-3 g:+ g-temp-2)			;treat own knights as 1.5 soldiers
-	)
-
-	(defrule
-	(up-compare-goal g-primary-unit != archer)
-	(up-compare-goal g-primary-unit != cavalry-archer)
-	(up-compare-goal g-primary-unit != hand-cannoneer)
-	(up-compare-goal g-primary-unit != slinger)
-	=>
-	(up-get-fact unit-type-in-town skirmisher-line g-temp-2)
-	(up-modify-goal g-temp-2 c:/ 2)
-	(up-modify-goal g-temp g:- g-temp-2)			;treat enemy skirmishers as 0.5 soldiers
-	)
-
-	(defrule
-	(goal g-gather-inside YES)
+	(goal g-attacking NO)
 	(or
-		(goal g-town-under-attack NO)
-		(or
-			(up-compare-goal g-enemy-units-in-town < 6)
-			(up-compare-goal g-temp g:<= g-temp-3)))	;Enemy no longer outnumbers us
+		(up-compare-goal g-enemy-units-in-town >= 4)
+		(goal g-enemy-units-in-town 0))
+	(soldier-count < 5)
 	=>
-	(set-goal g-gather-inside NO)
-	(up-gather-inside c: barracks c: 0)
-	(up-gather-inside c: archery-range c: 0)
-	(up-gather-inside c: stable c: 0)
-	(up-gather-inside c: siege-workshop c: 0)
-	(up-gather-inside c: castle c: 0)
-	(up-gather-inside c: monastery c: 0)
+	(up-jump-rule 2)
+	)
+	
+	(defrule
+	(goal g-town-under-attack YES)
+	(up-compare-goal g-enemy-units-in-town >= 6)
+	(soldier-count < 12)
+	(or
+		(up-compare-goal g-enemy-units-in-town >= 25)
+		(soldier-count < 8))
+	(up-compare-goal g-temp g:> g-temp-2)	;Enemy outnumbers us
+	=>
+	(up-jump-rule 1)
 	)
 
-	(defrule
-	(goal g-gather-inside YES)
-	(or
-		(soldier-count >= 12)
-		(and
-			(up-compare-goal g-enemy-units-in-town < 25)
-			(soldier-count >= 8)))
-	=>
-	(set-goal g-gather-inside NO)
-	(up-gather-inside c: barracks c: 0)
-	(up-gather-inside c: archery-range c: 0)
-	(up-gather-inside c: stable c: 0)
-	(up-gather-inside c: siege-workshop c: 0)
-	(up-gather-inside c: castle c: 0)
-	(up-gather-inside c: monastery c: 0)
-	)
+		(defrule
+		(goal g-gather-inside YES)
+		=>
+		(set-goal g-gather-inside NO)
+		(up-gather-inside c: barracks c: 0)
+		(up-gather-inside c: archery-range c: 0)
+		(up-gather-inside c: stable c: 0)
+		(up-gather-inside c: siege-workshop c: 0)
+		(up-gather-inside c: castle c: 0)
+		(up-gather-inside c: monastery c: 0)
+		(up-ungarrison c: barracks)
+		(up-ungarrison c: archery-range)
+		(up-ungarrison c: stable)
+		(up-ungarrison c: siege-workshop)
+		(up-ungarrison c: castle)
+		(up-ungarrison c: monastery)
+		)
 	
 	(defrule
 	(goal g-gather-inside YES)

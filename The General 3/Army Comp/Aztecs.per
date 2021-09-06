@@ -32,666 +32,687 @@
 ;   Eagle Warrior Strats
 ;--------------------------
 
-    ;Defense
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (current-age >= castle-age)
-    (goal g-primary-unit eagle-warrior)
-    (military-population g:< g-min-military-pop)
-    (up-compare-goal g-enemy-swordsmen-count > 5)
-    (goal g-primary-enemy-threat g-enemy-swordsmen-count)
-    =>
-    (up-modify-goal g-desired-num-archer c:max 6)
-    )
+    ;-------------
+    ;   Defense
+    ;-------------
 
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (current-age >= castle-age)
-    (goal g-primary-unit eagle-warrior)
-    (military-population g:< g-min-military-pop)
-    (or
-        (up-compare-goal g-enemy-heavy-cavalry-count > 4)
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (current-age >= castle-age)
+        (goal g-primary-unit eagle-warrior)
+        (military-population g:< g-min-military-pop)
+        (up-compare-goal g-enemy-swordsmen-count > 5)
+        (goal g-primary-enemy-threat g-enemy-swordsmen-count)
+        =>
+        (up-modify-goal g-desired-num-archer c:max 6)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (current-age >= castle-age)
+        (goal g-primary-unit eagle-warrior)
+        (military-population g:< g-min-military-pop)
         (or
-            (up-compare-goal g-enemy-camel-count > 6)
-            (up-compare-goal g-enemy-elephants-count > 2)))
-    (or
-        (goal g-primary-enemy-threat g-enemy-heavy-cavalry-count)
-        (or
-            (goal g-primary-enemy-threat g-enemy-camel-count)
-            (goal g-primary-enemy-threat g-enemy-elephants-count)))
-    =>
-    (up-modify-goal g-desired-num-spearman c:max 6)
-    )
-
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (current-age >= castle-age)
-    (goal g-primary-unit eagle-warrior)
-    (military-population g:< g-min-military-pop)
-    (up-compare-goal g-enemy-eagle-warrior-count > 6)
-    (goal g-primary-enemy-threat g-enemy-eagle-warrior-count)
-    =>
-    (up-modify-goal g-desired-num-militia c:max 6)
-    )
-
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (current-age >= castle-age)
-    (goal g-primary-unit eagle-warrior)
-    (military-population g:< g-min-military-pop)
-    (up-compare-goal g-enemy-elephants-count > 2)
-    (goal g-primary-enemy-threat g-enemy-elephants-count)
-    =>
-    (up-modify-goal g-desired-num-monk c:max 2)
-    )
-
-    ;Mid Castle
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDC-EAGLES)
-    (goal g-support-unit 0)
-    (goal g-position FLANK)
-    (or
-        (up-compare-goal g-enemy-light-cavalry-count > 12)
-        (or
-            (up-compare-goal g-enemy-heavy-cavalry-count > 8)
+            (up-compare-goal g-enemy-heavy-cavalry-count > 4)
             (or
-                (up-compare-goal g-enemy-elephants-count > 5)
-                (and
-                    (up-compare-goal g-enemy-special-unique-unit-count > 8)
-                    (up-compare-flag g-enemy-special-unique-unit-flag == LEITIS-FLAG)))))
-    =>
-    (set-goal g-support-unit spearman)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDC-EAGLES)
-    (goal g-support-unit 0)
-    (goal g-position FLANK)
-    (military-population < 12)
-    (or
-        (up-compare-goal g-enemy-light-cavalry-count > 8)
+                (up-compare-goal g-enemy-camel-count > 6)
+                (up-compare-goal g-enemy-elephants-count > 2)))
         (or
-            (up-compare-goal g-enemy-heavy-cavalry-count > 5)
+            (goal g-primary-enemy-threat g-enemy-heavy-cavalry-count)
             (or
-                (up-compare-goal g-enemy-elephants-count > 3)
-                (and
-                    (up-compare-goal g-enemy-special-unique-unit-count > 5)
-                    (up-compare-flag g-enemy-special-unique-unit-flag == LEITIS-FLAG)))))
-    =>
-    (set-goal g-support-unit spearman)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDC-EAGLES)
-    (goal g-support-unit spearman)
-    (goal g-position FLANK)
-    =>
-    (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
-    (up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-spearman c:%* 35)
-    )
-    
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDC-EAGLES)
-    (goal g-support-unit 0)
-    (goal g-position FLANK)
-    (or
-        (up-compare-goal g-enemy-foot-archers-count > 10)
-        (or
-            (up-compare-goal g-enemy-cavalry-archers-count > 8)
-            (up-compare-goal g-enemy-hand-cannoneer-slinger-count > 8)))
-    =>
-    (set-goal g-support-unit skirmisher)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDC-EAGLES)
-    (goal g-support-unit 0)
-    (goal g-position FLANK)
-    (military-population < 12)
-    (or
-        (up-compare-goal g-enemy-foot-archers-count > 6)
-        (or
-            (up-compare-goal g-enemy-cavalry-archers-count > 5)
-            (up-compare-goal g-enemy-hand-cannoneer-slinger-count > 5)))
-    =>
-    (set-goal g-support-unit skirmisher)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDC-EAGLES)
-    (goal g-support-unit 0)
-    (goal g-position FLANK)
-    (or
-        (up-compare-goal g-enemy-special-unique-unit-count > 8)
-        (and
-            (up-compare-goal g-enemy-special-unique-unit-count > 5)
-            (military-population < 12)))
-    (or
-        (up-compare-flag g-enemy-special-unique-unit-flag == CAMEL-ARCHER-FLAG)
-        (up-compare-flag g-enemy-special-unique-unit-flag == MAMELUKE-FLAG))
-    =>
-    (set-goal g-support-unit skirmisher)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDC-EAGLES)
-    (goal g-support-unit skirmisher)
-    (goal g-position FLANK)
-    =>
-    (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
-    (up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-skirmisher c:%* 35)
-    )
+                (goal g-primary-enemy-threat g-enemy-camel-count)
+                (goal g-primary-enemy-threat g-enemy-elephants-count)))
+        =>
+        (up-modify-goal g-desired-num-spearman c:max 6)
+        )
 
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDC-EAGLES)
-    (goal g-support-unit 0)
-    (goal g-position FLANK)
-    (building-type-count castle > 0)
-    (or
-        (up-compare-goal g-enemy-swordsmen-count > 6)
-        (or
-            (up-compare-goal g-enemy-eagle-warrior-count > 6)
-            (up-compare-goal g-enemy-condottiero-count > 6)))
-    =>
-    (set-goal g-support-unit my-unique-unit)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDC-EAGLES)
-    (goal g-support-unit 0)
-    (goal g-position FLANK)
-    (building-type-count castle > 0)
-    (or
-        (up-compare-goal g-enemy-special-unique-unit-count > 6)
-        (and
-            (up-compare-goal g-enemy-special-unique-unit-count > 3)
-            (military-population < 12)))
-    (or
-        (up-compare-flag g-enemy-special-unique-unit-flag == TEUTONIC-KNIGHT-FLAG)
-        (up-compare-flag g-enemy-special-unique-unit-flag == HUSKARL-FLAG))
-    =>
-    (set-goal g-support-unit my-unique-unit)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDC-EAGLES)
-    (goal g-support-unit my-unique-unit)
-    (goal g-position FLANK)
-    =>
-    (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
-    (up-modify-goal g-desired-num-unique-unit g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-unique-unit c:%* 35)
-    )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (current-age >= castle-age)
+        (goal g-primary-unit eagle-warrior)
+        (military-population g:< g-min-military-pop)
+        (up-compare-goal g-enemy-eagle-warrior-count > 6)
+        (goal g-primary-enemy-threat g-enemy-eagle-warrior-count)
+        =>
+        (up-modify-goal g-desired-num-militia c:max 6)
+        )
 
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDC-EAGLES)
-    (goal g-support-unit 0)
-    (goal g-position FLANK)
-    (up-compare-goal g-enemy-eagle-warrior-count > 8)
-    =>
-    (set-goal g-support-unit militiaman)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDC-EAGLES)
-    (goal g-support-unit militiaman)
-    (goal g-position FLANK)
-    =>
-    (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
-    (up-modify-goal g-desired-num-militia g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-militia c:%* 35)
-    )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (current-age >= castle-age)
+        (goal g-primary-unit eagle-warrior)
+        (military-population g:< g-min-military-pop)
+        (up-compare-goal g-enemy-elephants-count > 2)
+        (goal g-primary-enemy-threat g-enemy-elephants-count)
+        =>
+        (up-modify-goal g-desired-num-monk c:max 2)
+        )
 
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDC-EAGLES)
-    (goal g-support-unit 0)
-    (goal g-position FLANK)
-    (or
-        (up-compare-goal g-enemy-swordsmen-count > 6)
-        (population >= 75))
-    =>
-    (set-goal g-support-unit archer)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDC-EAGLES)
-    (goal g-support-unit 0)
-    (goal g-position FLANK)
-    (or
-        (up-compare-goal g-enemy-special-unique-unit-count > 6)
-        (and
-            (up-compare-goal g-enemy-special-unique-unit-count > 3)
-            (military-population < 12)))
-    (or
-        (up-compare-flag g-enemy-special-unique-unit-flag == CATAPHRACT-FLAG)
-        (or
-            (up-compare-flag g-enemy-special-unique-unit-flag == TEUTONIC-KNIGHT-FLAG)
-            (up-compare-flag g-enemy-special-unique-unit-flag == JAGUAR-WARRIOR-FLAG)))
-    =>
-    (set-goal g-support-unit archer)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDC-EAGLES)
-    (goal g-support-unit archer)
-    (goal g-position FLANK)
-    =>
-    (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
-    (up-modify-goal g-desired-num-archer g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-archer c:%* 35)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDC-EAGLES)
-    (goal g-support-unit archer)
-    (goal g-position FLANK)
-    (up-compare-goal g-enemy-special-unique-unit-count > 6)
-    (or
-        (up-compare-flag g-enemy-special-unique-unit-flag == CATAPHRACT-FLAG)
-        (or
-            (up-compare-flag g-enemy-special-unique-unit-flag == TEUTONIC-KNIGHT-FLAG)
-            (up-compare-flag g-enemy-special-unique-unit-flag == JAGUAR-WARRIOR-FLAG)))
-    =>
-    (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-eagle-warrior c:%* 40)
-    (up-modify-goal g-desired-num-archer g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-archer c:%* 60)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDC-EAGLES)
-    (goal g-support-unit archer)
-    (goal g-position FLANK)
-    (up-compare-goal g-enemy-special-unique-unit-count > 3)
-    (military-population < 12)
-    (or
-        (up-compare-flag g-enemy-special-unique-unit-flag == CATAPHRACT-FLAG)
-        (or
-            (up-compare-flag g-enemy-special-unique-unit-flag == TEUTONIC-KNIGHT-FLAG)
-            (up-compare-flag g-enemy-special-unique-unit-flag == JAGUAR-WARRIOR-FLAG)))
-    =>
-    (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-eagle-warrior c:%* 40)
-    (up-modify-goal g-desired-num-archer g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-archer c:%* 60)
-    )
+    ;----------------
+    ;   Mid Castle
+    ;----------------
 
-    ;Early Imp
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy EARLYI-EL-DORADO)
-    (goal g-support-unit 0)
-    (up-compare-goal g-spearman-tech-progress >= PRIORITY-CASTLE-COMPLETE)
-    (or
-        (up-compare-goal g-enemy-light-cavalry-count > 12)
+        ;Select support unit
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
         (or
-            (up-compare-goal g-enemy-heavy-cavalry-count > 8)
+            (goal g-support-unit 0)
+            (goal g-support-unit skirmisher))
+        (goal g-position FLANK)
+        (or
+            (up-compare-goal g-enemy-light-cavalry-count > 12)
             (or
-                (up-compare-goal g-enemy-elephants-count > 5)
-                (and
-                    (up-compare-goal g-enemy-special-unique-unit-count > 8)
-                    (up-compare-flag g-enemy-special-unique-unit-flag == LEITIS-FLAG)))))
-    =>
-    (set-goal g-support-unit spearman)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy EARLYI-EL-DORADO)
-    (goal g-support-unit 0)
-    (up-compare-goal g-spearman-tech-progress >= PRIORITY-CASTLE-COMPLETE)
-    (military-population < 12)
-    (or
-        (up-compare-goal g-enemy-light-cavalry-count > 8)
+                (up-compare-goal g-enemy-heavy-cavalry-count > 8)
+                (or
+                    (up-compare-goal g-enemy-elephants-count > 5)
+                    (and
+                        (up-compare-goal g-enemy-special-unique-unit-count > 8)
+                        (up-compare-flag g-enemy-special-unique-unit-flag == LEITIS-FLAG)))))
+        =>
+        (set-goal g-support-unit spearman)
+        )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
         (or
-            (up-compare-goal g-enemy-heavy-cavalry-count > 5)
+            (goal g-support-unit 0)
+            (goal g-support-unit skirmisher))
+        (goal g-position FLANK)
+        (military-population < 12)
+        (or
+            (up-compare-goal g-enemy-light-cavalry-count > 8)
             (or
-                (up-compare-goal g-enemy-elephants-count > 3)
-                (and
-                    (up-compare-goal g-enemy-special-unique-unit-count > 5)
-                    (up-compare-flag g-enemy-special-unique-unit-flag == LEITIS-FLAG)))))
-    =>
-    (set-goal g-support-unit spearman)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy EARLYI-EL-DORADO)
-    (goal g-support-unit spearman)
-    =>
-    (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-eagle-warrior c:%* 75)
-    (up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-spearman c:%* 25)
-    )
+                (up-compare-goal g-enemy-heavy-cavalry-count > 5)
+                (or
+                    (up-compare-goal g-enemy-elephants-count > 3)
+                    (and
+                        (up-compare-goal g-enemy-special-unique-unit-count > 5)
+                        (up-compare-flag g-enemy-special-unique-unit-flag == LEITIS-FLAG)))))
+        =>
+        (set-goal g-support-unit spearman)
+        )
 
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy EARLYI-EL-DORADO)
-    (goal g-support-unit 0)
-    (up-compare-goal g-unique-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)
-    (building-type-count castle > 0)
-    (or
-        (up-compare-goal g-enemy-swordsmen-count > 6)
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
         (or
-            (up-compare-goal g-enemy-eagle-warrior-count > 6)
-            (up-compare-goal g-enemy-condottiero-count > 6)))
-    =>
-    (set-goal g-support-unit my-unique-unit)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy EARLYI-EL-DORADO)
-    (goal g-support-unit 0)
-    (up-compare-goal g-unique-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)
-    (building-type-count castle > 0)
-    (or
-        (up-compare-goal g-enemy-special-unique-unit-count > 6)
-        (and
-            (up-compare-goal g-enemy-special-unique-unit-count > 3)
-            (military-population < 12)))
-    (or
-        (up-compare-flag g-enemy-special-unique-unit-flag == TEUTONIC-KNIGHT-FLAG)
-        (up-compare-flag g-enemy-special-unique-unit-flag == HUSKARL-FLAG))
-    =>
-    (set-goal g-support-unit my-unique-unit)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy EARLYI-EL-DORADO)
-    (goal g-support-unit my-unique-unit)
-    =>
-    (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
-    (up-modify-goal g-desired-num-unique-unit g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-unique-unit c:%* 35)
-    )
-
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy EARLYI-EL-DORADO)
-    (goal g-support-unit 0)
-    (up-compare-goal g-militia-tech-progress >= PRIORITY-CASTLE-COMPLETE)
-    (up-compare-goal g-enemy-eagle-warrior-count > 6)
-    =>
-    (set-goal g-support-unit militiaman)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy EARLYI-EL-DORADO)
-    (goal g-support-unit militiaman)
-    =>
-    (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
-    (up-modify-goal g-desired-num-militia g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-militia c:%* 35)
-    )
-
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy EARLYI-EL-DORADO)
-    (goal g-support-unit 0)
-    (up-compare-goal g-archer-tech-progress >= PRIORITY-CASTLE-COMPLETE)
-    (up-compare-goal g-enemy-swordsmen-count > 6)
-    =>
-    (set-goal g-support-unit archer)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy EARLYI-EL-DORADO)
-    (goal g-support-unit 0)
-    (up-compare-goal g-archer-tech-progress >= PRIORITY-CASTLE-COMPLETE)
-    (or
-        (up-compare-goal g-enemy-special-unique-unit-count > 6)
-        (and
-            (up-compare-goal g-enemy-special-unique-unit-count > 3)
-            (military-population < 12)))
-    (or
-        (up-compare-flag g-enemy-special-unique-unit-flag == CATAPHRACT-FLAG)
+            (goal g-support-unit 0)
+            (goal g-support-unit archer))
+        (goal g-position FLANK)
         (or
-            (up-compare-flag g-enemy-special-unique-unit-flag == TEUTONIC-KNIGHT-FLAG)
-            (up-compare-flag g-enemy-special-unique-unit-flag == JAGUAR-WARRIOR-FLAG)))
-    =>
-    (set-goal g-support-unit archer)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy EARLYI-EL-DORADO)
-    (goal g-support-unit archer)
-    =>
-    (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-eagle-warrior c:%* 75)
-    (up-modify-goal g-desired-num-archer g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-archer c:%* 25)
-    )
-
-    ;Mid Imp
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDI-EAGLES)
-    (goal g-support-unit 0)
-    (goal g-position FLANK)
-    (or
-        (up-compare-goal g-enemy-heavy-cavalry-count > 8)
+            (up-compare-goal g-enemy-foot-archers-count > 10)
+            (or
+                (up-compare-goal g-enemy-cavalry-archers-count > 8)
+                (up-compare-goal g-enemy-hand-cannoneer-slinger-count > 8)))
+        =>
+        (set-goal g-support-unit skirmisher)
+        )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
         (or
-            (up-compare-goal g-enemy-elephants-count > 5)
-            (and
-                (up-compare-goal g-enemy-special-unique-unit-count > 8)
-                (up-compare-flag g-enemy-special-unique-unit-flag == LEITIS-FLAG))))
-    =>
-    (set-goal g-support-unit spearman)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDI-EAGLES)
-    (goal g-support-unit 0)
-    (goal g-position FLANK)
-    (military-population < 12)
-    (or
-        (up-compare-goal g-enemy-heavy-cavalry-count > 5)
+            (goal g-support-unit 0)
+            (goal g-support-unit archer))
+        (goal g-position FLANK)
+        (military-population < 12)
         (or
-            (up-compare-goal g-enemy-elephants-count > 3)
+            (up-compare-goal g-enemy-foot-archers-count > 6)
+            (or
+                (up-compare-goal g-enemy-cavalry-archers-count > 5)
+                (up-compare-goal g-enemy-hand-cannoneer-slinger-count > 5)))
+        =>
+        (set-goal g-support-unit skirmisher)
+        )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
+        (goal g-support-unit 0)
+        (goal g-position FLANK)
+        (or
+            (up-compare-goal g-enemy-special-unique-unit-count > 8)
             (and
                 (up-compare-goal g-enemy-special-unique-unit-count > 5)
-                (up-compare-flag g-enemy-special-unique-unit-flag == LEITIS-FLAG))))
-    =>
-    (set-goal g-support-unit spearman)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDI-EAGLES)
-    (goal g-support-unit spearman)
-    (goal g-position FLANK)
-    =>
-    (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
-    (up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-spearman c:%* 35)
-    )
-
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDI-EAGLES)
-    (goal g-support-unit 0)
-    (building-type-count castle > 0)
-    (or
-        (up-compare-goal g-enemy-swordsmen-count > 6)
+                (military-population < 12)))
         (or
-            (up-compare-goal g-enemy-eagle-warrior-count > 6)
-            (up-compare-goal g-enemy-condottiero-count > 6)))
-    =>
-    (set-goal g-support-unit my-unique-unit)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDI-EAGLES)
-    (goal g-support-unit 0)
-    (building-type-count castle > 0)
-    (or
+            (up-compare-flag g-enemy-special-unique-unit-flag == CAMEL-ARCHER-FLAG)
+            (up-compare-flag g-enemy-special-unique-unit-flag == MAMELUKE-FLAG))
+        =>
+        (set-goal g-support-unit skirmisher)
+        )
+        
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
+        (goal g-support-unit 0)
+        (goal g-position FLANK)
+        (building-type-count castle > 0)
+        (or
+            (up-compare-goal g-enemy-swordsmen-count > 6)
+            (or
+                (up-compare-goal g-enemy-eagle-warrior-count > 6)
+                (up-compare-goal g-enemy-condottiero-count > 6)))
+        =>
+        (set-goal g-support-unit my-unique-unit)
+        )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
+        (goal g-support-unit 0)
+        (goal g-position FLANK)
+        (building-type-count castle > 0)
+        (or
+            (up-compare-goal g-enemy-special-unique-unit-count > 6)
+            (and
+                (up-compare-goal g-enemy-special-unique-unit-count > 3)
+                (military-population < 12)))
+        (or
+            (up-compare-flag g-enemy-special-unique-unit-flag == TEUTONIC-KNIGHT-FLAG)
+            (up-compare-flag g-enemy-special-unique-unit-flag == HUSKARL-FLAG))
+        =>
+        (set-goal g-support-unit my-unique-unit)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
+        (or
+            (goal g-support-unit 0)
+            (goal g-support-unit skirmisher))
+        (goal g-position FLANK)
+        (up-compare-goal g-enemy-eagle-warrior-count > 8)
+        =>
+        (set-goal g-support-unit militiaman)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
+        (goal g-support-unit 0)
+        (goal g-position FLANK)
+        (or
+            (up-compare-goal g-enemy-swordsmen-count > 6)
+            (population >= 75))
+        =>
+        (set-goal g-support-unit archer)
+        )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
+        (goal g-support-unit 0)
+        (goal g-position FLANK)
+        (or
+            (up-compare-goal g-enemy-special-unique-unit-count > 6)
+            (and
+                (up-compare-goal g-enemy-special-unique-unit-count > 3)
+                (military-population < 12)))
+        (or
+            (up-compare-flag g-enemy-special-unique-unit-flag == CATAPHRACT-FLAG)
+            (or
+                (up-compare-flag g-enemy-special-unique-unit-flag == TEUTONIC-KNIGHT-FLAG)
+                (up-compare-flag g-enemy-special-unique-unit-flag == JAGUAR-WARRIOR-FLAG)))
+        =>
+        (set-goal g-support-unit archer)
+        )
+
+        ;Modify unit counts
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
+        (goal g-support-unit militiaman)
+        (goal g-position FLANK)
+        =>
+        (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
+        (up-modify-goal g-desired-num-militia g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-militia c:%* 35)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
+        (goal g-support-unit spearman)
+        (goal g-position FLANK)
+        =>
+        (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
+        (up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-spearman c:%* 35)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
+        (goal g-support-unit archer)
+        (goal g-position FLANK)
+        =>
+        (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
+        (up-modify-goal g-desired-num-archer g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-archer c:%* 35)
+        )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
+        (goal g-support-unit archer)
+        (goal g-position FLANK)
         (up-compare-goal g-enemy-special-unique-unit-count > 6)
-        (and
-            (up-compare-goal g-enemy-special-unique-unit-count > 3)
-            (military-population < 12)))
-    (or
-        (up-compare-flag g-enemy-special-unique-unit-flag == TEUTONIC-KNIGHT-FLAG)
-        (up-compare-flag g-enemy-special-unique-unit-flag == HUSKARL-FLAG))
-    =>
-    (set-goal g-support-unit my-unique-unit)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDI-EAGLES)
-    (goal g-support-unit my-unique-unit)
-    =>
-    (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-eagle-warrior c:%* 50)
-    (up-modify-goal g-desired-num-unique-unit g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-unique-unit c:%* 50)
-    )
+        (or
+            (up-compare-flag g-enemy-special-unique-unit-flag == CATAPHRACT-FLAG)
+            (or
+                (up-compare-flag g-enemy-special-unique-unit-flag == TEUTONIC-KNIGHT-FLAG)
+                (up-compare-flag g-enemy-special-unique-unit-flag == JAGUAR-WARRIOR-FLAG)))
+        =>
+        (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-eagle-warrior c:%* 40)
+        (up-modify-goal g-desired-num-archer g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-archer c:%* 60)
+        )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
+        (goal g-support-unit archer)
+        (goal g-position FLANK)
+        (up-compare-goal g-enemy-special-unique-unit-count > 3)
+        (military-population < 12)
+        (or
+            (up-compare-flag g-enemy-special-unique-unit-flag == CATAPHRACT-FLAG)
+            (or
+                (up-compare-flag g-enemy-special-unique-unit-flag == TEUTONIC-KNIGHT-FLAG)
+                (up-compare-flag g-enemy-special-unique-unit-flag == JAGUAR-WARRIOR-FLAG)))
+        =>
+        (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-eagle-warrior c:%* 40)
+        (up-modify-goal g-desired-num-archer g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-archer c:%* 60)
+        )
+        
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
+        (goal g-support-unit skirmisher)
+        (goal g-position FLANK)
+        =>
+        (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
+        (up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-skirmisher c:%* 35)
+        )
 
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDI-EAGLES)
-    (goal g-support-unit 0)
-    (goal g-position FLANK)
-    (or
-        (up-compare-goal g-enemy-foot-archers-count > 15)
-        (and
-            (military-population < 20)
-            (up-compare-goal g-enemy-foot-archers-count > 8)))
-    =>
-    (set-goal g-support-unit skirmisher)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDI-EAGLES)
-    (goal g-support-unit skirmisher)
-    (goal g-position FLANK)
-    (or
-        (up-compare-goal g-enemy-foot-archers-count > 15)
-        (and
-            (military-population < 20)
-            (up-compare-goal g-enemy-foot-archers-count > 8)))
-    =>
-    (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-eagle-warrior c:%* 75)
-    (up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-skirmisher c:%* 25)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDI-EAGLES)
-    (goal g-support-unit 0)
-    (goal g-position FLANK)
-    (or
-        (up-compare-goal g-enemy-cavalry-archers-count > 15)
-        (and
-            (military-population < 20)
-            (up-compare-goal g-enemy-cavalry-archers-count > 8)))
-    =>
-    (set-goal g-support-unit skirmisher)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDI-EAGLES)
-    (goal g-support-unit skirmisher)
-    (goal g-position FLANK)
-    (or
-        (up-compare-goal g-enemy-cavalry-archers-count > 15)
-        (and
-            (military-population < 20)
-            (up-compare-goal g-enemy-cavalry-archers-count > 8)))
-    =>
-    (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
-    (up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-skirmisher c:%* 35)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDI-EAGLES)
-    (goal g-support-unit 0)
-    (goal g-position FLANK)
-    (or
-        (up-compare-goal g-enemy-special-unique-unit-count > 8)
-        (and
-            (up-compare-goal g-enemy-special-unique-unit-count > 5)
-            (military-population < 12)))
-    (or
-        (up-compare-flag g-enemy-special-unique-unit-flag == GENOESE-CROSSBOWMAN-FLAG)
-        (up-compare-flag g-enemy-special-unique-unit-flag == MAMELUKE-FLAG))
-    =>
-    (set-goal g-support-unit skirmisher)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDI-EAGLES)
-    (goal g-support-unit skirmisher)
-    (goal g-position FLANK)
-    (or
-        (up-compare-goal g-enemy-special-unique-unit-count > 8)
-        (and
-            (up-compare-goal g-enemy-special-unique-unit-count > 5)
-            (military-population < 12)))
-    (or
-        (up-compare-flag g-enemy-special-unique-unit-flag == GENOESE-CROSSBOWMAN-FLAG)
-        (up-compare-flag g-enemy-special-unique-unit-flag == MAMELUKE-FLAG))
-    =>
-    (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-eagle-warrior c:%* 70)
-    (up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-skirmisher c:%* 30)
-    )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-EAGLES)
+        (goal g-support-unit my-unique-unit)
+        (goal g-position FLANK)
+        =>
+        (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
+        (up-modify-goal g-desired-num-unique-unit g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-unique-unit c:%* 35)
+        )
 
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDI-EAGLES)
-    (goal g-support-unit 0)
-    (building-type-count castle == 0)
-    (up-compare-goal g-enemy-eagle-warrior-count > 8)
-    =>
-    (set-goal g-support-unit militiaman)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDI-EAGLES)
-    (goal g-support-unit militiaman)
-    =>
-    (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
-    (up-modify-goal g-desired-num-militia g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-militia c:%* 35)
-    )
+    ;---------------
+    ;   Early Imp
+    ;---------------
 
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDI-EAGLES)
-    (goal g-support-unit 0)
-    (goal g-position FLANK)
-    =>
-    (set-goal g-support-unit archer)
-    )
-    (defrule
-    (up-compare-goal g-desired-num-military > 0)
-    (goal g-current-strategy MIDI-EAGLES)
-    (goal g-support-unit archer)
-    (goal g-position FLANK)
-    =>
-    (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
-    (up-modify-goal g-desired-num-archer g:= g-desired-num-military)
-    (up-modify-goal g-desired-num-archer c:%* 35)
-    )
+        ;Select support unit
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy EARLYI-EL-DORADO)
+        (goal g-support-unit 0)
+        (up-compare-goal g-spearman-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+        (or
+            (up-compare-goal g-enemy-light-cavalry-count > 12)
+            (or
+                (up-compare-goal g-enemy-heavy-cavalry-count > 8)
+                (or
+                    (up-compare-goal g-enemy-elephants-count > 5)
+                    (and
+                        (up-compare-goal g-enemy-special-unique-unit-count > 8)
+                        (up-compare-flag g-enemy-special-unique-unit-flag == LEITIS-FLAG)))))
+        =>
+        (set-goal g-support-unit spearman)
+        )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy EARLYI-EL-DORADO)
+        (goal g-support-unit 0)
+        (up-compare-goal g-spearman-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+        (military-population < 12)
+        (or
+            (up-compare-goal g-enemy-light-cavalry-count > 8)
+            (or
+                (up-compare-goal g-enemy-heavy-cavalry-count > 5)
+                (or
+                    (up-compare-goal g-enemy-elephants-count > 3)
+                    (and
+                        (up-compare-goal g-enemy-special-unique-unit-count > 5)
+                        (up-compare-flag g-enemy-special-unique-unit-flag == LEITIS-FLAG)))))
+        =>
+        (set-goal g-support-unit spearman)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy EARLYI-EL-DORADO)
+        (goal g-support-unit 0)
+        (up-compare-goal g-unique-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+        (building-type-count castle > 0)
+        (or
+            (up-compare-goal g-enemy-swordsmen-count > 6)
+            (or
+                (up-compare-goal g-enemy-eagle-warrior-count > 6)
+                (up-compare-goal g-enemy-condottiero-count > 6)))
+        =>
+        (set-goal g-support-unit my-unique-unit)
+        )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy EARLYI-EL-DORADO)
+        (goal g-support-unit 0)
+        (up-compare-goal g-unique-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+        (building-type-count castle > 0)
+        (or
+            (up-compare-goal g-enemy-special-unique-unit-count > 6)
+            (and
+                (up-compare-goal g-enemy-special-unique-unit-count > 3)
+                (military-population < 12)))
+        (or
+            (up-compare-flag g-enemy-special-unique-unit-flag == TEUTONIC-KNIGHT-FLAG)
+            (up-compare-flag g-enemy-special-unique-unit-flag == HUSKARL-FLAG))
+        =>
+        (set-goal g-support-unit my-unique-unit)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy EARLYI-EL-DORADO)
+        (goal g-support-unit 0)
+        (up-compare-goal g-militia-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+        (up-compare-goal g-enemy-eagle-warrior-count > 6)
+        =>
+        (set-goal g-support-unit militiaman)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy EARLYI-EL-DORADO)
+        (goal g-support-unit 0)
+        (up-compare-goal g-archer-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+        (up-compare-goal g-enemy-swordsmen-count > 6)
+        =>
+        (set-goal g-support-unit archer)
+        )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy EARLYI-EL-DORADO)
+        (goal g-support-unit 0)
+        (up-compare-goal g-archer-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+        (or
+            (up-compare-goal g-enemy-special-unique-unit-count > 6)
+            (and
+                (up-compare-goal g-enemy-special-unique-unit-count > 3)
+                (military-population < 12)))
+        (or
+            (up-compare-flag g-enemy-special-unique-unit-flag == CATAPHRACT-FLAG)
+            (or
+                (up-compare-flag g-enemy-special-unique-unit-flag == TEUTONIC-KNIGHT-FLAG)
+                (up-compare-flag g-enemy-special-unique-unit-flag == JAGUAR-WARRIOR-FLAG)))
+        =>
+        (set-goal g-support-unit archer)
+        )
+        
+        ;Modify unit counts
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy EARLYI-EL-DORADO)
+        (goal g-support-unit militiaman)
+        =>
+        (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
+        (up-modify-goal g-desired-num-militia g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-militia c:%* 35)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy EARLYI-EL-DORADO)
+        (goal g-support-unit spearman)
+        =>
+        (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-eagle-warrior c:%* 75)
+        (up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-spearman c:%* 25)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy EARLYI-EL-DORADO)
+        (goal g-support-unit archer)
+        =>
+        (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-eagle-warrior c:%* 75)
+        (up-modify-goal g-desired-num-archer g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-archer c:%* 25)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy EARLYI-EL-DORADO)
+        (goal g-support-unit my-unique-unit)
+        =>
+        (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
+        (up-modify-goal g-desired-num-unique-unit g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-unique-unit c:%* 35)
+        )
+
+    ;-------------
+    ;   Mid Imp
+    ;-------------
+
+        ;Select support unit
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDI-EAGLES)
+        (goal g-support-unit 0)
+        (goal g-position FLANK)
+        (or
+            (up-compare-goal g-enemy-heavy-cavalry-count > 8)
+            (or
+                (up-compare-goal g-enemy-elephants-count > 5)
+                (and
+                    (up-compare-goal g-enemy-special-unique-unit-count > 8)
+                    (up-compare-flag g-enemy-special-unique-unit-flag == LEITIS-FLAG))))
+        =>
+        (set-goal g-support-unit spearman)
+        )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDI-EAGLES)
+        (goal g-support-unit 0)
+        (goal g-position FLANK)
+        (military-population < 12)
+        (or
+            (up-compare-goal g-enemy-heavy-cavalry-count > 5)
+            (or
+                (up-compare-goal g-enemy-elephants-count > 3)
+                (and
+                    (up-compare-goal g-enemy-special-unique-unit-count > 5)
+                    (up-compare-flag g-enemy-special-unique-unit-flag == LEITIS-FLAG))))
+        =>
+        (set-goal g-support-unit spearman)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDI-EAGLES)
+        (goal g-support-unit 0)
+        (building-type-count castle > 0)
+        (or
+            (up-compare-goal g-enemy-swordsmen-count > 6)
+            (or
+                (up-compare-goal g-enemy-eagle-warrior-count > 6)
+                (up-compare-goal g-enemy-condottiero-count > 6)))
+        =>
+        (set-goal g-support-unit my-unique-unit)
+        )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDI-EAGLES)
+        (goal g-support-unit 0)
+        (building-type-count castle > 0)
+        (or
+            (up-compare-goal g-enemy-special-unique-unit-count > 6)
+            (and
+                (up-compare-goal g-enemy-special-unique-unit-count > 3)
+                (military-population < 12)))
+        (or
+            (up-compare-flag g-enemy-special-unique-unit-flag == TEUTONIC-KNIGHT-FLAG)
+            (up-compare-flag g-enemy-special-unique-unit-flag == HUSKARL-FLAG))
+        =>
+        (set-goal g-support-unit my-unique-unit)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDI-EAGLES)
+        (goal g-support-unit 0)
+        (goal g-position FLANK)
+        (or
+            (up-compare-goal g-enemy-foot-archers-count > 15)
+            (and
+                (military-population < 20)
+                (up-compare-goal g-enemy-foot-archers-count > 8)))
+        =>
+        (set-goal g-support-unit skirmisher)
+        )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDI-EAGLES)
+        (goal g-support-unit 0)
+        (goal g-position FLANK)
+        (or
+            (up-compare-goal g-enemy-cavalry-archers-count > 15)
+            (and
+                (military-population < 20)
+                (up-compare-goal g-enemy-cavalry-archers-count > 8)))
+        =>
+        (set-goal g-support-unit skirmisher)
+        )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDI-EAGLES)
+        (goal g-support-unit 0)
+        (goal g-position FLANK)
+        (or
+            (up-compare-goal g-enemy-special-unique-unit-count > 8)
+            (and
+                (up-compare-goal g-enemy-special-unique-unit-count > 5)
+                (military-population < 12)))
+        (or
+            (up-compare-flag g-enemy-special-unique-unit-flag == GENOESE-CROSSBOWMAN-FLAG)
+            (up-compare-flag g-enemy-special-unique-unit-flag == MAMELUKE-FLAG))
+        =>
+        (set-goal g-support-unit skirmisher)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDI-EAGLES)
+        (goal g-support-unit 0)
+        (building-type-count castle == 0)
+        (up-compare-goal g-enemy-eagle-warrior-count > 8)
+        =>
+        (set-goal g-support-unit militiaman)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDI-EAGLES)
+        (goal g-support-unit 0)
+        (goal g-position FLANK)
+        =>
+        (set-goal g-support-unit archer)
+        )
+
+        ;Modify unit counts
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDI-EAGLES)
+        (goal g-support-unit militiaman)
+        =>
+        (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
+        (up-modify-goal g-desired-num-militia g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-militia c:%* 35)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDI-EAGLES)
+        (goal g-support-unit spearman)
+        (goal g-position FLANK)
+        =>
+        (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
+        (up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-spearman c:%* 35)
+        )
+        
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDI-EAGLES)
+        (goal g-support-unit archer)
+        (goal g-position FLANK)
+        =>
+        (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
+        (up-modify-goal g-desired-num-archer g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-archer c:%* 35)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDI-EAGLES)
+        (goal g-support-unit skirmisher)
+        (goal g-position FLANK)
+        =>
+        (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-eagle-warrior c:%* 65)
+        (up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-skirmisher c:%* 35)
+        )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDI-EAGLES)
+        (goal g-support-unit skirmisher)
+        (goal g-position FLANK)
+        (or
+            (up-compare-goal g-enemy-special-unique-unit-count > 8)
+            (and
+                (up-compare-goal g-enemy-special-unique-unit-count > 5)
+                (military-population < 12)))
+        (or
+            (up-compare-flag g-enemy-special-unique-unit-flag == GENOESE-CROSSBOWMAN-FLAG)
+            (up-compare-flag g-enemy-special-unique-unit-flag == MAMELUKE-FLAG))
+        =>
+        (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-eagle-warrior c:%* 70)
+        (up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-skirmisher c:%* 30)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDI-EAGLES)
+        (goal g-support-unit my-unique-unit)
+        =>
+        (up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-eagle-warrior c:%* 50)
+        (up-modify-goal g-desired-num-unique-unit g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-unique-unit c:%* 50)
+        )
 
 ;-------------------
 ;   Archer Strats

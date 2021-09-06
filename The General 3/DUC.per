@@ -2410,3 +2410,76 @@
         =>
         (enable-timer t-attack-patrol 2)
         )
+
+    ;-------------------------------------
+    ;   Villagers Target Battering Rams
+    ;-------------------------------------
+
+        (load "The General 3.1/Functions/Reset")
+
+        (defrule
+        (timer-triggered t-10-sec)
+        (players-unit-type-count any-enemy battering-ram-line > 0)
+        =>
+        (set-goal i 1)
+        (up-modify-sn sn-focus-player-number g:= i)
+        )
+
+            (defrule
+            (timer-triggered t-10-sec)
+            (players-unit-type-count any-enemy battering-ram-line > 0)
+            (up-compare-goal i <= 8)
+            (player-in-game focus-player)
+            (stance-toward focus-player enemy)
+            =>
+            (up-set-target-point g-position-self-x)
+            (up-full-reset-search)
+            (up-filter-distance c: -1 c: 5)
+            (up-find-remote c: battering-ram-line c: 1)
+            (up-get-search-state g-local-total)
+            )
+
+            (defrule
+            (timer-triggered t-10-sec)
+            (players-unit-type-count any-enemy battering-ram-line > 0)
+            (up-compare-goal i < 8)
+            (player-in-game focus-player)
+            (stance-toward focus-player enemy)
+            (up-compare-goal g-remote-total == 0)
+            =>
+            (up-modify-goal i c:+ 1)
+            (up-modify-sn sn-focus-player-number g:= i)
+            (up-jump-rule -2)
+            )
+
+            (defrule
+            (timer-triggered t-10-sec)
+            (players-unit-type-count any-enemy battering-ram-line > 0)
+            (up-compare-goal i <= 8)
+            (player-in-game focus-player)
+            (stance-toward focus-player enemy)
+            (up-compare-goal g-remote-total > 0)
+            (up-set-target-object search-remote c: 0)
+            =>
+            (up-get-point position-object g-point-x)
+            (up-set-target-point g-point-x)
+            (up-reset-search 1 1 0 0)
+            (up-reset-filters)
+            (up-filter-distance c: -1 c: 3)
+            (up-find-local c: villager-class c: 4)
+            (up-get-search-state g-local-total)
+            )
+
+            (defrule
+            (timer-triggered t-10-sec)
+            (players-unit-type-count any-enemy battering-ram-line > 0)
+            (up-compare-goal i <= 8)
+            (player-in-game focus-player)
+            (stance-toward focus-player enemy)
+            (up-compare-goal g-remote-total > 0)
+            (up-set-target-object search-remote c: 0)
+            (up-compare-goal g-local-total > 0)
+            =>
+            (up-target-objects 0 action-default -1 -1)
+            (chat-to-player my-player-number CHAT-TARGET-RAM-WITH-VILLAGERS)
+            )

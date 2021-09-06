@@ -1351,313 +1351,183 @@
 ;			   MARKET RESOURCE TRADING
 ;=========================<>=========================
 
+    (load "The General 3.1/Functions/Reset")
+
     (defrule
     (up-timer-status t-5-sec == timer-triggered)
-    (or
-        (goal g-age-status SAVE-FOR-CASTLE)
-        (goal g-age-status SAVE-FOR-IMPERIAL))
+    (goal g-age-status SAVE-FOR-CASTLE)
     =>
     (up-get-fact commodity-buying-price food g-food-cost)
     (up-get-fact commodity-buying-price wood g-wood-cost)
     (up-get-fact commodity-buying-price stone g-stone-cost)
+    (up-setup-cost-data 1 g-food-delta)
+    (up-add-research-cost c: castle-age c: 1)
     )
 
-    #load-if-defined ITALIAN-CIV
+    (defrule
+    (up-timer-status t-5-sec == timer-triggered)
+    (goal g-age-status SAVE-FOR-IMPERIAL)
+    =>
+    (up-get-fact commodity-buying-price food g-food-cost)
+    (up-get-fact commodity-buying-price wood g-wood-cost)
+    (up-get-fact commodity-buying-price stone g-stone-cost)
+    (up-setup-cost-data 1 g-food-delta)
+    (up-add-research-cost c: imperial-age c: 1)
+    )
 
-        ;--------------------------
-        ;   Trade for Castle Age
-        ;--------------------------
-    
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (goal g-age-status SAVE-FOR-CASTLE)
-            (food-amount >= 780)
-            (gold-amount < 170)
-            (can-sell-commodity food)
-            (goal g-traded NO)
-            =>
-            (sell-commodity food)
-            (set-goal g-traded YES)
-            ; (chat-local-to-self CHAT-SELL-FOOD-CASTLE-AGE)
-            )
+    ;--------------------------
+    ;   Trade for Castle Age
+    ;--------------------------
 
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (up-compare-goal g-age-status == SAVE-FOR-CASTLE)
-            (food-amount < 780)
-            (gold-amount < 170)
-            (or
-                (wood-amount > 400)
-                (and
-                    (wood-amount > 200)
-                    (goal g-town-under-attack YES)))
-            (can-sell-commodity wood)
-            (goal g-traded NO)
-            =>
-            (sell-commodity wood)
-            (set-goal g-traded YES)
-            ; (chat-local-to-self CHAT-SELL-WOOD-CASTLE-AGE)
-            )
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (goal g-age-status SAVE-FOR-CASTLE)
+        (up-modify-goal g-temp g:= g-food-delta)    ;Castle Age food cost
+        (up-modify-goal g-temp c:+ 100)
+        (food-amount g:>= g-temp)
+        (gold-amount g:< g-gold-delta)              ;Castle Age gold cost
+        (can-sell-commodity food)
+        (goal g-traded NO)
+        =>
+        (sell-commodity food)
+        (set-goal g-traded YES)
+        (chat-local-to-self CHAT-SELL-FOOD-CASTLE-AGE)
+        )
 
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (up-compare-goal g-age-status == SAVE-FOR-CASTLE)
-            (food-amount >= 680)
-            (gold-amount < 170)
-            (or
-                (stone-amount > 200)
-                (goal g-town-under-attack YES))
-            (can-sell-commodity stone)
-            (or
-                (up-compare-goal g-watch-tower-line g:>= g-desired-num-watch-tower)
-                (up-object-type-count-total c: donjon g:>= g-desired-num-watch-tower))
-            (up-compare-goal g-desired-num-castle == 0)
-            (goal g-traded NO)
-            =>
-            (sell-commodity stone)
-            (set-goal g-traded YES)
-            ; (chat-local-to-self CHAT-SELL-STONE-CASTLE-AGE)
-            )
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (up-compare-goal g-age-status == SAVE-FOR-CASTLE)
+        (up-modify-goal g-temp g:= g-food-delta)    ;Castle Age food cost
+        (up-modify-goal g-temp c:+ 100)
+        (food-amount g:< g-temp)
+        (gold-amount g:< g-gold-delta)              ;Castle Age gold cost
+        (or
+            (wood-amount > 400)
+            (and
+                (wood-amount > 200)
+                (goal g-town-under-attack YES)))
+        (can-sell-commodity wood)
+        (goal g-traded NO)
+        =>
+        (sell-commodity wood)
+        (set-goal g-traded YES)
+        (chat-local-to-self CHAT-SELL-WOOD-CASTLE-AGE)
+        )
 
-            ;Set gold cost
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (goal g-age-status SAVE-FOR-CASTLE)
-            (goal g-traded NO)
-            =>
-            (set-goal g-gold-cost 170)
-            (up-modify-goal g-gold-cost g:+ g-food-cost)    ;add food buying price
-            )
-
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (up-compare-goal g-age-status == SAVE-FOR-CASTLE)
-            (food-amount < 680)
-            (up-resource-amount gold g:>= g-gold-cost)
-            (can-buy-commodity food)
-            (goal g-traded NO)
-            =>
-            (buy-commodity food)
-            (set-goal g-traded YES)
-            ; (chat-local-to-self CHAT-BUY-FOOD-CASTLE-AGE)
-            )
-
-        ;----------------------------
-        ;   Trade for Imperial Age
-        ;----------------------------
-
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
-            (food-amount >= 950)
-            (gold-amount < 680)
-            (can-sell-commodity food)
-            (goal g-traded NO)
-            =>
-            (sell-commodity food)
-            (set-goal g-traded YES)
-            ; (chat-local-to-self CHAT-SELL-FOOD-IMPERIAL-AGE)
-            )
-
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
-            (food-amount < 950)
-            (gold-amount < 680)
-            (wood-amount > 300)
-            (can-sell-commodity wood)
-            (goal g-traded NO)
-            =>
-            (sell-commodity wood)
-            (set-goal g-traded YES)
-            ; (chat-local-to-self CHAT-SELL-WOOD-IMPERIAL-AGE)
-            )
-
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
-            (food-amount >= 850)
-            (gold-amount < 680)
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (up-compare-goal g-age-status == SAVE-FOR-CASTLE)
+        (food-amount g:>= g-food-delta)             ;Castle Age food cost
+        (gold-amount g:< g-gold-delta)              ;Castle Age gold cost
+        (or
             (stone-amount > 200)
-            (up-object-type-count-total c: castle >= g-desired-num-castle)
-            (can-sell-commodity stone)
-            (goal g-traded NO)
-            =>
-            (sell-commodity stone)
-            (set-goal g-traded YES)
-            ; (chat-local-to-self CHAT-SELL-STONE-IMPERIAL-AGE)
-            )
+            (goal g-town-under-attack YES))
+        (can-sell-commodity stone)
+        (or
+            (up-compare-goal g-watch-tower-line g:>= g-desired-num-watch-tower)
+            (up-object-type-count-total c: donjon g:>= g-desired-num-watch-tower))
+        (up-compare-goal g-desired-num-castle == 0)
+        (goal g-traded NO)
+        =>
+        (sell-commodity stone)
+        (set-goal g-traded YES)
+        (chat-local-to-self CHAT-SELL-STONE-CASTLE-AGE)
+        )
 
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (goal g-age-status SAVE-FOR-IMPERIAL)
-            (goal g-traded NO)
-            =>
-            (set-goal g-gold-cost 680)
-            (up-modify-goal g-gold-cost g:+ g-food-cost)    ;add food buying price
-            )
+        ;Set gold cost
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (goal g-age-status SAVE-FOR-CASTLE)
+        (goal g-traded NO)
+        =>
+        (up-modify-goal g-gold-cost g:= g-gold-delta)   ;Castle age gold cost
+        (up-modify-goal g-gold-cost g:+ g-food-cost)    ;add food buying price
+        )
 
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
-            (food-amount < 850)
-            (up-resource-amount gold g:>= g-gold-cost)
-            (can-buy-commodity food)
-            (goal g-traded NO)
-            =>
-            (buy-commodity food)
-            (set-goal g-traded YES)
-            ; (chat-local-to-self CHAT-BUY-FOOD-IMPERIAL-AGE)
-            )
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (up-compare-goal g-age-status == SAVE-FOR-CASTLE)
+        (food-amount g:< g-food-delta)      ;Castle Age food cost
+        (up-resource-amount gold g:>= g-gold-cost)
+        (can-buy-commodity food)
+        (goal g-traded NO)
+        =>
+        (buy-commodity food)
+        (set-goal g-traded YES)
+        (chat-local-to-self CHAT-BUY-FOOD-CASTLE-AGE)
+        )
 
-    #else
+    ;----------------------------
+    ;   Trade for Imperial Age
+    ;----------------------------
 
-        ;--------------------------
-        ;   Trade for Castle Age
-        ;--------------------------
-    
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (goal g-age-status SAVE-FOR-CASTLE)
-            (food-amount >= 900)
-            (gold-amount < 200)
-            (can-sell-commodity food)
-            (goal g-traded NO)
-            =>
-            (sell-commodity food)
-            (set-goal g-traded YES)
-            ; (chat-local-to-self CHAT-SELL-FOOD-CASTLE-AGE)
-            )
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
+        (up-modify-goal g-temp g:= g-food-delta)    ;Imperial Age food cost
+        (up-modify-goal g-temp c:+ 100)
+        (food-amount g:>= g-temp)
+        (gold-amount g:< g-gold-delta)              ;Imperial Age gold cost
+        (can-sell-commodity food)
+        (goal g-traded NO)
+        =>
+        (sell-commodity food)
+        (set-goal g-traded YES)
+        (chat-local-to-self CHAT-SELL-FOOD-IMPERIAL-AGE)
+        )
 
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (up-compare-goal g-age-status == SAVE-FOR-CASTLE)
-            (food-amount < 900)
-            (gold-amount < 200)
-            (or
-                (wood-amount > 400)
-                (and
-                    (wood-amount > 200)
-                    (goal g-town-under-attack YES)))
-            (can-sell-commodity wood)
-            (goal g-traded NO)
-            =>
-            (sell-commodity wood)
-            (set-goal g-traded YES)
-            ; (chat-local-to-self CHAT-SELL-WOOD-CASTLE-AGE)
-            )
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
+        (up-modify-goal g-temp g:= g-food-delta)    ;Imperial Age food cost
+        (up-modify-goal g-temp c:+ 100)
+        (food-amount g:< g-temp)
+        (gold-amount g:< g-gold-delta)              ;Imperial Age gold cost
+        (wood-amount > 300)
+        (can-sell-commodity wood)
+        (goal g-traded NO)
+        =>
+        (sell-commodity wood)
+        (set-goal g-traded YES)
+        (chat-local-to-self CHAT-SELL-WOOD-IMPERIAL-AGE)
+        )
 
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (up-compare-goal g-age-status == SAVE-FOR-CASTLE)
-            (food-amount >= 800)
-            (gold-amount < 200)
-            (or
-                (stone-amount > 200)
-                (goal g-town-under-attack YES))
-            (can-sell-commodity stone)
-            (or
-                (up-compare-goal g-watch-tower-line g:>= g-desired-num-watch-tower)
-                (up-object-type-count-total c: donjon g:>= g-desired-num-watch-tower))
-            (up-compare-goal g-desired-num-castle == 0)
-            (goal g-traded NO)
-            =>
-            (sell-commodity stone)
-            (set-goal g-traded YES)
-            ; (chat-local-to-self CHAT-SELL-STONE-CASTLE-AGE)
-            )
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
+        (food-amount g:>= g-food-delta)             ;Imperial age food cost
+        (gold-amount g:< g-gold-delta)              ;Imperial age gold cost
+        (stone-amount > 200)
+        (up-object-type-count-total c: castle >= g-desired-num-castle)
+        (can-sell-commodity stone)
+        (goal g-traded NO)
+        =>
+        (sell-commodity stone)
+        (set-goal g-traded YES)
+        (chat-local-to-self CHAT-SELL-STONE-IMPERIAL-AGE)
+        )
 
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (goal g-age-status SAVE-FOR-CASTLE)
-            (goal g-traded NO)
-            =>
-            (set-goal g-gold-cost 200)
-            (up-modify-goal g-gold-cost g:+ g-food-cost)    ;add food buying price
-            )
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (goal g-age-status SAVE-FOR-IMPERIAL)
+        (goal g-traded NO)
+        =>
+        (up-modify-goal g-gold-cost g:= g-gold-delta)
+        (up-modify-goal g-gold-cost g:+ g-food-cost)    ;add food buying price
+        )
 
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (up-compare-goal g-age-status == SAVE-FOR-CASTLE)
-            (food-amount < 800)
-            (up-resource-amount gold g:>= g-gold-cost)
-            (can-buy-commodity food)
-            (goal g-traded NO)
-            =>
-            (buy-commodity food)
-            (set-goal g-traded YES)
-            ; (chat-local-to-self CHAT-BUY-FOOD-CASTLE-AGE)
-            )
-
-        ;----------------------------
-        ;   Trade for Imperial Age
-        ;----------------------------
-
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
-            (food-amount >= 1100)
-            (gold-amount < 800)
-            (can-sell-commodity food)
-            (goal g-traded NO)
-            =>
-            (sell-commodity food)
-            (set-goal g-traded YES)
-            ; (chat-local-to-self CHAT-SELL-FOOD-IMPERIAL-AGE)
-            )
-
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
-            (food-amount < 1100)
-            (gold-amount < 800)
-            (wood-amount > 300)
-            (can-sell-commodity wood)
-            (goal g-traded NO)
-            =>
-            (sell-commodity wood)
-            (set-goal g-traded YES)
-            ; (chat-local-to-self CHAT-SELL-WOOD-IMPERIAL-AGE)
-            )
-
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
-            (food-amount >= 1000)
-            (gold-amount < 800)
-            (stone-amount > 200)
-            (up-object-type-count-total c: castle >= g-desired-num-castle)
-            (can-sell-commodity stone)
-            (goal g-traded NO)
-            =>
-            (sell-commodity stone)
-            (set-goal g-traded YES)
-            ; (chat-local-to-self CHAT-SELL-STONE-IMPERIAL-AGE)
-            )
-
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (goal g-age-status SAVE-FOR-IMPERIAL)
-            (goal g-traded NO)
-            =>
-            (set-goal g-gold-cost 800)
-            (up-modify-goal g-gold-cost g:+ g-food-cost)    ;add food buying price
-            )
-
-            (defrule
-            (up-timer-status t-5-sec == timer-triggered)
-            (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
-            (food-amount < 1000)
-            (up-resource-amount gold g:>= g-gold-cost)
-            (can-buy-commodity food)
-            (goal g-traded NO)
-            =>
-            (buy-commodity food)
-            (set-goal g-traded YES)
-            ; (chat-local-to-self CHAT-BUY-FOOD-IMPERIAL-AGE)
-            )
-
-    #end-if
+        (defrule
+        (up-timer-status t-5-sec == timer-triggered)
+        (up-compare-goal g-age-status == SAVE-FOR-IMPERIAL)
+        (food-amount g:< g-food-delta)              ;Imperial Age food cost
+        (up-resource-amount gold g:>= g-gold-cost)
+        (can-buy-commodity food)
+        (goal g-traded NO)
+        =>
+        (buy-commodity food)
+        (set-goal g-traded YES)
+        (chat-local-to-self CHAT-BUY-FOOD-IMPERIAL-AGE)
+        )
 
     #load-if-defined INCAN-CIV
     

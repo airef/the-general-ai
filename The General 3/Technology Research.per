@@ -846,11 +846,9 @@
 		(can-research-with-escrow feudal-age)
 		(or
 			(up-object-type-count c: villager g:>= g-required-num-villager)
-			(and
-				(or
-					(goal g-game-focus REBUILD)
-					(goal g-game-focus DEFENSIVE))
-				(goal g-top-enemy-age-parity WE-ARE-BEHIND)))
+			(or
+				(goal g-game-focus REBUILD)
+				(goal g-game-focus DEFENSIVE)))
 		=>
 		(release-escrow food)
 		(research feudal-age)
@@ -864,11 +862,9 @@
 		(can-research-with-escrow castle-age)
 		(or
 			(up-object-type-count c: villager g:>= g-required-num-villager)
-			(and
-				(or
-					(goal g-game-focus REBUILD)
-					(goal g-game-focus DEFENSIVE))
-				(goal g-top-enemy-age-parity WE-ARE-BEHIND)))
+			(or
+				(goal g-game-focus REBUILD)
+				(goal g-game-focus DEFENSIVE)))
 		=>
 		(release-escrow food)
 		(release-escrow gold)
@@ -880,11 +876,9 @@
 		(up-research-status c: castle-age == research-available)
 		(or
 			(up-object-type-count c: villager g:>= g-required-num-villager)
-			(and
-				(or
-					(goal g-game-focus REBUILD)
-					(goal g-game-focus DEFENSIVE))
-				(goal g-top-enemy-age-parity WE-ARE-BEHIND)))
+			(or
+				(goal g-game-focus REBUILD)
+				(goal g-game-focus DEFENSIVE)))
 		=>
 		(up-setup-cost-data 1 g-food-cost)
 		(up-add-research-cost c: castle-age c: 1)
@@ -900,11 +894,9 @@
 		(up-research-status c: castle-age == research-available)
 		(or
 			(up-object-type-count c: villager g:>= g-required-num-villager)
-			(and
-				(or
-					(goal g-game-focus REBUILD)
-					(goal g-game-focus DEFENSIVE))
-				(goal g-top-enemy-age-parity WE-ARE-BEHIND)))
+			(or
+				(goal g-game-focus REBUILD)
+				(goal g-game-focus DEFENSIVE)))
 		=>
 		(up-store-tech-name c: castle-age)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246 c: 7031232)
@@ -922,9 +914,9 @@
 				(or
 					(goal g-game-focus REBUILD)
 					(goal g-game-focus DEFENSIVE))
-				(and
+				(or
 					(goal g-top-enemy-age-parity WE-ARE-BEHIND)
-					(unit-type-count villager >= 60))))
+					(unit-type-count-total villager >= 50))))
 		=>
 		(release-escrow food)
 		(release-escrow gold)
@@ -933,35 +925,15 @@
 
 		(defrule
 		(current-age == castle-age)
-		(up-research-status c: imperial-age == research-available)
-		(up-object-type-count c: villager g:>= g-required-num-villager)
-		=>
-		(up-setup-cost-data 1 g-food-cost)
-		(up-add-research-cost c: imperial-age c: 1)
-		(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
-		(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
-		(up-modify-goal g-max-food-needed g:max g-food-cost)
-		(up-modify-goal g-max-gold-needed g:max g-gold-cost)
-		)
-
-		(defrule
-		(taunt-detected TAUNT-PLAYER 246)
-		(current-age == castle-age)
-		(up-research-status c: imperial-age == research-available)
-		(up-object-type-count c: villager g:>= g-required-num-villager)
-		=>
-		(up-store-tech-name c: imperial-age)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246 c: 7031232)
-		)
-
-		(defrule
-		(current-age == castle-age)
-		(up-research-status c: imperial-age == research-available)
 		(or
-			(goal g-game-focus REBUILD)
-			(goal g-game-focus DEFENSIVE))
-		(goal g-top-enemy-age-parity WE-ARE-BEHIND)
-		(unit-type-count villager >= 60)
+			(up-object-type-count c: villager g:>= g-required-num-villager)
+			(and
+				(or
+					(goal g-game-focus REBUILD)
+					(goal g-game-focus DEFENSIVE))
+				(or
+					(goal g-top-enemy-age-parity WE-ARE-BEHIND)
+					(unit-type-count-total villager >= 50))))
 		=>
 		(up-setup-cost-data 1 g-food-cost)
 		(up-add-research-cost c: imperial-age c: 1)
@@ -976,10 +948,14 @@
 		(current-age == castle-age)
 		(up-research-status c: imperial-age == research-available)
 		(or
-			(goal g-game-focus REBUILD)
-			(goal g-game-focus DEFENSIVE))
-		(goal g-top-enemy-age-parity WE-ARE-BEHIND)
-		(unit-type-count villager >= 60)
+			(up-object-type-count c: villager g:>= g-required-num-villager)
+			(and
+				(or
+					(goal g-game-focus REBUILD)
+					(goal g-game-focus DEFENSIVE))
+				(or
+					(goal g-top-enemy-age-parity WE-ARE-BEHIND)
+					(unit-type-count-total villager >= 50))))
 		=>
 		(up-store-tech-name c: imperial-age)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246 c: 7031232)
@@ -12189,7 +12165,10 @@
 	=>
 	(up-setup-cost-data 1 g-total-techs-food-needed)
 	(up-add-cost-data g-max-food-needed c: 1)
-	(up-add-cost-data g-important-techs-food-needed c: 1)
+	(up-modify-goal g-total-techs-food-needed g:max g-important-techs-food-needed)
+	(up-modify-goal g-total-techs-wood-needed g:max g-important-techs-wood-needed)
+	(up-modify-goal g-total-techs-gold-needed g:max g-important-techs-gold-needed)
+	(up-modify-goal g-total-techs-stone-needed g:max g-important-techs-stone-needed)
 	)
 
 ;=========================<>=========================
@@ -12361,11 +12340,26 @@
 			(or
 				(goal g-primary-unit-class cavalry-archer-class)
 				(goal g-primary-unit hand-cannoneer)))
+		(up-compare-goal g-age-status != TO-FEUDAL)
 		(up-compare-goal g-primary-unit != my-unique-unit)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
 		(up-add-object-cost c: archery-range c: 1)
 		(up-modify-goal g-max-wood-needed g:max g-wood-cost)
+		)
+		(defrule
+		(up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
+		(or
+			(goal g-primary-unit-class archery-class)
+			(or
+				(goal g-primary-unit-class cavalry-archer-class)
+				(goal g-primary-unit hand-cannoneer)))
+		(goal g-age-status TO-FEUDAL)
+		(up-compare-goal g-primary-unit != my-unique-unit)
+		=>
+		(up-setup-cost-data 1 g-food-cost)
+		(up-add-object-cost c: archery-range c: 1)
+		(up-modify-goal g-max-wood-needed g:+ g-wood-cost)
 		)
 		(defrule
 		(up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
@@ -12419,10 +12413,23 @@
 		(or
 			(up-compare-goal g-primary-unit != my-unique-unit)
 			(research-completed 483))	;Marauders
+		(up-compare-goal g-age-status != TO-FEUDAL)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
 		(up-add-object-cost c: stable c: 1)
 		(up-modify-goal g-max-wood-needed g:max g-wood-cost)
+		)
+		(defrule
+		(up-object-type-count-total c: stable g:< g-desired-num-stable)
+		(goal g-primary-unit-class cavalry-class)
+		(or
+			(up-compare-goal g-primary-unit != my-unique-unit)
+			(research-completed 483))	;Marauders
+		(goal g-age-status TO-FEUDAL)
+		=>
+		(up-setup-cost-data 1 g-food-cost)
+		(up-add-object-cost c: stable c: 1)
+		(up-modify-goal g-max-wood-needed g:+ g-wood-cost)
 		)
 		(defrule
 		(up-object-type-count-total c: stable g:< g-desired-num-stable)
@@ -12497,10 +12504,24 @@
 				(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 				(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop))
 			(wood-amount >= 275))
+		(up-compare-goal g-age-status != TO-FEUDAL)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
 		(up-add-object-cost c: market c: 1)
 		(up-modify-goal g-max-wood-needed g:max g-wood-cost)
+		)
+		(defrule
+		(up-object-type-count-total c: market g:< g-desired-num-market)
+		(or
+			(and
+				(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
+				(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop))
+			(wood-amount >= 275))
+		(goal g-age-status TO-FEUDAL)
+		=>
+		(up-setup-cost-data 1 g-food-cost)
+		(up-add-object-cost c: market c: 1)
+		(up-modify-goal g-max-wood-needed g:+ g-wood-cost)
 		)
 
 		(defrule
@@ -12602,10 +12623,19 @@
 
 		(defrule
 		(up-object-type-count-total c: blacksmith g:< g-desired-num-blacksmith)
+		(up-compare-goal g-age-status != TO-FEUDAL)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
 		(up-add-object-cost c: blacksmith c: 1)
 		(up-modify-goal g-max-wood-needed g:max g-wood-cost)
+		)
+		(defrule
+		(up-object-type-count-total c: blacksmith g:< g-desired-num-blacksmith)
+		(goal g-age-status TO-FEUDAL)
+		=>
+		(up-setup-cost-data 1 g-food-cost)
+		(up-add-object-cost c: blacksmith c: 1)
+		(up-modify-goal g-max-wood-needed g:+ g-wood-cost)
 		)
 
 		(defrule
