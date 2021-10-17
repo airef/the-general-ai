@@ -17,6 +17,67 @@
 ;				        TAUNTS
 ;=========================<>=========================
 
+	;------------------------------
+	;	Taunt 234 - Defense Data
+	;------------------------------
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 234)
+		(goal g-town-under-attack NO)
+		=>
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "Town is safe")
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 234)
+		(goal g-town-under-attack YES)
+		=>
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "Town is under attack")
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 234)
+		=>
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Mining Camp max distance: %d" s: sn-mining-camp-max-distance)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Lumber Camp max distance: %d" s: sn-lumber-camp-max-distance)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 234)
+		(up-compare-flag g-attack-method-flag == USE-TSA)
+		=>
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Max TS: %d" s: sn-maximum-town-size)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Safe TS: %d" s: sn-safe-town-size)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Peaceful TS: %d" s: custom-sn-peaceful-town-size)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 234)
+		=>
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Enemy bldgs in town: %d" g: g-enemy-buildings-in-town)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Enemy units in town: %d" g: g-enemy-units-in-town)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 234)
+		(goal g-gather-inside NO)
+		=>
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "NOT Garrisoning soldiers in buildings")
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 234)
+		(goal g-gather-inside YES)
+		=>
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "Garrisoning soldiers in buildings")
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 234)
+		=>
+		(acknowledge-taunt TAUNT-PLAYER 234)
+		)
+
 	;-----------------------------------------
 	;	Taunt 235 - Desired Building Counts
 	;-----------------------------------------
@@ -1270,22 +1331,6 @@
 		(goal g-attacking NO)
 		=>
 		(chat-to-player THIS-ANY-TAUNT-PLAYER "I am not attacking.")
-		)
-
-		(defrule
-		(taunt-detected TAUNT-PLAYER 245)
-		(up-compare-flag g-attack-method-flag == USE-TSA)
-		=>
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Max TS: %d" s: sn-maximum-town-size)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Safe TS: %d" s: sn-safe-town-size)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Peaceful TS: %d" s: custom-sn-peaceful-town-size)
-		)
-
-		(defrule
-		(taunt-detected TAUNT-PLAYER 245)
-		=>
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Mining Camp max distance: %d" s: sn-mining-camp-max-distance)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Lumber Camp max distance: %d" s: sn-lumber-camp-max-distance)
 		)
 
 		(defrule
@@ -3309,4 +3354,3 @@
 	(chat-to-player every-enemy "gg")
 	(disable-self)
 	)
-

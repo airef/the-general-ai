@@ -322,7 +322,9 @@
                 (and
                     (goal g-game-focus REBUILD)
                     (up-compare-goal g-desired-num-military > 0))))
-        (up-compare-goal g-target-military-parity > 0)
+        (or
+            (up-compare-goal g-target-military-parity > 0)
+            (military-population g:>= g-required-attack-num))
         (up-compare-goal g-current-age-primary-unit-tech-progress < REQUIRED-COMPLETE)
         =>
         (set-goal g-wood-escrow-type IMMEDIATE)
@@ -337,7 +339,22 @@
             (or
                 (up-compare-goal g-current-age-support-unit-tech-progress < PRIORITY-COMPLETE)
                 (up-compare-goal g-current-age-eco-tech-progress < SECONDARY-COMPLETE)))
-        (up-compare-goal g-target-military-parity > 0)
+        (or
+            (up-compare-goal g-target-military-parity > 0)
+            (military-population g:>= g-required-attack-num))
+        =>
+        (set-goal g-wood-escrow-type IMMEDIATE)
+        (set-goal g-food-escrow-type IMMEDIATE)
+        (set-goal g-gold-escrow-type IMMEDIATE)
+        )
+
+        (defrule
+        (up-compare-goal g-game-focus != DEFENSIVE)
+        (or
+            (goal g-age-status TO-FEUDAL)
+            (or
+                (goal g-age-status TO-CASTLE)
+                (goal g-age-status TO-IMPERIAL)))
         =>
         (set-goal g-wood-escrow-type IMMEDIATE)
         (set-goal g-food-escrow-type IMMEDIATE)
