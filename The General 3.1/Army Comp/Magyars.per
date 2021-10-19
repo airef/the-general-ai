@@ -129,6 +129,7 @@
     ;-------------
 
         (defrule
+        (goal g-game-focus DEFENSIVE)
         (up-compare-goal g-desired-num-military > 0)
         (current-age >= castle-age)
         (goal g-primary-unit knight)
@@ -140,6 +141,7 @@
         )
 
         (defrule
+        (goal g-game-focus DEFENSIVE)
         (up-compare-goal g-desired-num-military > 0)
         (current-age >= castle-age)
         (goal g-primary-unit knight)
@@ -159,6 +161,7 @@
         )
 
         (defrule
+        (goal g-game-focus DEFENSIVE)
         (up-compare-goal g-desired-num-military > 0)
         (current-age >= castle-age)
         (goal g-primary-unit knight)
@@ -170,6 +173,7 @@
         )
 
         (defrule
+        (goal g-game-focus DEFENSIVE)
         (up-compare-goal g-desired-num-military > 0)
         (current-age >= castle-age)
         (goal g-primary-unit knight)
@@ -258,7 +262,9 @@
         (goal g-current-strategy MIDC-KNIGHTS)
         (or
             (goal g-support-unit 0)
-            (goal g-support-unit skirmisher))
+            (or
+                (goal g-support-unit skirmisher)
+                (goal g-support-unit archer)))
         (goal g-position FLANK)
         (or
             (up-compare-goal g-enemy-heavy-cavalry-count > 8)
@@ -275,16 +281,29 @@
         (goal g-current-strategy MIDC-KNIGHTS)
         (or
             (goal g-support-unit 0)
-            (goal g-support-unit skirmisher))
+            (or
+                (goal g-support-unit skirmisher)
+                (goal g-support-unit archer)))
         (goal g-position FLANK)
         (military-population < 12)
         (or
             (up-compare-goal g-enemy-heavy-cavalry-count > 5)
+            (up-compare-goal g-enemy-elephants-count > 3))
+        =>
+        (set-goal g-support-unit spearman)
+        )
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDC-KNIGHTS)
+        (or
+            (goal g-support-unit 0)
             (or
-                (up-compare-goal g-enemy-elephants-count > 3)
-                (and
-                    (up-compare-goal g-enemy-special-unique-unit-count > 5)
-                    (up-compare-flag g-enemy-special-unique-unit-flag == LEITIS-FLAG))))
+                (goal g-support-unit skirmisher)
+                (goal g-support-unit archer)))
+        (goal g-position FLANK)
+        (military-population < 12)
+        (up-compare-goal g-enemy-special-unique-unit-count > 5)
+        (up-compare-flag g-enemy-special-unique-unit-flag == LEITIS-FLAG)
         =>
         (set-goal g-support-unit spearman)
         )
@@ -376,6 +395,7 @@
         (up-compare-goal g-desired-num-military > 0)
         (goal g-current-strategy EARLYI-PALASTORM)
         (goal g-support-unit 0)
+        (goal g-position FLANK)
         (up-compare-goal g-spearman-tech-progress >= PRIORITY-CASTLE-COMPLETE)
         (or
             (up-compare-goal g-enemy-heavy-cavalry-count > 8)
@@ -391,6 +411,7 @@
         (up-compare-goal g-desired-num-military > 0)
         (goal g-current-strategy EARLYI-PALASTORM)
         (goal g-support-unit 0)
+        (goal g-position FLANK)
         (up-compare-goal g-spearman-tech-progress >= PRIORITY-CASTLE-COMPLETE)
         (military-population < 12)
         (or
@@ -408,6 +429,7 @@
         (up-compare-goal g-desired-num-military > 0)
         (goal g-current-strategy EARLYI-PALASTORM)
         (goal g-support-unit 0)
+        (goal g-position FLANK)
         (up-compare-goal g-cavalry-archer-tech-progress >= PRIORITY-CASTLE-COMPLETE)
         (or
             (up-compare-goal g-enemy-special-unique-unit-count > 8)
@@ -426,6 +448,7 @@
         (up-compare-goal g-desired-num-military > 0)
         (goal g-current-strategy EARLYI-PALASTORM)
         (goal g-support-unit spearman)
+        (goal g-position FLANK)
         =>
         (up-modify-goal g-desired-num-knight g:= g-desired-num-military)
         (up-modify-goal g-desired-num-knight c:%* 75)
@@ -437,6 +460,7 @@
         (up-compare-goal g-desired-num-military > 0)
         (goal g-current-strategy EARLYI-PALASTORM)
         (goal g-support-unit cavalry-archer)
+        (goal g-position FLANK)
         =>
         (up-modify-goal g-desired-num-knight g:= g-desired-num-military)
         (up-modify-goal g-desired-num-knight c:%* 75)
@@ -638,6 +662,18 @@
         (up-modify-goal g-desired-num-knight c:%* 60)
         (up-modify-goal g-desired-num-cavalry-archer g:= g-desired-num-military)
         (up-modify-goal g-desired-num-cavalry-archer c:%* 40)
+        )
+
+        (defrule
+        (up-compare-goal g-desired-num-military > 0)
+        (goal g-current-strategy MIDI-PALADINS)
+        (goal g-support-unit my-unique-unit)
+        (goal g-position FLANK)
+        =>
+        (up-modify-goal g-desired-num-knight g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-knight c:%* 65)
+        (up-modify-goal g-desired-num-unique-unit g:= g-desired-num-military)
+        (up-modify-goal g-desired-num-unique-unit c:%* 35)
         )
 
 ;------------------------

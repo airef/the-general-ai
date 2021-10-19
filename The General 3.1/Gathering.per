@@ -1961,7 +1961,7 @@
             (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
             (wood-amount < 275)
             =>
-            (up-modify-goal g-total-objects-wood-needed c:+ 150)    ;don't add full cost
+            (up-modify-goal g-total-objects-wood-needed c:+ 200)    ;don't add full cost
             )
 
             (defrule
@@ -2166,6 +2166,19 @@
         =>
         (up-modify-goal g-total-objects-stone-needed c:+ 150)    ;don't add full cost of building
         )
+
+        #load-if-defined BULGARIANS-CIV
+
+            (defrule
+            (up-timer-status t-15-sec == timer-triggered)
+            (up-object-type-count-total c: krepost g:< g-desired-num-krepost)
+            (not
+                (can-afford-building krepost))
+            =>
+            (up-modify-goal g-total-objects-stone-needed c:+ 100)    ;don't add full cost of building
+            )
+
+        #end-if
 
         ;Add Ongoing Cost of Farms
         (defrule

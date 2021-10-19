@@ -1417,6 +1417,24 @@
         )
 
         (defrule
+        (goal g-boar-hunt-status LURE-BOAR)
+        (up-set-target-by-id g: g-current-boar-id)
+        (up-object-data object-data-action != actionid-attack)
+        (up-object-data object-data-hitpoints > 0)
+        (up-set-target-by-id g: g-boar-lurer-id)
+        (up-object-data object-data-garrisoned == 0)    ;not garrisoned
+        (or
+            (up-object-data object-data-carry <= 5)
+            (building-type-count town-center == 0))
+        =>
+        (up-full-reset-search)
+        (up-set-target-by-id g: g-current-boar-id)
+        (up-add-object-by-id search-local g: g-boar-lurer-id)
+        (up-target-objects 1 action-default -1 -1)	;right-click the boar with the villager, villager will auto-retreat to TC once boar attacks
+        (chat-local-to-self CHAT-BOAR-TARGET-BOAR)
+        )
+
+        (defrule
         (goal g-boar-hunt-status ASSIST-HUNTING-BOAR)
         (dropsite-min-distance live-boar <= 6)
         (up-set-target-by-id g: g-current-boar-id)
@@ -1825,70 +1843,124 @@
     ;----------------------
 
         (load "The General 3.1/Functions/Reset")
-
-        ;Add strength of melee and siege weapons to see if we should retreat from enemy TC at all
+        
         (defrule
-        (true)
+        (players-building-type-count target-player town-center > 0)
         =>
         (set-goal g-projectile-retreat NO)
-        (up-get-fact unit-type-count cavalry-class g-temp)
-        (up-get-fact unit-type-count infantry-class g-temp-2)
-        (up-modify-goal g-temp g:+ g-temp-2)
-        (up-get-fact unit-type-count siege-weapon-class g-temp-2)
-        (up-modify-goal g-temp-2 c:* 5)
-        (up-modify-goal g-temp g:+ g-temp-2)
-        (up-get-fact unit-type-count trebuchet-set g-temp-2)
-        (up-modify-goal g-temp-2 c:* 10)
-        (up-modify-goal g-temp g:+ g-temp-2)
-        )
-
-        (defrule
-        (true)
-        =>
         (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
         (up-full-reset-search)
-        (up-find-remote c: town-center c: 40)
+        (up-find-remote c: town-center c: 20)
         (up-remove-objects search-remote object-data-hitpoints < 480)   ;remove town centers that can't be garrisoned
         (set-goal i 0)				;look at first building and track progress through loop
-        (set-goal g-temp-2 0)       ;for use in later rule
         (up-get-search-state g-local-total)
         )
-
+        
             ;Loop through all target player TCs to find nearby units that should retreat
-
             (defrule
             (or
                 (not
                     (up-set-target-object search-remote g: i))	;cannot find any more enemy defensive buildings
-                (goal g-remote-total 0))
+                (or
+                    (goal g-remote-total 0)
+                    (players-building-type-count target-player town-center == 0)))
             =>
-            (up-jump-rule 18)
-            )
-
-            (defrule
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
-            (up-compare-goal g-remote-total > 0)
-            =>
-            (up-reset-search 1 1 0 0)
-            (up-reset-filters)
-            (up-get-point position-object g-point-x)
-            (up-set-target-point g-point-x)
-            (up-filter-distance c: -1 c: 6)
-            (up-find-local c: battering-ram c: 1)
-            (up-get-search-state g-local-total)
+            (up-jump-rule 14)
             )
             
+            ;Search for our units and enemy units near TC
             (defrule
             (up-set-target-object search-remote g: i)	;found enemy defensive building
+            ; (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
-            (up-compare-goal g-local-total > 0)			;battering ram near a TC
-            (up-object-data object-data-type == town-center)
             =>
-            (up-set-defense-priority c: town-center c: 5000)
+            (up-get-object-data object-data-garrison-count g-temp)
+            (up-modify-goal g-temp c:/ 2)               ;count the number of garrisoned units as half soldiers
+            (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+            (up-get-point position-object g-point-x)
+            (up-set-target-point g-point-x)
+            (up-reset-search 1 1 0 0)
+            (up-reset-filters)
+            (up-filter-distance c: -1 c: 14)
+            (up-filter-include cmdid-military -1 -1 -1)
+            (up-find-remote c: all-units-class c: 40)
+            (up-find-local c: all-units-class c: 40)
+            (up-find-local c: battering-ram-line c: 5)
+            (up-clean-search search-local -1 search-order-asc)
+            (up-get-search-state g-local-total)
+            )
+
+            ;We have no units near TC, check next TC
+            (defrule
+            (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-object-data object-data-type == town-center)
+            (up-compare-goal g-remote-total > 0)
+            (goal g-local-total 0)
+            =>
+            (up-jump-rule 12)
+            )
+
+            ;Calculate numbers of soldiers near TC
+            (defrule
+            (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-object-data object-data-type == town-center)
+            (up-compare-goal g-remote-total > 0)
+            (up-compare-goal g-local-total > 0)
+            =>
+            (up-modify-goal g-temp g:+ g-remote-last)   ;add the number of enemy military units near the TC
+            (up-modify-goal g-temp-2 g:= g-local-total)
+            (up-modify-goal g-temp-3 g:= g-local-last)  ;g-local-last is number of rams
+            (up-modify-goal g-temp-3 c:* 10)            ;nearby rams count as ten units
+            (up-modify-goal g-temp-2 g:+ g-temp-3)      ;g-temp-2 = our army strength near TC
             )
 
             (defrule
             (up-set-target-object search-remote g: i)	;found enemy defensive building
+            ; (up-object-data object-data-type == town-center)
+            (up-compare-goal g-remote-total > 0)
+            (up-compare-goal g-local-total > 0)
+            (goal g-target-age-parity WE-ARE-AHEAD)
+            =>
+            (up-modify-goal g-temp c:/ 2)
+            )
+
+            (defrule
+            (up-set-target-object search-remote g: i)	;found enemy defensive building
+            ; (up-object-data object-data-type == town-center)
+            (up-compare-goal g-remote-total > 0)
+            (up-compare-goal g-local-total > 0)
+            (goal g-target-age-parity WE-ARE-BEHIND)
+            =>
+            (up-modify-goal g-temp c:* 2)
+            )
+
+            ;Check if we should retreat from TC
+            (defrule
+            (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-object-data object-data-type == town-center)
+            (up-compare-goal g-remote-total > 0)
+            (up-compare-goal g-temp-2 g:< g-temp)      ;enemy strength near TC is stronger than ours
+            =>
+            (set-goal g-projectile-retreat YES)
+            )
+
+            (defrule
+            (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-object-data object-data-type == town-center)
+            (up-compare-goal g-remote-total > 0)
+            (up-compare-goal g-temp-2 g:> g-temp)      ;enemy strength near TC is weaker than ours
+            =>
+            (up-remove-objects search-remote object-data-type != town-center)
+            (up-get-search-state g-local-total)
+            (up-modify-goal i c:+ 1)
+            (up-jump-rule -8)
+            )
+
+            ;Get extra projectile avoidance radius, based on width of building
+            (defrule
+            (goal g-projectile-retreat YES)
+            (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
             (or
                 (up-object-data object-data-type == town-center)
@@ -1898,7 +1970,9 @@
             )                           ;this must be added to the range of the building to get the danger radius of the enemy building
 
             (defrule
+            (goal g-projectile-retreat YES)
             (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
             (up-object-data object-data-type == krepost)
             =>
@@ -1906,43 +1980,32 @@
             )                           ;this must be added to the range of the building to get the danger radius of the enemy building
 
             (defrule
+            (goal g-projectile-retreat YES)
             (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
             (up-object-data object-data-class == tower-class)
             =>
             (set-goal g-temp-2 71)      ;extra distance from middle of building to corner of the building (sqrt(2) * 0.5 * 100 to convert to precise distance)
             )                           ;this must be added to the range of the building to get the danger radius of the enemy building
 
+            ;g-temp-3 equals full projectile avoidance radius
             (defrule
+            (goal g-projectile-retreat YES)
             (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
             =>
             (up-get-object-data object-data-range g-temp-3)
             (up-modify-goal g-temp-3 c:* 100)           ;change to precise distance
             (up-modify-goal g-temp-3 g:+ g-temp-2)      ;add distance from middle of building to corner of building, see rules above
             )
-            
-            (defrule
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
-            (up-compare-goal g-remote-total > 0)
-            (or
-                (goal g-local-total 0)				        ;battering ram not found near enemy defensive building
-                (up-object-data object-data-type != town-center))
-            (up-object-data object-data-type == town-center)
-            (or
-                (up-compare-goal g-temp < 15)				;melee and siege army strength, only retreat with small strength
-                (up-compare-goal g-target-pop-parity < 30))
-            =>
-            (set-goal g-projectile-retreat YES)
-            )
-            
+                
             (defrule
             (goal g-projectile-retreat YES)
             (up-set-target-object search-remote g: i)	;found enemy defensive building
             (up-compare-goal g-remote-total > 0)
-            (or
-                (up-object-data object-data-type == town-center)
-                (goal g-local-total 0))		    ;battering ram found near enemy defensive building
+            (up-object-data object-data-type == town-center)
             =>
             (up-reset-search 1 1 0 0)
             (up-reset-filters)
@@ -1959,138 +2022,8 @@
             (defrule
             (goal g-projectile-retreat YES)
             (up-set-target-object search-remote g: i)	;found enemy defensive building
-            (up-object-data object-data-type != town-center)
-            (up-compare-goal g-local-total > 0)		    ;battering ram found near enemy defensive building
-            =>
-            (up-reset-search 1 1 0 0)
-            (up-reset-filters)
-            (up-get-point position-object g-point-x)
-            (up-set-target-point g-point-x)
-            (up-find-local c: all-units-class c: 240)
-            (up-remove-objects search-local object-data-speed == 0)		;remove buildings
-            (up-remove-objects search-local object-data-pierce-armor >= 20)	;remove rams
-            (up-remove-objects search-local object-data-attack-stance == stance-no-attack)  ;units on no attack stance are already retreating from building
-            (up-remove-objects search-local object-data-class == livestock-class)
-            (up-remove-objects search-local object-data-class == infantry-class)
-            (up-remove-objects search-local object-data-class == cavalry-class)
-            (up-remove-objects search-local object-data-precise-distance g:> g-temp-3)		;remove all objects outside range of defensive building
-            )
-
-            (defrule
-            (goal g-projectile-retreat YES)
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
             (up-compare-goal g-remote-total > 0)
             (up-object-data object-data-type == town-center)
-            (up-compare-goal g-temp >= 25)				;melee and siege army strength, only allow 50+ HP units to attack TCs if we have very large strength
-            (or
-                (up-compare-goal g-target-pop-parity >= 50)
-                (players-population target-player <= 25))
-            (up-set-target-object search-local c: 0)	;found a unit close to the enemy building
-            (military-population >= 20)                 ;only allow units to not retreat if we have a decent military
-            =>
-            (up-remove-objects search-local object-data-hitpoints > 50)
-            )
-
-            (defrule
-            (goal g-projectile-retreat YES)
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
-            (up-compare-goal g-remote-total > 0)
-            (up-object-data object-data-type == town-center)
-            (up-projectile-detected projectile-town-center < 2000)
-            (up-compare-goal g-temp >= 25)				;melee and siege army strength, only allow 70+ HP units to attack TCs if we have large strength
-            (up-compare-goal g-target-pop-parity >= 25)
-            (up-set-target-object search-local c: 0)	;found a unit close to the enemy building
-            (military-population >= 12)                 ;only allow units to not retreat if we have a decent military
-            =>
-            (up-remove-objects search-local object-data-hitpoints > 70)
-            )
-
-            (defrule
-            (goal g-projectile-retreat YES)
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
-            (up-compare-goal g-remote-total > 0)
-            (up-object-data object-data-type == town-center)
-            (or
-                (up-projectile-detected projectile-town-center >= 2000)
-                (nor
-                    (up-projectile-detected projectile-town-center >= 5000)     ;if neither of these facts are true
-                    (up-projectile-detected projectile-town-center < 5000)))    ;then TC projectiles have never been detected
-            (up-set-target-object search-local c: 0)	;found a unit close to the enemy TC
-            (military-population >= 12)                 ;only allow units to not retreat if we have a decent military
-            =>
-            (up-remove-objects search-local object-data-hitpoints > 70)
-            )
-
-            (defrule
-            (goal g-projectile-retreat YES)
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
-            (up-compare-goal g-remote-total > 0)
-            (up-object-data object-data-class == tower-class)
-            (or
-                (and
-                    (up-compare-goal g-temp >= 20)				;melee and siege army strength, only allow melee units if we have large strength
-                    (up-compare-goal g-target-military-parity > 0))
-                (goal g-game-focus DEFENSIVE))
-            (up-set-target-object search-local c: 0)	;found a unit close to the enemy building
-            (military-population >= 12)                 ;only allow units to not retreat if we have a decent military
-            =>
-            (up-remove-objects search-local object-data-range == 0) ;only allow melee units to attack towers
-            )
-
-            (defrule
-            (goal g-projectile-retreat YES)
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
-            (up-compare-goal g-remote-total > 0)
-            (up-object-data object-data-class == tower-class)
-            (or
-                (up-compare-goal g-target-military-parity > 15)
-                (or
-                    (goal g-game-focus DEFENSIVE)
-                    (research-completed ri-obsidian-arrows)))
-            (up-set-target-object search-local c: 0)	;found a unit close to the enemy building
-            (military-population >= 25)                 ;only allow units to not retreat if we have a decent military
-            =>
-            (up-remove-objects search-local object-data-hitpoints >= 30) ;only allow healthy units to attack towers
-            )
-
-            (defrule
-            (goal g-projectile-retreat YES)
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
-            (up-compare-goal g-remote-total > 0)
-            (or
-                (up-object-data object-data-type == castle)
-                (up-object-data object-data-type == krepost))
-            (or
-                (and
-                    (up-compare-goal g-temp >= 35)				;melee and siege army strength, only allow melee units if we have large strength
-                    (up-compare-goal g-target-military-parity > 10))
-                (goal g-game-focus DEFENSIVE))
-            (up-set-target-object search-local c: 0)	;found a unit close to the enemy building
-            (military-population >= 20)                 ;only allow units to not retreat if we have a decent military
-            =>
-            (up-remove-objects search-local object-data-range == 0) ;only allow melee units to attack
-            )
-
-            (defrule
-            (goal g-projectile-retreat YES)
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
-            (up-compare-goal g-remote-total > 0)
-            (or
-                (up-object-data object-data-type == castle)
-                (up-object-data object-data-type == krepost))
-            (or
-                (up-compare-goal g-target-military-parity > 35)
-                (research-completed ri-obsidian-arrows))
-            (up-set-target-object search-local c: 0)	;found a unit close to the enemy building
-            (military-population >= 25)                 ;only allow units to not retreat if we have a decent military
-            =>
-            (up-remove-objects search-local object-data-hitpoints >= 40) ;only allow healthy units to attack
-            )
-            
-            (defrule
-            (goal g-projectile-retreat YES)
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
-            (up-compare-goal g-remote-total > 0)
             (up-get-object-data object-data-range g-temp-3)
             (up-modify-goal g-temp-3 c:+ 6)
             (up-set-target-object search-local c: 0)	;find a unit close to the enemy building
@@ -2109,9 +2042,300 @@
             (up-compare-goal i < 40)
             =>
             (set-goal g-projectile-retreat NO)
+            (up-get-search-state g-remote-total)
             (up-modify-goal i c:+ 1)
-            (up-jump-rule -19)
+            (up-jump-rule -15)
             )
+
+
+
+
+        ; ;Add strength of melee and siege weapons to see if we should retreat from enemy TC at all
+        ; (defrule
+        ; (true)
+        ; =>
+        ; (set-goal g-projectile-retreat NO)
+        ; (up-get-fact unit-type-count cavalry-class g-temp)
+        ; (up-get-fact unit-type-count infantry-class g-temp-2)
+        ; (up-modify-goal g-temp g:+ g-temp-2)
+        ; (up-get-fact unit-type-count siege-weapon-class g-temp-2)
+        ; (up-modify-goal g-temp-2 c:* 5)
+        ; (up-modify-goal g-temp g:+ g-temp-2)
+        ; (up-get-fact unit-type-count trebuchet-set g-temp-2)
+        ; (up-modify-goal g-temp-2 c:* 10)
+        ; (up-modify-goal g-temp g:+ g-temp-2)
+        ; )
+
+        ; (defrule
+        ; (true)
+        ; =>
+        ; (set-goal g-projectile-retreat NO)
+        ; (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+        ; (up-full-reset-search)
+        ; (up-find-remote c: town-center c: 20)
+        ; (up-remove-objects search-remote object-data-hitpoints < 480)   ;remove town centers that can't be garrisoned
+        ; (set-goal i 0)				;look at first building and track progress through loop
+        ; (set-goal g-temp-2 0)       ;for use in later rule
+        ; (up-get-search-state g-local-total)
+        ; )
+
+        ;     ;Loop through all target player TCs to find nearby units that should retreat
+        ;     (defrule
+        ;     (or
+        ;         (not
+        ;             (up-set-target-object search-remote g: i))	;cannot find any more enemy defensive buildings
+        ;         (goal g-remote-total 0))
+        ;     =>
+        ;     (up-jump-rule 18)
+        ;     )
+
+        ;         (defrule
+        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
+        ;         (up-compare-goal g-remote-total > 0)
+        ;         =>
+        ;         (up-reset-search 1 1 0 0)
+        ;         (up-reset-filters)
+        ;         (up-get-point position-object g-point-x)
+        ;         (up-set-target-point g-point-x)
+        ;         (up-filter-distance c: -1 c: 6)
+        ;         (up-find-local c: battering-ram c: 1)
+        ;         (up-get-search-state g-local-total)
+        ;         )
+                
+        ;         (defrule
+        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
+        ;         (up-compare-goal g-remote-total > 0)
+        ;         (up-compare-goal g-local-total > 0)			;battering ram near a TC
+        ;         (up-object-data object-data-type == town-center)
+        ;         =>
+        ;         (up-set-defense-priority c: town-center c: 5000)
+        ;         )
+
+        ;         (defrule
+        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
+        ;         (up-compare-goal g-remote-total > 0)
+        ;         (or
+        ;             (up-object-data object-data-type == town-center)
+        ;             (up-object-data object-data-type == castle))
+        ;         =>
+        ;         (set-goal g-temp-2 283)     ;extra distance from middle of building to corner of the building (sqrt(2) * 2 * 100 to convert to precise distance)
+        ;         )                           ;this must be added to the range of the building to get the danger radius of the enemy building
+
+        ;         (defrule
+        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
+        ;         (up-compare-goal g-remote-total > 0)
+        ;         (up-object-data object-data-type == krepost)
+        ;         =>
+        ;         (set-goal g-temp-2 212)     ;extra distance from middle of building to corner of the building (sqrt(2) * 1.5 * 100 to convert to precise distance)
+        ;         )                           ;this must be added to the range of the building to get the danger radius of the enemy building
+
+        ;         (defrule
+        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
+        ;         (up-compare-goal g-remote-total > 0)
+        ;         (up-object-data object-data-class == tower-class)
+        ;         =>
+        ;         (set-goal g-temp-2 71)      ;extra distance from middle of building to corner of the building (sqrt(2) * 0.5 * 100 to convert to precise distance)
+        ;         )                           ;this must be added to the range of the building to get the danger radius of the enemy building
+
+        ;         (defrule
+        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
+        ;         (up-compare-goal g-remote-total > 0)
+        ;         =>
+        ;         (up-get-object-data object-data-range g-temp-3)
+        ;         (up-modify-goal g-temp-3 c:* 100)           ;change to precise distance
+        ;         (up-modify-goal g-temp-3 g:+ g-temp-2)      ;add distance from middle of building to corner of building, see rules above
+        ;         )
+                
+        ;         (defrule
+        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
+        ;         (up-compare-goal g-remote-total > 0)
+        ;         (or
+        ;             (goal g-local-total 0)				        ;battering ram not found near enemy defensive building
+        ;             (up-object-data object-data-type != town-center))
+        ;         (up-object-data object-data-type == town-center)
+        ;         (or
+        ;             (up-compare-goal g-temp < 15)				;melee and siege army strength, only retreat with small strength
+        ;             (up-compare-goal g-target-pop-parity < 30))
+        ;         =>
+        ;         (set-goal g-projectile-retreat YES)
+        ;         )
+                
+        ;         (defrule
+        ;         (goal g-projectile-retreat YES)
+        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
+        ;         (up-compare-goal g-remote-total > 0)
+        ;         (or
+        ;             (up-object-data object-data-type == town-center)
+        ;             (goal g-local-total 0))		    ;battering ram found near enemy defensive building
+        ;         =>
+        ;         (up-reset-search 1 1 0 0)
+        ;         (up-reset-filters)
+        ;         (up-get-point position-object g-point-x)
+        ;         (up-set-target-point g-point-x)
+        ;         (up-find-local c: all-units-class c: 240)
+        ;         (up-remove-objects search-local object-data-speed == 0)		;remove buildings
+        ;         (up-remove-objects search-local object-data-pierce-armor >= 20)	;remove rams
+        ;         (up-remove-objects search-local object-data-attack-stance == stance-no-attack)  ;units on no attack stance are already retreating from building
+        ;         (up-remove-objects search-local object-data-class == livestock-class)
+        ;         (up-remove-objects search-local object-data-precise-distance g:> g-temp-3)		;remove all objects outside range of defensive building
+        ;         )
+                
+        ;         (defrule
+        ;         (goal g-projectile-retreat YES)
+        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
+        ;         (up-object-data object-data-type != town-center)
+        ;         (up-compare-goal g-local-total > 0)		    ;battering ram found near enemy defensive building
+        ;         =>
+        ;         (up-reset-search 1 1 0 0)
+        ;         (up-reset-filters)
+        ;         (up-get-point position-object g-point-x)
+        ;         (up-set-target-point g-point-x)
+        ;         (up-find-local c: all-units-class c: 240)
+        ;         (up-remove-objects search-local object-data-speed == 0)		;remove buildings
+        ;         (up-remove-objects search-local object-data-pierce-armor >= 20)	;remove rams
+        ;         (up-remove-objects search-local object-data-attack-stance == stance-no-attack)  ;units on no attack stance are already retreating from building
+        ;         (up-remove-objects search-local object-data-class == livestock-class)
+        ;         (up-remove-objects search-local object-data-class == infantry-class)
+        ;         (up-remove-objects search-local object-data-class == cavalry-class)
+        ;         (up-remove-objects search-local object-data-precise-distance g:> g-temp-3)		;remove all objects outside range of defensive building
+        ;         )
+
+        ;         (defrule
+        ;         (goal g-projectile-retreat YES)
+        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
+        ;         (up-compare-goal g-remote-total > 0)
+        ;         (up-object-data object-data-type == town-center)
+        ;         (up-compare-goal g-temp >= 25)				;melee and siege army strength, only allow 50+ HP units to attack TCs if we have very large strength
+        ;         (or
+        ;             (up-compare-goal g-target-pop-parity >= 50)
+        ;             (players-population target-player <= 25))
+        ;         (up-set-target-object search-local c: 0)	;found a unit close to the enemy building
+        ;         (military-population >= 20)                 ;only allow units to not retreat if we have a decent military
+        ;         =>
+        ;         (up-remove-objects search-local object-data-hitpoints > 50)
+        ;         )
+
+        ;         (defrule
+        ;         (goal g-projectile-retreat YES)
+        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
+        ;         (up-compare-goal g-remote-total > 0)
+        ;         (up-object-data object-data-type == town-center)
+        ;         (up-projectile-detected projectile-town-center < 2000)
+        ;         (up-compare-goal g-temp >= 25)				;melee and siege army strength, only allow 70+ HP units to attack TCs if we have large strength
+        ;         (up-compare-goal g-target-pop-parity >= 25)
+        ;         (up-set-target-object search-local c: 0)	;found a unit close to the enemy building
+        ;         (military-population >= 12)                 ;only allow units to not retreat if we have a decent military
+        ;         =>
+        ;         (up-remove-objects search-local object-data-hitpoints > 70)
+        ;         )
+
+        ;         (defrule
+        ;         (goal g-projectile-retreat YES)
+        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
+        ;         (up-compare-goal g-remote-total > 0)
+        ;         (up-object-data object-data-type == town-center)
+        ;         (or
+        ;             (up-projectile-detected projectile-town-center >= 2000)
+        ;             (nor
+        ;                 (up-projectile-detected projectile-town-center >= 5000)     ;if neither of these facts are true
+        ;                 (up-projectile-detected projectile-town-center < 5000)))    ;then TC projectiles have never been detected
+        ;         (up-set-target-object search-local c: 0)	;found a unit close to the enemy TC
+        ;         (military-population >= 12)                 ;only allow units to not retreat if we have a decent military
+        ;         =>
+        ;         (up-remove-objects search-local object-data-hitpoints > 70)
+        ;         )
+
+        ;         (defrule
+        ;         (goal g-projectile-retreat YES)
+        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
+        ;         (up-compare-goal g-remote-total > 0)
+        ;         (up-object-data object-data-class == tower-class)
+        ;         (or
+        ;             (and
+        ;                 (up-compare-goal g-temp >= 20)				;melee and siege army strength, only allow melee units if we have large strength
+        ;                 (up-compare-goal g-target-military-parity > 0))
+        ;             (goal g-game-focus DEFENSIVE))
+        ;         (up-set-target-object search-local c: 0)	;found a unit close to the enemy building
+        ;         (military-population >= 12)                 ;only allow units to not retreat if we have a decent military
+        ;         =>
+        ;         (up-remove-objects search-local object-data-range == 0) ;only allow melee units to attack towers
+        ;         )
+
+        ;         (defrule
+        ;         (goal g-projectile-retreat YES)
+        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
+        ;         (up-compare-goal g-remote-total > 0)
+        ;         (up-object-data object-data-class == tower-class)
+        ;         (or
+        ;             (up-compare-goal g-target-military-parity > 15)
+        ;             (or
+        ;                 (goal g-game-focus DEFENSIVE)
+        ;                 (research-completed ri-obsidian-arrows)))
+        ;         (up-set-target-object search-local c: 0)	;found a unit close to the enemy building
+        ;         (military-population >= 25)                 ;only allow units to not retreat if we have a decent military
+        ;         =>
+        ;         (up-remove-objects search-local object-data-hitpoints >= 30) ;only allow healthy units to attack towers
+        ;         )
+
+        ;         (defrule
+        ;         (goal g-projectile-retreat YES)
+        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
+        ;         (up-compare-goal g-remote-total > 0)
+        ;         (or
+        ;             (up-object-data object-data-type == castle)
+        ;             (up-object-data object-data-type == krepost))
+        ;         (or
+        ;             (and
+        ;                 (up-compare-goal g-temp >= 35)				;melee and siege army strength, only allow melee units if we have large strength
+        ;                 (up-compare-goal g-target-military-parity > 10))
+        ;             (goal g-game-focus DEFENSIVE))
+        ;         (up-set-target-object search-local c: 0)	;found a unit close to the enemy building
+        ;         (military-population >= 20)                 ;only allow units to not retreat if we have a decent military
+        ;         =>
+        ;         (up-remove-objects search-local object-data-range == 0) ;only allow melee units to attack
+        ;         )
+
+        ;         (defrule
+        ;         (goal g-projectile-retreat YES)
+        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
+        ;         (up-compare-goal g-remote-total > 0)
+        ;         (or
+        ;             (up-object-data object-data-type == castle)
+        ;             (up-object-data object-data-type == krepost))
+        ;         (or
+        ;             (up-compare-goal g-target-military-parity > 35)
+        ;             (research-completed ri-obsidian-arrows))
+        ;         (up-set-target-object search-local c: 0)	;found a unit close to the enemy building
+        ;         (military-population >= 25)                 ;only allow units to not retreat if we have a decent military
+        ;         =>
+        ;         (up-remove-objects search-local object-data-hitpoints >= 40) ;only allow healthy units to attack
+        ;         )
+                
+        ;         (defrule
+        ;         (goal g-projectile-retreat YES)
+        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
+        ;         (up-compare-goal g-remote-total > 0)
+        ;         (up-get-object-data object-data-range g-temp-3)
+        ;         (up-modify-goal g-temp-3 c:+ 6)
+        ;         (up-set-target-object search-local c: 0)	;find a unit close to the enemy building
+        ;         =>
+        ;         (up-copy-point g-point3-x g-point-x)		;store enemy defensive building location in g-point3-x
+        ;         (up-get-point position-object g-point2-x)
+        ;         (up-lerp-tiles g-point3-x g-point2-x g: g-temp-3)	;find point g-temp-3 tiles away from enemy building (building's range + 6)
+        ;         (up-cross-tiles g-point3-x g-point2-x c: 3)	;so that units don't always retreat to the same spot
+        ;         (up-bound-point g-point3-x g-point3-x)
+        ;         (up-target-point g-point3-x action-move -1 stance-no-attack)
+        ;         )
+
+        ;         (defrule
+        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
+        ;         (up-compare-goal g-remote-total > 0)
+        ;         (up-compare-goal i < 40)
+        ;         =>
+        ;         (set-goal g-projectile-retreat NO)
+        ;         (up-modify-goal i c:+ 1)
+        ;         (up-jump-rule -19)
+        ;         )
 
         ;Reset attack stance for units that successfully retreated
 
