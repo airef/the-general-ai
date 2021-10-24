@@ -436,6 +436,7 @@
 		(and
 			(military-population g:>= g-required-attack-num)
 			(military-population g:>= g-stop-attack-num)))
+	(military-population > 5)
 	(players-building-count target-player > 0)
 	(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
 	=>
@@ -499,7 +500,9 @@
 	(defrule
 	(goal g-attack-status LATER-CASTLE-ATTACKS)
 	(goal g-attacking YES)
-	(military-population g:< g-stop-attack-num)
+	(or
+		(military-population g:< g-stop-attack-num)
+		(military-population < 5))
 	=>
 	(set-goal g-attacking NO)
 	(set-goal g-attack-coordination STOP-ATTACKING)
@@ -509,7 +512,9 @@
 	(defrule
 	(up-compare-goal g-attack-status >= FIRST-IMPERIAL-ATTACK)
 	(goal g-attacking YES)
-	(military-population g:< g-stop-attack-num)
+	(or
+		(military-population g:< g-stop-attack-num)
+		(military-population < 5))
 	(population < EIGHTY-FIVE-PERCENT-POP)
 	=>
 	(set-goal g-attacking NO)
