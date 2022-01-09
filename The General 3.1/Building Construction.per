@@ -1762,6 +1762,16 @@
 		(disable-self)
 		)
 
+		;Reset
+		(defrule
+		(or
+			(up-compare-goal g-build-line-bldg != PENDING)
+			(up-compare-goal g-build-line-type != PENDING))
+		=>
+		(set-goal g-build-line-bldg PENDING)
+		(set-goal g-build-line-type PENDING)
+		)
+
 		;Foraging mill
 		(defrule
 		(up-object-type-count-total c: mill g:< g-desired-num-mill)
@@ -1812,7 +1822,7 @@
 		(up-jump-direct g: g-mc-construction-rule-id)
 		)
 
-		(load "The General 3.1/Functions/Build Line")
+		(load "The General 3.1/Functions/Build Line Mill")
 
 		(defrule
 		(up-compare-sn sn-placement-to-center == 1)
@@ -1829,6 +1839,16 @@
 		=>
 		(up-get-rule-id g-mc-construction-rule-id)
 		(disable-self)
+		)
+
+		;Reset
+		(defrule
+		(or
+			(up-compare-goal g-build-line-bldg != PENDING)
+			(up-compare-goal g-build-line-type != PENDING))
+		=>
+		(set-goal g-build-line-bldg PENDING)
+		(set-goal g-build-line-type PENDING)
 		)
 
 		;Gold Camp
@@ -1994,39 +2014,84 @@
 		)
 
 		(defrule
-		(up-object-type-count-total c: mining-camp g:< g-desired-num-mining-camp)
+		(up-compare-goal g-current-gold-camp-total g:< g-desired-num-gold-camp)
 		(goal g-build-line-bldg mining-camp)
-		(population <= FIFTY-PERCENT-POP)
-		(building-type-count-total mining-camp < 3)
 		=>
-		(set-goal g-build-line-max-distance 40)
+		(set-goal g-build-line-max-distance 255)
 		)
 
 		(defrule
-		(up-object-type-count-total c: mining-camp g:< g-desired-num-mining-camp)
+		(up-compare-goal g-current-gold-camp-total g:< g-desired-num-gold-camp)
 		(goal g-build-line-bldg mining-camp)
-		(or
-			(population >= FIFTY-PERCENT-POP)
-			(building-type-count-total mining-camp >= 3))
+		(building-type-count-total town-center < 2)
+		(goal g-current-gold-camp-total 2)
 		=>
-		(set-goal g-build-line-max-distance 255)
+		(set-goal g-build-line-max-distance 55)
+		)
+
+		(defrule
+		(up-compare-goal g-current-gold-camp-total g:< g-desired-num-gold-camp)
+		(goal g-build-line-bldg mining-camp)
+		(building-type-count-total town-center < 2)
+		(goal g-current-gold-camp-total 1)
+		=>
+		(set-goal g-build-line-max-distance 45)
+		)
+
+		(defrule
+		(up-compare-goal g-current-gold-camp-total g:< g-desired-num-gold-camp)
+		(goal g-build-line-bldg mining-camp)
+		(building-type-count-total town-center < 2)
+		(up-compare-goal g-current-gold-camp-total < 1)
+		=>
+		(set-goal g-build-line-max-distance 30)
 		)
 	
 		(defrule
 		(goal g-build-line-type PENDING)
-		(up-object-type-count-total c: mining-camp g:>= g-desired-num-mining-camp)
-		(up-compare-goal g-lc-construction-rule-id > 0)
+		(up-compare-goal g-stone-camp-construction-rule-id > 0)
 		=>
 		(up-jump-direct g: g-stone-camp-construction-rule-id)
 		)
 
-		(load "The General 3.1/Functions/Build Line")
+		(load "The General 3.1/Functions/Build Line Mining")
+
+		;If failed to place gold TC, then place wood TC instead
+		(defrule
+		(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
+		(up-compare-goal g-build-line-resource-type != wood)
+		(goal g-build-line-bldg town-center)
+		(up-pending-objects g: g-build-line-bldg == 0)
+		(up-can-build g-build-line-escrow g: g-build-line-bldg)
+		=>		
+		(set-goal g-build-line-dropsite-distance 12)
+		(set-goal g-build-line-enemy-bldg-distance 45)
+		(set-goal g-build-line-max-distance -1)
+		(set-goal g-build-line-expand-direction NO-DIRECTION)
+		(set-goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
+		(set-goal g-build-line-resource-type wood)
+		(set-goal g-build-line-zone-radius 0)
+		(set-goal g-build-line-max-zone-radius 7)
+		; (chat-to-player my-player-number CHAT-BUILD-BACKUP-TC-WOOD)
+		)
+
+		(load "The General 3.1/Functions/Build Line Lumber")
 
 		(defrule
 		(true)
 		=>
 		(up-get-rule-id g-stone-camp-construction-rule-id)
 		(disable-self)
+		)
+
+		;Reset
+		(defrule
+		(or
+			(up-compare-goal g-build-line-bldg != PENDING)
+			(up-compare-goal g-build-line-type != PENDING))
+		=>
+		(set-goal g-build-line-bldg PENDING)
+		(set-goal g-build-line-type PENDING)
 		)
 
 		;Stone Camp
@@ -2048,22 +2113,28 @@
 		)
 
 		(defrule
-		(up-object-type-count-total c: mining-camp g:< g-desired-num-mining-camp)
+		(up-compare-goal g-current-stone-camp-total g:< g-desired-num-stone-camp)
 		(goal g-build-line-bldg mining-camp)
-		(population <= FIFTY-PERCENT-POP)
-		(building-type-count-total mining-camp < 4)
 		=>
-		(set-goal g-build-line-max-distance 40)
+		(set-goal g-build-line-max-distance 255)
+		)
+
+		(defrule
+		(up-compare-goal g-current-stone-camp-total g:< g-desired-num-stone-camp)
+		(goal g-build-line-bldg mining-camp)
+		(building-type-count-total town-center < 2)
+		(goal g-current-stone-camp-total 1)
+		=>
+		(set-goal g-build-line-max-distance 45)
 		)
 
 		(defrule
 		(up-object-type-count-total c: mining-camp g:< g-desired-num-mining-camp)
 		(goal g-build-line-bldg mining-camp)
-		(or
-			(population >= FIFTY-PERCENT-POP)
-			(building-type-count-total mining-camp >= 4))
+		(building-type-count-total town-center < 2)
+		(up-compare-goal g-current-stone-camp-total < 1)
 		=>
-		(set-goal g-build-line-max-distance 255)
+		(set-goal g-build-line-max-distance 30)
 		)
 	
 		(defrule
@@ -2073,7 +2144,7 @@
 		(up-jump-direct g: g-lc-construction-rule-id)
 		)
 
-		(load "The General 3.1/Functions/Build Line")
+		(load "The General 3.1/Functions/Build Line Mining")
 
 		(defrule
 		(up-compare-sn sn-placement-to-center == 1)
@@ -2090,6 +2161,16 @@
 		=>
 		(up-get-rule-id g-lc-construction-rule-id)
 		(disable-self)
+		)
+
+		;Reset
+		(defrule
+		(or
+			(up-compare-goal g-build-line-bldg != PENDING)
+			(up-compare-goal g-build-line-type != PENDING))
+		=>
+		(set-goal g-build-line-bldg PENDING)
+		(set-goal g-build-line-type PENDING)
 		)
 
 		(defrule
@@ -2171,7 +2252,7 @@
 		(up-jump-direct g: g-place-point-rule-id)
 		)
 
-		(load "The General 3.1/Functions/Build Line")
+		(load "The General 3.1/Functions/Build Line Lumber")
 
 		(defrule
 		(up-compare-sn sn-placement-to-center == 1)

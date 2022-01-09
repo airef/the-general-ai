@@ -1327,7 +1327,12 @@
         )
 
         (defrule
-        (goal g-boar-hunt-status SET-BOAR-ID)
+        (or
+            (goal g-boar-hunt-status SET-BOAR-ID)
+            (and
+                (not
+                    (up-set-target-by-id g: g-boar-lurer-id))
+                (up-compare-goal g-boar-hunt-status >= DROP-LURER-RESOURCES)))
         (up-set-target-by-id g: g-current-boar-id)
         (up-object-data object-data-action != actionid-attack)
         (up-object-data object-data-hitpoints > 0)

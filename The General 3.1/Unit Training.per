@@ -222,15 +222,31 @@
 	;	Siege Weapons
 	;-------------------
 
-		(defrule
-		(goal g-siege-workshop-next-unit bombard-cannon)
-		(goal g-town-under-attack NO)
-		(up-object-type-count-total c: bombard-cannon g:< g-desired-num-bombard-cannon)
-		; (up-pending-objects c: bombard-cannon g:< g-max-working-siege-workshops)
-		(can-train-with-escrow bombard-cannon)
-		=>
-		(up-train g-escrow c: bombard-cannon)
-		)
+		#load-if-defined DE-AVAILABLE
+
+			(defrule
+			(goal g-siege-workshop-next-unit bombard-cannon)
+			(goal g-town-under-attack NO)
+			(up-object-type-count-total c: bombard-cannon-line g:< g-desired-num-bombard-cannon)
+			; (up-pending-objects c: bombard-cannon-line g:< g-max-working-siege-workshops)
+			(can-train-with-escrow bombard-cannon-line)
+			=>
+			(up-train g-escrow c: bombard-cannon-line)
+			)
+
+		#else
+
+			(defrule
+			(goal g-siege-workshop-next-unit bombard-cannon)
+			(goal g-town-under-attack NO)
+			(up-object-type-count-total c: bombard-cannon g:< g-desired-num-bombard-cannon)
+			; (up-pending-objects c: bombard-cannon g:< g-max-working-siege-workshops)
+			(can-train-with-escrow bombard-cannon)
+			=>
+			(up-train g-escrow c: bombard-cannon)
+			)
+
+		#end-if
 
 		(defrule
 		(or

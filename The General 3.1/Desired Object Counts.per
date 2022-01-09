@@ -1050,13 +1050,27 @@
 	;	Eagle Warriors
 	;--------------------
 
-		(defrule
-		(up-compare-goal g-desired-num-military > 0)
-		(goal g-primary-unit eagle-warrior)
-		(up-compare-goal g-age-status >= TO-FEUDAL)
-		=>
-		(up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
-		)
+		#load-if-defined UP-GAME-WK
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit eagle-warrior)
+			(up-compare-goal g-age-status >= TO-FEUDAL)
+			=>
+			(up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+			)
+
+		#else
+
+			(defrule
+			(up-compare-goal g-desired-num-military > 0)
+			(goal g-primary-unit eagle-warrior)
+			(up-compare-goal g-age-status >= TO-CASTLE)
+			=>
+			(up-modify-goal g-desired-num-eagle-warrior g:= g-desired-num-military)
+			)
+
+		#end-if
 
 		(defrule
 		(up-compare-goal g-desired-num-military > 0)

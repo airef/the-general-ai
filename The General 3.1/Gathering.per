@@ -784,6 +784,7 @@
         (unit-type-count villager-forager g:< g-temp)
         =>
         (up-full-reset-search)
+        (up-set-target-point g-position-self-x)
         (up-filter-distance c: -1 c: 20)
         (up-find-local c: mill c: 1)
         (up-filter-status c: status-pending c: list-active)
@@ -3963,22 +3964,45 @@
             )
 
             ;Bombard Cannon
-            (defrule
-            (up-timer-status t-15-sec == timer-triggered)
-            (up-object-type-count c: bombard-cannon g:< g-desired-num-bombard-cannon)
-            (building-type-count siege-workshop > 0)
-            =>
-            (up-setup-cost-data 1 g-food-cost)
-            (up-add-object-cost c: bombard-cannon c: 1)
-            (up-modify-goal g-temp c:= 30)      ;60 seconds per minute, / 2 to cut amount to save in half
-            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
-            (up-modify-goal g-wood-cost g:* g-temp)
-            (up-modify-goal g-gold-cost g:* g-temp)
-            (up-modify-goal g-wood-cost c:/ BOMBARD-CANNON-TIME)  ;divide by creation time
-            (up-modify-goal g-gold-cost c:/ BOMBARD-CANNON-TIME)  ;divide by creation time
-            (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
-            (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
-            )
+            #load-if-defined DE-AVAILABLE
+
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-object-type-count c: bombard-cannon-line g:< g-desired-num-bombard-cannon)
+                (building-type-count siege-workshop > 0)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: bombard-cannon c: 1)
+                (up-modify-goal g-temp c:= 30)      ;60 seconds per minute, / 2 to cut amount to save in half
+                (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+                (up-modify-goal g-wood-cost g:* g-temp)
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-wood-cost c:/ BOMBARD-CANNON-TIME)  ;divide by creation time
+                (up-modify-goal g-gold-cost c:/ BOMBARD-CANNON-TIME)  ;divide by creation time
+                (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+                (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+                )
+
+            #else
+                
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-object-type-count c: bombard-cannon g:< g-desired-num-bombard-cannon)
+                (building-type-count siege-workshop > 0)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: bombard-cannon c: 1)
+                (up-modify-goal g-temp c:= 30)      ;60 seconds per minute, / 2 to cut amount to save in half
+                (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+                (up-modify-goal g-wood-cost g:* g-temp)
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-wood-cost c:/ BOMBARD-CANNON-TIME)  ;divide by creation time
+                (up-modify-goal g-gold-cost c:/ BOMBARD-CANNON-TIME)  ;divide by creation time
+                (up-modify-goal g-total-objects-wood-needed g:+ g-wood-cost)
+                (up-modify-goal g-total-objects-gold-needed g:+ g-gold-cost)
+                )
+
+            #end-if
 
     ;------------------------
     ;   Add Costs Together

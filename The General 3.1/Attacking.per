@@ -425,6 +425,7 @@
 	(set-goal g-attacking YES)
 	(set-goal g-attack-coordination ATTACK-STARTED)
 	(up-modify-goal g-attack-status c:+ 1)
+	(set-strategic-number sn-number-civilian-militia 0)
 	)
 
 	(defrule
@@ -443,6 +444,7 @@
 	(set-goal g-attacking YES)
 	(set-goal g-attack-coordination ATTACK-STARTED)
 	(up-modify-goal g-attack-status c:+ 1)
+	(set-strategic-number sn-number-civilian-militia 0)
 	)
 
 	(defrule
@@ -536,6 +538,7 @@
 	(up-modify-goal g-attack-status c:- 1)	;move back to previous attack status
 	(up-modify-sn sn-maximum-town-size s:= custom-sn-peaceful-town-size)
 	(up-update-targets)
+	(set-strategic-number sn-number-civilian-militia 4)
 	(set-goal g-attack-coordination RETREAT)
 	(disable-timer t-first-attack)
 	)
@@ -553,6 +556,7 @@
 	(up-modify-goal g-attack-status c:- 1)	;move back to previous attack status
 	(up-modify-sn sn-maximum-town-size s:= custom-sn-peaceful-town-size)
 	(up-update-targets)
+	(set-strategic-number sn-number-civilian-militia 4)
 	(set-goal g-attack-coordination RETREAT)
 	(disable-timer t-first-attack)
 	)
@@ -563,6 +567,7 @@
 	(up-modify-goal g-attack-status c:+ 1)
 	(up-modify-sn sn-maximum-town-size s:= custom-sn-peaceful-town-size)
 	(up-update-targets)
+	(set-strategic-number sn-number-civilian-militia 4)
 	(set-goal g-attack-coordination RETREAT)
 	(disable-timer t-first-attack)
 	)
@@ -686,15 +691,31 @@
 		(up-set-offense-priority c: tower-class c: 0)
 		)
 
-		(defrule
-		(or
-			(unit-type-count trebuchet-set > 0)
-			(unit-type-count bombard-cannon > 0))
-		=>
-		(up-set-offense-priority c: castle c: 11)
-		(up-set-offense-priority c: town-center c: 9)
-		(up-set-offense-priority c: tower-class c: 4)
-		)
+		#load-if-defined DE-AVAILABLE 
+
+			(defrule
+			(or
+				(unit-type-count trebuchet-set > 0)
+				(unit-type-count bombard-cannon-line > 0))
+			=>
+			(up-set-offense-priority c: castle c: 11)
+			(up-set-offense-priority c: town-center c: 9)
+			(up-set-offense-priority c: tower-class c: 4)
+			)
+
+		#else
+
+			(defrule
+			(or
+				(unit-type-count trebuchet-set > 0)
+				(unit-type-count bombard-cannon > 0))
+			=>
+			(up-set-offense-priority c: castle c: 11)
+			(up-set-offense-priority c: town-center c: 9)
+			(up-set-offense-priority c: tower-class c: 4)
+			)
+
+		#end-if
 
 	;--------------------------
 	;	Defensive Priorities

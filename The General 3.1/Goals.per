@@ -6007,19 +6007,39 @@
 	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-trebuchet)
 	)
 
-	(defrule
-	(current-age == imperial-age)
-	(or
-		(up-building-type-in-town c: castle > 0)
-		(military-population > 15))
-	(building-type-count siege-workshop > 0)
-	(unit-available bombard-cannon)
-	(unit-type-count-total bombard-cannon == 0)
-	(up-compare-goal g-desired-num-bombard-cannon > 0)
-	=>
-	(set-goal g-constant-train-unit bombard-cannon)
-	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-bombard-cannon)
-	)
+	#load-if-defined DE-AVAILABLE
+
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-building-type-in-town c: castle > 0)
+			(military-population > 15))
+		(building-type-count siege-workshop > 0)
+		(unit-available bombard-cannon-line)
+		(unit-type-count-total bombard-cannon-line == 0)
+		(up-compare-goal g-desired-num-bombard-cannon > 0)
+		=>
+		(set-goal g-constant-train-unit bombard-cannon)
+		(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-bombard-cannon)
+		)
+
+	#else
+
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-building-type-in-town c: castle > 0)
+			(military-population > 15))
+		(building-type-count siege-workshop > 0)
+		(unit-available bombard-cannon)
+		(unit-type-count-total bombard-cannon == 0)
+		(up-compare-goal g-desired-num-bombard-cannon > 0)
+		=>
+		(set-goal g-constant-train-unit bombard-cannon)
+		(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-bombard-cannon)
+		)
+
+	#end-if
 
 ;---------------------------------------
 ;	GOAL 230: g-team-partner
@@ -6833,7 +6853,7 @@
 
 		(defrule
 		(current-age == imperial-age)
-		(goal g-primary-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(goal g-spearman-tech-progress PRIORITY-IMPERIAL-COMPLETE)
 		(research-completed my-second-unique-research)
 		(or
 			(research-completed ri-blast-furnace)
@@ -6846,7 +6866,7 @@
 			
 		(defrule
 		(current-age == imperial-age)
-		(goal g-primary-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(goal g-spearman-tech-progress PRIORITY-IMPERIAL-COMPLETE)
 		(or
 			(research-completed ri-blast-furnace)
 			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
@@ -17208,17 +17228,34 @@
 	(set-goal g-siege-workshop-next-unit scorpion-line)
 	(up-modify-goal g-temp g:= g-temp-2)
 	)
+
+	#load-if-defined DE-AVAILABLE
 	
-	(defrule
-	(building-type-count siege-workshop > 0)
-	(up-object-type-count-total c: bombard-cannon g:< g-desired-num-bombard-cannon)
-	(up-get-fact unit-type-count-total bombard-cannon g-temp-2)
-	(up-modify-goal g-temp-2 g:%/ g-desired-num-bombard-cannon)
-	(up-compare-goal g-temp-2 g:< g-temp)
-	=>
-	(set-goal g-siege-workshop-next-unit bombard-cannon)
-	(up-modify-goal g-temp g:= g-temp-2)
-	)
+		(defrule
+		(building-type-count siege-workshop > 0)
+		(up-object-type-count-total c: bombard-cannon-line g:< g-desired-num-bombard-cannon)
+		(up-get-fact unit-type-count-total bombard-cannon-line g-temp-2)
+		(up-modify-goal g-temp-2 g:%/ g-desired-num-bombard-cannon)
+		(up-compare-goal g-temp-2 g:< g-temp)
+		=>
+		(set-goal g-siege-workshop-next-unit bombard-cannon)
+		(up-modify-goal g-temp g:= g-temp-2)
+		)
+
+	#else
+	
+		(defrule
+		(building-type-count siege-workshop > 0)
+		(up-object-type-count-total c: bombard-cannon g:< g-desired-num-bombard-cannon)
+		(up-get-fact unit-type-count-total bombard-cannon g-temp-2)
+		(up-modify-goal g-temp-2 g:%/ g-desired-num-bombard-cannon)
+		(up-compare-goal g-temp-2 g:< g-temp)
+		=>
+		(set-goal g-siege-workshop-next-unit bombard-cannon)
+		(up-modify-goal g-temp g:= g-temp-2)
+		)
+
+	#end-if
 
 ;--------------------------------
 ;	GOAL 325: g-dock-next-unit

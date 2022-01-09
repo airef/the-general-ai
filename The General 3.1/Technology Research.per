@@ -13929,34 +13929,69 @@
 	;	Bombard Cannons
 	;---------------------
 
-		(defrule
-		(up-object-type-count-total c: bombard-cannon g:< g-desired-num-bombard-cannon)
-		(military-population g:>= g-min-military-pop)
-		(or
-			(unit-type-count-total bombard-cannon < 1)
-			(and
-				(military-population >= 15)
-				(unit-type-count-total bombard-cannon < 2)))
-		=>
-		(up-setup-cost-data 1 g-food-cost)
-		(up-add-object-cost c: bombard-cannon c: 1)
-		(up-modify-goal g-max-wood-needed g:max g-wood-cost)
-		(up-modify-goal g-max-gold-needed g:max g-gold-cost)
-		)
+		#load-if-defined DE-AVAILABLE
 
-		(defrule
-		(taunt-detected TAUNT-PLAYER 246)
-		(up-object-type-count-total c: bombard-cannon g:< g-desired-num-bombard-cannon)
-		(military-population g:>= g-min-military-pop)
-		(or
-			(unit-type-count-total bombard-cannon < 1)
-			(and
-				(military-population >= 15)
-				(unit-type-count-total bombard-cannon < 2)))
-		=>
-		(up-store-type-name c: bombard-cannon)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246 c: 7031232)
-		)
+			(defrule
+			(up-object-type-count-total c: bombard-cannon-line g:< g-desired-num-bombard-cannon)
+			(military-population g:>= g-min-military-pop)
+			(or
+				(unit-type-count-total bombard-cannon-line < 1)
+				(and
+					(military-population >= 15)
+					(unit-type-count-total bombard-cannon-line < 2)))
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-object-cost c: bombard-cannon c: 1)
+			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
+			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
+			)
+
+			(defrule
+			(taunt-detected TAUNT-PLAYER 246)
+			(up-object-type-count-total c: bombard-cannon-line g:< g-desired-num-bombard-cannon)
+			(military-population g:>= g-min-military-pop)
+			(or
+				(unit-type-count-total bombard-cannon-line < 1)
+				(and
+					(military-population >= 15)
+					(unit-type-count-total bombard-cannon-line < 2)))
+			=>
+			(up-store-type-name c: bombard-cannon)
+			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246 c: 7031232)
+			)
+
+		#else
+
+			(defrule
+			(up-object-type-count-total c: bombard-cannon g:< g-desired-num-bombard-cannon)
+			(military-population g:>= g-min-military-pop)
+			(or
+				(unit-type-count-total bombard-cannon < 1)
+				(and
+					(military-population >= 15)
+					(unit-type-count-total bombard-cannon < 2)))
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-object-cost c: bombard-cannon c: 1)
+			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
+			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
+			)
+
+			(defrule
+			(taunt-detected TAUNT-PLAYER 246)
+			(up-object-type-count-total c: bombard-cannon g:< g-desired-num-bombard-cannon)
+			(military-population g:>= g-min-military-pop)
+			(or
+				(unit-type-count-total bombard-cannon < 1)
+				(and
+					(military-population >= 15)
+					(unit-type-count-total bombard-cannon < 2)))
+			=>
+			(up-store-type-name c: bombard-cannon)
+			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246 c: 7031232)
+			)
+
+		#end-if
 
 	;---------------
 	;	Villagers
