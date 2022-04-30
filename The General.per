@@ -1,11 +1,11 @@
-;                              - THE GENERAL V1.1h -
+;                              - THE GENERAL V1.1i -
 ;                                       
 ;                                By  Leif Ericson
 ;				
 ;Settings:
 ;
 ;Game Version:	Userpatch, DE, or Wololo Kingdoms only. Not compatible with 1.0c.
-;Civilizations:	Aztecs, Huns, or Magyars
+;Civilizations:	Aztecs, Franks, Huns, Incas, Magyars, or Mayans
 ;Game Type:		Random Map
 ;Map Type:		Arabia
 ;Map Size:		Any
@@ -63,18 +63,36 @@
 
 #load-if-not-defined AZTEC-CIV
 #load-if-not-defined BRITON-CIV
+#load-if-not-defined FRANKISH-CIV
 #load-if-not-defined HUN-CIV
 #load-if-not-defined INCAN-CIV
 #load-if-not-defined MAGYAR-CIV
+#load-if-not-defined MAYAN-CIV
 
-	(defrule
-	(game-time > 15)
-	=>
-	(chat-to-all "I currently play best with Aztecs, Huns, Incas, or Magyars.")
-	(chat-to-all "If you use AI versions before 1.1, I can play other civs.")
-	(disable-self)
-	)
+	#load-if-defined UP-GAME-WK
 
+		(defrule
+		(game-time > 15)
+		=>
+		(chat-to-all "I currently play best with Aztecs, Franks, Huns, Incas, Magyars, or Mayans.")
+		(chat-to-all "If you use The General versions before 1.1, I can play other civs.")
+		(disable-self)
+		)
+
+	#else
+
+		(defrule
+		(game-time > 15)
+		=>
+		(chat-to-all "I currently play best with Aztecs, Franks, Huns, or Mayans.")
+		(chat-to-all "If you use The General versions before 1.1, I can play other civs.")
+		(disable-self)
+		)
+
+	#end-if
+
+#end-if
+#end-if
 #end-if
 #end-if
 #end-if

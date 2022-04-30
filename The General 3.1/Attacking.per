@@ -94,7 +94,9 @@
 			(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS))
 		(or
 			(goal g-target-age-parity WE-ARE-BEHIND)
-			(goal g-age-status SAVE-FOR-IMPERIAL))
+			(and
+				(goal g-age-status SAVE-FOR-IMPERIAL)
+				(up-compare-goal g-target-pop-parity < 35)))
 		=>
 		(up-get-fact unit-type-count cavalry-class g-temp)
 		(up-modify-goal g-temp c:/ 4)
@@ -109,7 +111,9 @@
 			(up-compare-goal g-strategy-type != FAST-CASTLE)
 			(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS))
 		(goal g-target-age-parity WE-ARE-EQUAL)
-		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+		(or
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(up-compare-goal g-target-pop-parity >= 35))
 		=>
 		(up-get-fact unit-type-count cavalry-class g-temp)
 		(up-modify-goal g-temp c:/ 2)
@@ -123,10 +127,24 @@
 			(up-compare-goal g-strategy-type != FAST-CASTLE)
 			(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS))
 		(goal g-target-age-parity WE-ARE-AHEAD)
-		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+		(or
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(up-compare-goal g-target-pop-parity >= 25))
 		=>
 		(up-get-fact unit-type-count cavalry-class g-temp)
 		(up-modify-goal g-required-attack-num g:- g-temp)
+		)
+		(defrule
+		(goal g-attack-objective ATTACK-TARGET-ENEMY)
+		(current-age >= castle-age)
+		(or
+			(up-compare-goal g-strategy-type != FAST-CASTLE)
+			(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS))
+		(goal g-target-age-parity WE-ARE-AHEAD)
+		(or
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(up-compare-goal g-target-pop-parity >= 25))
+		=>
 		(up-get-fact unit-type-count archery-class g-temp)
 		(up-get-fact unit-type-count cavalry-archer-class g-temp-2)
 		(up-modify-goal g-temp g:+ g-temp-2)
@@ -144,7 +162,9 @@
 			(up-compare-goal g-strategy-type != FAST-CASTLE)
 			(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS))
 		(goal g-target-age-parity WE-ARE-AHEAD)
-		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+		(or
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(up-compare-goal g-target-pop-parity >= 25))
 		=>
 		(up-modify-goal g-temp g:= g-enemy-heavy-cavalry-count)
 		(up-modify-goal g-temp c:/ 4)
@@ -158,7 +178,9 @@
 			(up-compare-goal g-strategy-type != FAST-CASTLE)
 			(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS))
 		(goal g-target-age-parity WE-ARE-EQUAL)
-		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+		(or
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(up-compare-goal g-target-pop-parity >= 35))
 		=>
 		(up-modify-goal g-temp g:= g-enemy-heavy-cavalry-count)
 		(up-modify-goal g-temp c:/ 2)
@@ -190,6 +212,7 @@
 			(up-compare-goal g-strategy-type != FAST-CASTLE)
 			(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS))
 		(goal g-age-status SAVE-FOR-IMPERIAL)
+		(up-compare-goal g-target-pop-parity < 35)
 		=>
 		(up-modify-goal g-temp g:= g-enemy-heavy-cavalry-count)
 		(up-modify-goal g-temp g:+ g-enemy-elephants-count)
@@ -209,15 +232,14 @@
 			(up-compare-goal g-strategy-type != FAST-CASTLE)
 			(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS))
 		(goal g-target-age-parity WE-ARE-BEHIND)
-		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+		(or
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(up-compare-goal g-target-pop-parity >= 35))
 		=>
 		(up-modify-goal g-temp g:= g-enemy-foot-archers-count)
-		(up-modify-goal g-temp-2 g:= g-enemy-cavalry-archers-count)
-		(up-modify-goal g-temp g:+ g-temp-2)
-		(up-modify-goal g-temp-2 g:= g-enemy-hand-cannoneer-slinger-count)
-		(up-modify-goal g-temp g:+ g-temp-2)
-		(up-modify-goal g-temp-2 g:= g-enemy-special-unique-unit-count)
-		(up-modify-goal g-temp g:+ g-temp-2)
+		(up-modify-goal g-temp g:+ g-enemy-cavalry-archers-count)
+		(up-modify-goal g-temp g:+ g-enemy-hand-cannoneer-slinger-count)
+		(up-modify-goal g-temp g:+ g-enemy-special-unique-unit-count)
 		(up-modify-goal g-temp c:/ 2)
 		(up-modify-goal g-required-attack-num g:+ g-temp)
 		)
