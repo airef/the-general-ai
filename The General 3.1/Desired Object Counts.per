@@ -415,6 +415,48 @@
 ;				   	   MILITARY
 ;=========================<>=========================
 
+	;-----------------------
+	;	Choose Strategies
+	;-----------------------
+
+		#load-if-defined AZTEC-CIV			(load "The General 3.1/Strats/Aztecs")		#end-if
+		#load-if-defined BERBERS-CIV		(load "The General 3.1/Strats/Berbers")		#end-if
+		#load-if-defined BRITON-CIV			(load "The General 3.1/Strats/Britons")		#end-if
+		#load-if-defined BULGARIANS-CIV		(load "The General 3.1/Strats/Bulgarians")	#end-if
+		#load-if-defined BURGUNDIANS-CIV	(load "The General 3.1/Strats/Burgundians")	#end-if
+		#load-if-defined BURMESE-CIV		(load "The General 3.1/Strats/Burmese")		#end-if
+		#load-if-defined BYZANTINE-CIV		(load "The General 3.1/Strats/Byzantines")	#end-if
+		#load-if-defined CELTIC-CIV			(load "The General 3.1/Strats/Celts")		#end-if
+		#load-if-defined CHINESE-CIV		(load "The General 3.1/Strats/Chinese")		#end-if
+		#load-if-defined CUMANS-CIV			(load "The General 3.1/Strats/Cumans")		#end-if
+		#load-if-defined ETHIOPIAN-CIV		(load "The General 3.1/Strats/Ethiopians")	#end-if
+		#load-if-defined FRANKISH-CIV		(load "The General 3.1/Strats/Franks")		#end-if
+		#load-if-defined GOTHIC-CIV			(load "The General 3.1/Strats/Goths")		#end-if
+		#load-if-defined HUN-CIV			(load "The General 3.1/Strats/Huns")		#end-if
+		#load-if-defined INCAN-CIV			(load "The General 3.1/Strats/Incas")		#end-if
+		#load-if-defined INDIAN-CIV			(load "The General 3.1/Strats/Indians")		#end-if
+		#load-if-defined ITALIAN-CIV		(load "The General 3.1/Strats/Italians")	#end-if
+		#load-if-defined JAPANESE-CIV		(load "The General 3.1/Strats/Japanese")	#end-if
+		#load-if-defined KHMER-CIV			(load "The General 3.1/Strats/Khmer")		#end-if
+		#load-if-defined KOREAN-CIV			(load "The General 3.1/Strats/Koreans")		#end-if
+		#load-if-defined LITHUANIANS-CIV	(load "The General 3.1/Strats/Lithuanians")	#end-if
+		#load-if-defined MAGYAR-CIV			(load "The General 3.1/Strats/Magyars")		#end-if
+		#load-if-defined MALAY-CIV			(load "The General 3.1/Strats/Malay")		#end-if
+		#load-if-defined MALIAN-CIV			(load "The General 3.1/Strats/Malians")		#end-if
+		#load-if-defined MAYAN-CIV			(load "The General 3.1/Strats/Mayans")		#end-if
+		#load-if-defined MONGOL-CIV			(load "The General 3.1/Strats/Mongols")		#end-if
+		#load-if-defined PERSIAN-CIV		(load "The General 3.1/Strats/Persians")	#end-if
+		#load-if-defined PORTUGUESE-CIV		(load "The General 3.1/Strats/Portuguese")	#end-if
+		#load-if-defined SARACEN-CIV		(load "The General 3.1/Strats/Saracens")	#end-if
+		#load-if-defined SICILIANS-CIV		(load "The General 3.1/Strats/Sicilians")	#end-if
+		#load-if-defined SLAVIC-CIV			(load "The General 3.1/Strats/Slavs")		#end-if
+		#load-if-defined SPANISH-CIV		(load "The General 3.1/Strats/Spanish")		#end-if
+		#load-if-defined TATARS-CIV			(load "The General 3.1/Strats/Tatars")		#end-if
+		#load-if-defined TEUTONIC-CIV		(load "The General 3.1/Strats/Teutons")		#end-if
+		#load-if-defined TURKISH-CIV		(load "The General 3.1/Strats/Turks")		#end-if
+		#load-if-defined VIETNAMESE-CIV		(load "The General 3.1/Strats/Vietnamese")	#end-if
+		#load-if-defined VIKING-CIV			(load "The General 3.1/Strats/Vikings")		#end-if
+
 	;-----------
 	;	Reset
 	;-----------
@@ -528,9 +570,7 @@
 					(goal g-current-strategy EARLYC-XBOWS)
 					(or
 						(goal g-current-strategy MIDC-XBOWS)
-						(or
-							(goal g-current-strategy MIDC-RANGED)
-							(goal g-current-strategy MIDI-ARBS))))))
+						(goal g-current-strategy MIDI-ARBS)))))
 		=>
 		(set-goal g-primary-unit archer)
 		)
@@ -742,7 +782,7 @@
 		)
 
 		(defrule
-		(building-type-count town-center == 0)
+		(building-type-count-total town-center == 0)
 		(up-compare-goal g-desired-num-military > 0)
 		=>
 		(set-goal g-desired-num-military 0)
@@ -1127,9 +1167,7 @@
 		(defrule
 		(or
 			(goal g-current-strategy FL-GUERILLA)
-			(or
-				(goal g-current-strategy MIDF-FULL-RANGED)
-				(goal g-current-strategy MIDC-RANGED)))
+			(goal g-current-strategy MIDF-FULL-RANGED))
 		=>
 		(up-modify-goal g-desired-num-archer g:= g-desired-num-military)
 		(up-modify-goal g-desired-num-archer c:%* 60)
@@ -1149,9 +1187,7 @@
 					(goal g-previous-strategy FC-STRONGBOW)
 					(or
 						(goal g-previous-strategy EARLYC-XBOWS)
-						(or
-							(goal g-previous-strategy MIDC-XBOWS)
-							(goal g-previous-strategy MIDC-RANGED))))))
+						(goal g-previous-strategy MIDC-XBOWS)))))
 		=>
 		(up-modify-goal g-desired-num-archer g:= g-desired-num-military)
 		)
@@ -2600,7 +2636,7 @@
 		(current-age >= castle-age)
 		(up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
 		(or
-			(unit-type-count-total villager >= 60)
+			(unit-type-count-total villager >= 55)
 			(or
 				(up-compare-goal g-target-military-parity > 0)
 				(up-compare-goal g-target-pop-parity > 0)))
@@ -4685,28 +4721,31 @@
 		(up-compare-goal g-desired-num-watch-tower < 1)
 		(up-compare-goal g-enemy-strategy-type < FAST-CASTLE)
 		(up-compare-goal g-age-status >= TO-FEUDAL)
-		(up-compare-goal g-age-status <= MID-CASTLE)
+		(current-age <= feudal-age)
+		(or
+			(current-age == dark-age)
+			(current-age-time < 30))
 		(players-current-age target-player <= feudal-age)
 		=>
 		(up-modify-goal g-desired-num-watch-tower c:max 1)
 		)
 
-		(defrule
-		(goal g-town-under-attack NO)
-		(up-compare-goal g-enemy-units-in-town == 0)
-		(goal g-position FLANK)
-		(up-compare-goal g-desired-num-watch-tower < 1)
-		(or
-			(goal g-game-focus DEFENSIVE)
-			(and
-				(up-compare-goal g-target-military-parity <= -8)
-				(military-population < 15)))
-		(up-compare-goal g-age-status >= TO-FEUDAL)
-		(up-compare-goal g-age-status <= MID-CASTLE)
-		(players-current-age target-player <= feudal-age)
-		=>
-		(up-modify-goal g-desired-num-watch-tower c:max 1)
-		)
+		; (defrule
+		; (goal g-town-under-attack NO)
+		; (up-compare-goal g-enemy-units-in-town == 0)
+		; (goal g-position FLANK)
+		; (up-compare-goal g-desired-num-watch-tower < 1)
+		; (or
+		; 	(goal g-game-focus DEFENSIVE)
+		; 	(and
+		; 		(up-compare-goal g-target-military-parity <= -8)
+		; 		(military-population < 15)))
+		; (up-compare-goal g-age-status >= TO-FEUDAL)
+		; (up-compare-goal g-age-status <= MID-CASTLE)
+		; (players-current-age target-player <= feudal-age)
+		; =>
+		; (up-modify-goal g-desired-num-watch-tower c:max 1)
+		; )
 
 		; (defrule
 		; (goal g-town-under-attack NO)
@@ -4729,7 +4768,10 @@
 			(goal g-position FLANK)
 			(up-compare-goal g-desired-num-watch-tower < 1)
 			(up-compare-goal g-age-status >= TO-FEUDAL)
-			(up-compare-goal g-age-status <= MID-CASTLE)
+			(current-age <= feudal-age)
+			(or
+				(current-age == dark-age)
+				(current-age-time < 30))
 			=>
 			(up-modify-goal g-desired-num-watch-tower c:max 1)
 			)
@@ -4743,7 +4785,10 @@
 			(goal g-position FLANK)
 			(up-compare-goal g-desired-num-watch-tower < 1)
 			(up-compare-goal g-age-status >= TO-FEUDAL)
-			(up-compare-goal g-age-status <= MID-CASTLE)
+			(current-age <= feudal-age)
+			(or
+				(current-age == dark-age)
+				(current-age-time < 30))
 			=>
 			(up-modify-goal g-desired-num-watch-tower c:max 1)
 			)
@@ -4799,7 +4844,11 @@
 			(unit-type-count 225 > 0)	;dead male builder
 			(or
 				(unit-type-count 213 > 0)	;dead female builder
-				(population >= 70)))
+				(or
+					(population >= 70)
+					(and
+						(goal g-town-under-attack YES)
+						(up-compare-goal g-top-enemy-military-parity < 0)))))
 		(up-compare-goal g-desired-num-watch-tower > 0)
 		=>
 		(set-goal g-desired-num-watch-tower 0)

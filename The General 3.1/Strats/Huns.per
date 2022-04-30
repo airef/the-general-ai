@@ -12,8 +12,60 @@
 (disable-self)
 )
 
-(defrule
-(goal g-age-status LATE-IMPERIAL)
-=>
-(set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
-)
+;--------------------------------
+;	Knights Strategy Switching
+;--------------------------------
+
+	(defrule
+	(or
+		(up-compare-goal g-position != FLANK)
+		(or
+			(up-compare-goal g-initial-strategy != FC-KRUSH)
+			(up-compare-goal g-age-status != MID-IMPERIAL)))
+	=>
+	(up-jump-rule 3)
+	)
+
+		(defrule
+		(true)
+		=>
+        (set-goal g-mid-imperial-strategy MIDI-PALADINS)
+		)
+
+		(defrule
+		(or
+			(up-compare-goal g-enemy-eagle-warrior-count g:>= g-enemy-spearmen-count)
+			(or
+				(up-compare-goal g-enemy-light-cavalry-count g:>= g-enemy-spearmen-count)
+				(or
+					(up-compare-goal g-enemy-heavy-cavalry-count g:>= g-enemy-spearmen-count)
+                    (or
+                        (up-compare-goal g-enemy-field-siege-count > 4)
+                        (and
+                            (up-compare-goal g-enemy-special-unique-unit-count g:>= g-enemy-spearmen-count)
+                            (and
+                                (up-compare-flag g-enemy-special-unique-unit-flag == CATAPHRACT-FLAG)
+                                (and
+                                    (up-compare-flag g-enemy-special-unique-unit-flag == HUSKARL-FLAG)
+                                    (up-compare-flag g-enemy-special-unique-unit-flag == LEITIS-FLAG))))))))
+		=>
+		(up-jump-rule 1)
+		)
+			(defrule
+			(up-compare-goal g-enemy-spearmen-count >= 12)
+			=>
+			(set-goal g-mid-imperial-strategy MIDI-SKIRMS)
+			; (chat-to-all "Switching to skirms strategy")
+			)
+
+		
+
+;--------------------------------------
+;	Late Imperial Strategy Switching
+;--------------------------------------
+
+    (defrule
+    (goal g-age-status LATE-IMPERIAL)
+    =>
+    (set-goal g-late-imperial-strategy LATEI-TRASHUSSARS)
+    )

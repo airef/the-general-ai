@@ -8352,6 +8352,7 @@
 		(or
 			(goal g-primary-unit-class archery-class)
 			(goal g-support-unit-class archery-class))
+		(current-age-time > 5)
 		(can-research-with-escrow ri-bracer)
 		=>
 		(release-escrow food)
@@ -8362,6 +8363,7 @@
 		(or
 			(goal g-primary-unit-class cavalry-archer-class)
 			(goal g-support-unit-class cavalry-archer-class))
+		(current-age-time > 5)
 		(can-research-with-escrow ri-bracer)
 		=>
 		(release-escrow food)
@@ -8452,6 +8454,7 @@
 			(and
 				(up-compare-goal g-desired-num-cavalry-archers > 10)
 				(unit-type-count cavalry-archer-class > 15)))
+		(current-age-time > 5)
 		(can-research ri-bracer)
 		=>
 		(research ri-bracer)
@@ -8461,6 +8464,7 @@
 		(or
 			(unit-type-count archery-class > 5)
 			(unit-type-count cavalry-archer-class > 5))
+		(current-age-time > 5)
 		(can-research ri-bracer)
 		=>
 		(research ri-bracer)
@@ -10404,6 +10408,20 @@
         (research ri-man-at-arms)
         )
 
+		#load-if-defined AZTEC-CIV
+
+			(defrule
+			(goal g-position FLANK)
+			(goal g-primary-unit eagle-warrior)
+			(up-compare-goal g-enemy-swordsmen-count > 0)
+			(up-compare-goal g-eagle-warrior-tech-progress >= SECONDARY-CASTLE-COMPLETE)
+			(can-research ri-man-at-arms)
+			=>
+			(research ri-man-at-arms)
+			)
+
+		#end-if
+
 	;-------------------------------------------
 	;	Long Swordsman - Required Castle Tech
 	;-------------------------------------------
@@ -10491,6 +10509,19 @@
 		=>
 		(research ri-long-swordsman)
 		)
+
+		#load-if-defined AZTEC-CIV
+
+			(defrule
+			(goal g-position FLANK)
+			(goal g-primary-unit eagle-warrior)
+			(up-compare-goal g-enemy-swordsmen-count > 0)
+			(can-research ri-long-swordsman)
+			=>
+			(research ri-long-swordsman)
+			)
+
+		#end-if
 
 	;---------------------------------------------------
 	;	Two-Handed Swordsman - Required Imperial Tech
@@ -13035,6 +13066,34 @@
 		=>
 		(up-store-tech-name c: ri-caravan)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246 c: 7031232)
+		)
+
+	;-------------
+	;	Coinage
+	;-------------
+
+		(defrule
+		(or
+			(current-age == imperial-age)
+			(population >= EIGHTY-PERCENT-POP))
+		(population >= SEVENTY-PERCENT-POP)
+		(player-in-game any-ally)
+		(can-research ri-coinage)
+		=>
+		(research ri-coinage)
+		)
+
+	;-------------
+	;	Banking
+	;-------------
+
+		(defrule
+		(population >= EIGHTY-PERCENT-POP)
+		(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
+		(player-in-game any-ally)
+		(can-research ri-banking)
+		=>
+		(research ri-banking)
 		)
 
 	;------------

@@ -1,0 +1,173 @@
+(defrule
+(or
+    (goal g-town-under-attack YES)
+    (or
+        (up-research-status c: ri-coinage < research-complete)
+        (or
+            (up-compare-goal g-primary-unit-tech-progress < PRIORITY-IMPERIAL-COMPLETE)
+            (population < SEVENTY-PERCENT-POP))))
+=>
+(up-jump-rule 9)
+)
+    
+;----------------------------------------------
+;   Emergency Tribute for Training Villagers
+;----------------------------------------------
+
+    (defrule
+    (player-in-game any-ally)
+    (up-allied-resource-amount any-ally food < 50)
+    =>
+    (set-strategic-number sn-focus-player-number 1)
+    )
+
+        (defrule
+        (food-amount >= 300)
+        (stance-toward focus-player ally)
+        (strategic-number sn-focus-player-number != my-player-number)
+        (up-allied-resource-amount focus-player food < 50)
+        (players-population focus-player <= SIXTY-PERCENT-POP)
+        (players-building-type-count focus-player town-center > 0)
+        (or
+            (and
+                (up-allied-goal focus-player g-identity != THE-GENERAL)
+                (players-population focus-player > TEN-PERCENT-POP))
+            (up-allied-goal focus-player g-enemy-units-in-town < 4))
+        =>
+        (tribute-to-player focus-player food 100)
+        ; (up-chat-data-to-all CHAT-TRIBUTE-FOOD-FOR-VILS s: sn-focus-player-number)
+        )
+
+        (defrule
+        (player-in-game any-ally)
+        (up-allied-resource-amount any-ally food < 50)
+        (up-compare-sn sn-focus-player-number < 8)
+        =>
+        (up-modify-sn sn-focus-player-number c:+ 1)
+        (up-jump-rule -2)
+        )
+
+;---------------------------------------------------
+;   Emergency Tribute for Rebuilding Town Centers
+;---------------------------------------------------
+
+    ;Tribute wood
+    (defrule
+    (player-in-game any-ally)
+    (up-allied-resource-amount any-ally wood < 275)
+    =>
+    (set-strategic-number sn-focus-player-number 1)
+    )
+
+        (defrule
+        (wood-amount >= 300)
+        (stance-toward focus-player ally)
+        (strategic-number sn-focus-player-number != my-player-number)
+        (up-allied-resource-amount focus-player wood < 275)
+        (players-building-type-count focus-player town-center < 3)
+        (players-unit-type-count focus-player villager > 0)
+        (or
+            (and
+                (up-allied-goal focus-player g-identity != THE-GENERAL)
+                (players-population focus-player > TEN-PERCENT-POP))
+            (up-allied-goal focus-player g-enemy-units-in-town < 4))
+        =>
+        (tribute-to-player focus-player wood 100)
+        ; (up-chat-data-to-all CHAT-TRIBUTE-WOOD-FOR-TC s: sn-focus-player-number)
+        )
+
+        (defrule
+        (player-in-game any-ally)
+        (up-allied-resource-amount any-ally wood < 275)
+        (up-compare-sn sn-focus-player-number < 8)
+        =>
+        (up-modify-sn sn-focus-player-number c:+ 1)
+        (up-jump-rule -2)
+        )
+
+    ;Tribute stone
+    (defrule
+    (player-in-game any-ally)
+    (up-allied-resource-amount any-ally stone < 100)
+    =>
+    (set-strategic-number sn-focus-player-number 1)
+    )
+
+        (defrule
+        (stone-amount >= 200)
+        (stance-toward focus-player ally)
+        (strategic-number sn-focus-player-number != my-player-number)
+        (up-allied-resource-amount focus-player stone < 100)
+        (players-building-type-count focus-player town-center < 3)
+        (players-unit-type-count focus-player villager > 0)
+        (or
+            (and
+                (up-allied-goal focus-player g-identity != THE-GENERAL)
+                (players-population focus-player > TEN-PERCENT-POP))
+            (up-allied-goal focus-player g-enemy-units-in-town < 4))
+        =>
+        (tribute-to-player focus-player stone 50)
+        ; (up-chat-data-to-all CHAT-TRIBUTE-STONE-FOR-TC s: sn-focus-player-number)
+        )
+
+        (defrule
+        (player-in-game any-ally)
+        (up-allied-resource-amount any-ally stone < 100)
+        (up-compare-sn sn-focus-player-number < 8)
+        =>
+        (up-modify-sn sn-focus-player-number c:+ 1)
+        (up-jump-rule -2)
+        )
+
+;--------------------------------
+;   Tribute for Rebooming Ally
+;--------------------------------
+
+    (defrule
+    (or
+        (goal g-town-under-attack YES)
+        (or
+            (up-research-status c: ri-coinage < research-complete)
+            (or
+                (up-compare-goal g-primary-unit-tech-progress < SECONDARY-IMPERIAL-COMPLETE)
+                (or
+                    (up-compare-goal g-support-unit-tech-progress < PRIORITY-IMPERIAL-COMPLETE)
+                    (or
+                        (population < SEVENTY-PERCENT-POP)
+                        (up-timer-status t-tribute == timer-running))))))
+    =>
+    (up-jump-rule 3)
+    )
+
+        (defrule
+        (player-in-game any-ally)
+        (players-population any-ally < SIXTY-PERCENT-POP)
+        =>
+        (set-strategic-number sn-focus-player-number 1)
+        )
+
+            (defrule
+            (food-amount >= 500)
+            (stance-toward focus-player ally)
+            (strategic-number sn-focus-player-number != my-player-number)
+            (players-population focus-player <= SIXTY-PERCENT-POP)
+            (players-building-type-count focus-player town-center > 0)
+            (or
+                (and
+                    (up-allied-goal focus-player g-identity != THE-GENERAL)
+                    (players-population focus-player > TEN-PERCENT-POP))
+                (up-allied-goal focus-player g-enemy-units-in-town < 4))
+            =>
+            (tribute-to-player focus-player food 100)
+            (enable-timer t-tribute 30)
+            ; (up-chat-data-to-all CHAT-TRIBUTE-FOOD-FOR-BOOM s: sn-focus-player-number)
+            )
+
+            (defrule
+            (player-in-game any-ally)
+            (up-allied-resource-amount any-ally food < 50)
+            (up-compare-sn sn-focus-player-number < 8)
+            =>
+            (up-modify-sn sn-focus-player-number c:+ 1)
+            (up-jump-rule -2)
+            )

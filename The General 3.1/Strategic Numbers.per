@@ -697,6 +697,76 @@
     ; (enable-timer t-spread-soldiers 1)
     ; )
 
+;--------------------------------------
+;   SN-PERCENT-BUILDING-CANCELLATION
+;--------------------------------------
+
+    ; (load "The General 3.1/Functions/Reset")
+
+    ; (defrule
+    ; (strategic-number sn-percent-building-cancellation > 30)
+    ; (or
+    ;     (goal g-town-under-attack NO)
+    ;     (up-compare-goal g-top-enemy-military-parity >= 0))
+    ; =>
+    ; (set-strategic-number sn-percent-building-cancellation 30)
+    ; )
+
+    ; ;Find a tower under construction
+    ; (defrule
+    ; (strategic-number sn-percent-building-cancellation > 0)
+    ; (goal g-town-under-attack YES)
+    ; (up-pending-objects c: tower-class > 0)
+    ; (up-compare-goal g-top-enemy-military-parity < 0)
+    ; =>
+    ; (up-full-reset-search)
+    ; (up-filter-status c: status-pending c: list-active)
+    ; (up-find-local c: tower-class c: 1)
+    ; )
+
+    ; ;See if there are villagers building it
+    ; (defrule
+    ; (strategic-number sn-percent-building-cancellation < 100)
+    ; (goal g-town-under-attack YES)
+    ; (up-pending-objects c: tower-class > 0)
+    ; (up-compare-goal g-top-enemy-military-parity < 0)
+    ; (up-set-target-object search-local c: 0)
+    ; =>
+    ; (up-get-point position-object g-point-x)
+    ; (up-set-target-point g-point-x)
+    ; (set-strategic-number sn-focus-player-number my-player-number)
+    ; (up-reset-search 0 0 1 1)
+    ; (up-reset-filters)
+    ; (up-filter-distance c: -1 c: 2)
+    ; (up-find-remote c: villager-class c: 1)
+    ; (up-get-search-state g-local-total)
+    ; )
+
+    ; ;If builders are found but they are under attack, increase sn-percent-building-cancellation
+    ; (defrule
+    ; (strategic-number sn-percent-building-cancellation < 70)
+    ; (goal g-town-under-attack YES)
+    ; (up-pending-objects c: tower-class > 0)
+    ; (up-compare-goal g-top-enemy-military-parity < 0)
+    ; (up-set-target-object search-local c: 0)
+    ; (up-set-target-object search-remote c: 0)
+    ; (up-object-data object-data-attacker-count > 0)
+    ; =>
+    ; (set-strategic-number sn-percent-building-cancellation 70)
+    ; )
+
+    ; ;If no builders nearby, assume they have been killed and cancel the tower
+    ; (defrule
+    ; (strategic-number sn-percent-building-cancellation < 100)
+    ; (goal g-town-under-attack YES)
+    ; (up-pending-objects c: tower-class > 0)
+    ; (up-compare-goal g-top-enemy-military-parity < 0)
+    ; (up-set-target-object search-local c: 0)
+    ; (goal g-remote-total 0) ;no nearby builders
+    ; =>
+    ; (set-strategic-number sn-percent-building-cancellation 100)
+    ; )
+
 ;-------------------------------------
 ;   CUSTOM-SN-COUNTERING-PREFERENCE
 ;-------------------------------------

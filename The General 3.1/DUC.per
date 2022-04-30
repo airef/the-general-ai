@@ -2522,123 +2522,123 @@
     ;   Patrol to Initial TSA Target
     ;----------------------------------
 
-        (load "The General 3.1/Functions/Reset")
+        ; (load "The General 3.1/Functions/Reset")
 
-        (defrule
-        (timer-triggered t-attack-patrol)
-        (goal g-attack-coordination ATTACK-STARTED)
-        (goal g-attacking YES)
-        (up-compare-flag g-attack-method-flag == USE-TSA)
-        (enemy-buildings-in-town)
-        =>
-        (disable-timer t-attack-patrol)
-        (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-        (up-full-reset-search)
-        (up-find-remote c: building-class c: 40)
-        (up-find-remote c: tower-class c: 40)
-        (up-find-remote c: wall-class c: 40)
-        (up-find-remote c: gate-class c: 40)
-        (up-set-target-point g-position-self-x)
-        (up-clean-search search-remote object-data-distance search-order-asc)
-        (set-goal g-attack-coordination FIND-TARGET-BUILDING)
-        )
+        ; (defrule
+        ; (timer-triggered t-attack-patrol)
+        ; (goal g-attack-coordination ATTACK-STARTED)
+        ; (goal g-attacking YES)
+        ; (up-compare-flag g-attack-method-flag == USE-TSA)
+        ; (enemy-buildings-in-town)
+        ; =>
+        ; (disable-timer t-attack-patrol)
+        ; (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+        ; (up-full-reset-search)
+        ; (up-find-remote c: building-class c: 40)
+        ; (up-find-remote c: tower-class c: 40)
+        ; (up-find-remote c: wall-class c: 40)
+        ; (up-find-remote c: gate-class c: 40)
+        ; (up-set-target-point g-position-self-x)
+        ; (up-clean-search search-remote object-data-distance search-order-asc)
+        ; (set-goal g-attack-coordination FIND-TARGET-BUILDING)
+        ; )
 
-        (defrule
-        (goal g-attack-coordination FIND-TARGET-BUILDING)
-        (goal g-attacking YES)
-        (up-compare-flag g-attack-method-flag == USE-TSA)
-        (up-set-target-object search-remote c: 0)
-        (enemy-buildings-in-town)
-        =>
-        (up-get-object-data object-data-id g-attack-target-id)
-        (up-get-point position-object g-point-x)
-        (set-goal g-attack-coordination SET-TARGET-BUILDING)
-        )
+        ; (defrule
+        ; (goal g-attack-coordination FIND-TARGET-BUILDING)
+        ; (goal g-attacking YES)
+        ; (up-compare-flag g-attack-method-flag == USE-TSA)
+        ; (up-set-target-object search-remote c: 0)
+        ; (enemy-buildings-in-town)
+        ; =>
+        ; (up-get-object-data object-data-id g-attack-target-id)
+        ; (up-get-point position-object g-point-x)
+        ; (set-goal g-attack-coordination SET-TARGET-BUILDING)
+        ; )
 
-        (defrule
-        (goal g-attack-coordination SET-TARGET-BUILDING)
-        (goal g-attacking YES)
-        (up-compare-flag g-attack-method-flag == USE-TSA)
-        (up-set-target-by-id g: g-attack-target-id)
-        (enemy-buildings-in-town)
-        =>
-        (up-full-reset-search)
-        (up-filter-include cmdid-military -1 -1 monastery-class)
-        (up-filter-exclude -1 actionid-explore orderid-explore monk-with-relic-class)
-        (up-find-local c: -1 c: 240)
-        (up-remove-objects search-local object-data-speed <= 70)
-        (set-goal g-attack-coordination FIND-ATTACK-SOLDIERS)
-        (up-get-search-state g-local-total)
-        )
+        ; (defrule
+        ; (goal g-attack-coordination SET-TARGET-BUILDING)
+        ; (goal g-attacking YES)
+        ; (up-compare-flag g-attack-method-flag == USE-TSA)
+        ; (up-set-target-by-id g: g-attack-target-id)
+        ; (enemy-buildings-in-town)
+        ; =>
+        ; (up-full-reset-search)
+        ; (up-filter-include cmdid-military -1 -1 monastery-class)
+        ; (up-filter-exclude -1 actionid-explore orderid-explore monk-with-relic-class)
+        ; (up-find-local c: -1 c: 240)
+        ; (up-remove-objects search-local object-data-speed <= 70)
+        ; (set-goal g-attack-coordination FIND-ATTACK-SOLDIERS)
+        ; (up-get-search-state g-local-total)
+        ; )
 
-        (defrule
-        (goal g-attack-coordination FIND-ATTACK-SOLDIERS)
-        (goal g-attacking YES)
-        (up-compare-flag g-attack-method-flag == USE-TSA)
-        (up-set-target-by-id g: g-attack-target-id)
-        (up-compare-goal g-local-total > 0)
-        (enemy-buildings-in-town)
-        =>
-        (up-target-objects 1 action-patrol -1 -1)
-        ; (chat-to-player my-player-number CHAT-START-TSA-PATROL)
-        (set-goal g-attack-coordination START-PATROL)
-        )
+        ; (defrule
+        ; (goal g-attack-coordination FIND-ATTACK-SOLDIERS)
+        ; (goal g-attacking YES)
+        ; (up-compare-flag g-attack-method-flag == USE-TSA)
+        ; (up-set-target-by-id g: g-attack-target-id)
+        ; (up-compare-goal g-local-total > 0)
+        ; (enemy-buildings-in-town)
+        ; =>
+        ; (up-target-objects 1 action-patrol -1 -1)
+        ; ; (chat-to-player my-player-number CHAT-START-TSA-PATROL)
+        ; (set-goal g-attack-coordination START-PATROL)
+        ; )
 
-        (load "The General 3.1/Functions/Reset")
+        ; (load "The General 3.1/Functions/Reset")
 
-        (defrule
-        (goal g-attack-coordination START-PATROL)
-        (goal g-attacking YES)
-        (up-compare-flag g-attack-method-flag == USE-TSA)
-        (up-set-target-by-id g: g-attack-target-id)
-        (enemy-buildings-in-town)
-        =>
-        (up-get-point position-object g-point-x)
-        (up-set-target-point g-point-x)
-        (up-full-reset-search)
-        (up-filter-distance c: -1 c: 10)
-        (up-find-local c: -1 c: 3)
-        (up-get-search-state g-local-total)
-        )
+        ; (defrule
+        ; (goal g-attack-coordination START-PATROL)
+        ; (goal g-attacking YES)
+        ; (up-compare-flag g-attack-method-flag == USE-TSA)
+        ; (up-set-target-by-id g: g-attack-target-id)
+        ; (enemy-buildings-in-town)
+        ; =>
+        ; (up-get-point position-object g-point-x)
+        ; (up-set-target-point g-point-x)
+        ; (up-full-reset-search)
+        ; (up-filter-distance c: -1 c: 10)
+        ; (up-find-local c: -1 c: 3)
+        ; (up-get-search-state g-local-total)
+        ; )
 
-        (defrule
-        (goal g-attack-coordination START-PATROL)
-        (goal g-attacking YES)
-        (up-compare-flag g-attack-method-flag == USE-TSA)
-        (up-set-target-by-id g: g-attack-target-id)
-        (up-compare-goal g-local-total >= 3)
-        (enemy-buildings-in-town)
-        =>
-        (up-full-reset-search)
-        (up-filter-include cmdid-military -1 -1 monastery-class)
-        (up-filter-exclude -1 actionid-explore orderid-explore -1)
-        (up-find-local c: -1 c: 240)
-        (up-get-search-state g-local-total)
-        (set-goal g-attack-coordination TARGET-REACHED)
-        )
+        ; (defrule
+        ; (goal g-attack-coordination START-PATROL)
+        ; (goal g-attacking YES)
+        ; (up-compare-flag g-attack-method-flag == USE-TSA)
+        ; (up-set-target-by-id g: g-attack-target-id)
+        ; (up-compare-goal g-local-total >= 3)
+        ; (enemy-buildings-in-town)
+        ; =>
+        ; (up-full-reset-search)
+        ; (up-filter-include cmdid-military -1 -1 monastery-class)
+        ; (up-filter-exclude -1 actionid-explore orderid-explore -1)
+        ; (up-find-local c: -1 c: 240)
+        ; (up-get-search-state g-local-total)
+        ; (set-goal g-attack-coordination TARGET-REACHED)
+        ; )
 
-        (defrule
-        (goal g-attack-coordination TARGET-REACHED)
-        (goal g-attacking YES)
-        (up-compare-flag g-attack-method-flag == USE-TSA)
-        (up-set-target-by-id g: g-attack-target-id)
-        (up-compare-goal g-local-total > 0)
-        (enemy-buildings-in-town)
-        (up-set-target-object search-local c: 0)
-        =>
-        (up-target-point 0 action-stop -1 -1)
-        (set-goal g-attack-coordination STOP-PATROL)
-        )
+        ; (defrule
+        ; (goal g-attack-coordination TARGET-REACHED)
+        ; (goal g-attacking YES)
+        ; (up-compare-flag g-attack-method-flag == USE-TSA)
+        ; (up-set-target-by-id g: g-attack-target-id)
+        ; (up-compare-goal g-local-total > 0)
+        ; (enemy-buildings-in-town)
+        ; (up-set-target-object search-local c: 0)
+        ; =>
+        ; (up-target-point 0 action-stop -1 -1)
+        ; (set-goal g-attack-coordination STOP-PATROL)
+        ; )
 
-        (defrule
-        (goal g-attack-coordination ATTACK-STARTED)
-        (goal g-attacking YES)
-        (up-compare-flag g-attack-method-flag == USE-TSA)
-        (enemy-buildings-in-town)
-        (up-timer-status t-attack-patrol != timer-running)
-        =>
-        (enable-timer t-attack-patrol 2)
-        )
+        ; (defrule
+        ; (goal g-attack-coordination ATTACK-STARTED)
+        ; (goal g-attacking YES)
+        ; (up-compare-flag g-attack-method-flag == USE-TSA)
+        ; (enemy-buildings-in-town)
+        ; (up-timer-status t-attack-patrol != timer-running)
+        ; =>
+        ; (enable-timer t-attack-patrol 2)
+        ; )
 
     ;-------------------------------------
     ;   Villagers Target Battering Rams

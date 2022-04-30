@@ -75,174 +75,193 @@
 		(defrule
 		(goal g-attack-objective ATTACK-TARGET-ENEMY)
 		(current-age >= castle-age)
+		(players-population every-enemy < EIGHTY-PERCENT-POP)
 		=>
-		(up-get-target-fact military-population 0 g-required-attack-num)
+		(up-get-fact military-population 0 g-required-attack-num)
+		(up-modify-goal g-required-attack-num c:+ 5)
 		(up-modify-goal g-temp g:= g-target-pop-parity)
-		(up-modify-goal g-temp g:- g-target-military-parity)	;villager parity
-		(up-modify-goal g-temp c:/ 3)							;divide villager parity by 3
+		(up-modify-goal g-temp g:+ g-target-military-parity)
+		(up-modify-goal g-temp c:/ 3)							;divide pop/military parity by 3
 		(up-modify-goal g-temp c:max -10)						;restrict villager parity effect between -10 and 10
 		(up-modify-goal g-temp c:min 10)
 		(up-modify-goal g-required-attack-num g:- g-temp)
-		)
-
-		;Adjust required attacking number if we have strong units
-		(defrule
-		(goal g-attack-objective ATTACK-TARGET-ENEMY)
-		(current-age >= castle-age)
-		(or
-			(up-compare-goal g-strategy-type != FAST-CASTLE)
-			(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS))
-		(or
-			(goal g-target-age-parity WE-ARE-BEHIND)
-			(and
-				(goal g-age-status SAVE-FOR-IMPERIAL)
-				(up-compare-goal g-target-pop-parity < 35)))
-		=>
-		(up-get-fact unit-type-count cavalry-class g-temp)
-		(up-modify-goal g-temp c:/ 4)
-		(up-modify-goal g-required-attack-num g:- g-temp)
-		(up-modify-goal g-required-attack-num c:+ 15)
+		; (up-chat-data-to-all "Required1 %d" g: g-required-attack-num)
 		)
 
 		(defrule
 		(goal g-attack-objective ATTACK-TARGET-ENEMY)
 		(current-age >= castle-age)
-		(or
-			(up-compare-goal g-strategy-type != FAST-CASTLE)
-			(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS))
-		(goal g-target-age-parity WE-ARE-EQUAL)
-		(or
-			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-compare-goal g-target-pop-parity >= 35))
+		(players-population any-enemy >= EIGHTY-PERCENT-POP)
 		=>
-		(up-get-fact unit-type-count cavalry-class g-temp)
-		(up-modify-goal g-temp c:/ 2)
-		(up-modify-goal g-required-attack-num g:- g-temp)
-		)
-
-		(defrule
-		(goal g-attack-objective ATTACK-TARGET-ENEMY)
-		(current-age >= castle-age)
-		(or
-			(up-compare-goal g-strategy-type != FAST-CASTLE)
-			(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS))
-		(goal g-target-age-parity WE-ARE-AHEAD)
-		(or
-			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-compare-goal g-target-pop-parity >= 25))
-		=>
-		(up-get-fact unit-type-count cavalry-class g-temp)
-		(up-modify-goal g-required-attack-num g:- g-temp)
-		)
-		(defrule
-		(goal g-attack-objective ATTACK-TARGET-ENEMY)
-		(current-age >= castle-age)
-		(or
-			(up-compare-goal g-strategy-type != FAST-CASTLE)
-			(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS))
-		(goal g-target-age-parity WE-ARE-AHEAD)
-		(or
-			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-compare-goal g-target-pop-parity >= 25))
-		=>
-		(up-get-fact unit-type-count archery-class g-temp)
-		(up-get-fact unit-type-count cavalry-archer-class g-temp-2)
+		(up-get-fact military-population 0 g-required-attack-num)
+		(up-modify-goal g-required-attack-num c:+ 5)
+		(up-modify-goal g-temp g:= g-target-pop-parity)
+		(up-modify-goal g-temp g:+ g-top-enemy-pop-parity)
+		(up-modify-goal g-temp c:/ 2)							;find average between target and top enemy parity
+		(up-modify-goal g-temp-2 g:= g-target-military-parity)
+		(up-modify-goal g-temp-2 g:+ g-top-enemy-military-parity)
+		(up-modify-goal g-temp-2 c:/ 2)							;find average between target and top enemy military parity
 		(up-modify-goal g-temp g:+ g-temp-2)
-		(up-get-fact unit-type-count skirmisher-line g-temp-2)
-		(up-modify-goal g-temp g:- g-temp-2)
-		(up-modify-goal g-temp c:/ 2)
+		(up-modify-goal g-temp c:/ 3)							;divide pop/military parity by 3
+		(up-modify-goal g-temp c:max -10)						;restrict villager parity effect between -10 and 10
+		(up-modify-goal g-temp c:min 10)
 		(up-modify-goal g-required-attack-num g:- g-temp)
+		; (up-chat-data-to-all "Required1 %d" g: g-required-attack-num)
+		)
+
+		;Adjust required attacking number depending on age parity
+		(defrule
+		(goal g-attack-objective ATTACK-TARGET-ENEMY)
+		(current-age == castle-age)
+		(goal g-target-age-parity WE-ARE-AHEAD)
+		=>
+		(up-get-fact military-population 0 g-temp)
+		(up-modify-goal g-temp c:/ 4)
+		(up-modify-goal g-temp c:min 5)
+		(up-modify-goal g-required-attack-num g:- g-temp)
+		; (up-chat-data-to-all "Required2 %d" g: g-required-attack-num)
+		)
+
+		(defrule
+		(goal g-attack-objective ATTACK-TARGET-ENEMY)
+		(current-age == imperial-age)
+		(goal g-target-age-parity WE-ARE-AHEAD)
+		=>
+		(up-modify-goal g-required-attack-num c:- 12)
+		; (up-chat-data-to-all "Required3 %d" g: g-required-attack-num)
+		)
+
+		(defrule
+		(goal g-attack-objective ATTACK-TARGET-ENEMY)
+		(current-age == castle-age)
+		(goal g-top-enemy-age-parity WE-ARE-BEHIND)
+		=>
+		(up-modify-goal g-required-attack-num c:+ 12)
+		; (up-chat-data-to-all "Required4 %d" g: g-required-attack-num)
+		)
+
+		;Adjust required attacking number if we are saving for imperial
+		(defrule
+		(goal g-attack-objective ATTACK-TARGET-ENEMY)
+		(up-compare-goal g-age-status >= SAVE-FOR-IMPERIAL)
+		(up-compare-goal g-primary-unit-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+		(up-compare-goal g-target-pop-parity < 35)
+		=>
+		(up-modify-goal g-required-attack-num c:+ 13)
+		; (up-chat-data-to-all "Required5 %d" g: g-required-attack-num)
+		)
+
+		;Adjust required attacking number for our military units
+		(defrule
+		(goal g-attack-objective ATTACK-TARGET-ENEMY)
+		(current-age >= castle-age)
+		=>
+		(up-get-fact unit-type-count cavalry-class g-temp)
+		(up-modify-goal g-temp c:/ 3)
+		(up-modify-goal g-required-attack-num g:- g-temp)
+		(up-get-fact unit-type-count skirmisher-line g-temp)
+		; (up-get-fact unit-type-count spearman-line g-temp-2)
+		; (up-modify-goal g-temp g:+ g-temp-2)
+		(up-modify-goal g-temp c:/ 3)
+		(up-modify-goal g-required-attack-num g:+ g-temp)
+		; (up-chat-data-to-all "Required6 %d" g: g-required-attack-num)
 		)
 
 		;Adjust required attacking number if enemy has strong units
 		(defrule
 		(goal g-attack-objective ATTACK-TARGET-ENEMY)
 		(current-age >= castle-age)
-		(or
-			(up-compare-goal g-strategy-type != FAST-CASTLE)
-			(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS))
-		(goal g-target-age-parity WE-ARE-AHEAD)
-		(or
-			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-compare-goal g-target-pop-parity >= 25))
 		=>
 		(up-modify-goal g-temp g:= g-enemy-heavy-cavalry-count)
-		(up-modify-goal g-temp c:/ 4)
+		(up-modify-goal g-temp-2 g:= g-enemy-elephants-count)
+		(up-modify-goal g-temp g:+ g-temp-2)
+		(up-modify-goal g-temp c:/ 3)
 		(up-modify-goal g-required-attack-num g:+ g-temp)
+		(up-modify-goal g-temp g:= g-enemy-skirmishers-count)
+		; (up-modify-goal g-temp-2 g:= g-enemy-spearmen-count)
+		; (up-modify-goal g-temp g:+ g-temp-2)
+		(up-modify-goal g-temp c:/ 3)
+		(up-modify-goal g-required-attack-num g:- g-temp)
+		; (up-chat-data-to-all "Required7 %d" g: g-required-attack-num)
+		)
+
+		;Adjust required attacking number if top enemy has more military than us
+		(defrule
+		(goal g-attack-objective ATTACK-TARGET-ENEMY)
+		(current-age >= castle-age)
+		(up-compare-goal g-top-enemy-military-parity < 0)	;negative parity means we're outnumbered
+		; (military-population > 20)
+		=>
+		(up-modify-goal g-temp g:= g-top-enemy-military-parity)
+		(up-modify-goal g-temp c:/ -2)
+		(up-modify-goal g-required-attack-num g:+ g-temp)
+		; (up-chat-data-to-all "Required8 %d" g: g-required-attack-num)
+		)
+
+		;Adjust required attacking number if partner is under attack
+		(defrule
+		(goal g-attack-objective ATTACK-TARGET-ENEMY)
+		(current-age >= imperial-age)
+		(up-compare-goal g-team-partner-identity == THE-GENERAL)
+		=>
+		(up-modify-sn sn-focus-player-number g:= g-team-partner)
 		)
 
 		(defrule
 		(goal g-attack-objective ATTACK-TARGET-ENEMY)
-		(current-age >= castle-age)
+		(current-age >= imperial-age)
+		(up-compare-goal g-team-partner-identity == THE-GENERAL)
 		(or
-			(up-compare-goal g-strategy-type != FAST-CASTLE)
-			(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS))
-		(goal g-target-age-parity WE-ARE-EQUAL)
-		(or
-			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-compare-goal g-target-pop-parity >= 35))
+			(up-allied-goal focus-player g-town-under-attack == YES)
+			(up-allied-goal focus-player g-enemy-units-in-town > 10))
 		=>
-		(up-modify-goal g-temp g:= g-enemy-heavy-cavalry-count)
-		(up-modify-goal g-temp c:/ 2)
-		(up-modify-goal g-required-attack-num g:+ g-temp)
+		(up-modify-goal g-required-attack-num c:- 8)
 		)
 
+		#load-if-defined UP-3-PLAYER-TEAM
+		;Adjust required attacking number if partner is attacking
 		(defrule
 		(goal g-attack-objective ATTACK-TARGET-ENEMY)
-		(current-age >= castle-age)
-		(or
-			(up-compare-goal g-strategy-type != FAST-CASTLE)
-			(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS))
-		(goal g-target-age-parity WE-ARE-BEHIND)
+		(current-age == castle-age)
+		(up-compare-goal g-team-partner-identity == THE-GENERAL)
+		(up-allied-goal focus-player g-attacking == YES)
+		(up-allied-goal focus-player g-team-partner == my-player-number)
 		=>
-		(up-modify-goal g-temp g:= g-enemy-heavy-cavalry-count)
-		(up-modify-goal g-temp g:+ g-enemy-elephants-count)
-		(up-modify-goal g-temp-2 g:= g-enemy-camel-count)
-		(up-modify-goal g-temp-2 c:/ 2)
-		(up-modify-goal g-temp g:+ g-temp-2)
-		(up-modify-goal g-temp-2 g:= g-enemy-light-cavalry-count)
-		(up-modify-goal g-temp-2 c:/ 3)
-		(up-modify-goal g-temp g:+ g-temp-2)
-		(up-modify-goal g-required-attack-num g:+ g-temp)
+		(up-modify-goal g-required-attack-num c:- 5)
 		)
 		(defrule
 		(goal g-attack-objective ATTACK-TARGET-ENEMY)
-		(current-age >= castle-age)
-		(or
-			(up-compare-goal g-strategy-type != FAST-CASTLE)
-			(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS))
-		(goal g-age-status SAVE-FOR-IMPERIAL)
-		(up-compare-goal g-target-pop-parity < 35)
+		(current-age == imperial-age)
+		(up-compare-goal g-team-partner-identity == THE-GENERAL)
+		(up-allied-goal focus-player g-attacking == YES)
+		(up-allied-goal focus-player g-team-partner == my-player-number)
 		=>
-		(up-modify-goal g-temp g:= g-enemy-heavy-cavalry-count)
-		(up-modify-goal g-temp g:+ g-enemy-elephants-count)
-		(up-modify-goal g-temp-2 g:= g-enemy-camel-count)
-		(up-modify-goal g-temp-2 c:/ 2)
-		(up-modify-goal g-temp g:+ g-temp-2)
-		(up-modify-goal g-temp-2 g:= g-enemy-light-cavalry-count)
-		(up-modify-goal g-temp-2 c:/ 3)
-		(up-modify-goal g-temp g:+ g-temp-2)
-		(up-modify-goal g-required-attack-num g:+ g-temp)
+		(up-modify-goal g-required-attack-num c:- 10)
 		)
+		#end-if
 
+		#load-if-defined UP-4-PLAYER-TEAM
+		;Adjust required attacking number if partner is attacking
 		(defrule
 		(goal g-attack-objective ATTACK-TARGET-ENEMY)
-		(current-age >= castle-age)
-		(or
-			(up-compare-goal g-strategy-type != FAST-CASTLE)
-			(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS))
-		(goal g-target-age-parity WE-ARE-BEHIND)
-		(or
-			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-compare-goal g-target-pop-parity >= 35))
+		(current-age == castle-age)
+		(up-compare-goal g-team-partner-identity == THE-GENERAL)
+		(up-allied-goal focus-player g-attacking == YES)
+		(up-allied-goal focus-player g-team-partner == my-player-number)
 		=>
-		(up-modify-goal g-temp g:= g-enemy-foot-archers-count)
-		(up-modify-goal g-temp g:+ g-enemy-cavalry-archers-count)
-		(up-modify-goal g-temp g:+ g-enemy-hand-cannoneer-slinger-count)
-		(up-modify-goal g-temp g:+ g-enemy-special-unique-unit-count)
-		(up-modify-goal g-temp c:/ 2)
-		(up-modify-goal g-required-attack-num g:+ g-temp)
+		(up-modify-goal g-required-attack-num c:- 5)
 		)
+		(defrule
+		(goal g-attack-objective ATTACK-TARGET-ENEMY)
+		(current-age == imperial-age)
+		(up-compare-goal g-team-partner-identity == THE-GENERAL)
+		(up-allied-goal focus-player g-attacking == YES)
+		(up-allied-goal focus-player g-team-partner == my-player-number)
+		=>
+		(up-modify-goal g-required-attack-num c:- 10)
+		)
+		#end-if
+
 
 		;Hardcoded numbers for first attack
 		(defrule
@@ -295,21 +314,6 @@
 		(set-goal g-required-attack-num 10)
 		)
 
-		; (defrule
-		; (goal g-attack-objective ATTACK-TARGET-ENEMY)
-		; (current-age >= castle-age)
-		; (goal g-strategy-type FAST-CASTLE)
-		; (or
-		; 	(goal g-attack-status BEFORE-CASTLE-ATTACKS)
-		; 	(goal g-attack-status FIRST-CASTLE-ATTACK))
-		; (or
-		; 	(goal g-primary-unit-class archery-class)
-		; 	(goal g-primary-unit-class archery-cannon-class))
-		; =>
-		; (set-goal g-required-attack-num 14)
-		; )
-
-		;Increase g-required-attack-num if we are outnumbered
 		(defrule
 		(goal g-attack-objective ATTACK-TARGET-ENEMY)
 		(current-age >= castle-age)
@@ -318,35 +322,10 @@
 			(goal g-attack-status BEFORE-CASTLE-ATTACKS)
 			(goal g-attack-status FIRST-CASTLE-ATTACK))
 		(or
-			(goal g-primary-unit-class cavalry-class)
-			(or
-				(goal g-primary-unit-class siege-weapon-class)
-				(goal g-primary-unit-class scorpion-class)))
-		(up-compare-goal g-target-age-parity <= WE-ARE-EQUAL)
-		(up-compare-goal g-target-military-parity < 0)
+			(goal g-primary-unit-class archery-class)
+			(goal g-primary-unit-class archery-cannon-class))
 		=>
-		(up-modify-goal g-temp g:= g-target-military-parity)
-		(up-modify-goal g-temp c:/ -2)							;make a positive number and divide by 2
-		(up-modify-goal g-required-attack-num g:+ g-temp)
-		)
-		(defrule
-		(goal g-attack-objective ATTACK-TARGET-ENEMY)
-		(current-age >= castle-age)
-		(goal g-strategy-type FAST-CASTLE)
-		(or
-			(goal g-attack-status BEFORE-CASTLE-ATTACKS)
-			(goal g-attack-status FIRST-CASTLE-ATTACK))
-		(or
-			(goal g-primary-unit-class infantry-class)
-			(or
-				(goal g-primary-unit-class cavalry-archer-class)
-				(goal g-primary-unit-class cavalry-cannon-class)))
-		(up-compare-goal g-target-age-parity <= WE-ARE-EQUAL)
-		(up-compare-goal g-target-military-parity < 3)
-		=>
-		(up-modify-goal g-temp g:= g-target-military-parity)
-		(up-modify-goal g-temp c:/ -2)							;make a positive number and divide by 2
-		(up-modify-goal g-required-attack-num g:+ g-temp)
+		(set-goal g-required-attack-num 14)
 		)
 
 		;Adjust required military numbers for defenses
@@ -357,6 +336,54 @@
 		=>
 		(up-modify-goal g-required-attack-num c:+ 15)
 		)
+		
+		;Adjust required attacking number if partner is under attack
+		(defrule
+		(goal g-attack-objective ATTACK-TARGET-ENEMY)
+		(current-age >= imperial-age)
+		(up-compare-goal g-team-partner-identity == THE-GENERAL)
+		=>
+		(up-modify-sn sn-focus-player-number g:= g-team-partner)
+		)
+
+		(defrule
+		(goal g-attack-objective ATTACK-TARGET-ENEMY)
+		(current-age >= imperial-age)
+		(up-compare-goal g-team-partner-identity == THE-GENERAL)
+		(or
+			(up-allied-goal focus-player g-town-under-attack == YES)
+			(up-allied-goal focus-player g-enemy-units-in-town > 5))
+		=>
+		(up-modify-goal g-required-attack-num c:- 2)
+		)
+
+		#load-if-defined UP-3-PLAYER-TEAM
+		;Adjust required attacking number if partner is attacking
+		(defrule
+		(goal g-attack-objective ATTACK-TARGET-ENEMY)
+		(or
+			(goal g-attack-status BEFORE-CASTLE-ATTACKS)
+			(goal g-attack-status FIRST-CASTLE-ATTACK))
+		(up-compare-goal g-team-partner-identity == THE-GENERAL)
+		(up-allied-goal focus-player g-attacking == YES)
+		=>
+		(up-modify-goal g-required-attack-num c:- 2)
+		)
+		#end-if
+		#load-if-defined UP-4-PLAYER-TEAM
+		;Adjust required attacking number if partner is attacking
+		(defrule
+		(goal g-attack-objective ATTACK-TARGET-ENEMY)
+		(or
+			(goal g-attack-status BEFORE-CASTLE-ATTACKS)
+			(goal g-attack-status FIRST-CASTLE-ATTACK))
+		(up-compare-goal g-team-partner-identity == THE-GENERAL)
+		(up-allied-goal focus-player g-attacking == YES)
+		(up-allied-goal focus-player g-team-partner == my-player-number)
+		=>
+		(up-modify-goal g-required-attack-num c:- 2)
+		)
+		#end-if
 
 		;Adjust min and max required attack numbers
 		;Adjust stop attack numbers
@@ -376,7 +403,7 @@
 		(up-modify-goal g-required-attack-num c:min 16)
 		(up-modify-goal g-required-attack-num g:min g-desired-num-military)
 		(up-modify-goal g-stop-attack-num g:= g-required-attack-num)
-		(up-modify-goal g-stop-attack-num c:%* 50)
+		(up-modify-goal g-stop-attack-num c:%* 60)
 		)
 		
 		(defrule
@@ -396,7 +423,7 @@
 		(up-modify-goal g-required-attack-num c:max 8)
 		(up-modify-goal g-required-attack-num c:min 20)
 		(up-modify-goal g-stop-attack-num g:= g-required-attack-num)
-		(up-modify-goal g-stop-attack-num c:%* 60)
+		(up-modify-goal g-stop-attack-num c:%* 75)
 		)
 
 		(defrule
@@ -404,22 +431,25 @@
 		(current-age == castle-age)
 		(up-compare-goal g-attack-status >= BEFORE-LATER-CASTLE-ATTACKS)
 		=>
-		(up-get-fact population 0 g-temp)
-		(up-modify-goal g-temp c:%* 25)
-		(up-modify-goal g-required-attack-num g:max g-temp)
+		; (up-get-fact population 0 g-temp)
+		; (up-modify-goal g-temp c:%* 25)
+		; (up-modify-goal g-required-attack-num g:max g-temp)
 		(up-modify-goal g-required-attack-num c:max 12)
-		(up-modify-goal g-required-attack-num c:min 50)
+		(up-modify-goal g-temp g:= g-desired-num-military)
+		(up-modify-goal g-temp c:- 5)
+		(up-modify-goal g-required-attack-num g:min g-temp)
 		(up-modify-goal g-stop-attack-num g:= g-required-attack-num)
-		(up-modify-goal g-stop-attack-num c:%* 60)
+		(up-modify-goal g-stop-attack-num c:%* 70)
+		; (up-chat-data-to-all "Required9 %d" g: g-required-attack-num)
 		)
 
 		(defrule
 		(goal g-attack-objective ATTACK-TARGET-ENEMY)
 		(current-age == imperial-age)
 		=>
-		(up-get-fact population 0 g-temp)
-		(up-modify-goal g-temp c:%* 25)
-		(up-modify-goal g-required-attack-num g:max g-temp)
+		; (up-get-fact population 0 g-temp)
+		; (up-modify-goal g-temp c:%* 25)
+		; (up-modify-goal g-required-attack-num g:max g-temp)
 		(up-modify-goal g-required-attack-num c:max 20)
 		(up-modify-goal g-temp g:= g-desired-num-military)
 		(up-modify-goal g-temp c:- 5)
@@ -432,6 +462,25 @@
 ;			   		 START ATTACK
 ;=========================<>=========================
 
+	;Castle Age
+	; (defrule
+	; (not
+	; 	(taunt-detected TAUNT-PLAYER 251))
+	; (current-age == castle-age)
+	; (or
+	; 	(up-compare-goal g-town-under-attack != NO)
+	; 	(or
+	; 		(players-building-count target-player <= 0)
+	; 		(or
+	; 			(up-compare-goal g-primary-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+	; 			(up-compare-goal g-age-status == TO-IMPERIAL))))
+	; (military-population g:>= g-required-attack-num)
+	; (military-population g:>= g-stop-attack-num)
+	; (military-population > 5)
+	; =>
+	; (chat-to-all "Debug: Other Castle Attack Conditions Not Met")
+	; )
+
 	(defrule
 	(current-age == castle-age)
 	(goal g-attacking NO)
@@ -441,14 +490,49 @@
 	(military-population > 5)
 	(players-building-count target-player > 0)
 	(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)
-	(up-compare-goal g-age-status != TO-CASTLE)
 	(up-compare-goal g-age-status != TO-IMPERIAL)
 	=>
 	(set-goal g-attacking YES)
 	(set-goal g-attack-coordination ATTACK-STARTED)
 	(up-modify-goal g-attack-status c:+ 1)
 	(set-strategic-number sn-number-civilian-militia 0)
+	(up-jump-rule 1)
 	)
+		(defrule
+		(current-age == castle-age)
+		(goal g-attacking NO)
+		(goal g-town-under-attack NO)
+		(military-population g:>= g-required-attack-num)
+		(military-population g:>= g-stop-attack-num)
+		(players-building-count target-player > 0)
+		(up-get-fact military-population 0 g-temp)
+		(up-modify-goal g-temp g:- g-required-attack-num)
+		(up-compare-goal g-temp >= 10)
+		=>
+		(set-goal g-attacking YES)
+		(set-goal g-attack-coordination ATTACK-STARTED)
+		(up-modify-goal g-attack-status c:+ 1)
+		(set-strategic-number sn-number-civilian-militia 0)
+		)
+
+	;Imperial Age
+	; (defrule
+	; (not
+	; 	(taunt-detected TAUNT-PLAYER 251))
+	; (current-age == imperial-age)
+	; (or
+	; 	(up-compare-goal g-town-under-attack != NO)
+	; 	(or
+	; 		(players-building-count target-player <= 0)
+	; 		(up-compare-goal g-primary-unit-tech-progress < PRIORITY-IMPERIAL-COMPLETE)))
+	; (or
+	; 	(population >= NINETY-PERCENT-POP)
+	; 	(and
+	; 		(military-population g:>= g-required-attack-num)
+	; 		(military-population g:>= g-stop-attack-num)))
+	; =>
+	; (chat-to-all "Debug: Other Imperial Attack Conditions Not Met")
+	; )
 
 	(defrule
 	(current-age == imperial-age)
@@ -459,15 +543,32 @@
 		(and
 			(military-population g:>= g-required-attack-num)
 			(military-population g:>= g-stop-attack-num)))
-	(military-population > 5)
 	(players-building-count target-player > 0)
 	(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
+	(up-compare-goal g-support-unit-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
 	=>
 	(set-goal g-attacking YES)
 	(set-goal g-attack-coordination ATTACK-STARTED)
 	(up-modify-goal g-attack-status c:+ 1)
 	(set-strategic-number sn-number-civilian-militia 0)
+	(up-jump-rule 1)
 	)
+		(defrule
+		(current-age == imperial-age)
+		(goal g-attacking NO)
+		(goal g-town-under-attack NO)
+		(military-population g:>= g-required-attack-num)
+		(military-population g:>= g-stop-attack-num)
+		(players-building-count target-player > 0)
+		(up-get-fact military-population 0 g-temp)
+		(up-modify-goal g-temp g:- g-required-attack-num)
+		(up-compare-goal g-temp >= 10)
+		=>
+		(set-goal g-attacking YES)
+		(set-goal g-attack-coordination ATTACK-STARTED)
+		(up-modify-goal g-attack-status c:+ 1)
+		(set-strategic-number sn-number-civilian-militia 0)
+		)
 
 	(defrule
 	(or
@@ -486,113 +587,58 @@
 
 	(load "The General 3.1/Functions/Reset")
 
-	;Conditions to Stop Attack
-	; (defrule
-	; (goal g-attacking YES)
-	; (goal g-town-under-attack YES)
-	; =>
-	; (set-goal g-attacking NO)
-	; (set-goal g-attack-coordination STOP-ATTACKING)
-	; )
-
 	(defrule
-	(goal g-attack-status FIRST-CASTLE-ATTACK)
 	(goal g-attacking YES)
+	(current-age-time >= 600)
 	(or
-		(military-population g:< g-stop-attack-num)
-		(military-population < 5))
+		(goal g-attack-status FIRST-FEUDAL-ATTACK)
+		(goal g-attack-status FIRST-CASTLE-ATTACK))
 	=>
 	(set-goal g-attacking NO)
 	(set-goal g-attack-coordination STOP-ATTACKING)
+	(disable-timer t-first-attack)
 	; (chat-to-player my-player-number CHAT-STOP-FIRST-CASTLE-ATTACK-SOLDIERS)
 	)
-
 	(defrule
-	(goal g-attack-status FIRST-CASTLE-ATTACK)
-	(goal g-attacking YES)
-	(military-population g:< g-stop-attack-num)
-	(or
-		(players-military-population target-player >= 6)
-		(players-building-type-count target-player castle >= 1))
-	(timer-triggered t-first-attack)
-	=>
-	(set-goal g-attacking NO)
-	(set-goal g-attack-coordination STOP-ATTACKING)
-	; (chat-to-player my-player-number CHAT-STOP-FIRST-CASTLE-ATTACK-ENEMY)
-	)
-
-	(defrule
-	(goal g-attack-status LATER-CASTLE-ATTACKS)
-	(goal g-attacking YES)
-	(or
-		(military-population g:< g-stop-attack-num)
-		(military-population < 5))
-	=>
-	(set-goal g-attacking NO)
-	(set-goal g-attack-coordination STOP-ATTACKING)
-	; (chat-to-player my-player-number CHAT-STOP-LATER-CASTLE-ATTACK)
-	)
-
-	(defrule
-	(up-compare-goal g-attack-status >= FIRST-IMPERIAL-ATTACK)
 	(goal g-attacking YES)
 	(or
 		(military-population g:< g-stop-attack-num)
 		(military-population < 5))
 	(population < EIGHTY-FIVE-PERCENT-POP)
+	(up-timer-status t-first-attack != timer-running)
 	=>
 	(set-goal g-attacking NO)
 	(set-goal g-attack-coordination STOP-ATTACKING)
-	; (chat-to-player my-player-number CHAT-STOP-IMPERIAL-ATTACK)
+	(disable-timer t-first-attack)
+	; (chat-to-player my-player-number CHAT-STOP-FIRST-CASTLE-ATTACK-SOLDIERS)
 	)
 
 	;Stop attack
 	(defrule
-	(goal g-attack-coordination STOP-ATTACKING)
 	(or
-		(up-timer-status t-first-attack == timer-running)	;If attack lasted less than 30 seconds (timer is still running),
-		(or													;then attack never really happened
-			(goal g-attack-status LATER-FEUDAL-ATTACKS)
-			(and
-				(goal g-attack-status LATER-CASTLE-ATTACKS)
-				(current-age < imperial-age))))
-	=>
-	(up-modify-goal g-attack-status c:- 1)	;move back to previous attack status
-	(up-modify-sn sn-maximum-town-size s:= custom-sn-peaceful-town-size)
-	(up-update-targets)
-	(set-strategic-number sn-number-civilian-militia 4)
-	(set-goal g-attack-coordination RETREAT)
-	(disable-timer t-first-attack)
-	)
-
-	(defrule
-	(goal g-attack-coordination STOP-ATTACKING)
-	(or
-		(up-timer-status t-first-attack == timer-running)	;If attack lasted less than 30 seconds (timer is still running),
-		(or													;then attack never really happened
-			(and
-				(goal g-attack-status FIRST-IMPERIAL-ATTACK)
-				(current-age-time < 600))
-			(goal g-attack-status LATER-IMPERIAL-ATTACKS)))
-	=>
-	(up-modify-goal g-attack-status c:- 1)	;move back to previous attack status
-	(up-modify-sn sn-maximum-town-size s:= custom-sn-peaceful-town-size)
-	(up-update-targets)
-	(set-strategic-number sn-number-civilian-militia 4)
-	(set-goal g-attack-coordination RETREAT)
-	(disable-timer t-first-attack)
-	)
-
-	(defrule
+		(goal g-attack-status FIRST-FEUDAL-ATTACK)
+		(or
+			(goal g-attack-status FIRST-CASTLE-ATTACK)
+			(goal g-attack-status FIRST-IMPERIAL-ATTACK)))
 	(goal g-attack-coordination STOP-ATTACKING)
 	=>
-	(up-modify-goal g-attack-status c:+ 1)
+	(up-modify-goal g-attack-status c:+ 1)	;move back to previous attack status
 	(up-modify-sn sn-maximum-town-size s:= custom-sn-peaceful-town-size)
 	(up-update-targets)
 	(set-strategic-number sn-number-civilian-militia 4)
 	(set-goal g-attack-coordination RETREAT)
-	(disable-timer t-first-attack)
+	(up-jump-rule 1)
 	)
+		;Not the first attack of the age
+		(defrule
+		(goal g-attack-coordination STOP-ATTACKING)
+		=>
+		(up-modify-goal g-attack-status c:- 1)	;move back to previous attack status
+		(up-modify-sn sn-maximum-town-size s:= custom-sn-peaceful-town-size)
+		(up-update-targets)
+		(set-strategic-number sn-number-civilian-militia 4)
+		(set-goal g-attack-coordination RETREAT)
+		)
 
 ;=========================<>=========================
 ;		   SET SN-MAXIMUM-TOWN-SIZE FOR TSA
@@ -650,7 +696,7 @@
 	(up-modify-sn sn-maximum-town-size g:= g-temp)	;nearest enemy building distance + 5
 	(up-modify-sn sn-maximum-town-size c:min HUNDRED-PERCENT-MAP-SIZE)
 	(up-modify-sn sn-safe-town-size s:= sn-maximum-town-size)
-	(up-modify-sn sn-safe-town-size c:%* 70)
+	(up-modify-sn sn-safe-town-size c:%* 50)
 	(up-update-targets)
 	)
 
@@ -664,7 +710,7 @@
 	(up-modify-sn sn-maximum-town-size c:+ 20)
 	(up-modify-sn sn-maximum-town-size c:min HUNDRED-PERCENT-MAP-SIZE)
 	(up-modify-sn sn-safe-town-size s:= sn-maximum-town-size)
-	(up-modify-sn sn-safe-town-size c:%* 70)
+	(up-modify-sn sn-safe-town-size c:%* 50)
 	(up-update-targets)
 	)
 
@@ -677,7 +723,7 @@
 	(up-modify-sn sn-maximum-town-size g:= g-temp)
 	(up-modify-sn sn-maximum-town-size c:min HUNDRED-PERCENT-MAP-SIZE)
 	(up-modify-sn sn-safe-town-size s:= sn-maximum-town-size)
-	(up-modify-sn sn-safe-town-size c:%* 70)
+	(up-modify-sn sn-safe-town-size c:%* 50)
 	)
 
 	(defrule

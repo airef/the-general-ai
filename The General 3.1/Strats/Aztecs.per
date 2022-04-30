@@ -12,44 +12,223 @@
 (disable-self)
 )
 
-(defrule
-(goal g-age-status LATE-IMPERIAL)
-(or
-	(up-compare-goal g-enemy-swordsmen-count >= 8)
+;-------------------------------
+;	Eagles Strategy Switching
+;-------------------------------
+
+	(defrule
 	(or
-		(up-compare-goal g-enemy-spearmen-count >= 8)
+		(up-compare-goal g-position != FLANK)
 		(or
-			(up-compare-goal g-enemy-eagle-warrior-count >= 6)
-			(up-compare-goal g-enemy-condottiero-count >= 8))))
-(or
-	(unit-type-count trade-cart >= 6)
-	(or
-		(up-gaia-type-count c: gold > 4)
-		(up-compare-goal g-recent-gold-gathered >= 50)))
-=>
-(set-goal g-late-imperial-strategy LATEI-UNIQUE)
-)
+			(up-compare-goal g-initial-strategy != FC-EAGLES-REVENGE)
+			(or
+				(up-compare-goal g-age-status < TO-IMPERIAL)
+				(up-compare-goal g-age-status > MID-IMPERIAL))))
+	=>
+	(up-jump-rule 13)
+	)
 
-(defrule
-(goal g-age-status LATE-IMPERIAL)
-(up-compare-goal g-enemy-swordsmen-count < 8)
-(up-compare-goal g-enemy-spearmen-count < 8)
-(up-compare-goal g-enemy-eagle-warrior-count < 6)
-(up-compare-goal g-enemy-condottiero-count < 8)
-(or
-	(unit-type-count trade-cart >= 6)
-	(or
-		(up-gaia-type-count c: gold > 4)
-		(up-compare-goal g-recent-gold-gathered >= 50)))
-=>
-(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
-)
+		(defrule
+		(true)
+		=>
+		(set-goal g-mid-castle-strategy MIDC-EAGLES)
+		(set-goal g-early-imperial-strategy EARLYI-EL-DORADO)
+		(set-goal g-mid-imperial-strategy MIDI-EAGLES)
+		)
 
-(defrule
-(goal g-age-status LATE-IMPERIAL)
-(unit-type-count trade-cart < 6)
-(up-gaia-type-count c: gold <= 4)
-(up-compare-goal g-recent-gold-gathered < 50)
-=>
-(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
-)
+		(defrule
+		(or
+			(up-compare-goal g-enemy-foot-archers-count g:>= g-enemy-swordsmen-count)
+			(or
+				(up-compare-goal g-enemy-cavalry-archers-count g:>= g-enemy-swordsmen-count)
+				(or
+					(up-compare-goal g-enemy-hand-cannoneer-slinger-count g:>= g-enemy-swordsmen-count)
+					(and
+						(up-compare-goal g-enemy-special-unique-unit-count g:>= g-enemy-swordsmen-count)
+						(and
+							(up-compare-flag g-enemy-special-unique-unit-flag == CATAPHRACT-FLAG)
+							(and
+								(up-compare-flag g-enemy-special-unique-unit-flag == JAGUAR-WARRIOR-FLAG)
+								(up-compare-flag g-enemy-special-unique-unit-flag == TEUTONIC-KNIGHT-FLAG)))))))
+		=>
+		(up-jump-rule 1)
+		)
+			(defrule
+			(up-compare-goal g-enemy-swordsmen-count >= 8)
+			=>
+			(set-goal g-mid-castle-strategy MIDC-SWORDS)
+			(set-goal g-early-imperial-strategy EARLYI-CHAMPFLOOD)
+			(set-goal g-mid-imperial-strategy MIDI-CHAMPIONS)
+			; (chat-to-all "Switching to champs strategy")
+			)
+		(defrule
+		(up-compare-flag g-enemy-special-unique-unit-flag == HUSKARL-FLAG)
+		(or
+			(up-compare-goal g-enemy-foot-archers-count g:>= g-enemy-special-unique-unit-count)
+			(or
+				(up-compare-goal g-enemy-cavalry-archers-count g:>= g-enemy-special-unique-unit-count)
+				(up-compare-goal g-enemy-hand-cannoneer-slinger-count g:>= g-enemy-special-unique-unit-count)))
+		=>
+		(up-jump-rule 1)
+		)
+			(defrule
+			(up-compare-goal g-enemy-special-unique-unit-count >= 6)
+			(up-compare-flag g-enemy-special-unique-unit-flag == HUSKARL-FLAG)
+			=>
+			(set-goal g-mid-castle-strategy MIDC-SWORDS)
+			(set-goal g-early-imperial-strategy EARLYI-CHAMPFLOOD)
+			(set-goal g-mid-imperial-strategy MIDI-CHAMPIONS)
+			; (chat-to-all "Switching to champs strategy")
+			)
+
+		(defrule
+		(or
+			(up-compare-goal g-enemy-foot-archers-count g:>= g-enemy-swordsmen-count)
+			(or
+				(up-compare-goal g-enemy-cavalry-archers-count g:>= g-enemy-swordsmen-count)
+				(or
+					(up-compare-goal g-enemy-hand-cannoneer-slinger-count g:>= g-enemy-swordsmen-count)
+					(or
+						(up-compare-goal g-enemy-heavy-cavalry-count g:>= g-enemy-swordsmen-count)
+						(or
+							(up-compare-goal g-enemy-elephants-count g:>= g-enemy-swordsmen-count)
+							(and
+								(up-compare-goal g-enemy-special-unique-unit-count g:>= g-enemy-swordsmen-count)
+								(up-compare-flag g-enemy-special-unique-unit-flag == CATAPHRACT-FLAG)))))))
+		=>
+		(up-jump-rule 1)
+		)
+			(defrule
+			(military-population > 20)
+			(building-type-count castle >= 2)
+			(up-compare-goal g-enemy-swordsmen-count >= 8)
+			=>
+			(set-goal g-mid-castle-strategy MIDC-UNIQUE)
+			(set-goal g-early-imperial-strategy EARLYI-UNIQUE)
+			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
+			; (chat-to-all "Switching to jags strategy")
+			)
+		(defrule
+		(up-compare-flag g-enemy-special-unique-unit-flag == HUSKARL-FLAG)
+		(or
+			(up-compare-goal g-enemy-foot-archers-count g:>= g-enemy-special-unique-unit-count)
+			(or
+				(up-compare-goal g-enemy-cavalry-archers-count g:>= g-enemy-special-unique-unit-count)
+				(up-compare-goal g-enemy-hand-cannoneer-slinger-count g:>= g-enemy-special-unique-unit-count)))
+		=>
+		(up-jump-rule 1)
+		)
+			(defrule
+			(military-population > 20)
+			(building-type-count castle >= 2)
+			(up-compare-goal g-enemy-special-unique-unit-count >= 6)
+			(up-compare-flag g-enemy-special-unique-unit-flag == HUSKARL-FLAG)
+			=>
+			(set-goal g-mid-castle-strategy MIDC-UNIQUE)
+			(set-goal g-early-imperial-strategy EARLYI-UNIQUE)
+			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
+			; (chat-to-all "Switching to jags strategy")
+			)
+
+		(defrule
+		(or
+			(up-compare-goal g-enemy-eagle-warrior-count g:>= g-enemy-hand-cannoneer-slinger-count)
+			(or
+				(up-compare-goal g-enemy-skirmishers-count g:>= g-enemy-hand-cannoneer-slinger-count)
+				(and
+					(up-compare-goal g-enemy-special-unique-unit-count g:>= g-enemy-hand-cannoneer-slinger-count)
+					(up-compare-flag g-enemy-special-unique-unit-flag == HUSKARL-FLAG))))
+		=>
+		(up-jump-rule 1)
+		)
+			(defrule
+			(building-type-count archery-range > 0)
+			(up-compare-goal g-archer-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+			(or
+				(up-compare-goal g-enemy-hand-cannoneer-slinger-count >= 8)
+				(and
+					(up-compare-goal g-enemy-hand-cannoneer-slinger-count >= 12)
+					(up-compare-goal g-team-position >= POCKET)))
+			=>
+			(set-goal g-mid-castle-strategy MIDC-XBOWS)
+			(set-goal g-early-imperial-strategy EARLYI-ARBINGER)
+			(set-goal g-mid-imperial-strategy MIDI-ARBS)
+			; (chat-to-all "Switching to arbs strategy")
+			)
+		(defrule
+		(or
+			(up-compare-flag g-enemy-special-unique-unit-flag == CATAPHRACT-FLAG)
+			(or
+				(up-compare-flag g-enemy-special-unique-unit-flag == JAGUAR-WARRIOR-FLAG)
+				(up-compare-flag g-enemy-special-unique-unit-flag == TEUTONIC-KNIGHT-FLAG)))
+		(or
+			(up-compare-goal g-enemy-eagle-warrior-count g:>= g-enemy-special-unique-unit-count)
+			(up-compare-goal g-enemy-skirmishers-count g:>= g-enemy-special-unique-unit-count))
+		=>
+		(up-jump-rule 1)
+		)
+			(defrule
+			(building-type-count archery-range > 0)
+			(up-compare-goal g-archer-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+			(or
+				(up-compare-goal g-enemy-special-unique-unit-count >= 6)
+				(and
+					(up-compare-goal g-enemy-special-unique-unit-count >= 9)
+					(up-compare-goal g-team-position >= POCKET)))
+			(or
+				(up-compare-flag g-enemy-special-unique-unit-flag == CATAPHRACT-FLAG)
+				(or
+					(up-compare-flag g-enemy-special-unique-unit-flag == JAGUAR-WARRIOR-FLAG)
+					(up-compare-flag g-enemy-special-unique-unit-flag == TEUTONIC-KNIGHT-FLAG)))
+			=>
+			(set-goal g-mid-castle-strategy MIDC-XBOWS)
+			(set-goal g-early-imperial-strategy EARLYI-ARBINGER)
+			(set-goal g-mid-imperial-strategy MIDI-ARBS)
+			; (chat-to-all "Switching to arbs strategy")
+			)
+
+;--------------------------------------
+;	Late Imperial Strategy Switching
+;--------------------------------------
+
+	(defrule
+	(goal g-age-status LATE-IMPERIAL)
+	(or
+		(up-compare-goal g-enemy-swordsmen-count >= 8)
+		(or
+			(up-compare-goal g-enemy-spearmen-count >= 8)
+			(or
+				(up-compare-goal g-enemy-eagle-warrior-count >= 6)
+				(up-compare-goal g-enemy-condottiero-count >= 8))))
+	(or
+		(unit-type-count trade-cart >= 6)
+		(or
+			(up-gaia-type-count c: gold > 4)
+			(up-compare-goal g-recent-gold-gathered >= 50)))
+	=>
+	(set-goal g-late-imperial-strategy LATEI-UNIQUE)
+	)
+
+	(defrule
+	(goal g-age-status LATE-IMPERIAL)
+	(up-compare-goal g-enemy-swordsmen-count < 8)
+	(up-compare-goal g-enemy-spearmen-count < 8)
+	(up-compare-goal g-enemy-eagle-warrior-count < 6)
+	(up-compare-goal g-enemy-condottiero-count < 8)
+	(or
+		(unit-type-count trade-cart >= 6)
+		(or
+			(up-gaia-type-count c: gold > 4)
+			(up-compare-goal g-recent-gold-gathered >= 50)))
+	=>
+	(set-goal g-late-imperial-strategy LATEI-CHAMPIONS)
+	)
+
+	(defrule
+	(goal g-age-status LATE-IMPERIAL)
+	(unit-type-count trade-cart < 6)
+	(up-gaia-type-count c: gold <= 4)
+	(up-compare-goal g-recent-gold-gathered < 50)
+	=>
+	(set-goal g-late-imperial-strategy LATEI-TRASHKIRMS)
+	)

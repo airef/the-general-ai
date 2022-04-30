@@ -62,7 +62,7 @@
 		(defrule
 		(taunt-detected TAUNT-PLAYER 234)
 		=>
-		(acknowledge-taunt TAUNT-PLAYER 234)
+		(acknowledge-taunt THIS-ANY-TAUNT-PLAYER 234)
 		)
 
 	;-----------------------------------------
@@ -1649,6 +1649,7 @@
 		=>
 		(up-modify-goal g-temp s:= sn-target-player-number)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Target player: %d" g: g-temp)
+		(up-send-flare g-target-enemy-x)
 		(up-modify-goal g-temp s:= sn-focus-player-number)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Focus player: %d" g: g-temp)
 		)
@@ -1737,8 +1738,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy DRUSH)
 		=>
-		(chat-to-player this-any-computer "I will DRUSH the enemy.")
-		(chat-to-player this-any-human-ally "I will DRUSH the enemy.")
+		(chat-to-player this-any-computer TAUNT-250-DRUSH)
+		(chat-to-player this-any-human-ally TAUNT-250-DRUSH)
 		)
 
 		(defrule
@@ -1747,8 +1748,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy DOUCHE)
 		=>
-		(chat-to-player this-any-computer "I will douche the enemy.")
-		(chat-to-player this-any-human-ally "I will douche the enemy.")
+		(chat-to-player this-any-computer TAUNT-250-DOUCHE)
+		(chat-to-player this-any-human-ally TAUNT-250-DOUCHE)
 		)
 
 		(defrule
@@ -1757,8 +1758,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy FL-RANGER)
 		=>
-		(chat-to-player this-any-computer "I'm using the RANGER strategy.")
-		(chat-to-player this-any-human-ally "I'm using the RANGER strategy.")
+		(chat-to-player this-any-computer TAUNT-250-RANGER)
+		(chat-to-player this-any-human-ally TAUNT-250-RANGER)
 		)
 
 		(defrule
@@ -1768,8 +1769,8 @@
 		(goal g-current-strategy FL-RANGER)
 		(current-age == dark-age)
 		=>
-		(chat-to-player this-any-computer "I will attack the enemy with archers.")
-		(chat-to-player this-any-human-ally "I will attack the enemy with archers.")
+		(chat-to-player this-any-computer TAUNT-250-RANGER2)
+		(chat-to-player this-any-human-ally TAUNT-250-RANGER2)
 		)
 
 		(defrule
@@ -1778,8 +1779,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy FL-GUERILLA)
 		=>
-		(chat-to-player this-any-computer "I'm using the GUERILLA flush strategy.")
-		(chat-to-player this-any-human-ally "I'm using the GUERILLA flush strategy.")
+		(chat-to-player this-any-computer TAUNT-250-GUERILLA)
+		(chat-to-player this-any-human-ally TAUNT-250-GUERILLA)
 		)
 
 		(defrule
@@ -1789,8 +1790,8 @@
 		(goal g-current-strategy FL-GUERILLA)
 		(current-age == dark-age)
 		=>
-		(chat-to-player this-any-computer "I will attack the enemy with archers and skirmishers.")
-		(chat-to-player this-any-human-ally "I will attack the enemy with archers and skirmishers.")
+		(chat-to-player this-any-computer TAUNT-250-GUERILLA2)
+		(chat-to-player this-any-human-ally TAUNT-250-GUERILLA2)
 		)
 
 		(defrule
@@ -1799,8 +1800,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy FL-SKIRMMETA)
 		=>
-		(chat-to-player this-any-computer "I'm using the SKIRMMETA flush strategy.")
-		(chat-to-player this-any-human-ally "I'm using the SKIRMMETA flush strategy.")
+		(chat-to-player this-any-computer TAUNT-250-SKIRMMETA)
+		(chat-to-player this-any-human-ally TAUNT-250-SKIRMMETA)
 		)
 
 		(defrule
@@ -1810,8 +1811,8 @@
 		(goal g-current-strategy FL-SKIRMMETA)
 		(current-age == dark-age)
 		=>
-		(chat-to-player this-any-computer "I will attack the enemy with skirmishers.")
-		(chat-to-player this-any-human-ally "I will attack the enemy with skirmishers.")
+		(chat-to-player this-any-computer TAUNT-250-SKIRMMETA2)
+		(chat-to-player this-any-human-ally TAUNT-250-SKIRMMETA2)
 		)
 
 		(defrule
@@ -1820,8 +1821,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy FL-LATHER)
 		=>
-		(chat-to-player this-any-computer "I'm using the LATHER flush strategy.")
-		(chat-to-player this-any-human-ally "I'm using the LATHER flush strategy.")
+		(chat-to-player this-any-computer TAUNT-250-LATHER)
+		(chat-to-player this-any-human-ally TAUNT-250-LATHER)
 		)
 
 		(defrule
@@ -1831,8 +1832,8 @@
 		(goal g-current-strategy FL-LATHER)
 		(current-age == dark-age)
 		=>
-		(chat-to-player this-any-computer "I will attack the enemy with m@a.")
-		(chat-to-player this-any-human-ally "I will attack the enemy with m@a.")
+		(chat-to-player this-any-computer TAUNT-250-LATHER2)
+		(chat-to-player this-any-human-ally TAUNT-250-LATHER2)
 		)
 
 		(defrule
@@ -1841,8 +1842,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy FL-VULTURE)
 		=>
-		(chat-to-player this-any-computer "I'm using the VULTURE flush strategy.")
-		(chat-to-player this-any-human-ally "I'm using the VULTURE flush strategy.")
+		(chat-to-player this-any-computer TAUNT-250-VULTURE)
+		(chat-to-player this-any-human-ally TAUNT-250-VULTURE)
 		)
 
 		(defrule
@@ -1852,8 +1853,8 @@
 		(goal g-current-strategy FL-VULTURE)
 		(current-age == dark-age)
 		=>
-		(chat-to-player this-any-computer "I will attack the enemy with scouts.")
-		(chat-to-player this-any-human-ally "I will attack the enemy with scouts.")
+		(chat-to-player this-any-computer TAUNT-250-VULTURE2)
+		(chat-to-player this-any-human-ally TAUNT-250-VULTURE2)
 		)
 
 		(defrule
@@ -1862,8 +1863,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy FL-EYRIES)
 		=>
-		(chat-to-player this-any-computer "I'm using the EYRIES flush strategy.")
-		(chat-to-player this-any-human-ally "I'm using the EYRIES flush strategy.")
+		(chat-to-player this-any-computer TAUNT-250-EYRIES)
+		(chat-to-player this-any-human-ally TAUNT-250-EYRIES)
 		)
 
 		(defrule
@@ -1873,8 +1874,8 @@
 		(goal g-current-strategy FL-EYRIES)
 		(current-age == dark-age)
 		=>
-		(chat-to-player this-any-computer "I will attack the enemy with eagle warriors.")
-		(chat-to-player this-any-human-ally "I will attack the enemy with eagle warriors.")
+		(chat-to-player this-any-computer TAUNT-250-EYRIES2)
+		(chat-to-player this-any-human-ally TAUNT-250-EYRIES2)
 		)
 
 		(defrule
@@ -1883,8 +1884,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy FL-GOEMUL)
 		=>
-		(chat-to-player this-any-computer "I'm using the GOEMUL trush strategy.")
-		(chat-to-player this-any-human-ally "I'm using the GOEMUL trush strategy.")
+		(chat-to-player this-any-computer TAUNT-250-GOEMUL)
+		(chat-to-player this-any-human-ally TAUNT-250-GOEMUL)
 		)
 
 		(defrule
@@ -1893,8 +1894,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDF-FULL-ARCHERS)
 		=>
-		(chat-to-player this-any-computer "I'm going FULL ARCHERS in Feudal.")
-		(chat-to-player this-any-human-ally "I'm going FULL ARCHERS in Feudal.")
+		(chat-to-player this-any-computer TAUNT-250-FULL-ARCHERS)
+		(chat-to-player this-any-human-ally TAUNT-250-FULL-ARCHERS)
 		)
 
 		(defrule
@@ -1903,8 +1904,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDF-FULL-RANGED)
 		=>
-		(chat-to-player this-any-computer "I'm going FULL RANGED units in Feudal.")
-		(chat-to-player this-any-human-ally "I'm going FULL RANGED units in Feudal.")
+		(chat-to-player this-any-computer TAUNT-250-FULL-RANGED)
+		(chat-to-player this-any-human-ally TAUNT-250-FULL-RANGED)
 		)
 
 		(defrule
@@ -1913,8 +1914,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDF-FULL-SKIRMS)
 		=>
-		(chat-to-player this-any-computer "I'm going FULL SKIRMS in Feudal.")
-		(chat-to-player this-any-human-ally "I'm going FULL SKIRMS in Feudal.")
+		(chat-to-player this-any-computer TAUNT-250-FULL-SKIRMS)
+		(chat-to-player this-any-human-ally TAUNT-250-FULL-SKIRMS)
 		)
 
 		(defrule
@@ -1923,8 +1924,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDF-FULL-SCOUTS)
 		=>
-		(chat-to-player this-any-computer "I'm going FULL SCOUTS in Feudal.")
-		(chat-to-player this-any-human-ally "I'm going FULL SCOUTS in Feudal.")
+		(chat-to-player this-any-computer TAUNT-250-FULL-SCOUTS)
+		(chat-to-player this-any-human-ally TAUNT-250-FULL-SCOUTS)
 		)
 
 		(defrule
@@ -1933,8 +1934,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDF-SCOUT-SKIRM)
 		=>
-		(chat-to-player this-any-computer "I'm going SCOUTS and SKIRMS in Feudal.")
-		(chat-to-player this-any-human-ally "I'm going SCOUTS and SKIRMS in Feudal.")
+		(chat-to-player this-any-computer TAUNT-250-SCOUT-SKIRM)
+		(chat-to-player this-any-human-ally TAUNT-250-SCOUT-SKIRM)
 		)
 
 		(defrule
@@ -1943,8 +1944,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDF-FULL-MAA)
 		=>
-		(chat-to-player this-any-computer "I'm going FULL MAN-AT-ARMS in Feudal.")
-		(chat-to-player this-any-human-ally "I'm going FULL MAN-AT-ARMS in Feudal.")
+		(chat-to-player this-any-computer TAUNT-250-FULL-MAA)
+		(chat-to-player this-any-human-ally TAUNT-250-FULL-MAA)
 		)
 
 		(defrule
@@ -1953,8 +1954,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDF-FULL-EAGLES)
 		=>
-		(chat-to-player this-any-computer "I'm going FULL EAGLES in Feudal.")
-		(chat-to-player this-any-human-ally "I'm going FULL EAGLES in Feudal.")
+		(chat-to-player this-any-computer TAUNT-250-FULL-EAGLES)
+		(chat-to-player this-any-human-ally TAUNT-250-FULL-EAGLES)
 		)
 
 		(defrule
@@ -1963,8 +1964,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy FC-STRONGBOW)
 		=>
-		(chat-to-player this-any-computer "I'm using the STRONGBOW fc strategy.")
-		(chat-to-player this-any-human-ally "I'm using the STRONGBOW fc strategy.")
+		(chat-to-player this-any-computer TAUNT-250-STRONGBOW)
+		(chat-to-player this-any-human-ally TAUNT-250-STRONGBOW)
 		)
 
 		(defrule
@@ -1974,8 +1975,8 @@
 		(goal g-current-strategy FC-STRONGBOW)
 		(current-age <= feudal-age)
 		=>
-		(chat-to-player this-any-computer "I will attack the enemy with xbows.")
-		(chat-to-player this-any-human-ally "I will attack the enemy with xbows.")
+		(chat-to-player this-any-computer TAUNT-250-STRONGBOW2)
+		(chat-to-player this-any-human-ally TAUNT-250-STRONGBOW2)
 		)
 
 		(defrule
@@ -1984,8 +1985,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy FC-KRUSH)
 		=>
-		(chat-to-player this-any-computer "I'm using the KRUSH fc strategy.")
-		(chat-to-player this-any-human-ally "I'm using the KRUSH fc strategy.")
+		(chat-to-player this-any-computer TAUNT-250-KRUSH)
+		(chat-to-player this-any-human-ally TAUNT-250-KRUSH)
 		)
 
 		(defrule
@@ -1995,8 +1996,8 @@
 		(goal g-current-strategy FC-KRUSH)
 		(current-age <= feudal-age)
 		=>
-		(chat-to-player this-any-computer "I will attack the enemy with knights.")
-		(chat-to-player this-any-human-ally "I will attack the enemy with knights.")
+		(chat-to-player this-any-computer TAUNT-250-KRUSH2)
+		(chat-to-player this-any-human-ally TAUNT-250-KRUSH2)
 		)
 
 		(defrule
@@ -2005,8 +2006,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy FC-EAGLES-REVENGE)
 		=>
-		(chat-to-player this-any-computer "I'm using the EAGLES REVENGE fc strategy.")
-		(chat-to-player this-any-human-ally "I'm using the EAGLES REVENGE fc strategy.")
+		(chat-to-player this-any-computer TAUNT-250-EAGLES-REVENGE)
+		(chat-to-player this-any-human-ally TAUNT-250-EAGLES-REVENGE)
 		)
 
 		(defrule
@@ -2016,8 +2017,8 @@
 		(goal g-current-strategy FC-EAGLES-REVENGE)
 		(current-age <= feudal-age)
 		=>
-		(chat-to-player this-any-computer "I will attack the enemy with eagle warriors.")
-		(chat-to-player this-any-human-ally "I will attack the enemy with eagle warriors.")
+		(chat-to-player this-any-computer TAUNT-250-EAGLES-REVENGE2)
+		(chat-to-player this-any-human-ally TAUNT-250-EAGLES-REVENGE2)
 		)
 
 		(defrule
@@ -2026,8 +2027,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy FC-CRUSH)
 		=>
-		(chat-to-player this-any-computer "I'm using the CRUSH fc strategy.")
-		(chat-to-player this-any-human-ally "I'm using the CRUSH fc strategy.")
+		(chat-to-player this-any-computer TAUNT-250-CRUSH)
+		(chat-to-player this-any-human-ally TAUNT-250-CRUSH)
 		)
 
 		(defrule
@@ -2037,8 +2038,8 @@
 		(goal g-current-strategy FC-CRUSH)
 		(current-age <= feudal-age)
 		=>
-		(chat-to-player this-any-computer "I will attack the enemy with camels.")
-		(chat-to-player this-any-human-ally "I will attack the enemy with camels.")
+		(chat-to-player this-any-computer TAUNT-250-CRUSH2)
+		(chat-to-player this-any-human-ally TAUNT-250-CRUSH2)
 		)
 
 		(defrule
@@ -2047,8 +2048,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy FC-DEMON)
 		=>
-		(chat-to-player this-any-computer "I'm using the DEMON fc strategy.")
-		(chat-to-player this-any-human-ally "I'm using the DEMON fc strategy.")
+		(chat-to-player this-any-computer TAUNT-250-DEMON)
+		(chat-to-player this-any-human-ally TAUNT-250-DEMON)
 		)
 
 		(defrule
@@ -2058,8 +2059,8 @@
 		(goal g-current-strategy FC-DEMON)
 		(current-age <= feudal-age)
 		=>
-		(chat-to-player this-any-computer "I will attack the enemy with monks.")
-		(chat-to-player this-any-human-ally "I will attack the enemy with monks.")
+		(chat-to-player this-any-computer TAUNT-250-DEMON2)
+		(chat-to-player this-any-human-ally TAUNT-250-DEMON2)
 		)
 
 		(defrule
@@ -2068,8 +2069,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy FC-CASTLE-DROP)
 		=>
-		(chat-to-player this-any-computer "I'm using the CASTLE DROP fc strategy.")
-		(chat-to-player this-any-human-ally "I'm using the CASTLE DROP fc strategy.")
+		(chat-to-player this-any-computer TAUNT-250-CASTLE-DROP)
+		(chat-to-player this-any-human-ally TAUNT-250-CASTLE-DROP)
 		)
 
 		(defrule
@@ -2078,8 +2079,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy EARLYC-XBOWS)
 		=>
-		(chat-to-player this-any-computer "I'm using xbows in early Castle Age.")
-		(chat-to-player this-any-human-ally "I'm using xbows in early Castle Age.")
+		(chat-to-player this-any-computer TAUNT-250-EARLYC-XBOWS)
+		(chat-to-player this-any-human-ally TAUNT-250-EARLYC-XBOWS)
 		)
 
 		(defrule
@@ -2088,8 +2089,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy EARLYC-KNIGHTS)
 		=>
-		(chat-to-player this-any-computer "I'm using knights in early Castle Age.")
-		(chat-to-player this-any-human-ally "I'm using knights in early Castle Age.")
+		(chat-to-player this-any-computer TAUNT-250-EARLYC-KNIGHTS)
+		(chat-to-player this-any-human-ally TAUNT-250-EARLYC-KNIGHTS)
 		)
 
 		(defrule
@@ -2098,8 +2099,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy EARLYC-EAGLES)
 		=>
-		(chat-to-player this-any-computer "I'm using eagle warriors in early Castle Age.")
-		(chat-to-player this-any-human-ally "I'm using eagle warriors in early Castle Age.")
+		(chat-to-player this-any-computer TAUNT-250-EARLYC-EAGLES)
+		(chat-to-player this-any-human-ally TAUNT-250-EARLYC-EAGLES)
 		)
 
 		(defrule
@@ -2108,8 +2109,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy EARLYC-CAMELS)
 		=>
-		(chat-to-player this-any-computer "I'm using camels in early Castle Age.")
-		(chat-to-player this-any-human-ally "I'm using camels in early Castle Age.")
+		(chat-to-player this-any-computer TAUNT-250-EARLYC-CAMELS)
+		(chat-to-player this-any-human-ally TAUNT-250-EARLYC-CAMELS)
 		)
 
 		(defrule
@@ -2118,8 +2119,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDC-XBOWS)
 		=>
-		(chat-to-player this-any-computer "I'm using xbows in mid Castle Age.")
-		(chat-to-player this-any-human-ally "I'm using xbows in mid Castle Age.")
+		(chat-to-player this-any-computer TAUNT-250-MIDC-XBOWS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDC-XBOWS)
 		)
 
 		(defrule
@@ -2128,8 +2129,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDC-KNIGHTS)
 		=>
-		(chat-to-player this-any-computer "I'm using knights in mid Castle Age.")
-		(chat-to-player this-any-human-ally "I'm using knights in mid Castle Age.")
+		(chat-to-player this-any-computer TAUNT-250-MIDC-KNIGHTS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDC-KNIGHTS)
 		)
 
 		(defrule
@@ -2138,8 +2139,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDC-EAGLES)
 		=>
-		(chat-to-player this-any-computer "I'm using eagle warriors in mid Castle Age.")
-		(chat-to-player this-any-human-ally "I'm using eagle warriors in mid Castle Age.")
+		(chat-to-player this-any-computer TAUNT-250-MIDC-EAGLES)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDC-EAGLES)
 		)
 
 		(defrule
@@ -2148,8 +2149,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDC-CAMELS)
 		=>
-		(chat-to-player this-any-computer "I'm using camels in mid Castle Age.")
-		(chat-to-player this-any-human-ally "I'm using camels in mid Castle Age.")
+		(chat-to-player this-any-computer TAUNT-250-MIDC-CAMELS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDC-CAMELS)
 		)
 
 		(defrule
@@ -2158,8 +2159,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDC-CAV-ARCHERS)
 		=>
-		(chat-to-player this-any-computer "I'm using cav archers in mid Castle Age.")
-		(chat-to-player this-any-human-ally "I'm using cav archers in mid Castle Age.")
+		(chat-to-player this-any-computer TAUNT-250-MIDC-CAV-ARCHERS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDC-CAV-ARCHERS)
 		)
 
 		(defrule
@@ -2168,18 +2169,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDC-CIRCUS)
 		=>
-		(chat-to-player this-any-computer "I'm using battle eles in mid Castle Age.")
-		(chat-to-player this-any-human-ally "I'm using battle eles in mid Castle Age.")
-		)
-
-		(defrule
-		(or
-			(taunt-detected any-computer 250)
-			(taunt-detected any-human-ally 250))
-		(goal g-current-strategy MIDC-RANGED)
-		=>
-		(chat-to-player this-any-computer "I'm using ranged units in mid Castle Age.")
-		(chat-to-player this-any-human-ally "I'm using ranged units in mid Castle Age.")
+		(chat-to-player this-any-computer TAUNT-250-MIDC-CIRCUS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDC-CIRCUS)
 		)
 
 		(defrule
@@ -2188,8 +2179,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDC-UNIQUE)
 		=>
-		(chat-to-player this-any-computer "I'm using unique units in mid Castle Age.")
-		(chat-to-player this-any-human-ally "I'm using unique units in mid Castle Age.")
+		(chat-to-player this-any-computer TAUNT-250-MIDC-UNIQUE)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDC-UNIQUE)
 		)
 
 		(defrule
@@ -2198,8 +2189,78 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDC-MONKS)
 		=>
-		(chat-to-player this-any-computer "I'm using monks in mid Castle Age.")
-		(chat-to-player this-any-human-ally "I'm using monks in mid Castle Age.")
+		(chat-to-player this-any-computer TAUNT-250-MIDC-MONKS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDC-MONKS)
+		)
+
+		(defrule
+		(or
+			(taunt-detected any-computer 250)
+			(taunt-detected any-human-ally 250))
+		(goal g-current-strategy MIDC-SWORDS)
+		=>
+		(chat-to-player this-any-computer TAUNT-250-MIDC-SWORDS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDC-SWORDS)
+		)
+
+		(defrule
+		(or
+			(taunt-detected any-computer 250)
+			(taunt-detected any-human-ally 250))
+		(goal g-current-strategy MIDC-PIKES)
+		=>
+		(chat-to-player this-any-computer TAUNT-250-MIDC-PIKES)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDC-PIKES)
+		)
+
+		(defrule
+		(or
+			(taunt-detected any-computer 250)
+			(taunt-detected any-human-ally 250))
+		(goal g-current-strategy MIDC-SKIRMS)
+		=>
+		(chat-to-player this-any-computer TAUNT-250-MIDC-SKIRMS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDC-SKIRMS)
+		)
+
+		(defrule
+		(or
+			(taunt-detected any-computer 250)
+			(taunt-detected any-human-ally 250))
+		(goal g-current-strategy MIDC-LIGHT)
+		=>
+		(chat-to-player this-any-computer TAUNT-250-MIDC-LIGHT)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDC-LIGHT)
+		)
+
+		(defrule
+		(or
+			(taunt-detected any-computer 250)
+			(taunt-detected any-human-ally 250))
+		(goal g-current-strategy MIDC-LANCERS)
+		=>
+		(chat-to-player this-any-computer TAUNT-250-MIDC-LANCERS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDC-LANCERS)
+		)
+
+		(defrule
+		(or
+			(taunt-detected any-computer 250)
+			(taunt-detected any-human-ally 250))
+		(goal g-current-strategy MIDC-SLINGERS)
+		=>
+		(chat-to-player this-any-computer TAUNT-250-MIDC-SLINGERS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDC-SLINGERS)
+		)
+
+		(defrule
+		(or
+			(taunt-detected any-computer 250)
+			(taunt-detected any-human-ally 250))
+		(goal g-current-strategy MIDC-GENITOURS)
+		=>
+		(chat-to-player this-any-computer TAUNT-250-MIDC-GENITOURS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDC-GENITOURS)
 		)
 
 		(defrule
@@ -2208,8 +2269,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy FI-SNIPER)
 		=>
-		(chat-to-player this-any-computer "I'm using the SNIPER fast imp strategy.")
-		(chat-to-player this-any-human-ally "I'm using the SNIPER fast imp strategy.")
+		(chat-to-player this-any-computer TAUNT-250-FI-SNIPER)
+		(chat-to-player this-any-human-ally TAUNT-250-FI-SNIPER)
 		)
 
 		(defrule
@@ -2219,8 +2280,8 @@
 		(goal g-current-strategy FI-SNIPER)
 		(current-age <= castle-age)
 		=>
-		(chat-to-player this-any-computer "I will attack the enemy with hand cannoneers and bombard cannons.")
-		(chat-to-player this-any-human-ally "I will attack the enemy with hand cannoneers and bombard cannons.")
+		(chat-to-player this-any-computer TAUNT-250-FI-SNIPER2)
+		(chat-to-player this-any-human-ally TAUNT-250-FI-SNIPER2)
 		)
 
 		(defrule
@@ -2229,8 +2290,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy FI-FARMERTRON)
 		=>
-		(chat-to-player this-any-computer "I'm using the FARMERTRON fast imp strategy.")
-		(chat-to-player this-any-human-ally "I'm using the FARMERTRON fast imp strategy.")
+		(chat-to-player this-any-computer TAUNT-250-FI-FARMERTRON)
+		(chat-to-player this-any-human-ally TAUNT-250-FI-FARMERTRON)
 		)
 
 		(defrule
@@ -2240,8 +2301,8 @@
 		(goal g-current-strategy FI-FARMERTRON)
 		(current-age <= castle-age)
 		=>
-		(chat-to-player this-any-computer "I will attack the enemy with champions.")
-		(chat-to-player this-any-human-ally "I will attack the enemy with champions.")
+		(chat-to-player this-any-computer TAUNT-250-FI-FARMERTRON2)
+		(chat-to-player this-any-human-ally TAUNT-250-FI-FARMERTRON2)
 		)
 
 		(defrule
@@ -2250,8 +2311,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy FI-AGEOFSTONEWALLS)
 		=>
-		(chat-to-player this-any-computer "I'm using the AGEOFSTONEWALLS fast imp strategy.")
-		(chat-to-player this-any-human-ally "I'm using the AGEOFSTONEWALLS fast imp strategy.")
+		(chat-to-player this-any-computer TAUNT-250-FI-AGEOFSTONEWALLS)
+		(chat-to-player this-any-human-ally TAUNT-250-FI-AGEOFSTONEWALLS)
 		)
 
 		(defrule
@@ -2261,8 +2322,8 @@
 		(goal g-current-strategy FI-AGEOFSTONEWALLS)
 		(current-age <= castle-age)
 		=>
-		(chat-to-player this-any-computer "I will attack the enemy with elite eagle warriors.")
-		(chat-to-player this-any-human-ally "I will attack the enemy with elite eagle warriors.")
+		(chat-to-player this-any-computer TAUNT-250-FI-AGEOFSTONEWALLS2)
+		(chat-to-player this-any-human-ally TAUNT-250-FI-AGEOFSTONEWALLS2)
 		)
 
 		(defrule
@@ -2271,8 +2332,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy EARLYI-EL-DORADO)
 		=>
-		(chat-to-player this-any-computer "I'm using the EL DORADO early imp strategy.")
-		(chat-to-player this-any-human-ally "I'm using the EL DORADO early imp strategy.")
+		(chat-to-player this-any-computer TAUNT-250-EARLYI-EL-DORADO)
+		(chat-to-player this-any-human-ally TAUNT-250-EARLYI-EL-DORADO)
 		)
 
 		(defrule
@@ -2281,8 +2342,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy EARLYI-PALASTORM)
 		=>
-		(chat-to-player this-any-computer "I'm using the PALASTORM early imp strategy.")
-		(chat-to-player this-any-human-ally "I'm using the PALASTORM early imp strategy.")
+		(chat-to-player this-any-computer TAUNT-250-EARLYI-PALASTORM)
+		(chat-to-player this-any-human-ally TAUNT-250-EARLYI-PALASTORM)
 		)
 
 		(defrule
@@ -2291,8 +2352,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy EARLYI-ARBINGER)
 		=>
-		(chat-to-player this-any-computer "I'm using the ARBINGER of death early imp strategy.")
-		(chat-to-player this-any-human-ally "I'm using the ARBINGER of death early imp strategy.")
+		(chat-to-player this-any-computer TAUNT-250-EARLYI-ARBINGER)
+		(chat-to-player this-any-human-ally TAUNT-250-EARLYI-ARBINGER)
 		)
 
 		(defrule
@@ -2301,8 +2362,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy EARLYI-CAMELSTORM)
 		=>
-		(chat-to-player this-any-computer "I'm using the CAMELSTORM early imp strategy.")
-		(chat-to-player this-any-human-ally "I'm using the CAMELSTORM early imp strategy.")
+		(chat-to-player this-any-computer TAUNT-250-EARLYI-CAMELSTORM)
+		(chat-to-player this-any-human-ally TAUNT-250-EARLYI-CAMELSTORM)
 		)
 
 		(defrule
@@ -2311,8 +2372,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy EARLYI-CHAMPFLOOD)
 		=>
-		(chat-to-player this-any-computer "I'm using the CHAMPFLOOD early imp strategy.")
-		(chat-to-player this-any-human-ally "I'm using the CHAMPFLOOD early imp strategy.")
+		(chat-to-player this-any-computer TAUNT-250-EARLYI-CHAMPFLOOD)
+		(chat-to-player this-any-human-ally TAUNT-250-EARLYI-CHAMPFLOOD)
 		)
 
 		(defrule
@@ -2321,8 +2382,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy EARLYI-CIRCUS-STOMP)
 		=>
-		(chat-to-player this-any-computer "I'm using the CIRCUS STOMP early imp strategy.")
-		(chat-to-player this-any-human-ally "I'm using the CIRCUS STOMP early imp strategy.")
+		(chat-to-player this-any-computer TAUNT-250-EARLYI-CIRCUS-STOMP)
+		(chat-to-player this-any-human-ally TAUNT-250-EARLYI-CIRCUS-STOMP)
 		)
 
 		(defrule
@@ -2331,8 +2392,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy EARLYI-UNIQUE)
 		=>
-		(chat-to-player this-any-computer "I'm using unique units in early imperial.")
-		(chat-to-player this-any-human-ally "I'm using unique units in early imperial.")
+		(chat-to-player this-any-computer TAUNT-250-EARLYI-UNIQUE)
+		(chat-to-player this-any-human-ally TAUNT-250-EARLYI-UNIQUE)
 		)
 
 		(defrule
@@ -2341,8 +2402,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy EARLYI-HORDE)
 		=>
-		(chat-to-player this-any-computer "I'm using the HORDE early imp strategy.")
-		(chat-to-player this-any-human-ally "I'm using the HORDE early imp strategy.")
+		(chat-to-player this-any-computer TAUNT-250-EARLYI-HORDE)
+		(chat-to-player this-any-human-ally TAUNT-250-EARLYI-HORDE)
 		)
 
 		(defrule
@@ -2351,8 +2412,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDI-EAGLES)
 		=>
-		(chat-to-player this-any-computer "I'm using eagle warriors in mid imperial.")
-		(chat-to-player this-any-human-ally "I'm using eagle warriors in mid imperial.")
+		(chat-to-player this-any-computer TAUNT-250-MIDI-EAGLES)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDI-EAGLES)
 		)
 
 		(defrule
@@ -2361,8 +2422,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDI-PALADINS)
 		=>
-		(chat-to-player this-any-computer "I'm using cavaliers/paladins in mid imperial.")
-		(chat-to-player this-any-human-ally "I'm using cavaliers/paladins in mid imperial.")
+		(chat-to-player this-any-computer TAUNT-250-MIDI-PALADINS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDI-PALADINS)
 		)
 
 		(defrule
@@ -2371,8 +2432,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDI-CAMELS)
 		=>
-		(chat-to-player this-any-computer "I'm using heavy/imp camels in mid imperial.")
-		(chat-to-player this-any-human-ally "I'm using heavy/imp camels in mid imperial.")
+		(chat-to-player this-any-computer TAUNT-250-MIDI-CAMELS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDI-CAMELS)
 		)
 
 		(defrule
@@ -2381,8 +2442,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDI-ARBS)
 		=>
-		(chat-to-player this-any-computer "I'm using arbalests in mid imperial.")
-		(chat-to-player this-any-human-ally "I'm using arbalests in mid imperial.")
+		(chat-to-player this-any-computer TAUNT-250-MIDI-ARBS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDI-ARBS)
 		)
 
 		(defrule
@@ -2391,8 +2452,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDI-CAV-ARCHERS)
 		=>
-		(chat-to-player this-any-computer "I'm using heavy cav archers in mid imperial.")
-		(chat-to-player this-any-human-ally "I'm using heavy cav archers in mid imperial.")
+		(chat-to-player this-any-computer TAUNT-250-MIDI-CAV-ARCHERS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDI-CAV-ARCHERS)
 		)
 
 		(defrule
@@ -2401,8 +2462,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDI-CIRCUS)
 		=>
-		(chat-to-player this-any-computer "I'm using elite battle eles in mid imperial.")
-		(chat-to-player this-any-human-ally "I'm using elite battle eles in mid imperial.")
+		(chat-to-player this-any-computer TAUNT-250-MIDI-CIRCUS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDI-CIRCUS)
 		)
 
 		(defrule
@@ -2411,8 +2472,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDI-CHAMPIONS)
 		=>
-		(chat-to-player this-any-computer "I'm using champions in mid imperial.")
-		(chat-to-player this-any-human-ally "I'm using champions in mid imperial.")
+		(chat-to-player this-any-computer TAUNT-250-MIDI-CHAMPIONS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDI-CHAMPIONS)
 		)
 
 		(defrule
@@ -2421,8 +2482,98 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy MIDI-UNIQUE)
 		=>
-		(chat-to-player this-any-computer "I'm using unique units in mid imperial.")
-		(chat-to-player this-any-human-ally "I'm using unique units in mid imperial.")
+		(chat-to-player this-any-computer TAUNT-250-MIDI-UNIQUE)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDI-UNIQUE)
+		)
+
+		(defrule
+		(or
+			(taunt-detected any-computer 250)
+			(taunt-detected any-human-ally 250))
+		(goal g-current-strategy MIDI-HALBS)
+		=>
+		(chat-to-player this-any-computer TAUNT-250-MIDI-HALBS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDI-HALBS)
+		)
+
+		(defrule
+		(or
+			(taunt-detected any-computer 250)
+			(taunt-detected any-human-ally 250))
+		(goal g-current-strategy MIDI-CONDOS)
+		=>
+		(chat-to-player this-any-computer TAUNT-250-MIDI-CONDOS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDI-CONDOS)
+		)
+
+		(defrule
+		(or
+			(taunt-detected any-computer 250)
+			(taunt-detected any-human-ally 250))
+		(goal g-current-strategy MIDI-SKIRMS)
+		=>
+		(chat-to-player this-any-computer TAUNT-250-MIDI-SKIRMS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDI-SKIRMS)
+		)
+
+		(defrule
+		(or
+			(taunt-detected any-computer 250)
+			(taunt-detected any-human-ally 250))
+		(goal g-current-strategy MIDI-CANNONEERS)
+		=>
+		(chat-to-player this-any-computer TAUNT-250-MIDI-CANNONEERS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDI-CANNONEERS)
+		)
+
+		(defrule
+		(or
+			(taunt-detected any-computer 250)
+			(taunt-detected any-human-ally 250))
+		(goal g-current-strategy MIDI-SLINGERS)
+		=>
+		(chat-to-player this-any-computer TAUNT-250-MIDI-SLINGERS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDI-SLINGERS)
+		)
+
+		(defrule
+		(or
+			(taunt-detected any-computer 250)
+			(taunt-detected any-human-ally 250))
+		(goal g-current-strategy MIDI-GENITOURS)
+		=>
+		(chat-to-player this-any-computer TAUNT-250-MIDI-GENITOURS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDI-GENITOURS)
+		)
+
+		(defrule
+		(or
+			(taunt-detected any-computer 250)
+			(taunt-detected any-human-ally 250))
+		(goal g-current-strategy MIDI-HUSSARS)
+		=>
+		(chat-to-player this-any-computer TAUNT-250-MIDI-HUSSARS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDI-HUSSARS)
+		)
+
+		(defrule
+		(or
+			(taunt-detected any-computer 250)
+			(taunt-detected any-human-ally 250))
+		(goal g-current-strategy MIDI-LANCERS)
+		=>
+		(chat-to-player this-any-computer TAUNT-250-MIDI-LANCERS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDI-LANCERS)
+		)
+
+		(defrule
+		(or
+			(taunt-detected any-computer 250)
+			(taunt-detected any-human-ally 250))
+		(goal g-current-strategy MIDI-MONKS)
+		=>
+		(chat-to-player this-any-computer TAUNT-250-MIDI-MONKS)
+		(chat-to-player this-any-human-ally TAUNT-250-MIDI-MONKS)
 		)
 
 		(defrule
@@ -2431,8 +2582,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy BOOM-KNIGHTS)
 		=>
-		(chat-to-player this-any-computer "I will boom into knights.")
-		(chat-to-player this-any-human-ally "I will boom into knights.")
+		(chat-to-player this-any-computer TAUNT-250-BOOM-KNIGHTS)
+		(chat-to-player this-any-human-ally TAUNT-250-BOOM-KNIGHTS)
 		)
 
 		(defrule
@@ -2441,8 +2592,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy BOOM-CAMELS)
 		=>
-		(chat-to-player this-any-computer "I will boom into camels.")
-		(chat-to-player this-any-human-ally "I will boom into camels.")
+		(chat-to-player this-any-computer TAUNT-250-BOOM-CAMELS)
+		(chat-to-player this-any-human-ally TAUNT-250-BOOM-CAMELS)
 		)
 
 		(defrule
@@ -2451,8 +2602,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy BOOM-XBOWS)
 		=>
-		(chat-to-player this-any-computer "I will boom into xbows.")
-		(chat-to-player this-any-human-ally "I will boom into xbows.")
+		(chat-to-player this-any-computer TAUNT-250-BOOM-XBOWS)
+		(chat-to-player this-any-human-ally TAUNT-250-BOOM-XBOWS)
 		)
 
 		(defrule
@@ -2461,8 +2612,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy BOOM-EAGLES)
 		=>
-		(chat-to-player this-any-computer "I will boom into eagle warriors.")
-		(chat-to-player this-any-human-ally "I will boom into eagle warriors.")
+		(chat-to-player this-any-computer TAUNT-250-BOOM-EAGLES)
+		(chat-to-player this-any-human-ally TAUNT-250-BOOM-EAGLES)
 		)
 
 		(defrule
@@ -2471,8 +2622,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy BOOM-IMPERIAL)
 		=>
-		(chat-to-player this-any-computer "I will boom to the Imperial Age.")
-		(chat-to-player this-any-human-ally "I will boom to the Imperial Age.")
+		(chat-to-player this-any-computer TAUNT-250-BOOM-IMPERIAL)
+		(chat-to-player this-any-human-ally TAUNT-250-BOOM-IMPERIAL)
 		)
 
 		(defrule
@@ -2481,8 +2632,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy LATEI-CHAMPIONS)
 		=>
-		(chat-to-player this-any-computer "I am using champions to conserve gold.")
-		(chat-to-player this-any-human-ally "I am using champions to conserve gold.")
+		(chat-to-player this-any-computer TAUNT-250-LATEI-CHAMPIONS)
+		(chat-to-player this-any-human-ally TAUNT-250-LATEI-CHAMPIONS)
 		)
 
 		(defrule
@@ -2491,8 +2642,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy LATEI-UNIQUE)
 		=>
-		(chat-to-player this-any-computer "I am using unique units to conserve gold.")
-		(chat-to-player this-any-human-ally "I am using unique units to conserve gold.")
+		(chat-to-player this-any-computer TAUNT-250-LATEI-UNIQUE)
+		(chat-to-player this-any-human-ally TAUNT-250-LATEI-UNIQUE)
 		)
 
 		(defrule
@@ -2501,8 +2652,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy LATEI-TRASHBOWS)
 		=>
-		(chat-to-player this-any-computer "I am using Persian xbows to conserve gold.")
-		(chat-to-player this-any-human-ally "I am using Persian xbows to conserve gold.")
+		(chat-to-player this-any-computer TAUNT-250-LATEI-TRASHBOWS)
+		(chat-to-player this-any-human-ally TAUNT-250-LATEI-TRASHBOWS)
 		)
 
 		(defrule
@@ -2511,8 +2662,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy LATEI-TRASHKIRMS)
 		=>
-		(chat-to-player this-any-computer "I am using skirmishers to conserve gold.")
-		(chat-to-player this-any-human-ally "I am using skirmishers to conserve gold.")
+		(chat-to-player this-any-computer TAUNT-250-LATEI-TRASHKIRMS)
+		(chat-to-player this-any-human-ally TAUNT-250-LATEI-TRASHKIRMS)
 		)
 
 		(defrule
@@ -2521,8 +2672,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy LATEI-TRASHALBS)
 		=>
-		(chat-to-player this-any-computer "I am using halberdiers to conserve gold.")
-		(chat-to-player this-any-human-ally "I am using halberdiers to conserve gold.")
+		(chat-to-player this-any-computer TAUNT-250-LATEI-TRASHALBS)
+		(chat-to-player this-any-human-ally TAUNT-250-LATEI-TRASHALBS)
 		)
 
 		(defrule
@@ -2531,8 +2682,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy LATEI-TRASHUSSARS)
 		=>
-		(chat-to-player this-any-computer "I am using hussars to conserve gold.")
-		(chat-to-player this-any-human-ally "I am using hussars to conserve gold.")
+		(chat-to-player this-any-computer TAUNT-250-LATEI-TRASHUSSARS)
+		(chat-to-player this-any-human-ally TAUNT-250-LATEI-TRASHUSSARS)
 		)
 
 		(defrule
@@ -2541,8 +2692,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy LATEI-TRASHGENS)
 		=>
-		(chat-to-player this-any-computer "I am using genitours to conserve gold.")
-		(chat-to-player this-any-human-ally "I am using genitours to conserve gold.")
+		(chat-to-player this-any-computer TAUNT-250-LATEI-TRASHGENS)
+		(chat-to-player this-any-human-ally TAUNT-250-LATEI-TRASHGENS)
 		)
 
 		(defrule
@@ -2551,8 +2702,8 @@
 			(taunt-detected any-human-ally 250))
 		(goal g-current-strategy LATEI-HUSSARS)
 		=>
-		(chat-to-player this-any-computer "I am using hussars to conserve gold.")
-		(chat-to-player this-any-human-ally "I am using hussars to conserve gold.")
+		(chat-to-player this-any-computer TAUNT-250-LATEI-HUSSARS)
+		(chat-to-player this-any-human-ally TAUNT-250-LATEI-HUSSARS)
 		)
 
 		(defrule
