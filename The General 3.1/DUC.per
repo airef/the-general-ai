@@ -1327,12 +1327,7 @@
         )
 
         (defrule
-        (or
-            (goal g-boar-hunt-status SET-BOAR-ID)
-            (and
-                (not
-                    (up-set-target-by-id g: g-boar-lurer-id))
-                (up-compare-goal g-boar-hunt-status >= DROP-LURER-RESOURCES)))
+        (goal g-boar-hunt-status SET-BOAR-ID)
         (up-set-target-by-id g: g-current-boar-id)
         (up-object-data object-data-action != actionid-attack)
         (up-object-data object-data-hitpoints > 0)
@@ -1419,24 +1414,6 @@
         (set-goal g-boar-hunt-status ASSIST-HUNTING-BOAR)
         (up-get-search-state g-local-total)
         ; (chat-local-to-self CHAT-BOAR-GET-ASSISTANT-HUNTERS)
-        )
-
-        (defrule
-        (goal g-boar-hunt-status LURE-BOAR)
-        (up-set-target-by-id g: g-current-boar-id)
-        (up-object-data object-data-action != actionid-attack)
-        (up-object-data object-data-hitpoints > 0)
-        (up-set-target-by-id g: g-boar-lurer-id)
-        (up-object-data object-data-garrisoned == 0)    ;not garrisoned
-        (or
-            (up-object-data object-data-carry <= 5)
-            (building-type-count town-center == 0))
-        =>
-        (up-full-reset-search)
-        (up-set-target-by-id g: g-current-boar-id)
-        (up-add-object-by-id search-local g: g-boar-lurer-id)
-        (up-target-objects 1 action-default -1 -1)	;right-click the boar with the villager, villager will auto-retreat to TC once boar attacks
-        (chat-local-to-self CHAT-BOAR-TARGET-BOAR)
         )
 
         (defrule

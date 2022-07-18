@@ -203,3 +203,207 @@
 =>
 (up-modify-goal g-rule-pass-count c:+ 1)
 )
+
+#load-if-defined DE-AVAILABLE
+
+	(defrule
+	(true)
+	=>
+	(up-get-fact wood-amount 0 g-wood-cost)
+	(up-get-fact escrow-amount wood g-temp)
+	(up-modify-goal g-wood-cost g:- g-temp)
+	(up-get-fact stone-amount 0 g-stone-cost)
+	(up-get-fact escrow-amount stone g-temp)
+	(up-modify-goal g-stone-cost g:- g-temp)
+	)
+
+	(defrule
+	(up-pending-placement c: castle)
+	(up-compare-goal g-stone-cost < 650)	;g-stone-cost = unescrowed stone
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: castle c: 1)
+	(up-modify-escrow stone g:- g-stone-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: krepost)
+	(up-compare-goal g-stone-cost < 350)	;g-stone-cost = unescrowed stone
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: krepost c: 1)
+	(up-modify-escrow stone g:- g-stone-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: town-center)
+	(up-compare-goal g-wood-cost < 275)	;g-wood-cost = unescrowed wood
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: town-center-foundation c: 1)
+	(up-modify-escrow wood g:- g-wood-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: town-center)
+	(up-compare-goal g-stone-cost < 100)	;g-stone-cost = unescrowed stone
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: town-center-foundation c: 1)
+	(up-modify-escrow stone g:- g-stone-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: siege-workshop)
+	(up-compare-goal g-wood-cost < 200)	;g-wood-cost = unescrowed wood
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: siege-workshop c: 1)
+	(up-modify-escrow wood g:- g-wood-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: university)
+	(up-compare-goal g-wood-cost < 200)	;g-wood-cost = unescrowed wood
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: university c: 1)
+	(up-modify-escrow wood g:- g-wood-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: monastery)
+	(up-compare-goal g-wood-cost < 175)	;g-wood-cost = unescrowed wood
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: monastery c: 1)
+	(up-modify-escrow wood g:- g-wood-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: barracks)
+	(up-compare-goal g-wood-cost < 175)	;g-wood-cost = unescrowed wood
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: barracks c: 1)
+	(up-modify-escrow wood g:- g-wood-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: archery-range)
+	(up-compare-goal g-wood-cost < 175)	;g-wood-cost = unescrowed wood
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: archery-range c: 1)
+	(up-modify-escrow wood g:- g-wood-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: stable)
+	(up-compare-goal g-wood-cost < 175)	;g-wood-cost = unescrowed wood
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: stable c: 1)
+	(up-modify-escrow wood g:- g-wood-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: market)
+	(up-compare-goal g-wood-cost < 175)	;g-wood-cost = unescrowed wood
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: market c: 1)
+	(up-modify-escrow wood g:- g-wood-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: blacksmith)
+	(up-compare-goal g-wood-cost < 150)	;g-wood-cost = unescrowed wood
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: blacksmith c: 1)
+	(up-modify-escrow wood g:- g-wood-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: house)
+	(up-compare-goal g-wood-cost < 25)	;g-wood-cost = unescrowed wood
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: house c: 1)
+	(up-modify-escrow wood g:- g-wood-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: lumber-camp)
+	(up-compare-goal g-wood-cost < 100)	;g-wood-cost = unescrowed wood
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: lumber-camp c: 1)
+	(up-modify-escrow wood g:- g-wood-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: mining-camp)
+	(up-compare-goal g-wood-cost < 100)	;g-wood-cost = unescrowed wood
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: mining-camp c: 1)
+	(up-modify-escrow wood g:- g-wood-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: mill)
+	(up-compare-goal g-wood-cost < 100)	;g-wood-cost = unescrowed wood
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: mill c: 1)
+	(up-modify-escrow wood g:- g-wood-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: farm)
+	(up-compare-goal g-wood-cost < 60)	;g-wood-cost = unescrowed wood
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: farm c: 1)
+	(up-modify-escrow wood g:- g-wood-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: watch-tower)
+	(up-compare-goal g-stone-cost < 125)	;g-stone-cost = unescrowed stone
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: watch-tower c: 1)
+	(up-modify-escrow stone g:- g-stone-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: watch-tower)
+	(up-compare-goal g-wood-cost < 50)	;g-wood-cost = unescrowed wood
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: watch-tower c: 1)
+	(up-modify-escrow wood g:- g-wood-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: donjon)
+	(up-compare-goal g-stone-cost < 175)	;g-stone-cost = unescrowed stone
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: donjon c: 1)
+	(up-modify-escrow stone g:- g-stone-cost)
+	)
+
+	(defrule
+	(up-pending-placement c: donjon)
+	(up-compare-goal g-wood-cost < 75)	;g-wood-cost = unescrowed wood
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: donjon c: 1)
+	(up-modify-escrow wood g:- g-wood-cost)
+	)
+
+#end-if
