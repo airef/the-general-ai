@@ -2,7 +2,7 @@
 ;				        SETUP
 ;=========================<>=========================
 
-	(load "The General 3.1/Functions/Reset")
+	(load "The General 1.2/Functions/Reset")
 
 	(defrule
 	(goal g-build-line-bldg mining-camp)
@@ -22,7 +22,7 @@
 ;		    PLACE POINT - MINING DROPSITE
 ;=========================<>=========================
 
-	(load "The General 3.1/Functions/Reset")
+	(load "The General 1.2/Functions/Reset")
 	
 	(defrule
 	(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
@@ -61,8 +61,8 @@
 			(up-modify-goal g-temp c:* 3)	;weight the distance to the TC thrice as much as the distance to the map center
 			(up-get-point position-center g-point-x)
 			(up-set-target-point g-point-x)
-			(up-get-object-data object-data-distance g-temp-2)
-			(up-modify-goal g-temp-2 g:- g-temp)
+			(up-get-object-data object-data-distance g-temp2)
+			(up-modify-goal g-temp2 g:- g-temp)
 			)
 
 			(defrule
@@ -79,8 +79,8 @@
 			(up-get-object-data object-data-distance g-temp)
 			(up-modify-goal g-temp c:* 3)	;weight the distance to the TC thrice as much as the distance to the target enemy
 			(up-set-target-point g-target-enemy-x)
-			(up-get-object-data object-data-distance g-temp-2)
-			(up-modify-goal g-temp-2 g:- g-temp)
+			(up-get-object-data object-data-distance g-temp2)
+			(up-modify-goal g-temp2 g:- g-temp)
 			)
 
 			;If we found a new best camp location, get the ID of the gold/stone mine
@@ -92,9 +92,9 @@
 			(building-type-count town-center > 0)
 			(up-set-target-object search-remote g: i)
 			(up-compare-goal i < 40)
-			(up-compare-goal g-build-line-net-dropsite-distance g:< g-temp-2)
+			(up-compare-goal g-build-line-net-dropsite-distance g:< g-temp2)
 			=>
-			(up-modify-goal g-build-line-net-dropsite-distance g:= g-temp-2)
+			(up-modify-goal g-build-line-net-dropsite-distance g:= g-temp2)
 			(up-get-object-data object-data-id g-build-line-resource-id)
 			)
 
@@ -186,6 +186,7 @@
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-by-id g: g-build-line-resource-id)
+			(player-in-game focus-player)
 			(stance-toward focus-player enemy)
 			=>
 			(up-get-point position-object g-point-x)
@@ -204,6 +205,7 @@
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-by-id g: g-build-line-resource-id)
+			(player-in-game focus-player)
 			(stance-toward focus-player enemy)
 			(up-compare-goal g-remote-last > 0)		;found enemy units nearby gold/stone mine
 			=>
@@ -247,6 +249,7 @@
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-by-id g: g-build-line-resource-id)
+			(player-in-game focus-player)
 			(stance-toward focus-player enemy)
 			=>
 			(up-get-point position-object g-point-x)
@@ -265,6 +268,7 @@
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-by-id g: g-build-line-resource-id)
+			(player-in-game focus-player)
 			(stance-toward focus-player enemy)
 			(up-compare-goal g-remote-last > 0)		;found enemy units nearby gold/stone mine
 			=>
@@ -283,6 +287,7 @@
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-by-id g: g-build-line-resource-id)
+			(player-in-game focus-player)
 			(stance-toward focus-player enemy)
 			=>
 			(up-get-point position-object g-point-x)
@@ -300,6 +305,7 @@
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-by-id g: g-build-line-resource-id)
+			(player-in-game focus-player)
 			(stance-toward focus-player enemy)
 			(up-compare-goal g-remote-last > 0)		;found enemy TC nearby gold/stone mine
 			=>
@@ -324,7 +330,7 @@
 			(up-jump-rule -5)
 			)
 			
-	(load "The General 3.1/Functions/Reset")
+	(load "The General 1.2/Functions/Reset")
 	
 	;Get midpoint of gold/stone mines at gold/stone mining location, store in g-build-line-point-x
 	(defrule
@@ -384,7 +390,7 @@
 	;Test constructing camp at midpoint, then slowly test locations further away
 	;in an increasing zone, similar to place-point
 	
-	(load "The General 3.1/Functions/Reset")
+	(load "The General 1.2/Functions/Reset")
 	
 	(defrule
 	(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
@@ -497,8 +503,8 @@
 		(up-compare-goal g-build-line-point-y > -1)
 		(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
 		=>
-		(up-modify-goal g-temp-2 g:= g-build-line-zone-radius)
-		(up-modify-goal g-temp-2 c:mod 2)
+		(up-modify-goal g-temp2 g:= g-build-line-zone-radius)
+		(up-modify-goal g-temp2 c:mod 2)
 		)
 		
 		(defrule
@@ -510,7 +516,7 @@
 		(up-compare-goal g-build-line-point-x > -1)
 		(up-compare-goal g-build-line-point-y > -1)
 		(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
-		(goal g-temp-2 0)	;lerp tiles only when remainder is 0
+		(goal g-temp2 0)	;lerp tiles only when remainder is 0
 		(goal g-build-line-expand-direction HALF-TOWARD-TC)
 		(building-type-count town-center > -1)
 		=>

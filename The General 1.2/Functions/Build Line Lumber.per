@@ -2,7 +2,7 @@
 ;				        SETUP
 ;=========================<>=========================
 
-	(load "The General 3.1/Functions/Reset")
+	(load "The General 1.2/Functions/Reset")
 
 	(defrule
 	(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
@@ -24,7 +24,7 @@
 ;		    PLACE POINT - LUMBER DROPSITE
 ;=========================<>=========================
 
-	(load "The General 3.1/Functions/Reset")
+	(load "The General 1.2/Functions/Reset")
 
 	;Find trees within a certain distance from the starting TC
     ;Slowly expand until we have at least 30 trees that are good spots for a dropsite
@@ -38,13 +38,13 @@
 	=>
 	(set-goal g-build-line-min-distance 0)
 	(set-goal g-build-line-max-distance 1)
-	(set-goal g-temp-3 44444)
+	(set-goal g-temp3 44444)
 	(up-full-reset-search)
 	)
 
         (defrule
         (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-        (goal g-temp-3 44444)
+        (goal g-temp3 44444)
         =>
         (up-set-target-point g-position-self-x)
         (up-filter-distance g: g-build-line-min-distance g: g-build-line-max-distance)
@@ -57,19 +57,19 @@
         )
 
             (defrule
-            (goal g-temp-3 44444)
+            (goal g-temp3 44444)
             (up-set-target-object search-remote g: i)
 			(up-compare-goal i < 40)
 			(up-compare-goal j > 0)		;trees remaining in remote list to check
             =>
             (up-get-point position-object g-point-x)
-			(up-get-point-terrain g-point-x g-temp-4)
+			(up-get-point-terrain g-point-x g-temp4)
             )
 
             #load-if-not-defined UP-GAME-WK
 
                 (defrule
-                (goal g-temp-3 44444)
+                (goal g-temp3 44444)
                 (up-set-target-object search-remote g: i)
                 (up-point-terrain g-point-x != terrain-forest)          ;terrain 6
                 (up-point-terrain g-point-x != terrain-forest-palm)     ;terrain 13
@@ -79,7 +79,7 @@
                 (up-point-terrain g-point-x != terrain-forest-oak)      ;terrain 20
                 (up-point-terrain g-point-x != terrain-forest-snow)     ;terrain 21
                 =>
-                (set-goal g-temp-3 44443)
+                (set-goal g-temp3 44443)
                 )
 
                 (defrule            ;extra rule required to match the two rules in the DE load section below since be will be using up-jump-rule to loop
@@ -93,7 +93,7 @@
                 #load-if-not-defined DE-AVAILABLE ;WK
 
                     (defrule
-                    (goal g-temp-3 44444)
+                    (goal g-temp3 44444)
                     (up-set-target-object search-remote g: i)
                     (up-point-terrain g-point-x != terrain-forest)          ;terrain 6
                     (up-point-terrain g-point-x != terrain-forest-palm)     ;terrain 13
@@ -105,7 +105,7 @@
                     (up-point-terrain g-point-x != terrain-forest-baobab)   ;terrain 16
                     (up-point-terrain g-point-x != terrain-forest-acacia)   ;terrain 41
                     =>
-                    (set-goal g-temp-3 44443)
+                    (set-goal g-temp3 44443)
                     )
 
                     (defrule            ;rule required to match the two rules in the DE load section below because we will be using up-jump-rule to loop
@@ -118,7 +118,7 @@
                 #else ;DE
 
                     (defrule
-                    (goal g-temp-3 44444)
+                    (goal g-temp3 44444)
                     (up-set-target-object search-remote g: i)
                     (up-point-terrain g-point-x != terrain-forest)          ;terrain 6
                     (up-point-terrain g-point-x != terrain-forest-palm)     ;terrain 13
@@ -136,7 +136,7 @@
                     )
 
                     (defrule
-                    (goal g-temp-3 44444)
+                    (goal g-temp3 44444)
                     (goal g-temp 4341)
                     (up-set-target-object search-remote g: i)
                     (up-point-terrain g-point-x != terrain-forest-rainforest)       ;terrain 56
@@ -149,7 +149,7 @@
                     (up-point-terrain g-point-x != terrain-forest-autumn-snow)      ;terrain 105
                     (up-point-terrain g-point-x != terrain-forest-dead)             ;terrain 106
                     =>
-                    (set-goal g-temp-3 44443)
+                    (set-goal g-temp3 44443)
                     (set-goal g-temp PENDING)
                     )
 
@@ -158,21 +158,21 @@
 
             (defrule
             (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-            (goal g-temp-3 44443)   ;tree doesn't have forest terrain
+            (goal g-temp3 44443)   ;tree doesn't have forest terrain
             (up-set-target-object search-remote g: i)
             (up-compare-goal i < 40)
 			(up-compare-goal j > 0)		;trees remaining in remote list to check
             =>
             (up-remove-objects search-remote object-data-index g:== i)
 			(up-modify-goal j c:- 1)
-            (set-goal g-temp-3 44444)
+            (set-goal g-temp3 44444)
             (up-jump-rule -4)
             )
 
             ;Search for new tree if lumber camp or town center is nearby
             (defrule
             (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-            (goal g-temp-3 44444)
+            (goal g-temp3 44444)
             (up-set-target-object search-remote g: i)
             (up-compare-goal i < 40)
 			(up-compare-goal j > 0)		;trees remaining in remote list to check
@@ -193,7 +193,7 @@
             ;If we found lumber camps or town centers, move on to next tree
             (defrule
             (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-            (goal g-temp-3 44444)
+            (goal g-temp3 44444)
             (up-set-target-object search-remote g: i)
             (up-compare-goal i < 40)
 			(up-compare-goal j > 0)		;trees remaining in remote list to check
@@ -208,7 +208,7 @@
             (defrule
             (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 			(goal g-build-line-bldg town-center)
-            (goal g-temp-3 44444)
+            (goal g-temp3 44444)
             (up-set-target-object search-remote g: i)
             (up-compare-goal i < 40)
 			(up-compare-goal j > 0)		;trees remaining in remote list to check
@@ -220,7 +220,7 @@
             (defrule
             (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 			(goal g-build-line-bldg town-center)
-            (goal g-temp-3 44444)
+            (goal g-temp3 44444)
             (up-set-target-object search-remote g: i)
             (up-compare-goal i < 40)
 			(up-compare-goal j > 0)		;trees remaining in remote list to check
@@ -234,7 +234,7 @@
             ;Search for new tree if enemy soldiers are nearby
             (defrule
             (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-            (goal g-temp-3 44444)
+            (goal g-temp3 44444)
             (up-set-target-object search-remote g: i)
             (up-compare-goal i < 40)
 			(up-compare-goal j > 0)		;trees remaining in remote list to check
@@ -245,10 +245,11 @@
             
                 (defrule
                 (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-                (goal g-temp-3 44444)
+                (goal g-temp3 44444)
                 (up-set-target-object search-remote g: i)
             	(up-compare-goal i < 40)
 				(up-compare-goal j > 0)		;trees remaining in remote list to check
+				(player-in-game focus-player)
                 (stance-toward focus-player enemy)
                 =>
                 (up-get-point position-object g-point-x)
@@ -261,10 +262,11 @@
                 
                 (defrule
                 (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-                (goal g-temp-3 44444)
+                (goal g-temp3 44444)
                 (up-set-target-object search-remote g: i)
             	(up-compare-goal i < 40)
 				(up-compare-goal j > 0)		;trees remaining in remote list to check
+				(player-in-game focus-player)
                 (stance-toward focus-player enemy)
                 (up-compare-goal g-remote-last > 0)		;found enemy units nearby tree
                 =>
@@ -276,7 +278,7 @@
                 
                 (defrule
                 (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-                (goal g-temp-3 44444)
+                (goal g-temp3 44444)
                 (up-set-target-object search-remote g: i)
             	(up-compare-goal i < 40)
 				(up-compare-goal j > 0)		;trees remaining in remote list to check
@@ -289,7 +291,7 @@
             ;Search for new tree if enemy buildings are nearby
             (defrule
             (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-            (goal g-temp-3 44444)
+            (goal g-temp3 44444)
             (up-set-target-object search-remote g: i)
             (up-compare-goal i < 40)
 			(up-compare-goal j > 0)		;trees remaining in remote list to check
@@ -300,10 +302,11 @@
             
                 (defrule
                 (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-                (goal g-temp-3 44444)
+                (goal g-temp3 44444)
                 (up-set-target-object search-remote g: i)
             	(up-compare-goal i < 40)
 				(up-compare-goal j > 0)		;trees remaining in remote list to check
+				(player-in-game focus-player)
                 (stance-toward focus-player enemy)
                 =>
                 (up-get-point position-object g-point-x)
@@ -317,10 +320,11 @@
                 
                 (defrule
                 (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-                (goal g-temp-3 44444)
+                (goal g-temp3 44444)
                 (up-set-target-object search-remote g: i)
             	(up-compare-goal i < 40)
 				(up-compare-goal j > 0)		;trees remaining in remote list to check
+				(player-in-game focus-player)
                 (stance-toward focus-player enemy)
                 (up-compare-goal g-remote-last > 0)		;found enemy units nearby tree
                 =>
@@ -332,10 +336,11 @@
             
                 (defrule
                 (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-                (goal g-temp-3 44444)
+                (goal g-temp3 44444)
                 (up-set-target-object search-remote g: i)
             	(up-compare-goal i < 40)
 				(up-compare-goal j > 0)		;trees remaining in remote list to check
+				(player-in-game focus-player)
                 (stance-toward focus-player enemy)
                 =>
                 (up-get-point position-object g-point-x)
@@ -349,10 +354,11 @@
                 
                 (defrule
                 (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-                (goal g-temp-3 44444)
+                (goal g-temp3 44444)
                 (up-set-target-object search-remote g: i)
             	(up-compare-goal i < 40)
 				(up-compare-goal j > 0)		;trees remaining in remote list to check
+				(player-in-game focus-player)
                 (stance-toward focus-player enemy)
                 (up-compare-goal g-remote-last > 0)		;found enemy units nearby tree
                 =>
@@ -365,7 +371,7 @@
                 
                 (defrule
                 (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-                (goal g-temp-3 44444)
+                (goal g-temp3 44444)
                 (up-set-target-object search-remote g: i)
             	(up-compare-goal i < 40)
 				(up-compare-goal j > 0)		;trees remaining in remote list to check
@@ -378,14 +384,14 @@
             (defrule
             (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
             (or
-                (goal g-temp-3 44443)
-                (goal g-temp-3 44444))
+                (goal g-temp3 44443)
+                (goal g-temp3 44444))
             (up-modify-goal i c:+ 1)
             (up-set-target-object search-remote g: i)
             (up-compare-goal i < 40)
 			(up-compare-goal j > 0)		;trees remaining in remote list to check
             =>
-            (set-goal g-temp-3 44444)
+            (set-goal g-temp3 44444)
             (up-jump-rule -19)
             )
 
@@ -393,8 +399,8 @@
         (defrule
         (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
         (or
-            (goal g-temp-3 44443)
-            (goal g-temp-3 44444))
+            (goal g-temp3 44443)
+            (goal g-temp3 44444))
         (not
             (up-set-target-object search-remote c: 29))
         (up-compare-goal g-build-line-max-distance < HUNDRED-FIFTY-PERCENT-MAP-SIZE)
@@ -402,7 +408,7 @@
         =>
 	    (up-set-target-point g-position-self-x)
         (up-reset-filters)
-	    (set-goal g-temp-3 44444)
+	    (set-goal g-temp3 44444)
         (set-goal i 0)
         (up-modify-goal g-build-line-min-distance c:+ 1)
         (up-modify-goal g-build-line-max-distance c:+ 1)
@@ -416,20 +422,20 @@
     ;Track this distance in g-build-line-net-dropsite-distance
     (defrule
     (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-    (goal g-temp-3 44444)
+    (goal g-temp3 44444)
     =>
     (set-goal i 0)
 	(set-goal g-build-line-net-dropsite-distance -500)
 	(set-goal g-build-line-resource-id PENDING)
 	(set-goal g-build-line-backup-resource-id PENDING)
     (set-goal g-temp PENDING)
-    (set-goal g-temp-2 PENDING)
+    (set-goal g-temp2 PENDING)
     )
 
 		(defrule
 		(goal g-map-style NOMAD)
 		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-		(goal g-temp-3 44444)
+		(goal g-temp3 44444)
         (up-set-target-object search-remote g: i)
 		=>
 		(up-set-target-point g-position-self-x)
@@ -437,14 +443,14 @@
 		(up-modify-goal g-temp c:* 4)	;weight the distance to the TC four times as much as the distance to the map center
 		(up-get-point position-center g-point-x)
 		(up-set-target-point g-point-x)
-		(up-get-object-data object-data-distance g-temp-2)
-		(up-modify-goal g-temp-2 g:- g-temp)
+		(up-get-object-data object-data-distance g-temp2)
+		(up-modify-goal g-temp2 g:- g-temp)
 		)
 
 		(defrule
 		(up-compare-goal g-map-style != NOMAD)
 		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-		(goal g-temp-3 44444)
+		(goal g-temp3 44444)
         (up-set-target-object search-remote g: i)
 		(up-compare-goal g-remote-total >= 10)
 		=>
@@ -452,28 +458,28 @@
 		(up-get-object-data object-data-distance g-temp)
 		(up-modify-goal g-temp c:* 4)	;weight the distance to the TC four times as much as the distance to the target enemy
 		(up-set-target-point g-target-enemy-x)
-		(up-get-object-data object-data-distance g-temp-2)
-		(up-modify-goal g-temp-2 g:- g-temp)
+		(up-get-object-data object-data-distance g-temp2)
+		(up-modify-goal g-temp2 g:- g-temp)
 		)
 
 		(defrule
 		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-		(goal g-temp-3 44444)
+		(goal g-temp3 44444)
         (up-set-target-object search-remote g: i)
-		(up-compare-goal g-build-line-net-dropsite-distance g:< g-temp-2)
+		(up-compare-goal g-build-line-net-dropsite-distance g:< g-temp2)
 		=>
         (up-get-object-data object-data-id g-build-line-resource-id)
-        (up-modify-goal g-build-line-net-dropsite-distance g:= g-temp-2)
+        (up-modify-goal g-build-line-net-dropsite-distance g:= g-temp2)
 		)
 
 		(defrule
 		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-		(goal g-temp-3 44444)
+		(goal g-temp3 44444)
 		(up-compare-goal i < 40)
 		=>
 		(up-modify-goal i c:+ 1)
         (set-goal g-temp PENDING)
-        (set-goal g-temp-2 PENDING)
+        (set-goal g-temp2 PENDING)
 		(up-jump-rule -4)
 		)
 
@@ -481,14 +487,14 @@
 	;Require backup location to be >= 15 tiles away
 	(defrule
     (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-    (goal g-temp-3 44444)
+    (goal g-temp3 44444)
 	(up-set-target-by-id g: g-build-line-resource-id)
     =>
     (set-goal i 0)
 	(set-goal g-build-line-net-dropsite-distance -500)
 	(set-goal g-build-line-backup-resource-id PENDING)
     (set-goal g-temp PENDING)
-    (set-goal g-temp-2 PENDING)
+    (set-goal g-temp2 PENDING)
 	(up-remove-objects search-remote object-data-id g:== g-build-line-resource-id)
 	(up-get-point position-object g-point2-x)
     )
@@ -496,7 +502,7 @@
 		(defrule
 		(goal g-map-style NOMAD)
 		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-		(goal g-temp-3 44444)
+		(goal g-temp3 44444)
 		(up-set-target-by-id g: g-build-line-resource-id)
         (up-set-target-object search-remote g: i)
 		=>
@@ -505,15 +511,15 @@
 		(up-modify-goal g-temp c:* 4)	;weight the distance to the TC four times as much as the distance to the map center
 		(up-get-point position-center g-point-x)
 		(up-set-target-point g-point-x)
-		(up-get-object-data object-data-distance g-temp-2)
-		(up-modify-goal g-temp-2 g:- g-temp)
+		(up-get-object-data object-data-distance g-temp2)
+		(up-modify-goal g-temp2 g:- g-temp)
 		(up-get-point position-object g-point-x)
 		)
 
 		(defrule
 		(up-compare-goal g-map-style != NOMAD)
 		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-		(goal g-temp-3 44444)
+		(goal g-temp3 44444)
 		(up-set-target-by-id g: g-build-line-resource-id)
         (up-set-target-object search-remote g: i)
 		(up-compare-goal g-remote-total >= 10)
@@ -522,36 +528,36 @@
 		(up-get-object-data object-data-distance g-temp)
 		(up-modify-goal g-temp c:* 4)	;weight the distance to the TC four times as much as the distance to the target enemy
 		(up-set-target-point g-target-enemy-x)
-		(up-get-object-data object-data-distance g-temp-2)
-		(up-modify-goal g-temp-2 g:- g-temp)
+		(up-get-object-data object-data-distance g-temp2)
+		(up-modify-goal g-temp2 g:- g-temp)
 		(up-get-point position-object g-point-x)
 		)
 
 		(defrule
 		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-		(goal g-temp-3 44444)
+		(goal g-temp3 44444)
 		(up-set-target-by-id g: g-build-line-resource-id)
         (up-set-target-object search-remote g: i)
-		(up-compare-goal g-build-line-net-dropsite-distance g:< g-temp-2)
+		(up-compare-goal g-build-line-net-dropsite-distance g:< g-temp2)
 		(up-point-distance g-point-x g-point2-x >= 15)
 		=>
         (up-get-object-data object-data-id g-build-line-backup-resource-id)
-        (up-modify-goal g-build-line-net-dropsite-distance g:= g-temp-2)
+        (up-modify-goal g-build-line-net-dropsite-distance g:= g-temp2)
 		)
 
 		(defrule
 		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-		(goal g-temp-3 44444)
+		(goal g-temp3 44444)
 		(up-set-target-by-id g: g-build-line-resource-id)
 		(up-compare-goal i < 40)
 		=>
 		(up-modify-goal i c:+ 1)
         (set-goal g-temp PENDING)
-        (set-goal g-temp-2 PENDING)
+        (set-goal g-temp2 PENDING)
 		(up-jump-rule -4)
 		)
 
-	(load "The General 3.1/Functions/Reset")
+	(load "The General 1.2/Functions/Reset")
 	
 		;Get midpoint of nearby trees at possible lumber camp location, store in g-build-line-point-x
 		(defrule
@@ -606,7 +612,7 @@
 			;Test constructing camp at midpoint, then slowly test locations further away
 			;in an increasing zone, similar to place-point
 			
-			(load "The General 3.1/Functions/Reset")
+			(load "The General 1.2/Functions/Reset")
 		
 			(defrule
 			(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
@@ -635,7 +641,7 @@
 				(up-modify-goal g-point-x g:+ g-build-line-zone-radius)
 				(up-modify-goal g-point-y g:+ g-build-line-zone-radius)
 				(up-bound-point g-point-x g-point-x)
-				(set-goal g-temp-3 44446)
+				(set-goal g-temp3 44446)
 				)
 
 					;Check if possible build location is reachable
@@ -646,11 +652,11 @@
 					(up-set-target-by-id g: g-build-line-resource-id)
 					(up-compare-goal g-build-line-point-x > -1)
 					(up-compare-goal g-build-line-point-y > -1)
-					(goal g-temp-3 44446)
+					(goal g-temp3 44446)
 					=>
 					(up-full-reset-search)
 					(up-find-local c: villager-class c: 1)
-					(set-goal g-temp-3 44447)
+					(set-goal g-temp3 44447)
 					)
 				
 					(defrule
@@ -662,9 +668,9 @@
 					(up-compare-goal g-build-line-point-y > -1)
 					(up-can-build-line g-build-line-escrow g-point-x g: g-build-line-bldg-foundation)
 					(up-set-target-object search-local c: 0)
-					(goal g-temp-3 44447)
+					(goal g-temp3 44447)
 					=>
-					(up-get-path-distance g-point-x 1 g-temp-2)
+					(up-get-path-distance g-point-x 1 g-temp2)
 					)
 				
 					;Check if dropsite is near possible build location
@@ -675,8 +681,8 @@
 					(up-set-target-by-id g: g-build-line-resource-id)
 					(up-compare-goal g-build-line-point-x > -1)
 					(up-compare-goal g-build-line-point-y > -1)
-					(up-compare-goal g-temp-2 != 65535)			;we can reach the tile
-					(goal g-temp-3 44447)
+					(up-compare-goal g-temp2 != 65535)			;we can reach the tile
+					(goal g-temp3 44447)
 					=>
 					(up-full-reset-search)
 					(up-set-target-point g-point-x)
@@ -684,7 +690,7 @@
 					(up-find-local c: lumber-camp c: 1)
 					(up-find-local c: town-center c: 1)
 					(up-get-search-state g-local-total)
-					(set-goal g-temp-3 44448)
+					(set-goal g-temp3 44448)
 					)
 
 					(defrule
@@ -694,7 +700,7 @@
 					(up-set-target-by-id g: g-build-line-resource-id)
 					(up-compare-goal g-build-line-point-x > -1)
 					(up-compare-goal g-build-line-point-y > -1)
-					(goal g-temp-3 44448)
+					(goal g-temp3 44448)
 					(goal g-local-total 0) 						;no lumber camps or TCs within 4 tiles
 					(goal g-build-line-bldg lumber-camp)
 					=>
@@ -704,7 +710,7 @@
 					(up-filter-distance c: -1 c: 3)
 					(up-find-resource c: wood c: 3)
 					(up-get-search-state g-local-total)
-					(set-goal g-temp-3 44449)
+					(set-goal g-temp3 44449)
 					)
 
 					(defrule
@@ -714,7 +720,7 @@
 					(up-set-target-by-id g: g-build-line-resource-id)
 					(up-compare-goal g-build-line-point-x > -1)
 					(up-compare-goal g-build-line-point-y > -1)
-					(goal g-temp-3 44448)
+					(goal g-temp3 44448)
 					(goal g-local-total 0) 						;no lumber camps or TCs within 4 tiles
 					(goal g-build-line-bldg town-center)
 					=>
@@ -724,7 +730,7 @@
 					(up-filter-distance c: -1 c: 4)
 					(up-find-resource c: wood c: 3)
 					(up-get-search-state g-local-total)
-					(set-goal g-temp-3 44449)
+					(set-goal g-temp3 44449)
 					)
 					
 					;If no dropsite nearby, we can reach the location with up-path-distance, there are no issues with hills, and we can build dropsite, build it!
@@ -735,22 +741,22 @@
 					(up-set-target-by-id g: g-build-line-resource-id)
 					(up-compare-goal g-build-line-point-x > -1)
 					(up-compare-goal g-build-line-point-y > -1)
-					(goal g-temp-3 44449)
+					(goal g-temp3 44449)
 					(up-compare-goal g-remote-total >= 3)	;trees nearby
 					(up-point-explored g-point-x != explored-no)
 					(up-can-build-line g-build-line-escrow g-point-x g: g-build-line-bldg-foundation)
 					=>
-					(set-goal g-temp-3 44450)
+					(set-goal g-temp3 44450)
 					(up-build-line g-point-x g-point-x g: g-build-line-bldg-foundation)
 					)
 				
 					;There are issues building the dropsite here, set goal to allow us to check a new location
 					(defrule
 					(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
-					(up-compare-goal g-temp-3 >= 44446)
-					(up-compare-goal g-temp-3 < 44450)
+					(up-compare-goal g-temp3 >= 44446)
+					(up-compare-goal g-temp3 < 44450)
 					(or
-						(goal g-temp-2 65535)					;we can't reach the tile
+						(goal g-temp2 65535)					;we can't reach the tile
 						(or
 							(not
 								(up-can-build-line g-build-line-escrow g-point-x g: g-build-line-bldg-foundation))
@@ -758,7 +764,7 @@
 								(up-compare-goal g-local-total > 0) 		;found lumber camp or TC within 4 tiles
 								(up-compare-goal g-remote-total < 3))))
 					=>
-					(set-goal g-temp-3 44451)
+					(set-goal g-temp3 44451)
 					)
 					
 					;If we are still inside the build zone, subtract 1 from the x-coordinate and try again
@@ -769,7 +775,7 @@
 					(up-set-target-by-id g: g-build-line-resource-id)
 					(up-compare-goal g-build-line-point-x > -1)
 					(up-compare-goal g-build-line-point-y > -1)
-					(goal g-temp-3 44451)
+					(goal g-temp3 44451)
 					(up-compare-goal i g:< g-build-line-zone-radius)
 					=>
 					(up-modify-goal i c:+ 1)
@@ -777,7 +783,7 @@
 					(up-modify-goal g-point-x g:- i)
 					(up-modify-goal g-point-y g:- j)
 					(up-bound-point g-point-x g-point-x)
-					(set-goal g-temp-3 44446)
+					(set-goal g-temp3 44446)
 					(up-jump-rule -8)
 					)
 				
@@ -788,7 +794,7 @@
 					(up-pending-objects g: g-build-line-bldg == 0)
 					(up-can-build g-build-line-escrow g: g-build-line-bldg)
 					(up-set-target-by-id g: g-build-line-resource-id)
-					(goal g-temp-3 44451)
+					(goal g-temp3 44451)
 					(up-compare-goal j g:< g-build-line-zone-radius)
 					=>
 					(up-modify-goal j c:+ 1)
@@ -797,7 +803,7 @@
 					(up-modify-goal g-point-x g:- i)
 					(up-modify-goal g-point-y g:- j)
 					(up-bound-point g-point-x g-point-x)
-					(set-goal g-temp-3 44446)
+					(set-goal g-temp3 44446)
 					(up-jump-rule -9)
 					)
 				
@@ -810,13 +816,13 @@
 				(up-set-target-by-id g: g-build-line-resource-id)
 				(up-compare-goal g-build-line-point-x > -1)
 				(up-compare-goal g-build-line-point-y > -1)
-				(goal g-temp-3 44451)
+				(goal g-temp3 44451)
 				(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
 				(goal g-build-line-expand-direction HALF-TOWARD-TC)
 				(building-type-count town-center > 0)
 				=>
-				(up-modify-goal g-temp-2 g:= g-build-line-zone-radius)
-				(up-modify-goal g-temp-2 c:mod 2)
+				(up-modify-goal g-temp2 g:= g-build-line-zone-radius)
+				(up-modify-goal g-temp2 c:mod 2)
 				)
 				
 				;Move build line location toward TC if remainder is 0
@@ -827,11 +833,11 @@
 				(up-set-target-by-id g: g-build-line-resource-id)
 				(up-compare-goal g-build-line-point-x > -1)
 				(up-compare-goal g-build-line-point-y > -1)
-				(goal g-temp-3 44451)
+				(goal g-temp3 44451)
 				(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
 				(goal g-build-line-expand-direction HALF-TOWARD-TC)
 				(building-type-count town-center > 0)
-				(goal g-temp-2 0)	;lerp tiles only when remainder is 0
+				(goal g-temp2 0)	;lerp tiles only when remainder is 0
 				=>
 				(up-lerp-tiles g-build-line-point-x g-position-self-x c: 1)
 				(up-bound-point g-build-line-point-x g-build-line-point-x)
@@ -845,7 +851,7 @@
 				(up-set-target-by-id g: g-build-line-resource-id)
 				(up-compare-goal g-build-line-point-x > -1)
 				(up-compare-goal g-build-line-point-y > -1)
-				(goal g-temp-3 44451)
+				(goal g-temp3 44451)
 				(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
 				=>
 				(up-modify-goal g-build-line-zone-radius c:+ 1)
@@ -864,12 +870,12 @@
 		(up-set-target-by-id g: g-build-line-resource-id)
 		(up-compare-goal g-build-line-point-x > -1)
 		(up-compare-goal g-build-line-point-y > -1)
-		(goal g-temp-3 44451)
+		(goal g-temp3 44451)
 		(up-compare-goal g-build-line-zone-radius g:>= g-build-line-max-zone-radius)
 		=>
 		(up-modify-goal g-build-line-resource-id g:= g-build-line-backup-resource-id)	;try again with backup tree location
 		(set-goal g-build-line-zone-radius 0)
-		(up-jump-rule -20)
+		(up-jump-rule -21)
 		)
 
 	(defrule
@@ -880,7 +886,7 @@
 	(up-set-target-by-id g: g-build-line-resource-id)
 	(up-compare-goal g-build-line-point-x > -1)
 	(up-compare-goal g-build-line-point-y > -1)
-	(goal g-temp-3 44451)
+	(goal g-temp3 44451)
 	(up-compare-goal g-build-line-zone-radius g:>= g-build-line-max-zone-radius)
 	(or
 		(up-compare-goal g-build-line-resource-id g:== g-build-line-backup-resource-id)

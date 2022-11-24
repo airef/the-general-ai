@@ -1,6 +1,6 @@
 ;Building Construction.per
 
-(load "The General 3.1/Functions/Reset")
+(load "The General 1.2/Functions/Reset")
 
 ;=========================<>=========================
 ;				      BUILD LINE
@@ -27,7 +27,7 @@
 		#load-if-not-defined HUN-CIV
 		#load-if-not-defined CHINESE-CIV
 
-			(load "The General 3.1/Functions/Reset")
+			(load "The General 1.2/Functions/Reset")
 
 			(defrule
 			(can-build house)
@@ -40,14 +40,14 @@
 			(up-modify-goal g-point-y c:- 6)
 			(up-copy-point g-point2-x g-point-x)
 			(set-goal g-temp 8943)
-			(up-get-fact building-type-count-total house g-temp-2)
+			(up-get-fact building-type-count-total house g-temp2)
 			(set-goal i 1)
 			)
 
 				;Check if house can be built at this spot and that no villagers are at this spot
 				(defrule
 				(goal g-temp 8943)
-				(up-compare-goal g-temp-2 < 2)	;we have < 2 houses
+				(up-compare-goal g-temp2 < 2)	;we have < 2 houses
 				(up-can-build-line 0 g-point-x c: house)
 				(not
 					(up-point-contains g-point2-x c: villager-class))
@@ -67,7 +67,7 @@
 
 				(defrule
 				(goal g-temp 8943)			;can't build house at current spot, try another location
-				(up-compare-goal g-temp-2 < 2)	;we have < 2 houses
+				(up-compare-goal g-temp2 < 2)	;we have < 2 houses
 				(up-modify-goal j g:= i)
 				(up-modify-goal j c:mod 2)
 				(goal j 0)					;goal i is even
@@ -76,9 +76,9 @@
 				(up-copy-point g-point-x g-position-self-x)
 				(up-modify-goal g-point-x c:- 6)
 				(up-modify-goal g-point-y c:- 6)
-				(up-modify-goal g-temp-3 g:= i)
-				(up-modify-goal g-temp-3 c:/ 2)
-				(up-modify-goal g-point-y g:+ g-temp-3)	;move next point SE one tile each iteration
+				(up-modify-goal g-temp3 g:= i)
+				(up-modify-goal g-temp3 c:/ 2)
+				(up-modify-goal g-point-y g:+ g-temp3)	;move next point SE one tile each iteration
 				(up-copy-point g-point2-x g-point-x)
 				(up-modify-goal i c:+ 1)
 				(up-jump-rule -2)
@@ -86,7 +86,7 @@
 
 				(defrule
 				(goal g-temp 8943)			;can't build house at current spot, try another location
-				(up-compare-goal g-temp-2 < 2)	;we have < 2 houses
+				(up-compare-goal g-temp2 < 2)	;we have < 2 houses
 				(up-modify-goal j g:= i)
 				(up-modify-goal j c:mod 2)
 				(goal j 1)					;goal i is odd
@@ -95,10 +95,10 @@
 				(up-copy-point g-point-x g-position-self-x)
 				(up-modify-goal g-point-x c:- 6)
 				(up-modify-goal g-point-y c:- 6)
-				(up-modify-goal g-temp-3 g:= i)
-				(up-modify-goal g-temp-3 c:+ 1)
-				(up-modify-goal g-temp-3 c:/ 2)
-				(up-modify-goal g-point-x g:+ g-temp-3)	;move next point NE one tile each iteration
+				(up-modify-goal g-temp3 g:= i)
+				(up-modify-goal g-temp3 c:+ 1)
+				(up-modify-goal g-temp3 c:/ 2)
+				(up-modify-goal g-point-x g:+ g-temp3)	;move next point NE one tile each iteration
 				(up-copy-point g-point2-x g-point-x)
 				(up-modify-goal i c:+ 1)
 				(up-jump-rule -3)
@@ -137,11 +137,11 @@
 				(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
 				(up-modify-goal g-food-cost g:- g-wood-cost)
 				(up-compare-goal g-food-cost < 2)
-				(up-compare-goal g-temp-2 < 2)
+				(up-compare-goal g-temp2 < 2)
 				=>
 				(up-build-line g-point-x g-point-x c: house)
 				(set-goal g-temp 8943)
-				(up-modify-goal g-temp-2 c:+ 1)
+				(up-modify-goal g-temp2 c:+ 1)
 				(up-modify-goal i c:+ 5)
 				(up-jump-rule -6)
 				)				
@@ -164,7 +164,7 @@
 				;Check if house can be built at this spot and that no villagers are at this spot
 				(defrule
 				(goal g-temp 8946)
-				(up-compare-goal g-temp-2 < 2)	;we have < 2 houses
+				(up-compare-goal g-temp2 < 2)	;we have < 2 houses
 				(up-can-build-line 0 g-point-x c: house)
 				(not
 					(up-point-contains g-point2-x c: villager-class))
@@ -184,7 +184,7 @@
 
 				(defrule
 				(goal g-temp 8946)			;can't build house at current spot, try another location
-				(up-compare-goal g-temp-2 < 2)	;we have < 2 houses
+				(up-compare-goal g-temp2 < 2)	;we have < 2 houses
 				(up-modify-goal j g:= i)
 				(up-modify-goal j c:mod 2)
 				(goal j 0)					;goal i is even
@@ -193,9 +193,9 @@
 				(up-copy-point g-point-x g-position-self-x)
 				(up-modify-goal g-point-x c:+ 6)
 				(up-modify-goal g-point-y c:+ 6)
-				(up-modify-goal g-temp-3 g:= i)
-				(up-modify-goal g-temp-3 c:/ -2)
-				(up-modify-goal g-point-y g:+ g-temp-3)	;move next point NW one tile each iteration
+				(up-modify-goal g-temp3 g:= i)
+				(up-modify-goal g-temp3 c:/ -2)
+				(up-modify-goal g-point-y g:+ g-temp3)	;move next point NW one tile each iteration
 				(up-copy-point g-point2-x g-point-x)
 				(up-modify-goal i c:+ 1)
 				(up-jump-rule -2)
@@ -203,7 +203,7 @@
 
 				(defrule
 				(goal g-temp 8946)			;can't build house at current spot, try another location
-				(up-compare-goal g-temp-2 < 2)	;we have < 2 houses
+				(up-compare-goal g-temp2 < 2)	;we have < 2 houses
 				(up-modify-goal j g:= i)
 				(up-modify-goal j c:mod 2)
 				(goal j 1)					;goal i is odd
@@ -212,10 +212,10 @@
 				(up-copy-point g-point-x g-position-self-x)
 				(up-modify-goal g-point-x c:+ 6)
 				(up-modify-goal g-point-y c:+ 6)
-				(up-modify-goal g-temp-3 g:= i)
-				(up-modify-goal g-temp-3 c:+ 1)
-				(up-modify-goal g-temp-3 c:/ -2)
-				(up-modify-goal g-point-x g:+ g-temp-3)	;move next point SE one tile each iteration
+				(up-modify-goal g-temp3 g:= i)
+				(up-modify-goal g-temp3 c:+ 1)
+				(up-modify-goal g-temp3 c:/ -2)
+				(up-modify-goal g-point-x g:+ g-temp3)	;move next point SE one tile each iteration
 				(up-copy-point g-point2-x g-point-x)
 				(up-modify-goal i c:+ 1)
 				(up-jump-rule -3)
@@ -254,18 +254,18 @@
 				(up-get-fact building-type-count house g-wood-cost)			;using g-wood-cost merely as a temp goal
 				(up-modify-goal g-food-cost g:- g-wood-cost)
 				(up-compare-goal g-food-cost < 2)
-				(up-compare-goal g-temp-2 < 2)
+				(up-compare-goal g-temp2 < 2)
 				=>
 				(up-build-line g-point-x g-point-x c: house)
 				(set-goal g-temp 8946)
-				(up-modify-goal g-temp-2 c:+ 1)
+				(up-modify-goal g-temp2 c:+ 1)
 				(up-modify-goal i c:+ 5)
 				(up-jump-rule -6)
 				)
 
 			#load-if-not-defined INCAN-CIV
 
-				(load "The General 3.1/Functions/Reset")
+				(load "The General 1.2/Functions/Reset")
 
 				(defrule
 				(building-type-count house < 2)
@@ -297,7 +297,7 @@
 
 			#end-if
 
-			(load "The General 3.1/Functions/Reset")
+			(load "The General 1.2/Functions/Reset")
 
 			;Assign starting villagers to houses
 			(defrule
@@ -315,9 +315,9 @@
 			(up-set-target-object search-local c: 0)
 			(up-get-object-data object-data-id g-temp)
 			(up-set-target-object search-local c: 1)
-			(up-get-object-data object-data-id g-temp-2)
+			(up-get-object-data object-data-id g-temp2)
 			(up-set-target-object search-local c: 2)
-			(up-get-object-data object-data-id g-temp-3)
+			(up-get-object-data object-data-id g-temp3)
 			)
 
 			(defrule
@@ -361,7 +361,7 @@
 			(up-compare-goal g-food-cost > 0)
 			; (up-pending-objects c: house > 0)
 			(unit-type-count villager >= 3)
-			(up-set-target-by-id g: g-temp-2)
+			(up-set-target-by-id g: g-temp2)
 			(game-time < 2)
 			=>
 			(up-get-point position-object g-point-x)
@@ -380,7 +380,7 @@
 			(up-compare-goal g-food-cost > 0)
 			; (up-pending-objects c: house > 0)
 			(unit-type-count villager >= 3)
-			(up-add-object-by-id search-local g: g-temp-2)
+			(up-add-object-by-id search-local g: g-temp2)
 			(up-set-target-object search-local c: 0)
 			(up-set-target-object search-remote c: 0)
 			(game-time < 2)
@@ -395,7 +395,7 @@
 			(up-compare-goal g-food-cost > 0)
 			; (up-pending-objects c: house > 0)
 			(unit-type-count villager >= 3)
-			(up-set-target-by-id g: g-temp-3)
+			(up-set-target-by-id g: g-temp3)
 			(game-time < 2)
 			=>
 			(up-get-point position-object g-point-x)
@@ -414,7 +414,7 @@
 			(up-compare-goal g-food-cost > 0)
 			; (up-pending-objects c: house > 0)
 			(unit-type-count villager >= 3)
-			(up-add-object-by-id search-local g: g-temp-3)
+			(up-add-object-by-id search-local g: g-temp3)
 			(up-set-target-object search-local c: 0)
 			(up-set-target-object search-remote c: 0)
 			(game-time < 2)
@@ -481,7 +481,7 @@
 
 		; #load-if-not-defined SICILIANS-CIV
 
-		; 	(load "The General 3.1/Functions/Reset")
+		; 	(load "The General 1.2/Functions/Reset")
 
 		; 	(defrule
 		; 	(goal g-town-under-attack NO)
@@ -524,22 +524,22 @@
 		; 	(up-find-local c: mill c: 40)
 		; 	(up-set-target-point g-target-enemy-x)
 		; 	(up-clean-search search-local object-data-distance search-order-asc)
-		; 	(set-goal g-temp-3 9986)
+		; 	(set-goal g-temp3 9986)
 		; 	)
 			
 		; 	;No dropsite nearby, decide to build near g-gather-point-x
 		; 	(defrule
-		; 	(goal g-temp-3 9986)
+		; 	(goal g-temp3 9986)
 		; 	(can-build-with-escrow watch-tower)
 		; 	(not
 		; 		(up-set-target-object search-local c: 0))
 		; 	=>
-		; 	(set-goal g-temp-3 9988)
+		; 	(set-goal g-temp3 9988)
 		; 	)
 			
 		; 	;Dropsite nearby, check if it's closer than g-gather-point-x
 		; 	(defrule
-		; 	(goal g-temp-3 9986)
+		; 	(goal g-temp3 9986)
 		; 	(can-build-with-escrow watch-tower)
 		; 	(up-set-target-object search-local c: 0)
 		; 	=>
@@ -547,16 +547,16 @@
 		; 	(up-set-target-point g-target-enemy-x)
 		; 	(up-get-point-distance g-point-x g-target-enemy-x g-temp) ;distance from dropsite to target enemy
 		; 	(up-modify-goal g-temp c:- 8)							  ;prefer dropsite even if it's further away from enemy
-		; 	(up-get-point-distance g-gather-point-x g-target-enemy-x g-temp-2) ;distance from soldier gather point to target enemy
-		; 	(set-goal g-temp-3 9987)
+		; 	(up-get-point-distance g-gather-point-x g-target-enemy-x g-temp2) ;distance from soldier gather point to target enemy
+		; 	(set-goal g-temp3 9987)
 		; 	)
 			
 		; 	;If dropsite is closer, build near dropsite
 		; 	(defrule
-		; 	(goal g-temp-3 9987)
+		; 	(goal g-temp3 9987)
 		; 	(can-build-with-escrow watch-tower)
 		; 	(up-set-target-object search-local c: 0)
-		; 	(up-compare-goal g-temp g:<= g-temp-2)
+		; 	(up-compare-goal g-temp g:<= g-temp2)
 		; 	=>
 		; 	(up-copy-point g-build-line-point-x g-point-x)
 		; 	(up-lerp-tiles g-build-line-point-x g-target-enemy-x c: 2)
@@ -568,17 +568,17 @@
 
 		; 	;Dropsite isn't closer, build near g-gather-point-x
 		; 	(defrule
-		; 	(goal g-temp-3 9987)
+		; 	(goal g-temp3 9987)
 		; 	(can-build-with-escrow watch-tower)
 		; 	(up-set-target-object search-local c: 0)
-		; 	(up-compare-goal g-temp g:> g-temp-2)
+		; 	(up-compare-goal g-temp g:> g-temp2)
 		; 	=>
-		; 	(set-goal g-temp-3 9988)
+		; 	(set-goal g-temp3 9988)
 		; 	)
 			
 		; 	;Build near g-target-point-x
 		; 	(defrule
-		; 	(goal g-temp-3 9988)
+		; 	(goal g-temp3 9988)
 		; 	(can-build-with-escrow watch-tower)
 		;	(up-compare-goal g-place-control-rule-id > 0)
 		; 	=>
@@ -750,8 +750,8 @@
 		)
 		
 		(defrule
-		(up-object-type-count c: town-center g:< g-desired-num-town-center)
-		(can-afford-building town-center)
+		; (up-object-type-count c: town-center g:< g-desired-num-town-center)
+		; (can-afford-building town-center)
 		(up-pending-objects c: town-center > 1)
 		=>
 		(up-assign-builders c: town-center-foundation c: 8)
@@ -1031,24 +1031,24 @@
 		(up-get-fact building-type-count-total barracks g-temp)
 		(up-modify-goal g-temp g:%/ g-desired-num-barracks)
 		=>
-		(up-get-fact building-type-count-total archery-range g-temp-2)
-		(up-modify-goal g-temp-2 g:%/ g-desired-num-archery-range)
-		(up-get-fact building-type-count-total stable g-temp-3)
-		(up-modify-goal g-temp-3 g:%/ g-desired-num-stable)
+		(up-get-fact building-type-count-total archery-range g-temp2)
+		(up-modify-goal g-temp2 g:%/ g-desired-num-archery-range)
+		(up-get-fact building-type-count-total stable g-temp3)
+		(up-modify-goal g-temp3 g:%/ g-desired-num-stable)
 		)
 
 		(defrule
 		(goal g-build-line-bldg 0)
 		(building-type-count-total archery-range == 0)
 		=>
-		(set-goal g-temp-2 100)
+		(set-goal g-temp2 100)
 		)
 
 		(defrule
 		(goal g-build-line-bldg 0)
 		(building-type-count-total stable == 0)
 		=>
-		(set-goal g-temp-3 100)
+		(set-goal g-temp3 100)
 		)
 
 		(defrule
@@ -1056,8 +1056,8 @@
 		(up-object-type-count-total c: barracks g:< g-desired-num-barracks)
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
-		(up-compare-goal g-temp g:<= g-temp-2)
-		(up-compare-goal g-temp g:<= g-temp-3)
+		(up-compare-goal g-temp g:<= g-temp2)
+		(up-compare-goal g-temp g:<= g-temp3)
 		(can-build-with-escrow barracks)
 		=>
 		(set-goal g-build-line-bldg barracks)
@@ -1194,24 +1194,24 @@
 		(up-get-fact building-type-count-total archery-range g-temp)
 		(up-modify-goal g-temp g:%/ g-desired-num-archery-range)
 		=>
-		(up-get-fact building-type-count-total barracks g-temp-2)
-		(up-modify-goal g-temp-2 g:%/ g-desired-num-barracks)
-		(up-get-fact building-type-count-total stable g-temp-3)
-		(up-modify-goal g-temp-3 g:%/ g-desired-num-stable)
+		(up-get-fact building-type-count-total barracks g-temp2)
+		(up-modify-goal g-temp2 g:%/ g-desired-num-barracks)
+		(up-get-fact building-type-count-total stable g-temp3)
+		(up-modify-goal g-temp3 g:%/ g-desired-num-stable)
 		)
 
 		(defrule
 		(goal g-build-line-bldg 0)
 		(building-type-count-total barracks == 0)
 		=>
-		(set-goal g-temp-2 100)
+		(set-goal g-temp2 100)
 		)
 
 		(defrule
 		(goal g-build-line-bldg 0)
 		(building-type-count-total stable == 0)
 		=>
-		(set-goal g-temp-3 100)
+		(set-goal g-temp3 100)
 		)
 
 		(defrule
@@ -1220,8 +1220,8 @@
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: university g:>= g-desired-num-university)
-		(up-compare-goal g-temp g:<= g-temp-2)
-		(up-compare-goal g-temp g:<= g-temp-3)
+		(up-compare-goal g-temp g:<= g-temp2)
+		(up-compare-goal g-temp g:<= g-temp3)
 		(can-build-with-escrow archery-range)
 		(up-pending-objects c: archery-range < 1)
 		(building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
@@ -1322,24 +1322,24 @@
 		(up-get-fact building-type-count-total stable g-temp)
 		(up-modify-goal g-temp g:%/ g-desired-num-stable)
 		=>
-		(up-get-fact building-type-count-total archery-range g-temp-2)
-		(up-modify-goal g-temp-2 g:%/ g-desired-num-archery-range)
-		(up-get-fact building-type-count-total barracks g-temp-3)
-		(up-modify-goal g-temp-3 g:%/ g-desired-num-barracks)
+		(up-get-fact building-type-count-total archery-range g-temp2)
+		(up-modify-goal g-temp2 g:%/ g-desired-num-archery-range)
+		(up-get-fact building-type-count-total barracks g-temp3)
+		(up-modify-goal g-temp3 g:%/ g-desired-num-barracks)
 		)
 
 		(defrule
 		(goal g-build-line-bldg 0)
 		(building-type-count-total archery-range == 0)
 		=>
-		(set-goal g-temp-2 100)
+		(set-goal g-temp2 100)
 		)
 
 		(defrule
 		(goal g-build-line-bldg 0)
 		(building-type-count-total barracks == 0)
 		=>
-		(set-goal g-temp-3 100)
+		(set-goal g-temp3 100)
 		)
 
 		(defrule
@@ -1347,8 +1347,8 @@
 		(up-object-type-count-total c: stable g:< g-desired-num-stable)
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
-		(up-compare-goal g-temp g:<= g-temp-2)
-		(up-compare-goal g-temp g:<= g-temp-3)
+		(up-compare-goal g-temp g:<= g-temp2)
+		(up-compare-goal g-temp g:<= g-temp3)
 		(can-build-with-escrow stable)
 		(up-pending-objects c: stable < 1)
 		; (building-type-count town-center > 0)		;important condition for up-set-placement to work (I think)
@@ -1642,17 +1642,17 @@
 
 		#load-if-not-defined HUN-CIV
 
-			(load "The General 3.1/Functions/Reset")
+			(load "The General 1.2/Functions/Reset")
 		
 			;get number of additional houses needed (stored in g-temp)
 			(defrule
 			(true)
 			=>
 			(up-modify-goal g-temp g:= g-desired-num-house)
-			(up-get-fact building-type-count house g-temp-2)
-			(up-get-fact building-type-count-total house g-temp-3)
-			(up-modify-goal g-temp g:- g-temp-2)
-			(up-modify-goal g-temp-3 g:- g-temp-2)
+			(up-get-fact building-type-count house g-temp2)
+			(up-get-fact building-type-count-total house g-temp3)
+			(up-modify-goal g-temp g:- g-temp2)
+			(up-modify-goal g-temp3 g:- g-temp2)
 			(up-modify-goal g-temp c:max 0)
 			)
 
@@ -1674,7 +1674,7 @@
 			(up-object-type-count-total c: house g:< g-desired-num-house)
 			(can-build-with-escrow house)
 			; (up-pending-objects c: house g:< g-temp)
-			(up-compare-goal g-temp-3 g:< g-temp)
+			(up-compare-goal g-temp3 g:< g-temp)
 			(game-time > 5)
 			=>
 			(set-goal g-build-line-bldg house)
@@ -1725,7 +1725,7 @@
 	(up-chat-data-to-self CHAT-BUILD-LINE c: 7031232)
 	)
 
-	(load "The General 3.1/Functions/Build Line")
+	(load "The General 1.2/Functions/Build Line")
 
 	(defrule
 	(up-compare-sn sn-placement-to-center == 1)
@@ -1822,7 +1822,7 @@
 		(up-jump-direct g: g-mc-construction-rule-id)
 		)
 
-		(load "The General 3.1/Functions/Build Line Mill")
+		(load "The General 1.2/Functions/Build Line Mill")
 
 		(defrule
 		(up-compare-sn sn-placement-to-center == 1)
@@ -1869,7 +1869,7 @@
 		; (chat-to-player my-player-number CHAT-CAMP-GOLD)
 		)
 
-		(load "The General 3.1/Functions/Reset")
+		(load "The General 1.2/Functions/Reset")
 		
 		;Go through all gold mines on the map and
 		;find available gold mines to see if we can build gold camp
@@ -1948,7 +1948,7 @@
 			(goal g-local-total 0)
 			(goal g-temp 97969)
 			=>
-			(up-get-object-data object-data-id g-temp-2)
+			(up-get-object-data object-data-id g-temp2)
 			(set-strategic-number sn-focus-player-number 1)
 			(up-set-target-point g-point-x)
 			(set-goal g-temp 97970)
@@ -2054,7 +2054,7 @@
 		(up-jump-direct g: g-stone-camp-construction-rule-id)
 		)
 
-		(load "The General 3.1/Functions/Build Line Mining")
+		(load "The General 1.2/Functions/Build Line Mining")
 
 		;If failed to place gold TC, then place wood TC instead
 		(defrule
@@ -2075,7 +2075,7 @@
 		; (chat-to-player my-player-number CHAT-BUILD-BACKUP-TC-WOOD)
 		)
 
-		(load "The General 3.1/Functions/Build Line Lumber")
+		(load "The General 1.2/Functions/Build Line Lumber")
 
 		(defrule
 		(true)
@@ -2144,7 +2144,7 @@
 		(up-jump-direct g: g-lc-construction-rule-id)
 		)
 
-		(load "The General 3.1/Functions/Build Line Mining")
+		(load "The General 1.2/Functions/Build Line Mining")
 
 		(defrule
 		(up-compare-sn sn-placement-to-center == 1)
@@ -2252,7 +2252,7 @@
 		(up-jump-direct g: g-place-point-rule-id)
 		)
 
-		(load "The General 3.1/Functions/Build Line Lumber")
+		(load "The General 1.2/Functions/Build Line Lumber")
 
 		(defrule
 		(up-compare-sn sn-placement-to-center == 1)
@@ -2288,7 +2288,7 @@
 
 		#load-if-not-defined SICILIANS-CIV
 
-			(load "The General 3.1/Functions/Reset")
+			(load "The General 1.2/Functions/Reset")
 
 			(defrule
 			(goal g-town-under-attack NO)
@@ -2327,67 +2327,67 @@
 			(up-find-local c: mining-camp c: 10)
 			(up-find-local c: lumber-camp c: 10)
 			(up-find-local c: mill c: 5)
-			(set-goal g-temp-3 9986)
+			(set-goal g-temp3 9986)
 			(set-goal i 0)		;loop counter
 			(set-goal g-temp 0)	;score of best dropsite
 			)
 
 				;Loop through each dropsite and see which one has the best location
 				(defrule
-				(goal g-temp-3 9986)
+				(goal g-temp3 9986)
 				(can-build-with-escrow watch-tower)
 				(up-set-target-object search-local g: i)
 				(up-object-data object-data-type == mining-camp)
 				=>
-				(set-goal g-temp-2 500)		;score of current dropsite
+				(set-goal g-temp2 500)		;score of current dropsite
 				(up-get-point position-object g-point-x)
-				(up-get-point-distance g-point-x g-target-enemy-x g-temp-4)
-				(up-modify-goal g-temp-4 c:* 3)
-				(up-modify-goal g-temp-2 g:- g-temp-4)
-				(up-get-point-distance g-point-x g-gather-point-x g-temp-4)
-				(up-modify-goal g-temp-2 g:- g-temp-4)
+				(up-get-point-distance g-point-x g-target-enemy-x g-temp4)
+				(up-modify-goal g-temp4 c:* 3)
+				(up-modify-goal g-temp2 g:- g-temp4)
+				(up-get-point-distance g-point-x g-gather-point-x g-temp4)
+				(up-modify-goal g-temp2 g:- g-temp4)
 				)
 				(defrule
-				(goal g-temp-3 9986)
+				(goal g-temp3 9986)
 				(can-build-with-escrow watch-tower)
 				(up-set-target-object search-local g: i)
 				(up-object-data object-data-type == lumber-camp)
 				=>
-				(set-goal g-temp-2 480)
+				(set-goal g-temp2 480)
 				(up-get-point position-object g-point-x)
-				(up-get-point-distance g-point-x g-target-enemy-x g-temp-4)
-				(up-modify-goal g-temp-4 c:* 3)
-				(up-modify-goal g-temp-2 g:- g-temp-4)
-				(up-get-point-distance g-point-x g-gather-point-x g-temp-4)
-				(up-modify-goal g-temp-2 g:- g-temp-4)
+				(up-get-point-distance g-point-x g-target-enemy-x g-temp4)
+				(up-modify-goal g-temp4 c:* 3)
+				(up-modify-goal g-temp2 g:- g-temp4)
+				(up-get-point-distance g-point-x g-gather-point-x g-temp4)
+				(up-modify-goal g-temp2 g:- g-temp4)
 				)
 				(defrule
-				(goal g-temp-3 9986)
+				(goal g-temp3 9986)
 				(can-build-with-escrow watch-tower)
 				(up-set-target-object search-local g: i)
 				(up-object-data object-data-type == mill)
 				=>
-				(set-goal g-temp-2 440)
+				(set-goal g-temp2 440)
 				(up-get-point position-object g-point-x)
-				(up-get-point-distance g-point-x g-target-enemy-x g-temp-4)
-				(up-modify-goal g-temp-4 c:* 3)
-				(up-modify-goal g-temp-2 g:- g-temp-4)
-				(up-get-point-distance g-point-x g-gather-point-x g-temp-4)
-				(up-modify-goal g-temp-2 g:- g-temp-4)
+				(up-get-point-distance g-point-x g-target-enemy-x g-temp4)
+				(up-modify-goal g-temp4 c:* 3)
+				(up-modify-goal g-temp2 g:- g-temp4)
+				(up-get-point-distance g-point-x g-gather-point-x g-temp4)
+				(up-modify-goal g-temp2 g:- g-temp4)
 				)
 
 				(defrule
-				(goal g-temp-3 9986)
+				(goal g-temp3 9986)
 				(can-build-with-escrow watch-tower)
 				(up-set-target-object search-local g: i)
-				(up-compare-goal g-temp-2 g:> g-temp)
+				(up-compare-goal g-temp2 g:> g-temp)
 				=>
 				(up-get-object-data object-data-id j)
-				(up-modify-goal g-temp g:= g-temp-2)
+				(up-modify-goal g-temp g:= g-temp2)
 				)
 
 				(defrule
-				(goal g-temp-3 9986)
+				(goal g-temp3 9986)
 				(can-build-with-escrow watch-tower)
 				(up-compare-goal i < 25)
 				=>
@@ -2397,7 +2397,7 @@
 			
 			;Dropsite nearby, check if it's closer than g-gather-point-x
 			(defrule
-			(goal g-temp-3 9986)
+			(goal g-temp3 9986)
 			(can-build-with-escrow watch-tower)
 			(up-set-target-by-id g: j)
 			(up-compare-goal g-place-control-rule-id > 0)
@@ -2422,7 +2422,7 @@
 
 		#load-if-defined SICILIANS-CIV
 
-			(load "The General 3.1/Functions/Reset")
+			(load "The General 1.2/Functions/Reset")
 
 			(defrule
 			(goal g-town-under-attack NO)
@@ -2461,67 +2461,67 @@
 			(up-find-local c: mining-camp c: 10)
 			(up-find-local c: lumber-camp c: 10)
 			(up-find-local c: mill c: 5)
-			(set-goal g-temp-3 9986)
+			(set-goal g-temp3 9986)
 			(set-goal i 0)		;loop counter
 			(set-goal g-temp 0)	;score of best dropsite
 			)
 
 				;Loop through each dropsite and see which one has the best location
 				(defrule
-				(goal g-temp-3 9986)
+				(goal g-temp3 9986)
 				(can-build-with-escrow donjon)
 				(up-set-target-object search-local g: i)
 				(up-object-data object-data-type == mining-camp)
 				=>
-				(set-goal g-temp-2 500)		;score of current dropsite
+				(set-goal g-temp2 500)		;score of current dropsite
 				(up-get-point position-object g-point-x)
-				(up-get-point-distance g-point-x g-target-enemy-x g-temp-4)
-				(up-modify-goal g-temp-4 c:* 3)
-				(up-modify-goal g-temp-2 g:- g-temp-4)
-				(up-get-point-distance g-point-x g-gather-point-x g-temp-4)
-				(up-modify-goal g-temp-2 g:- g-temp-4)
+				(up-get-point-distance g-point-x g-target-enemy-x g-temp4)
+				(up-modify-goal g-temp4 c:* 3)
+				(up-modify-goal g-temp2 g:- g-temp4)
+				(up-get-point-distance g-point-x g-gather-point-x g-temp4)
+				(up-modify-goal g-temp2 g:- g-temp4)
 				)
 				(defrule
-				(goal g-temp-3 9986)
+				(goal g-temp3 9986)
 				(can-build-with-escrow donjon)
 				(up-set-target-object search-local g: i)
 				(up-object-data object-data-type == lumber-camp)
 				=>
-				(set-goal g-temp-2 480)
+				(set-goal g-temp2 480)
 				(up-get-point position-object g-point-x)
-				(up-get-point-distance g-point-x g-target-enemy-x g-temp-4)
-				(up-modify-goal g-temp-4 c:* 3)
-				(up-modify-goal g-temp-2 g:- g-temp-4)
-				(up-get-point-distance g-point-x g-gather-point-x g-temp-4)
-				(up-modify-goal g-temp-2 g:- g-temp-4)
+				(up-get-point-distance g-point-x g-target-enemy-x g-temp4)
+				(up-modify-goal g-temp4 c:* 3)
+				(up-modify-goal g-temp2 g:- g-temp4)
+				(up-get-point-distance g-point-x g-gather-point-x g-temp4)
+				(up-modify-goal g-temp2 g:- g-temp4)
 				)
 				(defrule
-				(goal g-temp-3 9986)
+				(goal g-temp3 9986)
 				(can-build-with-escrow donjon)
 				(up-set-target-object search-local g: i)
 				(up-object-data object-data-type == mill)
 				=>
-				(set-goal g-temp-2 440)
+				(set-goal g-temp2 440)
 				(up-get-point position-object g-point-x)
-				(up-get-point-distance g-point-x g-target-enemy-x g-temp-4)
-				(up-modify-goal g-temp-4 c:* 3)
-				(up-modify-goal g-temp-2 g:- g-temp-4)
-				(up-get-point-distance g-point-x g-gather-point-x g-temp-4)
-				(up-modify-goal g-temp-2 g:- g-temp-4)
+				(up-get-point-distance g-point-x g-target-enemy-x g-temp4)
+				(up-modify-goal g-temp4 c:* 3)
+				(up-modify-goal g-temp2 g:- g-temp4)
+				(up-get-point-distance g-point-x g-gather-point-x g-temp4)
+				(up-modify-goal g-temp2 g:- g-temp4)
 				)
 
 				(defrule
-				(goal g-temp-3 9986)
+				(goal g-temp3 9986)
 				(can-build-with-escrow donjon)
 				(up-set-target-object search-local g: i)
-				(up-compare-goal g-temp-2 g:> g-temp)
+				(up-compare-goal g-temp2 g:> g-temp)
 				=>
 				(up-get-object-data object-data-id j)
-				(up-modify-goal g-temp g:= g-temp-2)
+				(up-modify-goal g-temp g:= g-temp2)
 				)
 
 				(defrule
-				(goal g-temp-3 9986)
+				(goal g-temp3 9986)
 				(can-build-with-escrow donjon)
 				(up-compare-goal i < 25)
 				=>
@@ -2531,7 +2531,7 @@
 			
 			;Dropsite nearby, check if it's closer than g-gather-point-x
 			(defrule
-			(goal g-temp-3 9986)
+			(goal g-temp3 9986)
 			(can-build-with-escrow donjon)
 			(up-set-target-by-id g: j)
 			(up-compare-goal g-place-control-rule-id > 0)
@@ -2569,7 +2569,7 @@
 	;	Town Center
 	;-----------------
 
-		(load "The General 3.1/Functions/Reset")
+		(load "The General 1.2/Functions/Reset")
 
 		(defrule
 		(up-object-type-count-total c: town-center g:< g-desired-num-town-center)
@@ -2622,7 +2622,7 @@
 		(up-modify-sn sn-lumber-camp-max-distance c:min 50)
 		)
 
-		(load "The General 3.1/Functions/Reset")
+		(load "The General 1.2/Functions/Reset")
 
 		(defrule
 		(up-object-type-count-total c: town-center g:< g-desired-num-town-center)
@@ -2954,7 +2954,7 @@
 	;	Barracks
 	;--------------
 
-		(load "The General 3.1/Functions/Reset")
+		(load "The General 1.2/Functions/Reset")
 
 		(defrule
 		(or
@@ -2979,8 +2979,8 @@
 		(true)
 		=>
 		(set-goal g-temp 100)
-		(set-goal g-temp-2 100)
-		(set-goal g-temp-3 100)
+		(set-goal g-temp2 100)
+		(set-goal g-temp3 100)
 		)
 
 		(defrule
@@ -2993,23 +2993,23 @@
 		(defrule
 		(up-compare-goal g-desired-num-archery-range > 0)
 		=>
-		(up-get-fact building-type-count-total archery-range g-temp-2)
-		(up-modify-goal g-temp-2 g:%/ g-desired-num-archery-range)
+		(up-get-fact building-type-count-total archery-range g-temp2)
+		(up-modify-goal g-temp2 g:%/ g-desired-num-archery-range)
 		)
 
 		(defrule
 		(up-compare-goal g-desired-num-stable > 0)
 		=>
-		(up-get-fact building-type-count-total stable g-temp-3)
-		(up-modify-goal g-temp-3 g:%/ g-desired-num-stable)
+		(up-get-fact building-type-count-total stable g-temp3)
+		(up-modify-goal g-temp3 g:%/ g-desired-num-stable)
 		)
 
 		(defrule
 		(up-object-type-count-total c: barracks g:< g-desired-num-barracks)
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
-		(up-compare-goal g-temp g:<= g-temp-2)
-		(up-compare-goal g-temp g:<= g-temp-3)
+		(up-compare-goal g-temp g:<= g-temp2)
+		(up-compare-goal g-temp g:<= g-temp3)
 		(can-build-with-escrow barracks)
 		(up-pending-objects c: barracks < 2)
 		(up-compare-goal g-place-forward-rule-id > 0)
@@ -3028,20 +3028,24 @@
 		(up-compare-goal g-game-focus != DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
-		(up-modify-sn sn-placement-zone-size c:= 5)
-		(set-strategic-number sn-placement-fail-delta 0)
-		(up-assign-builders c: barracks c: 1)
-		(up-build place-control g-escrow c: barracks)
-		(up-jump-direct g: g-place-forward-rule-id)
 		)
+
 		(defrule
 		(goal i 573428)
 		(can-build-with-escrow barracks)
 		(up-pending-objects c: barracks < 1)
 		(up-compare-goal g-place-forward-rule-id > 0)
-		(up-compare-goal g-game-focus == DEFENSIVE)
+		(goal g-game-focus DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: -8)
+		)
+
+		(defrule
+		(goal i 573428)
+		(can-build-with-escrow barracks)
+		(up-pending-objects c: barracks < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		=>
 		(up-modify-sn sn-placement-zone-size c:= 5)
 		(set-strategic-number sn-placement-fail-delta 0)
 		(up-assign-builders c: barracks c: 1)
@@ -3058,22 +3062,24 @@
 		(up-compare-goal g-game-focus != DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
-		(up-modify-sn sn-placement-zone-size c:= 5)
-		(set-strategic-number sn-placement-fail-delta 0)
-		(up-assign-builders c: barracks c: 1)
-		(up-build place-control 0 c: barracks)
-		(up-jump-direct g: g-place-forward-rule-id)
-		(up-store-type-name c: barracks)
-		; (up-chat-data-to-player my-player-number CHAT-BUILD-BACKUP-BUILDING c: 7031232)
 		)
+
 		(defrule
 		(up-object-type-count-total c: barracks g:< g-desired-num-barracks)
 		(can-build barracks)
 		(up-pending-objects c: barracks < 1)
 		(up-compare-goal g-place-forward-rule-id > 0)
-		(up-compare-goal g-game-focus == DEFENSIVE)
+		(goal g-game-focus DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: -8)
+		)
+
+		(defrule
+		(up-object-type-count-total c: barracks g:< g-desired-num-barracks)
+		(can-build barracks)
+		(up-pending-objects c: barracks < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		=>
 		(up-modify-sn sn-placement-zone-size c:= 5)
 		(set-strategic-number sn-placement-fail-delta 0)
 		(up-assign-builders c: barracks c: 1)
@@ -3087,7 +3093,7 @@
 	;	Archery Range
 	;-------------------
 
-		(load "The General 3.1/Functions/Reset")
+		(load "The General 1.2/Functions/Reset")
 
 		(defrule
 		(true)
@@ -3173,8 +3179,8 @@
 		(true)
 		=>
 		(set-goal g-temp 100)
-		(set-goal g-temp-2 100)
-		(set-goal g-temp-3 100)
+		(set-goal g-temp2 100)
+		(set-goal g-temp3 100)
 		)
 
 		(defrule
@@ -3187,15 +3193,15 @@
 		(defrule
 		(up-compare-goal g-desired-num-archery-range > 0)
 		=>
-		(up-get-fact building-type-count-total archery-range g-temp-2)
-		(up-modify-goal g-temp-2 g:%/ g-desired-num-archery-range)
+		(up-get-fact building-type-count-total archery-range g-temp2)
+		(up-modify-goal g-temp2 g:%/ g-desired-num-archery-range)
 		)
 
 		(defrule
 		(up-compare-goal g-desired-num-stable > 0)
 		=>
-		(up-get-fact building-type-count-total stable g-temp-3)
-		(up-modify-goal g-temp-3 g:%/ g-desired-num-stable)
+		(up-get-fact building-type-count-total stable g-temp3)
+		(up-modify-goal g-temp3 g:%/ g-desired-num-stable)
 		)
 
 		(defrule
@@ -3203,8 +3209,8 @@
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: university g:>= g-desired-num-university)
-		(up-compare-goal g-temp-2 g:<= g-temp)
-		(up-compare-goal g-temp-2 g:<= g-temp-3)
+		(up-compare-goal g-temp2 g:<= g-temp)
+		(up-compare-goal g-temp2 g:<= g-temp3)
 		(can-build-with-escrow archery-range)
 		(up-pending-objects c: archery-range < 1)
 		(up-compare-goal g-place-forward-rule-id > 0)
@@ -3223,21 +3229,27 @@
 		(up-compare-goal g-game-focus != DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
-		(up-modify-sn sn-placement-zone-size c:= 5)
-		(set-strategic-number sn-placement-fail-delta 0)
-		(up-build place-control g-escrow c: archery-range)
-		(up-jump-direct g: g-place-forward-rule-id)
 		)
+
 		(defrule
 		(goal i 573429)
 		(can-build-with-escrow archery-range)
 		(up-pending-objects c: archery-range < 1)
 		(up-compare-goal g-place-forward-rule-id > 0)
-		(up-compare-goal g-game-focus == DEFENSIVE)
+		(goal g-game-focus DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: -8)
+		)
+
+		(defrule
+		(goal i 573429)
+		(can-build-with-escrow archery-range)
+		(up-pending-objects c: archery-range < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		=>
 		(up-modify-sn sn-placement-zone-size c:= 5)
 		(set-strategic-number sn-placement-fail-delta 0)
+		(up-assign-builders c: archery-range c: 1)
 		(up-build place-control g-escrow c: archery-range)
 		(up-jump-direct g: g-place-forward-rule-id)
 		)
@@ -3251,21 +3263,27 @@
 		(up-compare-goal g-game-focus != DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
-		(up-modify-sn sn-placement-zone-size c:= 5)
-		(set-strategic-number sn-placement-fail-delta 0)
-		(up-build place-control 0 c: archery-range)
-		(up-jump-direct g: g-place-forward-rule-id)
 		)
+
 		(defrule
 		(up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
 		(can-build archery-range)
 		(up-pending-objects c: archery-range < 1)
 		(up-compare-goal g-place-forward-rule-id > 0)
-		(up-compare-goal g-game-focus == DEFENSIVE)
+		(goal g-game-focus DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: -8)
+		)
+
+		(defrule
+		(up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
+		(can-build archery-range)
+		(up-pending-objects c: archery-range < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		=>
 		(up-modify-sn sn-placement-zone-size c:= 5)
 		(set-strategic-number sn-placement-fail-delta 0)
+		(up-assign-builders c: archery-range c: 1)
 		(up-build place-control 0 c: archery-range)
 		(up-jump-direct g: g-place-forward-rule-id)
 		)
@@ -3274,7 +3292,7 @@
 	;	Stable
 	;------------
 
-		(load "The General 3.1/Functions/Reset")
+		(load "The General 1.2/Functions/Reset")
 
 		(defrule
 		(true)
@@ -3328,8 +3346,8 @@
 		(true)
 		=>
 		(set-goal g-temp 100)
-		(set-goal g-temp-2 100)
-		(set-goal g-temp-3 100)
+		(set-goal g-temp2 100)
+		(set-goal g-temp3 100)
 		)
 
 		(defrule
@@ -3342,23 +3360,23 @@
 		(defrule
 		(up-compare-goal g-desired-num-archery-range > 0)
 		=>
-		(up-get-fact building-type-count-total archery-range g-temp-2)
-		(up-modify-goal g-temp-2 g:%/ g-desired-num-archery-range)
+		(up-get-fact building-type-count-total archery-range g-temp2)
+		(up-modify-goal g-temp2 g:%/ g-desired-num-archery-range)
 		)
 
 		(defrule
 		(up-compare-goal g-desired-num-stable > 0)
 		=>
-		(up-get-fact building-type-count-total stable g-temp-3)
-		(up-modify-goal g-temp-3 g:%/ g-desired-num-stable)
+		(up-get-fact building-type-count-total stable g-temp3)
+		(up-modify-goal g-temp3 g:%/ g-desired-num-stable)
 		)
 
 		(defrule
 		(up-object-type-count-total c: stable g:< g-desired-num-stable)
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
-		(up-compare-goal g-temp-3 g:<= g-temp)
-		(up-compare-goal g-temp-3 g:<= g-temp-2)
+		(up-compare-goal g-temp3 g:<= g-temp)
+		(up-compare-goal g-temp3 g:<= g-temp2)
 		(can-build-with-escrow stable)
 		(up-pending-objects c: stable < 1)
 		(up-compare-goal g-place-forward-rule-id > 0)
@@ -3377,19 +3395,24 @@
 		(up-compare-goal g-game-focus != DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
-		(up-modify-sn sn-placement-zone-size c:= 5)
-		(set-strategic-number sn-placement-fail-delta 0)
-		(up-build place-control g-escrow c: stable)
-		(up-jump-direct g: g-place-forward-rule-id)
 		)
+
 		(defrule
 		(goal i 573430)
 		(can-build-with-escrow stable)
 		(up-pending-objects c: stable < 1)
 		(up-compare-goal g-place-forward-rule-id > 0)
-		(up-compare-goal g-game-focus == DEFENSIVE)
+		(goal g-game-focus DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: -8)
+		)
+
+		(defrule
+		(goal i 573430)
+		(can-build-with-escrow stable)
+		(up-pending-objects c: stable < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		=>
 		(up-modify-sn sn-placement-zone-size c:= 5)
 		(set-strategic-number sn-placement-fail-delta 0)
 		(up-build place-control g-escrow c: stable)
@@ -3405,20 +3428,24 @@
 		(up-compare-goal g-game-focus != DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: 5)
-		(up-modify-sn sn-placement-zone-size c:= 5)
-		(set-strategic-number sn-placement-fail-delta 0)
-		(up-assign-builders c: stable c: 1)
-		(up-build place-control 0 c: stable)
-		(up-jump-direct g: g-place-forward-rule-id)
 		)
+
 		(defrule
 		(up-object-type-count-total c: stable g:< g-desired-num-stable)
 		(can-build stable)
 		(up-pending-objects c: stable < 1)
 		(up-compare-goal g-place-forward-rule-id > 0)
-		(up-compare-goal g-game-focus == DEFENSIVE)
+		(goal g-game-focus DEFENSIVE)
 		=>
 		(up-set-placement-data my-player-number -1 c: -8)
+		)
+
+		(defrule
+		(up-object-type-count-total c: stable g:< g-desired-num-stable)
+		(can-build stable)
+		(up-pending-objects c: stable < 1)
+		(up-compare-goal g-place-forward-rule-id > 0)
+		=>
 		(up-modify-sn sn-placement-zone-size c:= 5)
 		(set-strategic-number sn-placement-fail-delta 0)
 		(up-assign-builders c: stable c: 1)
@@ -3664,10 +3691,10 @@
 			(true)
 			=>
 			(up-modify-goal g-temp g:= g-desired-num-house)
-			(up-get-fact building-type-count house g-temp-2)
-			(up-get-fact building-type-count-total house g-temp-3)
-			(up-modify-goal g-temp g:- g-temp-2)
-			(up-modify-goal g-temp-3 g:- g-temp-2)
+			(up-get-fact building-type-count house g-temp2)
+			(up-get-fact building-type-count-total house g-temp3)
+			(up-modify-goal g-temp g:- g-temp2)
+			(up-modify-goal g-temp3 g:- g-temp2)
 			(up-modify-goal g-temp c:max 0)
 			)
 
@@ -3689,7 +3716,7 @@
 			(up-object-type-count-total c: house g:< g-desired-num-house)
 			(can-build-with-escrow house)
 			; (up-pending-objects c: house g:< g-temp)
-			(up-compare-goal g-temp-3 g:< g-temp)
+			(up-compare-goal g-temp3 g:< g-temp)
 			(game-time > 5)
 			(up-compare-goal g-game-focus != DEFENSIVE)
 			=>
@@ -3701,7 +3728,7 @@
 			(up-object-type-count-total c: house g:< g-desired-num-house)
 			(can-build-with-escrow house)
 			; (up-pending-objects c: house g:< g-temp)
-			(up-compare-goal g-temp-3 g:< g-temp)
+			(up-compare-goal g-temp3 g:< g-temp)
 			(game-time > 5)
 			(goal g-game-focus DEFENSIVE)
 			=>
@@ -3713,7 +3740,7 @@
 			(up-object-type-count-total c: house g:< g-desired-num-house)
 			(can-build-with-escrow house)
 			; (up-pending-objects c: house g:< g-temp)
-			(up-compare-goal g-temp-3 g:< g-temp)
+			(up-compare-goal g-temp3 g:< g-temp)
 			(game-time > 5)
 			=>
 			(set-strategic-number sn-placement-zone-size 5)
@@ -3802,7 +3829,7 @@
 	;	Farms
 	;-----------
 
-		(load "The General 3.1/Functions/Reset")
+		(load "The General 1.2/Functions/Reset")
 
 		;Dark Age
 		(defrule
@@ -3859,11 +3886,11 @@
 		(up-object-type-count-total c: blacksmith g:>= g-desired-num-blacksmith)
 		(up-object-type-count-total c: market g:>= g-desired-num-market)
 		=>
-		(set-goal g-temp-2 1234)
+		(set-goal g-temp2 1234)
 		)
 
 		(defrule
-		(goal g-temp-2 1234)
+		(goal g-temp2 1234)
 		(current-age == feudal-age)
 		(building-type-count-total lumber-camp > 0)
 		(can-build farm)
@@ -3908,8 +3935,8 @@
 		(up-pending-objects c: farm > 0)
 		=>
 		(up-get-fact building-type-count-total farm g-temp)
-		(up-get-fact building-type-count farm g-temp-2)
-		(up-modify-goal g-temp g:- g-temp-2)
+		(up-get-fact building-type-count farm g-temp2)
+		(up-modify-goal g-temp g:- g-temp2)
 		(up-assign-builders c: farm g: g-temp)
 		)
 

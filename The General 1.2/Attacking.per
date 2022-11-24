@@ -69,7 +69,7 @@
 	;	Castle/Imperial Attacks
 	;-----------------------------
 
-		(load "The General 3.1/Functions/Reset")
+		(load "The General 1.2/Functions/Reset")
 
 		;Required attacking number is affected by the enemy military pop, civilian pop, and age
 		(defrule
@@ -98,10 +98,10 @@
 		(up-modify-goal g-temp g:= g-target-pop-parity)
 		(up-modify-goal g-temp g:+ g-top-enemy-pop-parity)
 		(up-modify-goal g-temp c:/ 2)							;find average between target and top enemy parity
-		(up-modify-goal g-temp-2 g:= g-target-military-parity)
-		(up-modify-goal g-temp-2 g:+ g-top-enemy-military-parity)
-		(up-modify-goal g-temp-2 c:/ 2)							;find average between target and top enemy military parity
-		(up-modify-goal g-temp g:+ g-temp-2)
+		(up-modify-goal g-temp2 g:= g-target-military-parity)
+		(up-modify-goal g-temp2 g:+ g-top-enemy-military-parity)
+		(up-modify-goal g-temp2 c:/ 2)							;find average between target and top enemy military parity
+		(up-modify-goal g-temp g:+ g-temp2)
 		(up-modify-goal g-temp c:/ 3)							;divide pop/military parity by 3
 		(up-modify-goal g-temp c:max -10)						;restrict villager parity effect between -10 and 10
 		(up-modify-goal g-temp c:min 10)
@@ -160,8 +160,8 @@
 		(up-modify-goal g-temp c:/ 3)
 		(up-modify-goal g-required-attack-num g:- g-temp)
 		(up-get-fact unit-type-count skirmisher-line g-temp)
-		; (up-get-fact unit-type-count spearman-line g-temp-2)
-		; (up-modify-goal g-temp g:+ g-temp-2)
+		; (up-get-fact unit-type-count spearman-line g-temp2)
+		; (up-modify-goal g-temp g:+ g-temp2)
 		(up-modify-goal g-temp c:/ 3)
 		(up-modify-goal g-required-attack-num g:+ g-temp)
 		; (up-chat-data-to-all "Required6 %d" g: g-required-attack-num)
@@ -173,13 +173,13 @@
 		(current-age >= castle-age)
 		=>
 		(up-modify-goal g-temp g:= g-enemy-heavy-cavalry-count)
-		(up-modify-goal g-temp-2 g:= g-enemy-elephants-count)
-		(up-modify-goal g-temp g:+ g-temp-2)
+		(up-modify-goal g-temp2 g:= g-enemy-elephants-count)
+		(up-modify-goal g-temp g:+ g-temp2)
 		(up-modify-goal g-temp c:/ 3)
 		(up-modify-goal g-required-attack-num g:+ g-temp)
 		(up-modify-goal g-temp g:= g-enemy-skirmishers-count)
-		; (up-modify-goal g-temp-2 g:= g-enemy-spearmen-count)
-		; (up-modify-goal g-temp g:+ g-temp-2)
+		; (up-modify-goal g-temp2 g:= g-enemy-spearmen-count)
+		; (up-modify-goal g-temp g:+ g-temp2)
 		(up-modify-goal g-temp c:/ 3)
 		(up-modify-goal g-required-attack-num g:- g-temp)
 		; (up-chat-data-to-all "Required7 %d" g: g-required-attack-num)
@@ -585,7 +585,7 @@
 ;			   		 STOP ATTACK
 ;=========================<>=========================
 
-	(load "The General 3.1/Functions/Reset")
+	(load "The General 1.2/Functions/Reset")
 
 	(defrule
 	(goal g-attacking YES)
@@ -644,13 +644,45 @@
 ;		   SET SN-MAXIMUM-TOWN-SIZE FOR TSA
 ;=========================<>=========================
 
-	(defrule
-	(true)
-	=>
-	(up-modify-flag g-attack-method-flag c:+ USE-TSA)
-	(up-modify-flag g-attack-method-flag c:- USE-ATTACK-GROUPS)
-	(disable-self)
-	)
+	#load-if-defined DE-AVAILABLE
+
+		(defrule
+		(up-compare-goal g-attack-status < BEFORE-IMPERIAL-ATTACKS)
+		(or
+			(up-compare-flag g-attack-method-flag != USE-DUC)
+			(up-compare-flag g-attack-method-flag == USE-TSA))
+		=>
+		(up-modify-flag g-attack-method-flag c:+ USE-DUC)
+		(up-modify-flag g-attack-method-flag c:- USE-TSA)
+		(up-modify-flag g-attack-method-flag c:- USE-ATTACK-GROUPS)
+		(up-modify-flag g-attack-method-flag c:- USE-ATTACK-NOW)
+		(disable-self)
+		)
+
+		(defrule
+		(up-compare-goal g-attack-status >= BEFORE-IMPERIAL-ATTACKS)
+		(or
+			(up-compare-flag g-attack-method-flag == USE-DUC)
+			(up-compare-flag g-attack-method-flag != USE-TSA))
+		=>
+		(up-modify-flag g-attack-method-flag c:+ USE-TSA)
+		(up-modify-flag g-attack-method-flag c:- USE-ATTACK-GROUPS)
+		(up-modify-flag g-attack-method-flag c:- USE-ATTACK-NOW)
+		(up-modify-flag g-attack-method-flag c:- USE-DUC)
+		)
+
+	#else
+
+		(defrule
+		(up-compare-flag g-attack-method-flag != USE-TSA)
+		=>
+		(up-modify-flag g-attack-method-flag c:+ USE-TSA)
+		(up-modify-flag g-attack-method-flag c:- USE-ATTACK-GROUPS)
+		(up-modify-flag g-attack-method-flag c:- USE-ATTACK-NOW)
+		(up-modify-flag g-attack-method-flag c:- USE-DUC)
+		)
+
+	#end-if
 
 	; (defrule
 	; (goal g-attacking YES)
@@ -665,6 +697,7 @@
 	(defrule
 	(goal g-attacking YES)
 	(up-compare-flag g-attack-method-flag != USE-ATTACK-GROUPS)
+	(up-compare-flag g-attack-method-flag != USE-DUC)
 	(players-building-count every-enemy == 0)
 	(game-time > 600)
 	(up-compare-sn sn-maximum-town-size >= HUNDRED-FIFTY-PERCENT-MAP-SIZE)
@@ -754,9 +787,7 @@
 		(up-set-offense-priority c: siege-weapon-class c: 8)
 		(up-set-offense-priority c: scorpion-class c: 8)
 		(up-set-offense-priority c: villager-class c: 9)
-		(up-set-offense-priority c: castle c: 0)
-		(up-set-offense-priority c: town-center c: 0)
-		(up-set-offense-priority c: tower-class c: 0)
+		(disable-self)
 		)
 
 		#load-if-defined DE-AVAILABLE 
@@ -768,7 +799,18 @@
 			=>
 			(up-set-offense-priority c: castle c: 11)
 			(up-set-offense-priority c: town-center c: 9)
-			(up-set-offense-priority c: tower-class c: 4)
+			(up-set-offense-priority c: watch-tower c: 4)
+			(up-set-offense-priority c: bombard-tower c: 4)
+			)
+
+			(defrule
+			(unit-type-count trebuchet-set <= 0)
+			(unit-type-count bombard-cannon-line <= 0)
+			=>
+			(up-set-offense-priority c: castle c: 0)
+			(up-set-offense-priority c: town-center c: 0)
+			(up-set-offense-priority c: watch-tower c: 0)
+			(up-set-offense-priority c: bombard-tower c: 0)
 			)
 
 		#else
@@ -780,7 +822,18 @@
 			=>
 			(up-set-offense-priority c: castle c: 11)
 			(up-set-offense-priority c: town-center c: 9)
-			(up-set-offense-priority c: tower-class c: 4)
+			(up-set-offense-priority c: watch-tower c: 4)
+			(up-set-offense-priority c: bombard-tower c: 4)
+			)
+
+			(defrule
+			(unit-type-count trebuchet-set <= 0)
+			(unit-type-count bombard-cannon <= 0)
+			=>
+			(up-set-offense-priority c: castle c: 0)
+			(up-set-offense-priority c: town-center c: 0)
+			(up-set-offense-priority c: watch-tower c: 0)
+			(up-set-offense-priority c: bombard-tower c: 0)
 			)
 
 		#end-if
@@ -955,7 +1008,7 @@
 
 		#end-if
 
-		(load "The General 3.1/Functions/Reset")
+		(load "The General 1.2/Functions/Reset")
 
 		;Check for towers surrounded by walls
 		;If they exist, set wall defense priorities higher
@@ -977,7 +1030,7 @@
 		=>
 		(up-get-point position-object g-point-x)
 		(up-set-target-point g-point-x)
-		(up-get-object-data object-data-id g-temp-2)
+		(up-get-object-data object-data-id g-temp2)
 		(up-full-reset-search)
 		(up-filter-distance c: -1 c: 2)
 		(up-find-remote c: palisade-wall c: 20)
@@ -1000,7 +1053,7 @@
 		(up-projectile-detected projectile-watch-tower <= 5000)
 		(up-compare-goal g-remote-total >= 3)
 		(timer-triggered t-5-sec)
-		(up-set-target-by-id g: g-temp-2)
+		(up-set-target-by-id g: g-temp2)
 		=>
 		(up-reset-search 1 1 0 0)
 		(up-reset-filters)
@@ -1010,7 +1063,7 @@
 		(up-find-local c: all-units-class c: 240)
 		(up-remove-objects search-local object-data-attack-stance == stance-stand-ground)
 		(up-remove-objects search-local object-data-range > 0)
-		(up-remove-objects search-local object-data-target-id g:!= g-temp-2)	;remove soldiers targeting tower with walls around it
+		(up-remove-objects search-local object-data-target-id g:!= g-temp2)	;remove soldiers targeting tower with walls around it
 		(up-get-search-state g-local-total)
 		(up-set-defense-priority c: watch-tower c: 20)
 		(up-set-defense-priority c: donjon c: 20)
@@ -1031,7 +1084,7 @@
 		(up-projectile-detected projectile-watch-tower <= 5000)
 		(up-compare-goal g-remote-total >= 3)
 		(timer-triggered t-5-sec)
-		(up-set-target-by-id g: g-temp-2)
+		(up-set-target-by-id g: g-temp2)
 		=>
 		(up-reset-search 1 1 0 0)
 		(up-reset-filters)
@@ -1041,7 +1094,7 @@
 		(up-find-local c: all-units-class c: 240)
 		(up-remove-objects search-local object-data-attack-stance == stance-stand-ground)
 		(up-remove-objects search-local object-data-range > 0)
-		(up-remove-objects search-local object-data-target-id g:!= g-temp-2)	;remove soldiers targeting tower with walls around it
+		(up-remove-objects search-local object-data-target-id g:!= g-temp2)	;remove soldiers targeting tower with walls around it
 		(up-get-search-state g-local-total)
 		(up-set-defense-priority c: watch-tower c: 20)
 		(up-set-defense-priority c: donjon c: 20)

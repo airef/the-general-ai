@@ -2,7 +2,7 @@
 ;				        SETUP
 ;=========================<>=========================
 
-	(load "The General 3.1/Functions/Reset")
+	(load "The General 1.2/Functions/Reset")
 
 	(defrule
 	(up-compare-goal g-build-line-bldg != 0)
@@ -133,7 +133,7 @@
 ;		             PLACE NORMAL
 ;=========================<>=========================
 
-	(load "The General 3.1/Functions/Reset")
+	(load "The General 1.2/Functions/Reset")
 
 	;Initialize loop variables
 	(defrule
@@ -226,7 +226,7 @@
 ;		            PLACE CONTROL
 ;=========================<>=========================
 
-	(load "The General 3.1/Functions/Reset")
+	(load "The General 1.2/Functions/Reset")
 
 	;----------------------------------
 	;	Find primary reference point
@@ -383,7 +383,7 @@
 ;		         PLACE POINT - NORMAL (also places place-normal and place-control)
 ;=========================<>=========================
 
-	(load "The General 3.1/Functions/Reset")
+	(load "The General 1.2/Functions/Reset")
 
 	;Debug chat
 	; (defrule
@@ -428,6 +428,7 @@
 			(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
+			(player-in-game focus-player)
 			(stance-toward focus-player enemy)
 			=>
 			(up-full-reset-search)
@@ -444,6 +445,7 @@
 			(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
+			(player-in-game focus-player)
 			(stance-toward focus-player enemy)
 			=>
 			(up-reset-filters)
@@ -456,6 +458,7 @@
 			(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
+			(player-in-game focus-player)
 			(stance-toward focus-player enemy)
 			(up-compare-goal g-remote-total > 0)		;found enemy units or buildings nearby
 			=>
@@ -517,8 +520,8 @@
 		(up-modify-goal g-point2-y g:- g-temp)
 		(set-goal g-food-cost 0)	;simply used as a temp goal
 		(set-goal g-wood-cost 0)	;simply used as a temp goal
-		(up-modify-goal g-temp-2 g:= g-build-line-size)
-		(up-modify-goal g-temp-2 c:+ 1)
+		(up-modify-goal g-temp2 g:= g-build-line-size)
+		(up-modify-goal g-temp2 c:+ 1)
 		)
 
 			(defrule
@@ -526,8 +529,8 @@
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(up-compare-goal g-build-line-min-separation >= 1)
 			(building-type-count town-center > 0)
-			(up-compare-goal g-food-cost g:<= g-temp-2)
-			(up-compare-goal g-wood-cost g:<= g-temp-2)
+			(up-compare-goal g-food-cost g:<= g-temp2)
+			(up-compare-goal g-wood-cost g:<= g-temp2)
 			(not
 				(up-can-build-line g-build-line-escrow g-point2-x c: palisade-wall))
 			=>
@@ -539,8 +542,8 @@
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(up-compare-goal g-build-line-min-separation >= 1)
 			(building-type-count town-center > 0)
-			(up-compare-goal g-food-cost g:<= g-temp-2)
-			(up-compare-goal g-wood-cost g:<= g-temp-2)
+			(up-compare-goal g-food-cost g:<= g-temp2)
+			(up-compare-goal g-wood-cost g:<= g-temp2)
 			(up-can-build-line g-build-line-escrow g-point2-x c: palisade-wall)
 			=>
 			(up-modify-goal g-food-cost c:+ 1)
@@ -557,7 +560,7 @@
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(up-compare-goal g-build-line-min-separation >= 1)
 			(building-type-count town-center > 0)
-			(up-compare-goal g-wood-cost g:<= g-temp-2)
+			(up-compare-goal g-wood-cost g:<= g-temp2)
 			=>
 			(set-goal g-food-cost 0)
 			(up-modify-goal g-wood-cost c:+ 1)
@@ -578,7 +581,7 @@
 		=>
 		(up-modify-goal g-temp s:= custom-sn-peaceful-town-size)
 		(up-modify-goal g-temp c:+ 2)
-		(up-modify-goal g-temp-2 g:= g-temp)	;g-temp and g-temp-2 now form a point: (custom-sn-peaceful-town-size + 2, custom-sn-peaceful-town-size + 2)
+		(up-modify-goal g-temp2 g:= g-temp)	;g-temp and g-temp2 now form a point: (custom-sn-peaceful-town-size + 2, custom-sn-peaceful-town-size + 2)
 		(up-copy-point g-point2-x g-position-self-x)
 		(up-copy-point g-point3-x g-position-self-x)
 		(up-add-point g-point2-x g-temp c: -1)	;subtract [custom-sn-peaceful-town-size + 2] from the g-point2-x coordinates
@@ -665,8 +668,8 @@
 			(up-compare-goal g-build-line-point-y > -1)
 			(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
 			=>
-			(up-modify-goal g-temp-2 g:= g-build-line-zone-radius)
-			(up-modify-goal g-temp-2 c:mod 2)
+			(up-modify-goal g-temp2 g:= g-build-line-zone-radius)
+			(up-modify-goal g-temp2 c:mod 2)
 			)
 			
 			(defrule
@@ -675,7 +678,7 @@
 			(up-compare-goal g-build-line-point-x > -1)
 			(up-compare-goal g-build-line-point-y > -1)
 			(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
-			(goal g-temp-2 0)	;lerp tiles only when remainder is 0
+			(goal g-temp2 0)	;lerp tiles only when remainder is 0
 			(goal g-build-line-expand-direction HALF-TOWARD-TC)
 			(building-type-count town-center > 0)
 			=>

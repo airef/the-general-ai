@@ -1,4 +1,4 @@
-;                              - THE GENERAL V1.1j -
+;                              - THE GENERAL V1.2 -
 ;                                       
 ;                                By  Leif Ericson
 ;				
@@ -44,23 +44,38 @@
 ;
 ;===============================================================================
 
-(load "The General 3.1/UserPatchConst")
-(load "The General 3.1/Game Stats")
-(load "The General 3.1/Initialization")
-(load "The General 3.1/Desired Object Counts")
-(load "The General 3.1/Strategic Numbers")
-(load "The General 3.1/Goals")
-(load "The General 3.1/Personality")
-(load "The General 3.1/Building Construction")
-(load "The General 3.1/Technology Research")
-(load "The General 3.1/Escrow")
-(load "The General 3.1/Unit Training")
-(load "The General 3.1/Gathering")
-(load "The General 3.1/Attacking")
-(load "The General 3.1/DUC")
-(load "The General 3.1/Tribute")
-(load "The General 3.1/Resign")
-(load "The General 3.1/Debug")
+(load "The General 1.2/UserPatchConst")
+(load "The General 1.2/Game Stats")
+(load "The General 1.2/Initialization")
+(defrule
+(up-compare-goal g-rule-pass-count >= 0)
+=>
+(up-get-fact game-time 0 g-temp5)
+(up-get-fact player-number 0 g-temp6)
+(up-log-data 0 CHAT-LOG-TIME g: g-temp5)
+(up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
+(up-log-data 0 CHAT-BEGIN-PASS g: g-rule-pass-count)
+)
+
+(load "The General 1.2/Desired Object Counts")
+(load "The General 1.2/Strategic Numbers")
+(load "The General 1.2/Goals")
+(load "The General 1.2/Personality")
+(load "The General 1.2/Building Construction")
+(load "The General 1.2/Technology Research")
+(load "The General 1.2/Escrow")
+(load "The General 1.2/Unit Training")
+(load "The General 1.2/Gathering")
+(load "The General 1.2/Attacking")
+#load-if-defined DE-AVAILABLE
+	(load "The General 1.2/Army Control DE")
+#else
+	; (load "The General 1.2/Army Control UP")
+#end-if
+(load "The General 1.2/DUC")
+(load "The General 1.2/Tribute")
+(load "The General 1.2/Resign")
+(load "The General 1.2/Debug")
 
 #load-if-not-defined AZTEC-CIV
 #load-if-not-defined BRITON-CIV
@@ -202,6 +217,16 @@
 (true)
 =>
 (up-modify-goal g-rule-pass-count c:+ 1)
+)
+
+(defrule
+(up-compare-goal g-rule-pass-count >= 0)
+=>
+(up-get-fact game-time 0 g-temp5)
+(up-get-fact player-number 0 g-temp6)
+(up-log-data 0 CHAT-LOG-TIME g: g-temp5)
+(up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
+(up-log-data 0 CHAT-END-PASS g: g-rule-pass-count)
 )
 
 #load-if-defined DE-AVAILABLE

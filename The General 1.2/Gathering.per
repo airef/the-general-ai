@@ -10,7 +10,7 @@
     ;   Reset
     ;-----------
 
-        (load "The General 3.1/Functions/Reset")
+        (load "The General 1.2/Functions/Reset")
 
         (defrule
         (true)
@@ -728,10 +728,10 @@
         (current-age == imperial-age)
         (unit-type-count villager > 35)
         =>
-        (set-goal g-desired-future-food-vils 425)   ;42.5%
-        (set-goal g-desired-future-wood-vils 270)   ;27%
-        (set-goal g-desired-future-gold-vils 270)   ;27%
-        (set-goal g-desired-future-stone-vils 35)   ;3.5%
+        (set-goal g-desired-future-food-vils 400)
+        (set-goal g-desired-future-wood-vils 270)
+        (set-goal g-desired-future-gold-vils 295)
+        (set-goal g-desired-future-stone-vils 35)
         )
 
     ;-----------------------------------------------
@@ -761,7 +761,7 @@
     ;   Ensure Enough Foragers
     ;----------------------------
 
-        (load "The General 3.1/Functions/Reset")
+        (load "The General 1.2/Functions/Reset")
 
         (defrule
         (current-age == dark-age)
@@ -772,8 +772,8 @@
         (up-get-fact unit-type-count villager g-temp)
         (up-modify-goal g-temp c:- 15)
         (up-modify-goal g-temp c:min 4)
-        (up-get-fact unit-type-count villager-builder g-temp-2)
-        (up-modify-goal g-temp g:- g-temp-2)
+        (up-get-fact unit-type-count villager-builder g-temp2)
+        (up-modify-goal g-temp g:- g-temp2)
         )
 
         (defrule
@@ -789,11 +789,11 @@
         (up-find-local c: mill c: 1)
         (up-filter-status c: status-pending c: list-active)
         (up-find-status-local c: mill c: 1)
-        (set-goal g-temp-2 23947)
+        (set-goal g-temp2 23947)
         )
 
         (defrule
-        (goal g-temp-2 23947)
+        (goal g-temp2 23947)
         (building-type-count-total mill > 0)
         (up-gaia-type-count c: forage-class > 0)
         (up-set-target-object search-local c: 0)
@@ -807,11 +807,11 @@
         (up-clean-search search-remote object-data-distance search-order-asc)
         (up-remove-objects search-remote object-data-index == 0) ;remove closest bush because it often is blocked by the mill
         (up-get-search-state g-local-total)
-        (set-goal g-temp-2 23948)
+        (set-goal g-temp2 23948)
         )        
 
         (defrule
-        (goal g-temp-2 23948)
+        (goal g-temp2 23948)
         (building-type-count-total mill > 0)
         (up-gaia-type-count c: forage-class > 0)
         (up-compare-goal g-remote-total > 0)
@@ -825,11 +825,11 @@
         (up-find-local c: male-hunter c: 1)
         (up-remove-objects search-local object-data-index > 0)
         (up-get-search-state g-local-total)
-        (set-goal g-temp-2 23949)
+        (set-goal g-temp2 23949)
         )
 
         (defrule
-        (goal g-temp-2 23949)
+        (goal g-temp2 23949)
         (building-type-count-total mill > 0)
         (up-gaia-type-count c: forage-class > 0)
         (up-compare-goal g-local-total == 1)
@@ -843,7 +843,7 @@
     ;--------------
 
         ;Retask when gathering from forage bushes without mill
-        (load "The General 3.1/Functions/Reset")
+        (load "The General 1.2/Functions/Reset")
 
         (defrule
         (unit-type-count villager-forager > 0)
@@ -878,7 +878,7 @@
         )
 
         ;Retask when gathering from forage bushes away from mill
-        (load "The General 3.1/Functions/Reset")
+        (load "The General 1.2/Functions/Reset")
 
         (defrule
         (unit-type-count villager-forager > 0)
@@ -943,7 +943,7 @@
     ;   Hunters
     ;-------------
 
-        (load "The General 3.1/Functions/Reset")
+        (load "The General 1.2/Functions/Reset")
 
         (defrule
         (unit-type-count villager-forager > 4)
@@ -979,7 +979,7 @@
     ;   Retask Early Lumberjacks
     ;------------------------------
 
-        (load "The General 3.1/Functions/Reset")
+        (load "The General 1.2/Functions/Reset")
 
         (defrule
         (building-type-count town-center > 0)
@@ -1038,7 +1038,7 @@
     ;   Lumberjacks
     ;-----------------
 
-        (load "The General 3.1/Functions/Reset")
+        (load "The General 1.2/Functions/Reset")
 
         (defrule
         (building-type-count town-center > 0)
@@ -1099,7 +1099,7 @@
     ;   Gold Miners
     ;-----------------
 
-        (load "The General 3.1/Functions/Reset")
+        (load "The General 1.2/Functions/Reset")
 
         (defrule
         (building-type-count town-center > 0)
@@ -1219,7 +1219,7 @@
     ;   Task Villagers to Idle Farms
     ;----------------------------------
 
-        (load "The General 3.1/Functions/Reset")
+        (load "The General 1.2/Functions/Reset")
 
         (defrule
         (timer-triggered t-5-sec)
@@ -1285,7 +1285,7 @@
 ;				    DROP RESOURCES
 ;=========================<>=========================
 
-    (load "The General 3.1/Functions/Reset")
+    (load "The General 1.2/Functions/Reset")
 
     ;Drop resources if we are low on food for villagers
     (defrule
@@ -1352,7 +1352,7 @@
 ;			   MARKET RESOURCE TRADING
 ;=========================<>=========================
 
-    (load "The General 3.1/Functions/Reset")
+    (load "The General 1.2/Functions/Reset")
 
     (defrule
     (up-timer-status t-5-sec == timer-triggered)
@@ -1924,7 +1924,7 @@
 ;		   DYNAMIC DESIRED GATHERER COUNTS
 ;=========================<>=========================
 
-    (load "The General 3.1/Functions/Reset")
+    (load "The General 1.2/Functions/Reset")
 
     (defrule
     (up-timer-status t-15-sec == timer-triggered)
@@ -2028,8 +2028,8 @@
         (wood-amount < 60)
         =>
         (up-modify-goal g-temp g:= g-desired-num-farm)          
-        (up-modify-goal g-temp-2 g:= g-usable-farm-count-total)
-        (up-modify-goal g-temp g:- g-temp-2)                    ;get difference between desired farms and current farms
+        (up-modify-goal g-temp2 g:= g-usable-farm-count-total)
+        (up-modify-goal g-temp g:- g-temp2)                    ;get difference between desired farms and current farms
         (up-modify-goal g-temp c:max 3)
         (up-modify-goal g-temp c:* 60)                          ;multiply number of extra farms wanted by farm cost (cap at 3 extra farms)
         (up-modify-goal g-total-objects-wood-needed g:+ g-temp)
@@ -2186,7 +2186,7 @@
         (up-timer-status t-15-sec == timer-triggered)
         (up-research-status c: ri-wheel-barrow != research-complete)
         =>
-        (set-goal g-temp-2 FARM-RATE)   ;default farming gather rate per minute * 100
+        (set-goal g-temp2 FARM-RATE)   ;default farming gather rate per minute * 100
         )
 
         (defrule
@@ -2194,14 +2194,14 @@
         (research-completed ri-wheel-barrow)
         (up-research-status c: ri-hand-cart != research-complete)
         =>
-        (set-goal g-temp-2 FARM-WHEEL-RATE) ;farming gather rate per minute with Wheelbarrow * 100
+        (set-goal g-temp2 FARM-WHEEL-RATE) ;farming gather rate per minute with Wheelbarrow * 100
         )
 
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (research-completed ri-hand-cart)
         =>
-        (set-goal g-temp-2 FARM-CART-RATE)  ;farming gather rate per minute with Hand Cart * 100
+        (set-goal g-temp2 FARM-CART-RATE)  ;farming gather rate per minute with Hand Cart * 100
         )
 
         ;Calculate amount of wood per minute needed to sustain farming
@@ -2217,7 +2217,7 @@
         (up-compare-goal g-desired-num-farm > 0)
         =>
         (up-modify-goal g-temp g:= g-desired-num-farm)
-        (up-modify-goal g-temp g:* g-temp-2)    ;multiply by farming rate per minute
+        (up-modify-goal g-temp g:* g-temp2)    ;multiply by farming rate per minute
         (up-setup-cost-data 1 g-food-cost)
         (up-add-object-cost c: farm c: 1)
         (up-modify-goal g-temp g:* g-wood-cost) ;multiply by cost of farm
@@ -2236,7 +2236,7 @@
         (up-compare-goal g-desired-num-farm > 0)
         =>
         (up-modify-goal g-temp g:= g-desired-num-farm)
-        (up-modify-goal g-temp g:* g-temp-2)    ;multiply by farming rate per minute
+        (up-modify-goal g-temp g:* g-temp2)    ;multiply by farming rate per minute
         (up-setup-cost-data 1 g-food-cost)
         (up-add-object-cost c: farm c: 1)
         (up-modify-goal g-temp g:* g-wood-cost) ;multiply by cost of farm
@@ -2255,7 +2255,7 @@
         (up-compare-goal g-desired-num-farm > 0)
         =>
         (up-modify-goal g-temp g:= g-desired-num-farm)
-        (up-modify-goal g-temp g:* g-temp-2)    ;multiply by farming rate per minute
+        (up-modify-goal g-temp g:* g-temp2)    ;multiply by farming rate per minute
         (up-setup-cost-data 1 g-food-cost)
         (up-add-object-cost c: farm c: 1)
         (up-modify-goal g-temp g:* g-wood-cost) ;multiply by cost of farm
@@ -2273,7 +2273,7 @@
         (up-compare-goal g-desired-num-farm > 0)
         =>
         (up-modify-goal g-temp g:= g-desired-num-farm)
-        (up-modify-goal g-temp g:* g-temp-2)    ;multiply by farming rate per minute
+        (up-modify-goal g-temp g:* g-temp2)    ;multiply by farming rate per minute
         (up-setup-cost-data 1 g-food-cost)
         (up-add-object-cost c: farm c: 1)
         (up-modify-goal g-temp g:* g-wood-cost) ;multiply by cost of farm
@@ -2291,7 +2291,7 @@
         (up-compare-goal g-desired-num-farm > 0)
         =>
         (up-modify-goal g-temp g:= g-desired-num-farm)
-        (up-modify-goal g-temp g:* g-temp-2)    ;multiply by farming rate per minute
+        (up-modify-goal g-temp g:* g-temp2)    ;multiply by farming rate per minute
         (up-setup-cost-data 1 g-food-cost)
         (up-add-object-cost c: farm c: 1)
         (up-modify-goal g-temp g:* g-wood-cost) ;multiply by cost of farm
@@ -2310,7 +2310,7 @@
         (up-compare-goal g-desired-num-farm > 0)
         =>
         (up-modify-goal g-temp g:= g-desired-num-farm)
-        (up-modify-goal g-temp g:* g-temp-2)    ;multiply by farming rate per minute
+        (up-modify-goal g-temp g:* g-temp2)    ;multiply by farming rate per minute
         (up-setup-cost-data 1 g-food-cost)
         (up-add-object-cost c: farm c: 1)
         (up-modify-goal g-temp g:* g-wood-cost) ;multiply by cost of farm
@@ -2329,7 +2329,7 @@
         (up-compare-goal g-desired-num-farm > 0)
         =>
         (up-modify-goal g-temp g:= g-desired-num-farm)
-        (up-modify-goal g-temp g:* g-temp-2)    ;multiply by farming rate per minute
+        (up-modify-goal g-temp g:* g-temp2)    ;multiply by farming rate per minute
         (up-setup-cost-data 1 g-food-cost)
         (up-add-object-cost c: farm c: 1)
         (up-modify-goal g-temp g:* g-wood-cost) ;multiply by cost of farm
@@ -2347,7 +2347,7 @@
         (up-compare-goal g-desired-num-farm > 0)
         =>
         (up-modify-goal g-temp g:= g-desired-num-farm)
-        (up-modify-goal g-temp g:* g-temp-2)    ;multiply by farming rate per minute
+        (up-modify-goal g-temp g:* g-temp2)    ;multiply by farming rate per minute
         (up-setup-cost-data 1 g-food-cost)
         (up-add-object-cost c: farm c: 1)
         (up-modify-goal g-temp g:* g-wood-cost) ;multiply by cost of farm
@@ -4027,7 +4027,7 @@
     ;   Calculate Needed Gatherers Per Resource
     ;---------------------------------------------
 
-        (load "The General 3.1/Functions/Reset")
+        (load "The General 1.2/Functions/Reset")
 
         ;For each resource, calculate difference between the resource stockpile and the needed
         ;resource amount. If we have excess resources over our max needed amount, then subtract
@@ -4147,7 +4147,7 @@
         ;desired gatherer numbers and the dynamic gatherer numbers calculated above.
         ;The percentage of both is determined by g-percent-dynamic-gatherers.
 
-        (load "The General 3.1/Functions/Reset")
+        (load "The General 1.2/Functions/Reset")
 
         ;Food
         (defrule
@@ -4160,9 +4160,9 @@
         (set-goal g-temp 1000)
         (up-modify-goal g-temp g:%/ g-total-needed-villagers)   ;scale the total required villager counts to
         (up-modify-goal g-temp g:%* g-percent-dynamic-gathering);equal the total static future gatherer numbers
-        (up-modify-goal g-temp-2 g:= g-required-num-food-vils)
-        (up-modify-goal g-temp-2 g:%* g-temp)                   ;scale the required food villager count
-        (up-modify-goal g-desired-future-food-vils g:+ g-temp-2);add scaled required food villager count to future gatherers
+        (up-modify-goal g-temp2 g:= g-required-num-food-vils)
+        (up-modify-goal g-temp2 g:%* g-temp)                   ;scale the required food villager count
+        (up-modify-goal g-desired-future-food-vils g:+ g-temp2);add scaled required food villager count to future gatherers
         )
 
         ;Wood
@@ -4176,9 +4176,9 @@
         (set-goal g-temp 1000)
         (up-modify-goal g-temp g:%/ g-total-needed-villagers)   ;scale the total required villager counts to
         (up-modify-goal g-temp g:%* g-percent-dynamic-gathering);equal the total static future gatherer numbers
-        (up-modify-goal g-temp-2 g:= g-required-num-wood-vils)
-        (up-modify-goal g-temp-2 g:%* g-temp)                   ;scale the required wood villager count
-        (up-modify-goal g-desired-future-wood-vils g:+ g-temp-2);add scaled required wood villager count to future gatherers
+        (up-modify-goal g-temp2 g:= g-required-num-wood-vils)
+        (up-modify-goal g-temp2 g:%* g-temp)                   ;scale the required wood villager count
+        (up-modify-goal g-desired-future-wood-vils g:+ g-temp2);add scaled required wood villager count to future gatherers
         )
 
         ;Gold
@@ -4192,9 +4192,9 @@
         (set-goal g-temp 1000)
         (up-modify-goal g-temp g:%/ g-total-needed-villagers)   ;scale the total required villager counts to
         (up-modify-goal g-temp g:%* g-percent-dynamic-gathering);equal the total static future gatherer numbers
-        (up-modify-goal g-temp-2 g:= g-required-num-gold-vils)
-        (up-modify-goal g-temp-2 g:%* g-temp)                   ;scale the required gold villager count
-        (up-modify-goal g-desired-future-gold-vils g:+ g-temp-2);add scaled required gold villager count to future gatherers
+        (up-modify-goal g-temp2 g:= g-required-num-gold-vils)
+        (up-modify-goal g-temp2 g:%* g-temp)                   ;scale the required gold villager count
+        (up-modify-goal g-desired-future-gold-vils g:+ g-temp2);add scaled required gold villager count to future gatherers
         )
 
         ;Stone
@@ -4208,9 +4208,9 @@
         (set-goal g-temp 1000)
         (up-modify-goal g-temp g:%/ g-total-needed-villagers)   ;scale the total required villager counts to
         (up-modify-goal g-temp g:%* g-percent-dynamic-gathering);equal the total static future gatherer numbers
-        (up-modify-goal g-temp-2 g:= g-required-num-stone-vils)
-        (up-modify-goal g-temp-2 g:%* g-temp)                   ;scale the required stone villager count
-        (up-modify-goal g-desired-future-stone-vils g:+ g-temp-2);add scaled required food villager count to future gatherers
+        (up-modify-goal g-temp2 g:= g-required-num-stone-vils)
+        (up-modify-goal g-temp2 g:%* g-temp)                   ;scale the required stone villager count
+        (up-modify-goal g-desired-future-stone-vils g:+ g-temp2);add scaled required food villager count to future gatherers
         )
 
 ;=========================<>=========================
@@ -4324,8 +4324,8 @@
         (up-object-type-count c: villager g:> g-temp)   ;we need to assign new villagers
         (goal g-percent-dynamic-gathering 0)
         =>
-        (set-goal g-temp-2 food)
-        (up-modify-goal g-temp-3 g:= g-food-cost)
+        (set-goal g-temp2 food)
+        (up-modify-goal g-temp3 g:= g-food-cost)
         )
 
         ;If we need a wood villager more than food, set wood as resource for new villager
@@ -4339,10 +4339,10 @@
                     (goal g-age-status TO-CASTLE))))
         (up-object-type-count c: villager g:> g-temp)   ;we need to assign new villagers
         (goal g-percent-dynamic-gathering 0)
-        (up-compare-goal g-wood-cost g:> g-temp-3)
+        (up-compare-goal g-wood-cost g:> g-temp3)
         =>
-        (set-goal g-temp-2 wood)
-        (up-modify-goal g-temp-3 g:= g-wood-cost)
+        (set-goal g-temp2 wood)
+        (up-modify-goal g-temp3 g:= g-wood-cost)
         )
 
         ;If we need a gold villager more than food or wood, set gold as resource for new villager
@@ -4356,10 +4356,10 @@
                     (goal g-age-status TO-CASTLE))))
         (up-object-type-count c: villager g:> g-temp)   ;we need to assign new villagers
         (goal g-percent-dynamic-gathering 0)
-        (up-compare-goal g-gold-cost g:> g-temp-3)
+        (up-compare-goal g-gold-cost g:> g-temp3)
         =>
-        (set-goal g-temp-2 gold)
-        (up-modify-goal g-temp-3 g:= g-gold-cost)
+        (set-goal g-temp2 gold)
+        (up-modify-goal g-temp3 g:= g-gold-cost)
         )
 
         ;If we need a stone villager more than food, wood, or gold, set stone as resource for new villager
@@ -4372,11 +4372,11 @@
                     (goal g-age-status TO-FEUDAL)
                     (goal g-age-status TO-CASTLE))))
         (up-object-type-count c: villager g:> g-temp)   ;we need to assign new villagers
-        (up-compare-goal g-stone-cost g:> g-temp-3)
+        (up-compare-goal g-stone-cost g:> g-temp3)
         (goal g-percent-dynamic-gathering 0)
         =>
-        (set-goal g-temp-2 stone)
-        (up-modify-goal g-temp-3 g:= g-stone-cost)
+        (set-goal g-temp2 stone)
+        (up-modify-goal g-temp3 g:= g-stone-cost)
         )
 
         ;Increase desired number of current gathers for the most urgent resource
@@ -4390,7 +4390,7 @@
                     (goal g-age-status TO-CASTLE))))
         (up-object-type-count c: villager g:> g-temp)   ;we need to assign new villagers
         (goal g-percent-dynamic-gathering 0)
-        (goal g-temp-2 food)
+        (goal g-temp2 food)
         (game-time > 10)
         =>
         (up-modify-goal g-desired-num-food-vils c:+ 1)
@@ -4406,7 +4406,7 @@
                     (goal g-age-status TO-CASTLE))))
         (up-object-type-count c: villager g:> g-temp)   ;we need to assign new villagers
         (goal g-percent-dynamic-gathering 0)
-        (goal g-temp-2 wood)
+        (goal g-temp2 wood)
         (game-time > 10)
         =>
         (up-modify-goal g-desired-num-wood-vils c:+ 1)
@@ -4422,7 +4422,7 @@
                     (goal g-age-status TO-CASTLE))))
         (up-object-type-count c: villager g:> g-temp)   ;we need to assign new villagers
         (goal g-percent-dynamic-gathering 0)
-        (goal g-temp-2 stone)
+        (goal g-temp2 stone)
         (game-time > 10)
         =>
         (up-modify-goal g-desired-num-stone-vils c:+ 1)
@@ -4438,7 +4438,7 @@
                     (goal g-age-status TO-CASTLE))))
         (up-object-type-count c: villager g:> g-temp)   ;we need to assign new villagers
         (goal g-percent-dynamic-gathering 0)
-        (goal g-temp-2 gold)
+        (goal g-temp2 gold)
         (game-time > 10)
         =>
         (up-modify-goal g-desired-num-gold-vils c:+ 1)
@@ -4518,12 +4518,12 @@
     (up-modify-goal g-temp s:+ sn-wood-gatherer-percentage)
     (up-modify-goal g-temp s:+ sn-stone-gatherer-percentage)
     (up-modify-goal g-temp s:+ sn-gold-gatherer-percentage)
-    (set-goal g-temp-2 100)
-    (up-modify-goal g-temp-2 g:%/ g-temp)
-    (up-modify-sn sn-food-gatherer-percentage g:%* g-temp-2)
-    (up-modify-sn sn-wood-gatherer-percentage g:%* g-temp-2)
-    (up-modify-sn sn-stone-gatherer-percentage g:%* g-temp-2)
-    (up-modify-sn sn-gold-gatherer-percentage g:%* g-temp-2)
+    (set-goal g-temp2 100)
+    (up-modify-goal g-temp2 g:%/ g-temp)
+    (up-modify-sn sn-food-gatherer-percentage g:%* g-temp2)
+    (up-modify-sn sn-wood-gatherer-percentage g:%* g-temp2)
+    (up-modify-sn sn-stone-gatherer-percentage g:%* g-temp2)
+    (up-modify-sn sn-gold-gatherer-percentage g:%* g-temp2)
     )
 
     (defrule

@@ -1,0 +1,52 @@
+(defrule
+(up-set-target-object search-local c: 0)
+=>
+(up-log-data 0 CHAT-LOG-TIME g: g-temp5)
+(up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
+(up-log-data 0 CHAT-LOCAL-LIST-NOT-EMPTY c: 0)
+(chat-to-player my-player-number CHAT-LOCAL-LIST-NOT-EMPTY)
+)
+
+;Move remote list to local list
+(defrule
+(true)
+=>
+(set-goal g-loop-counter 0)
+(up-reset-search 1 1 0 0)
+(up-get-search-state g-local-total)
+)
+
+    ;Move unit into local list
+    (defrule
+    (up-set-target-object search-remote g: g-loop-counter)
+    (up-get-object-data object-data-id g-temp4)
+    =>
+    (up-add-object-by-id search-local g: g-temp4)
+    (up-get-search-state g-local-total)
+    )
+
+    (defrule
+    (up-compare-goal g-loop-counter < 39)
+    =>
+    (up-modify-goal g-loop-counter c:+ 1)
+    (up-jump-rule -2)
+    )
+
+;Store units in group
+(defrule
+(true)
+=>
+(up-clean-search search-local -1 search-order-asc)
+(up-reset-group c: 0)
+(up-create-group 0 0 c: 0)
+(up-get-search-state g-local-total)
+(up-get-fact game-time 0 g-temp5)
+(up-get-fact player-number 0 g-temp6)
+(up-log-data 0 CHAT-LOG-ENTRY c: 0)
+(up-log-data 0 CHAT-LOG-TIME g: g-temp5)
+(up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
+(up-log-data 0 CHAT-STORED-REMOTE-LIST g: g-local-total)
+(up-full-reset-search)
+(up-get-search-state g-local-total)
+(set-goal g-loop-counter 0)
+)

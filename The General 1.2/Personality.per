@@ -17,6 +17,13 @@
 ;				       CHATTING
 ;=========================<>=========================
 
+	(defrule
+	(game-time >= 10)
+	=>
+	(chat-to-all CHAT-GENERAL-VERSION)
+	(disable-self)
+	)
+
 	#load-if-defined AZTEC-CIV
 		
 		;Chat
@@ -121,6 +128,7 @@
 		(defrule
 		(goal g-temp 501)
 		(goal g-general EDWARD-LONGSHANKS)
+		(player-in-game focus-player)
 		(stance-toward focus-player enemy)
 		=>
 		(chat-to-all "Wallace? What are you doing here?")
@@ -130,6 +138,7 @@
 		(defrule
 		(goal g-temp 501)
 		(goal g-general EDWARD-LONGSHANKS)
+		(player-in-game focus-player)
 		(stance-toward focus-player ally)
 		=>
 		(chat-to-all "You're not going to turn traitor are you, William Wallace?")
@@ -441,6 +450,7 @@
 	)
 
 	(defrule
+	(player-in-game target-player)
 	(stance-toward target-player enemy)
 	(up-compare-text c: TEXT-GG == 0)
 	(up-compare-text c: TEXT-GG2 < 0)

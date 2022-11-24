@@ -516,8 +516,8 @@
 			(defconst elite-rattan-archer 1131)
 			(defconst arambai 1126)
 			(defconst elite-arambai 1128)
-			(defconst battle-elephant 1134)
-			(defconst elite-battle-elephant 1132)
+			(defconst battle-elephant 1132)
+			(defconst elite-battle-elephant 1134)
 			(defconst karambit-warrior 1123)
 			(defconst elite-karambit-warrior 1125)
 			(defconst imperial-skirmisher 1155)
@@ -541,6 +541,7 @@
 			(defconst steppe-lancer 1370)
 			(defconst elite-steppe-lancer 1372)
 			(defconst flaming-camel 1263)
+			(defconst xolotl-warrior 1570)
 
 			(defconst coustillier 1655)
 			(defconst elite-coustillier 1657)
@@ -682,9 +683,22 @@
 			
 		#end-if
 
+		;Language IDs
+		(defconst lang-id-town-center 5164)
+
+		;Action Constants
+		#load-if-defined DE-AVAILABLE
+			(defconst custom-action-attack-move 19)
+		#else
+			(defconst custom-action-attack-move 2) ;2 = action-patrol
+		#end-if
+
 	;----------------------
 	;	String Constants
 	;----------------------
+
+		;Verson
+		(defconst CHAT-GENERAL-VERSION "The General 1.2 by Leif Ericson")
 
 		;Text Comparison	
 		(defconst TEXT-GG "gg")
@@ -816,6 +830,150 @@
 		(defconst TAUNT-250-LATEI-TRASHGENS "I am using genitours to conserve gold.")
 		(defconst TAUNT-250-LATEI-HUSSARS "I am using hussars to conserve gold.")
 
+		;Functions
+		(defconst CHAT-LOCAL-LIST-NOT-EMPTY "local list not empty")
+		(defconst CHAT-STORED-REMOTE-LIST "Stored %d objects from remote list in group 0")
+		(defconst CHAT-STORED-LOCAL-LIST "Stored %d objects from local list in group 0")
+
+		;Army DUC
+		(defconst CHAT-CREATE-MELEE-INFANTRY-GROUP "Melee Infantry Group ID %d")
+		(defconst CHAT-CREATE-RANGED-INFANTRY-GROUP "Ranged Infantry Group ID %d")
+		(defconst CHAT-CREATE-FOOT-ARCHER-GROUP "Foot Archer Group ID %d")
+		(defconst CHAT-CREATE-CAVALRY-ARCHER-GROUP "Cav Archer Group ID %d")
+		(defconst CHAT-CREATE-CAVALRY-GROUP "Cavalry Group ID %d")
+		(defconst CHAT-CREATE-MONK-GROUP "Monk Group ID %d")
+		(defconst CHAT-CREATE-RAM-GROUP "Ram Group ID %d")
+		(defconst CHAT-CREATE-SCORPION-GROUP "Scorpion Group ID %d")
+		(defconst CHAT-CREATE-MANGONEL-GROUP "Mangonel Group ID %d")
+		(defconst CHAT-CREATE-CANNON-GROUP "Cannon Group ID %d")
+		(defconst CHAT-CREATE-TREBUCHET-GROUP "Trebuchet Group ID %d")
+		(defconst CHAT-REMOVE-UNIT-FROM-GROUP "Remove unit from group %d")
+		(defconst CHAT-GROUP-SIZES-NOT-MATCHING "Group %d size not matching g-local-total")
+		(defconst CHAT-ADD-TO-GROUP "Add objects to group %d")
+		(defconst CHAT-SPLIT-GROUP "Split Group %d")
+		(defconst CHAT-SPLIT-SCOUTING-GROUP "Split Scouting Group %d")
+		(defconst CHAT-GROUP-SCOUT-COUNTER-CLOCKWISE "Group %d start scouting counter-clockwise")
+		(defconst CHAT-GROUP-STOP-SCOUTING-1 "Group %d stop scouting1")
+		(defconst CHAT-GROUP-STOP-SCOUTING-2 "Group %d stop scouting2")
+		(defconst CHAT-GROUP-SWITCH-SCOUTING-COUNTER-CLOCKWISE-1 "Group %d switch to scouting counter clockwise1")
+		(defconst CHAT-GROUP-SWITCH-SCOUTING-COUNTER-CLOCKWISE-2 "Group %d switch to scouting counter clockwise2")
+		(defconst CHAT-GROUP-SWITCH-SCOUTING-CLOCKWISE-1 "Group %d switch to scouting clockwise1")
+		(defconst CHAT-GROUP-SWITCH-SCOUTING-CLOCKWISE-2 "Group %d switch to scouting clockwise2")
+		(defconst CHAT-GROUP-DISABLE-SCOUTING "Group %d disable scouting")
+		(defconst CHAT-COMBINE-MELEE-INFANTRY-GROUPS "Combine melee infantry groups %d")
+		(defconst CHAT-COMBINE-RANGED-INFANTRY-GROUPS "Combine ranged infantry groups %d")
+		(defconst CHAT-COMBINE-FOOT-ARCHER-GROUPS "Combine foot archer groups %d")
+		(defconst CHAT-COMBINE-CAVALRY-ARCHER-GROUPS "Combine cav archer groups %d")
+		(defconst CHAT-COMBINE-CAVALRY-GROUPS "Combine cavalry groups %d")
+		(defconst CHAT-COMBINE-MONK-GROUPS "Combine monk groups %d")
+		(defconst CHAT-COMBINE-RAM-GROUPS "Combine ram groups %d")
+		(defconst CHAT-COMBINE-MANGONEL-GROUPS "Combine mangonel groups %d")
+		(defconst CHAT-COMBINE-SCORPION-GROUPS "Combine scorpion groups %d")
+		(defconst CHAT-COMBINE-CANNON-GROUPS "Combine cannon groups %d")
+		(defconst CHAT-COMBINE-TREBUCHET-GROUPS "Combine trebuchet groups %d")
+		(defconst CHAT-FIND-NEW-DESTINATION-1 "Find new destination1, group %d, ranged group max dest time reached")
+		(defconst CHAT-FIND-NEW-DESTINATION-2 "Find new destination2, group %d, no target object")
+		(defconst CHAT-FIND-NEW-DESTINATION-3 "Find new destination3, group %d, group max dest time reached, no assault")
+		(defconst CHAT-FIND-NEW-DESTINATION-4 "Find new destination4, group %d, no current destination")
+		(defconst CHAT-FIND-NEW-DESTINATION-5 "Find new destination5, group %d, destination unreachable")
+		(defconst CHAT-FOUND-NEW-DESTINATIONS "Found new destinations, group %d")
+		(defconst CHAT-EXPLORE-AROUND-TOWN "Explore around town, group %d")
+		(defconst CHAT-CALCULATE-DESTINATION-SCORES "Calculate destination scores")
+		(defconst CHAT-DESTINATION-ID "Destination Object ID: %d")
+		(defconst CHAT-DESTINATION-CLASS "Destination Object Class: %d")
+		(defconst CHAT-DESTINATION-SCORE "Destination Object Score: %d")
+		(defconst CHAT-SET-NEW-DESTINATION-1 "set new destination1")
+		(defconst CHAT-SET-NEW-DESTINATION-2 "set new destination2")
+		(defconst CHAT-SET-NEW-DESTINATION-3 "set new destination3")
+		(defconst CHAT-SET-NEW-DESTINATION-X "New Destination X: %d")
+		(defconst CHAT-SET-NEW-DESTINATION-Y "New Destination Y: %d")
+		(defconst CHAT-NO-BUILDING-TO-SCOUT "Group %d didn't find a building to scout around")
+		(defconst CHAT-DESTINATION-UNREACHABLE "Destination unreachable, attempt %d")
+		(defconst CHAT-RESET-SCOUTING-DESTINATION "Group %d reset scouting destination")
+		(defconst CHAT-NEW-SCOUT-POINT-1 "Group %d new scout point1")
+		(defconst CHAT-NEW-SCOUT-POINT-2 "Group %d new scout point2")
+		(defconst CHAT-NEW-SCOUT-POINT-3 "Group %d new scout point3")
+		(defconst CHAT-NEW-SCOUT-POINT-4 "Group %d new scout point4")
+		(defconst CHAT-NEW-SCOUT-POINT-X "New Scout Point X: %d")
+		(defconst CHAT-NEW-SCOUT-POINT-Y "New Scout Point Y: %d")
+		(defconst CHAT-GROUP-IN-RANGE "group %d in range")
+		(defconst CHAT-GROUP-DIED "Group %d died")
+		(defconst CHAT-RESET-GROUP-TASK "Reset group task")
+		(defconst CHAT-RETURN-TO-SCOUTING "Return to scouting, counter %d")
+		(defconst CHAT-SUCCESSFULLY-AVOIDED-OBJECT "Successfully avoided object")
+		(defconst CHAT-ORDER-IDLE-SOLDIERS "order group %d idle soldiers to attack target")
+		(defconst CHAT-ORDER-TREBUCHET-ATTACK "Order treb to attack, group %d")
+		(defconst CHAT-HEAL-UNIT "Heal unit in group %d")
+		(defconst CHAT-REDUCE-COUNTER "Reduce counter %d")
+		(defconst CHAT-SCOUT-GROUP-DONT-AVOID-DANGEROUS-OBJECT "Group %d is scouting, don't avoid dangerous object")
+		(defconst CHAT-DONT-AVOID-DANGEROUS-OBJECT "Group %d don't avoid dangerous object")
+		(defconst CHAT-DONT-AVOID-MONK-MANGONEL "Group %d don't avoid monk or mangonel")
+		(defconst CHAT-NUM-BUILDINGS-TO-AVOID "Bldgs to avoid: %d")
+		(defconst CHAT-ALL-LOCATIONS-UNREACHABLE "all locations unreachable")
+		(defconst CHAT-LOCATION1-NOT-SAFE "Loc 1 not safe for group %d")
+		(defconst CHAT-LOCATION2-NOT-SAFE "Loc 2 not safe for group %d")
+		(defconst CHAT-AVOID-OBJECT-1A "Get group %d away from scary object1a")
+		(defconst CHAT-AVOID-OBJECT-1B "Get group %d away from scary object1b")
+		(defconst CHAT-AVOID-OBJECT-2 "Get group %d away from scary object2")
+		(defconst CHAT-AVOID-OBJECT-3 "Get group %d away from scary object3")
+		(defconst CHAT-MONK-AVOID-OBJECT-1A "Get monk group %d away from scary object1a")
+		(defconst CHAT-MONK-AVOID-OBJECT-1B "Get monk group %d away from scary object1b")
+		(defconst CHAT-MONK-AVOID-OBJECT-2 "Get monk group %d away from scary object2")
+		(defconst CHAT-AVOIDANCE-COUNTER "Avoidance counter: %d")
+		(defconst CHAT-DESTINATION-TOO-CLOSE-TO-DANGEROUS-BUILDING "Group %d destination too close to dangerous building, pick new one")
+		(defconst CHAT-NO-RETREAT-LOCATIONS-AVAILABLE "No retreat locations available for group %d")
+		(defconst CHAT-AVOIDANCE-FLAG "Avoid flag %d")
+		(defconst CHAT-RESET-TARGET "reset target")
+		(defconst CHAT-TARGET-GARRISONED-RESET-TARGET "target garrisoned, reset target")
+		(defconst CHAT-TARGET-NOT-VISIBLE-RESET-TARGET "target not visible, reset target")
+		(defconst CHAT-TARGET-TOO-FAR-AWAY "target too far away, group %d")
+		(defconst CHAT-TARGET-KILLED "group %d killed target")
+		(defconst CHAT-DANGEROUS-OBJECT-NEARBY-DONT-ATTACK "dangerous object nearby, don't attack")
+		(defconst CHAT-FOUND-OBJECTS-BEHIND-WALLS "Group %d found objects behind walls")
+		(defconst CHAT-TARGET-PROTECTED-BY-BUILDING "Target protected by building, group %d")
+		(defconst CHAT-UNITS-FOUND "Units found: %d")
+		(defconst CHAT-UNITS-FOUND-BY-GROUP "Units found by Group: %d")
+		(defconst CHAT-BUILDINGS-FOUND "Buildings found: %d")
+		(defconst CHAT-BUILDINGS-FOUND-BY-GROUP "Buildings found by Group: %d")
+		(defconst CHAT-NEW-BEST-TARGET-CLASS "New Best Target Class: %d")
+		(defconst CHAT-NEW-BEST-TARGET-SCORE "New Best Target Score: %d")
+		(defconst CHAT-NEW-TARGET1 "New Target1, group %d")
+		(defconst CHAT-NEW-TARGET2 "New Target2, group %d")
+		(defconst CHAT-NEW-TARGET3 "New Target3, group %d")
+		(defconst CHAT-NEW-TARGET4 "New Target4, group %d")
+		(defconst CHAT-NEW-TARGET5 "New Target5, group %d")
+		(defconst CHAT-GROUP-TARGETING-BUILDING "Group %d targeting building")
+		(defconst CHAT-NO-TARGET-FOCUS-FLAGS "Group %d no target focus flags!")
+		(defconst CHAT-ATTACK-TARGET-1 "Group %d attack target1")
+		(defconst CHAT-MONKS-ATTACK-TARGET-1 "Monk group %d attack target1")
+		(defconst CHAT-ATTACK-WITH-X-MONKS "with %d monks")
+		(defconst CHAT-TREBUCHETS-ATTACK-TARGET-1 "Trebuchet group %d attack target1")
+		(defconst CHAT-ATTACK-TARGET-2 "Group %d attack target2")
+		(defconst CHAT-ATTACK-MULTIPLE-TARGETS-1 "Group %d attack multiple targets1")
+		(defconst CHAT-ATTACK-MULTIPLE-TARGETS-2 "Group %d attack multiple targets2")
+		(defconst CHAT-INCREASE-DESTINATION-TIME "Increase destination time: %d")
+		(defconst CHAT-ATTACK-OVER "attack over, group %d")
+		(defconst CHAT-GROUP-LOCATION-INACCESSIBLE "Group %d location inaccessible")
+		(defconst CHAT-GATHER-GROUP-1 "gather group %d, ver 1")
+		(defconst CHAT-GATHER-GROUP-2 "gather group %d, ver 2")
+		(defconst CHAT-GROUP-GATHERED "group %d gathered")
+		(defconst CHAT-INCREASE-DESTINATION-TIME-WHILE-GATHERING "Increase destination time while gathering: %d")
+		(defconst CHAT-MOVE-GROUP "move group %d")
+		(defconst CHAT-RESET-GROUP-DESTINATION-TIME "Reset group %d destination time")
+		(defconst CHAT-USE-BOX "Group %d, use box")
+		(defconst CHAT-DONT-USE-BOX "Group %d, don't use box")
+		(defconst CHAT-SEND-MELEE-INFANTRY-UNIT-TO-JOIN-GROUP "Send melee infantry unit to join group %d")
+		(defconst CHAT-SEND-RANGED-INFANTRY-UNIT-TO-JOIN-GROUP "Send ranged infantry unit to join group %d")
+		(defconst CHAT-SEND-FOOT-ARCHER-UNIT-TO-JOIN-GROUP "Send foot archer to join group %d")
+		(defconst CHAT-SEND-CAVALRY-ARCHER-UNIT-TO-JOIN-GROUP "Send cav archer to join group %d")
+		(defconst CHAT-SEND-CAVALRY-UNIT-TO-JOIN-GROUP "Send cavalry unit to join group %d")
+		(defconst CHAT-SEND-MONK-UNIT-TO-JOIN-GROUP "Send monk to join group %d")
+		(defconst CHAT-SEND-RAM-UNIT-TO-JOIN-GROUP "Send ram to join group %d")
+		(defconst CHAT-SEND-MANGONEL-UNIT-TO-JOIN-GROUP "Send mangonel to join group %d")
+		(defconst CHAT-SEND-SCORPION-UNIT-TO-JOIN-GROUP "Send scorpion to join group %d")
+		(defconst CHAT-SEND-CANNON-UNIT-TO-JOIN-GROUP "Send cannon to join group %d")
+		(defconst CHAT-SEND-TREBUCHET-UNIT-TO-JOIN-GROUP "Send trebuchet to join group %d")
+
 		;Attacking
 		(defconst CHAT-INCREASE-STOP-ATTACK "Increase stop attack number to %d")
 		(defconst CHAT-STOP-DRUSH-ATTACK-SOLDIERS "Stop drush attack - too few soldiers")
@@ -866,6 +1024,12 @@
 		;Debug
 		(defconst CHAT-NO-TARGET-PLAYER-BUILDINGS "Bug! No buildings for target player (player %d) found on map.")
 		(defconst CHAT-CLOSEST-ENEMY-BUG "Closest enemy not set properly")
+		(defconst CHAT-LOG "Begin Log")
+		(defconst CHAT-LOG-ENTRY "---Log Entry---")
+		(defconst CHAT-LOG-TIME "Log Time: %d")
+		(defconst CHAT-LOG-PLAYER "Log Player: %d")
+		(defconst CHAT-BEGIN-PASS "Begin Pass %d")
+		(defconst CHAT-END-PASS "End Pass %d")
 
 		;Defense
 		(defconst CHAT-CHECK-TOWN-IS-SAFE "wait to see if town is safe")
@@ -945,9 +1109,9 @@
 
 			(defconst scout-unit eagle-warrior)
 			(defconst my-second-unique-research 460)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 6)
 			(defconst UNIQUE-UNIT-CLASS infantry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -1061,10 +1225,12 @@
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -1073,9 +1239,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 578)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS cavalry-archer-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -1185,21 +1351,149 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 			
+		#end-if
+
+		#load-if-defined BOHEMIANS-CIV
+
+			(defconst scout-unit scout-cavalry)
+			(defconst my-second-unique-research 784)
+			(defconst SCOUT-LOS 4)
+			(defconst UNIQUE-UNIT-CLASS scorpion-class)
+			(defconst NUM-GENERALS 5)
+			(defconst VILS-FOR-LUMBER-CAMP 7)
+
+			;Techs
+			(defconst DRY-DOCK-AVAILABLE NO)
+			(defconst SHIPWRIGHT-AVAILABLE NO)
+			(defconst CROP-ROTATION-AVAILABLE NO)
+			(defconst TWO-MAN-SAW-AVAILABLE YES)
+			(defconst GOLD-SHAFT-MINING-AVAILABLE YES)
+			(defconst STONE-SHAFT-MINING-AVAILABLE YES)
+			(defconst SQUIRES-AVAILABLE YES)
+			(defconst THUMB-RING-AVAILABLE NO)
+			(defconst PARTHIAN-TACTICS-AVAILABLE NO)
+			(defconst BLOODLINES-AVAILABLE NO)
+			(defconst HUSBANDRY-AVAILABLE YES)
+			(defconst GUILDS-AVAILABLE YES)
+			(defconst LEATHER-ARCHER-ARMOR-AVAILABLE YES)
+			(defconst RING-ARCHER-ARMOR-AVAILABLE YES)
+			(defconst BRACER-AVAILABLE YES)
+			(defconst BLAST-FURNACE-AVAILABLE YES)
+			(defconst CHAIN-MAIL-ARMOR-AVAILABLE YES)
+			(defconst PLATE-MAIL-ARMOR-AVAILABLE YES)
+			(defconst SCALE-BARDING-ARMOR-AVAILABLE YES)
+			(defconst CHAIN-BARDING-ARMOR-AVAILABLE YES)
+			(defconst PLATE-BARDING-ARMOR-AVAILABLE NO)
+			(defconst MASONRY-AVAILABLE YES)
+			(defconst HEATED-SHOT-AVAILABLE NO)
+			(defconst TREADMILL-CRANE-AVAILABLE YES)
+			(defconst ARCHITECTURE-AVAILABLE YES)
+			(defconst SIEGE-ENGINEERS-AVAILABLE YES)
+			(defconst REDEMPTION-AVAILABLE YES)
+			(defconst ATONEMENT-AVAILABLE YES)
+			(defconst HERBAL-MEDICINE-AVAILABLE YES)
+			(defconst HERESY-AVAILABLE YES)
+			(defconst SANCTITY-AVAILABLE NO)
+			(defconst FERVOR-AVAILABLE YES)
+			(defconst FAITH-AVAILABLE YES)
+			(defconst ILLUMINATION-AVAILABLE YES)
+			(defconst BLOCK-PRINTING-AVAILABLE YES)
+			(defconst THEOCRACY-AVAILABLE YES)
+			(defconst HOARDINGS-AVAILABLE NO)
+			(defconst SAPPERS-AVAILABLE YES)
+
+			;Units/Upgrades
+			(defconst GALLEON-AVAILABLE YES)
+			(defconst FIRE-SHIP-AVAILABLE YES)
+			(defconst FAST-FIRE-SHIP-AVAILABLE NO)
+			(defconst DEMOLITION-SHIP-AVAILABLE YES)
+			(defconst HEAVY-DEMOLITION-SHIP-AVAILABLE NO)
+			(defconst CANNON-GALLEON-AVAILABLE YES)
+			(defconst ELITE-CANNON-GALLEON-AVAILABLE YES)
+			(defconst TWO-HANDED-SWORDSMAN-AVAILABLE YES)
+			(defconst CHAMPION-AVAILABLE YES)
+			(defconst PIKEMAN-AVAILABLE YES)
+			(defconst HALBERDIER-AVAILABLE YES)
+			(defconst EAGLE-WARRIOR-AVAILABLE NO)
+			(defconst ELITE-EAGLE-WARRIOR-AVAILABLE NO)
+			(defconst CROSSBOWMAN-AVAILABLE YES)
+			(defconst ARBALEST-AVAILABLE YES)
+			(defconst ELITE-SKIRMISHER-AVAILABLE YES)
+			(defconst CAVALRY-ARCHER-AVAILABLE NO)
+			(defconst HEAVY-CAVALRY-ARCHER-AVAILABLE NO)
+			(defconst HAND-CANNONEER-AVAILABLE YES)
+			(defconst SCOUT-CAVALRY-AVAILABLE YES)
+			(defconst LIGHT-CAVALRY-AVAILABLE YES)
+			(defconst HUSSAR-AVAILABLE NO)
+			(defconst KNIGHT-AVAILABLE YES)
+			(defconst CAVALIER-AVAILABLE YES)
+			(defconst PALADIN-AVAILABLE NO)
+			(defconst CAMEL-AVAILABLE NO)
+			(defconst HEAVY-CAMEL-AVAILABLE NO)
+			(defconst SIEGE-RAM-AVAILABLE NO)
+			(defconst ONAGER-AVAILABLE YES)
+			(defconst SIEGE-ONAGER-AVAILABLE NO)
+			(defconst HEAVY-SCORPION-AVAILABLE YES)
+			(defconst BOMBARD-CANNON-AVAILABLE YES)
+
+			;Buildings
+			(defconst STONE-GATE-AVAILABLE YES)
+			(defconst STONE-WALL-AVAILABLE YES)
+			(defconst FORTIFIED-WALL-AVAILABLE YES)
+			(defconst WATCH-TOWER-AVAILABLE YES)
+			(defconst GUARD-TOWER-AVAILABLE YES)
+			(defconst KEEP-AVAILABLE YES)
+			(defconst BOMBARD-TOWER-AVAILABLE YES)
+
+			;WK and DE Stuff
+			#load-if-defined UP-GAME-WK
+				(defconst ARSON-AVAILABLE YES)
+				(defconst ARROWSLITS-AVAILABLE YES)
+				(defconst EAGLE-SCOUT-AVAILABLE NO)
+				(defconst FIRE-GALLEY-AVAILABLE YES)
+				(defconst DEMOLITION-RAFT-AVAILABLE YES)
+				(defconst BATTLE-ELEPHANT-AVAILABLE NO)
+				(defconst ELITE-BATTLE-ELEPHANT-AVAILABLE NO)
+			#else
+				(defconst ARSON-AVAILABLE NO)
+				(defconst ARROWSLITS-AVAILABLE NO)
+				(defconst EAGLE-SCOUT-AVAILABLE NO)
+				(defconst FIRE-GALLEY-AVAILABLE NO)
+				(defconst DEMOLITION-RAFT-AVAILABLE NO)
+				(defconst BATTLE-ELEPHANT-AVAILABLE NO)
+				(defconst ELITE-BATTLE-ELEPHANT-AVAILABLE NO)
+			#end-if
+
+			;DE Only
+			#load-if-defined DE-AVAILABLE
+				(defconst SUPPLIES-AVAILABLE YES)
+				(defconst STEPPE-LANCER-AVAILABLE NO)
+				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
+			#else
+				(defconst SUPPLIES-AVAILABLE NO)
+				(defconst STEPPE-LANCER-AVAILABLE NO)
+				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
+			#end-if
+
 		#end-if
 
 		#load-if-defined BRITON-CIV
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 3)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS archery-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 6)
 
 			;Techs
@@ -1317,10 +1611,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -1329,9 +1625,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 685)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS cavalry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -1441,10 +1737,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -1453,9 +1751,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 754)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS cavalry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -1565,10 +1863,12 @@
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -1577,9 +1877,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 626)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS cavalry-cannon-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -1689,10 +1989,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 			
 		#end-if
@@ -1701,9 +2003,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 464)
-			(defconst NUM-GENERALS 6)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS cavalry-class)
+			(defconst NUM-GENERALS 6)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -1813,10 +2115,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -1825,9 +2129,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 482)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS infantry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -1937,10 +2241,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -1949,9 +2255,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 462)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS archery-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 8)
 
 			;Techs
@@ -2066,10 +2372,12 @@
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -2078,9 +2386,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 689)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS cavalry-archer-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -2190,10 +2498,12 @@
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE YES)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE YES)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -2202,9 +2512,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 574)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS infantry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -2314,10 +2624,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 			
 		#end-if
@@ -2326,9 +2638,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 493)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS infantry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -2446,10 +2758,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -2458,9 +2772,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 457)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS infantry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -2578,10 +2892,12 @@
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -2590,9 +2906,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 483)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS cavalry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -2710,10 +3026,12 @@
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -2722,9 +3040,9 @@
 
 			(defconst scout-unit eagle-warrior)
 			(defconst my-second-unique-research 516)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 6)
 			(defconst UNIQUE-UNIT-CLASS infantry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -2834,10 +3152,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -2846,9 +3166,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 506)
-			(defconst NUM-GENERALS 7)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS cavalry-archer-class)
+			(defconst NUM-GENERALS 7)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -2962,10 +3282,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 			
 		#end-if
@@ -2974,9 +3296,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 494)
-			(defconst NUM-GENERALS 6)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS archery-class)
+			(defconst NUM-GENERALS 6)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -3086,10 +3408,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 			
 		#end-if
@@ -3098,9 +3422,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 484)
-			(defconst NUM-GENERALS 6)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS infantry-class)
+			(defconst NUM-GENERALS 6)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -3222,10 +3546,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -3234,9 +3560,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 622)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS cavalry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -3366,10 +3692,12 @@
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 			
 		#end-if
@@ -3378,9 +3706,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 486)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS cavalry-archer-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -3494,10 +3822,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -3506,9 +3836,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 691)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS cavalry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -3618,10 +3948,12 @@
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE YES)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -3630,9 +3962,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 514)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS cavalry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -3742,10 +4074,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 			
 		#end-if
@@ -3754,9 +4088,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 624)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS infantry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -3866,10 +4200,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 			
 		#end-if
@@ -3878,9 +4214,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 576)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS infantry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -3995,10 +4331,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 			
 		#end-if
@@ -4007,9 +4345,9 @@
 
 			(defconst scout-unit eagle-warrior)
 			(defconst my-second-unique-research 485)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 6)
 			(defconst UNIQUE-UNIT-CLASS archery-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -4119,10 +4457,12 @@
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -4131,9 +4471,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 487)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 6)
 			(defconst UNIQUE-UNIT-CLASS cavalry-archer-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -4247,10 +4587,12 @@
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE YES)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE YES)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -4259,9 +4601,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 488)	;Both Boiling Oil and Kamandaran
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS cavalry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -4371,10 +4713,138 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
+			#end-if
+
+		#end-if
+
+		#load-if-defined POLES-CIV
+
+			(defconst scout-unit scout-cavalry)
+			(defconst my-second-unique-research 782)
+			(defconst SCOUT-LOS 4)
+			(defconst UNIQUE-UNIT-CLASS infantry-class)
+			(defconst NUM-GENERALS 5)
+			(defconst VILS-FOR-LUMBER-CAMP 7)
+
+			;Techs
+			(defconst DRY-DOCK-AVAILABLE NO)
+			(defconst SHIPWRIGHT-AVAILABLE NO)
+			(defconst CROP-ROTATION-AVAILABLE YES)
+			(defconst TWO-MAN-SAW-AVAILABLE NO)
+			(defconst GOLD-SHAFT-MINING-AVAILABLE NO)
+			(defconst STONE-SHAFT-MINING-AVAILABLE YES)
+			(defconst SQUIRES-AVAILABLE YES)
+			(defconst THUMB-RING-AVAILABLE YES)
+			(defconst PARTHIAN-TACTICS-AVAILABLE NO)
+			(defconst BLOODLINES-AVAILABLE YES)
+			(defconst HUSBANDRY-AVAILABLE YES)
+			(defconst GUILDS-AVAILABLE YES)
+			(defconst LEATHER-ARCHER-ARMOR-AVAILABLE YES)
+			(defconst RING-ARCHER-ARMOR-AVAILABLE NO)
+			(defconst BRACER-AVAILABLE YES)
+			(defconst BLAST-FURNACE-AVAILABLE YES)
+			(defconst CHAIN-MAIL-ARMOR-AVAILABLE YES)
+			(defconst PLATE-MAIL-ARMOR-AVAILABLE YES)
+			(defconst SCALE-BARDING-ARMOR-AVAILABLE YES)
+			(defconst CHAIN-BARDING-ARMOR-AVAILABLE YES)
+			(defconst PLATE-BARDING-ARMOR-AVAILABLE NO)
+			(defconst MASONRY-AVAILABLE YES)
+			(defconst HEATED-SHOT-AVAILABLE NO)
+			(defconst TREADMILL-CRANE-AVAILABLE YES)
+			(defconst ARCHITECTURE-AVAILABLE NO)
+			(defconst SIEGE-ENGINEERS-AVAILABLE YES)
+			(defconst REDEMPTION-AVAILABLE YES)
+			(defconst ATONEMENT-AVAILABLE NO)
+			(defconst HERBAL-MEDICINE-AVAILABLE YES)
+			(defconst HERESY-AVAILABLE NO)
+			(defconst SANCTITY-AVAILABLE YES)
+			(defconst FERVOR-AVAILABLE YES)
+			(defconst FAITH-AVAILABLE YES)
+			(defconst ILLUMINATION-AVAILABLE NO)
+			(defconst BLOCK-PRINTING-AVAILABLE YES)
+			(defconst THEOCRACY-AVAILABLE YES)
+			(defconst HOARDINGS-AVAILABLE YES)
+			(defconst SAPPERS-AVAILABLE YES)
+
+			;Units/Upgrades
+			(defconst GALLEON-AVAILABLE YES)
+			(defconst FIRE-SHIP-AVAILABLE YES)
+			(defconst FAST-FIRE-SHIP-AVAILABLE YES)
+			(defconst DEMOLITION-SHIP-AVAILABLE YES)
+			(defconst HEAVY-DEMOLITION-SHIP-AVAILABLE NO)
+			(defconst CANNON-GALLEON-AVAILABLE YES)
+			(defconst ELITE-CANNON-GALLEON-AVAILABLE NO)
+			(defconst TWO-HANDED-SWORDSMAN-AVAILABLE YES)
+			(defconst CHAMPION-AVAILABLE YES)
+			(defconst PIKEMAN-AVAILABLE YES)
+			(defconst HALBERDIER-AVAILABLE NO)
+			(defconst EAGLE-WARRIOR-AVAILABLE NO)
+			(defconst ELITE-EAGLE-WARRIOR-AVAILABLE NO)
+			(defconst CROSSBOWMAN-AVAILABLE YES)
+			(defconst ARBALEST-AVAILABLE YES)
+			(defconst ELITE-SKIRMISHER-AVAILABLE YES)
+			(defconst CAVALRY-ARCHER-AVAILABLE YES)
+			(defconst HEAVY-CAVALRY-ARCHER-AVAILABLE YES)
+			(defconst HAND-CANNONEER-AVAILABLE NO)
+			(defconst SCOUT-CAVALRY-AVAILABLE YES)
+			(defconst LIGHT-CAVALRY-AVAILABLE YES)
+			(defconst HUSSAR-AVAILABLE NO)
+			(defconst KNIGHT-AVAILABLE YES)
+			(defconst CAVALIER-AVAILABLE YES)
+			(defconst PALADIN-AVAILABLE NO)
+			(defconst CAMEL-AVAILABLE NO)
+			(defconst HEAVY-CAMEL-AVAILABLE NO)
+			(defconst SIEGE-RAM-AVAILABLE YES)
+			(defconst ONAGER-AVAILABLE YES)
+			(defconst SIEGE-ONAGER-AVAILABLE NO)
+			(defconst HEAVY-SCORPION-AVAILABLE NO)
+			(defconst BOMBARD-CANNON-AVAILABLE YES)
+
+			;Buildings
+			(defconst STONE-GATE-AVAILABLE YES)
+			(defconst STONE-WALL-AVAILABLE YES)
+			(defconst FORTIFIED-WALL-AVAILABLE YES)
+			(defconst WATCH-TOWER-AVAILABLE YES)
+			(defconst GUARD-TOWER-AVAILABLE YES)
+			(defconst KEEP-AVAILABLE YES)
+			(defconst BOMBARD-TOWER-AVAILABLE YES)
+
+			;WK and DE Stuff
+			#load-if-defined UP-GAME-WK
+				(defconst ARSON-AVAILABLE YES)
+				(defconst ARROWSLITS-AVAILABLE YES)
+				(defconst EAGLE-SCOUT-AVAILABLE NO)
+				(defconst FIRE-GALLEY-AVAILABLE YES)
+				(defconst DEMOLITION-RAFT-AVAILABLE YES)
+				(defconst BATTLE-ELEPHANT-AVAILABLE NO)
+				(defconst ELITE-BATTLE-ELEPHANT-AVAILABLE NO)
+			#else
+				(defconst ARSON-AVAILABLE NO)
+				(defconst ARROWSLITS-AVAILABLE NO)
+				(defconst EAGLE-SCOUT-AVAILABLE NO)
+				(defconst FIRE-GALLEY-AVAILABLE NO)
+				(defconst DEMOLITION-RAFT-AVAILABLE NO)
+				(defconst BATTLE-ELEPHANT-AVAILABLE NO)
+				(defconst ELITE-BATTLE-ELEPHANT-AVAILABLE NO)
+			#end-if
+
+			;DE Only
+			#load-if-defined DE-AVAILABLE
+				(defconst SUPPLIES-AVAILABLE YES)
+				(defconst STEPPE-LANCER-AVAILABLE NO)
+				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE YES)
+			#else
+				(defconst SUPPLIES-AVAILABLE NO)
+				(defconst STEPPE-LANCER-AVAILABLE NO)
+				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -4383,9 +4853,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 572)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS siege-weapon-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -4495,10 +4965,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 			
 		#end-if
@@ -4507,9 +4979,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 490)
-			(defconst NUM-GENERALS 6)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS cavalry-class)
+			(defconst NUM-GENERALS 6)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -4619,10 +5091,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -4631,9 +5105,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 756)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS infantry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -4743,10 +5217,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -4755,9 +5231,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 512)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS cavalry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -4872,10 +5348,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 			
 		#end-if
@@ -4884,9 +5362,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 492)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS cavalry-cannon-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -4996,10 +5474,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -5008,9 +5488,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 687)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS cavalry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -5120,10 +5600,12 @@
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE YES)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE YES)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -5132,9 +5614,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 489)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS infantry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -5248,10 +5730,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -5260,9 +5744,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 491)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS archery-cannon-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -5372,10 +5856,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -5384,9 +5870,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 628)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS archery-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -5500,10 +5986,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 			
 		#end-if
@@ -5512,9 +6000,9 @@
 
 			(defconst scout-unit scout-cavalry)
 			(defconst my-second-unique-research 463)
-			(defconst NUM-GENERALS 5)
 			(defconst SCOUT-LOS 4)
 			(defconst UNIQUE-UNIT-CLASS infantry-class)
+			(defconst NUM-GENERALS 5)
 			(defconst VILS-FOR-LUMBER-CAMP 7)
 
 			;Techs
@@ -5525,7 +6013,11 @@
 			(defconst GOLD-SHAFT-MINING-AVAILABLE YES)
 			(defconst STONE-SHAFT-MINING-AVAILABLE NO)
 			(defconst SQUIRES-AVAILABLE YES)
-			(defconst THUMB-RING-AVAILABLE YES)
+			#load-if-defined DE-AVAILABLE
+				(defconst THUMB-RING-AVAILABLE NO)
+			#else
+				(defconst THUMB-RING-AVAILABLE YES)
+			#end-if
 			(defconst PARTHIAN-TACTICS-AVAILABLE NO)
 			(defconst BLOODLINES-AVAILABLE NO)
 			(defconst HUSBANDRY-AVAILABLE NO)
@@ -5628,10 +6120,12 @@
 				(defconst SUPPLIES-AVAILABLE YES)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#else
 				(defconst SUPPLIES-AVAILABLE NO)
 				(defconst STEPPE-LANCER-AVAILABLE NO)
 				(defconst ELITE-STEPPE-LANCER-AVAILABLE NO)
+				(defconst WINGED-HUSSAR-AVAILABLE NO)
 			#end-if
 
 		#end-if
@@ -6850,16 +7344,16 @@
 			(defconst LATEI-TRASHGENS 1037)		;Genitours, supported by hussars or halbs
 			(defconst LATEI-HUSSARS 1308)		;All hussars
 		(defconst g-initial-strategy 3)					;The player's original strategy/build order
-		(defconst g-previous-strategy 370)
-		(defconst g-next-strategy 371)
-		(defconst g-game-focus 4)						;What the AI is current focused on
+		(defconst g-previous-strategy 4)
+		(defconst g-next-strategy 5)
+		(defconst g-game-focus 6)						;What the AI is current focused on
 			(defconst REBUILD 1)
 			(defconst DEFENSIVE 2)
 			(defconst BOOM 3)
 			(defconst AGGRESSIVE 4)
 			(defconst BALANCED 5)
 			(defconst RESET 99)		
-		(defconst g-age-status 5)
+		(defconst g-age-status 7)
 			(defconst DARK 101)
 			(defconst SAVE-FOR-FEUDAL 102)
 			(defconst TO-FEUDAL 103)
@@ -6874,14 +7368,14 @@
 			(defconst EARLY-IMPERIAL 112)
 			(defconst MID-IMPERIAL 113)
 			(defconst LATE-IMPERIAL 114)	
-		(defconst g-team-position 6)					;A more flexible version of goal 46 that is more specific
+		(defconst g-team-position 8)					;A more flexible version of goal 46 that is more specific
 			(defconst SOLO -2)					;1-player team
 			;PENDING: -1
 			(defconst FLANK-NO-POCKET 0)		;2-player team
 			(defconst FLANK 1)					;flank on 3+ player team
 			(defconst POCKET 2)					;pocket
 			(defconst SUPER-POCKET 3)			;surrounded by other pocket players
-		(defconst g-attack-status 7)					;Tracks what the status is for our attacks
+		(defconst g-attack-status 9)					;Tracks what the status is for our attacks
 			(defconst BEFORE-DARK-ATTACKS 3)
 			(defconst DARK-ATTACKS 4)
 			(defconst BEFORE-FEUDAL-ATTACKS 5)
@@ -6896,7 +7390,7 @@
 			(defconst FIRST-IMPERIAL-ATTACK 14)
 			(defconst BEFORE-LATER-IMPERIAL-ATTACKS 15)
 			(defconst LATER-IMPERIAL-ATTACKS 16)
-		(defconst g-map-style 8)						;Determines the style of map
+		(defconst g-map-style 10)						;Determines the style of map
 			(defconst OPEN-LAND 1)			;Arabia, etc.
 			(defconst CLOSED-LAND 2)		;Black Forest, etc.
 			(defconst WALLED-LAND 3)		;Arena, etc.
@@ -6908,31 +7402,28 @@
 			(defconst TEAM-ISLANDS 9)		;Islands where teams are always on separate islands
 			(defconst MIGRATION 10)			;Migration, etc.
 			(defconst IMMOBILE 11)			;Stay immobile in scenarios with no villagers
-		(defconst g-enemy-buildings-in-town 9)			;Determines enemy buildings within custom-sn-peaceful-town-size, not sn-maximum-town-size
-		(defconst g-enemy-units-in-town 10)				;Determines enemy units within custom-sn-peaceful-town-size, not sn-maximum-town-size
 		(defconst g-town-under-attack 11)				;Determines if the town is under attack, helps request assistance from allies
 			;NO = 0
 			;YES = 1
-		(defconst g-target-military-parity 12)			;The difference between our military pop and the military pop of the target player, > 0 means we have superiority
-		(defconst g-target-pop-parity 13)				;The difference between our total pop and the total pop of the target player, > 0 means we have superiority
-		(defconst g-top-enemy-military-parity 14)		;The difference between our military pop and the highest military pop of any enemy, > 0 means we have superiority
-		(defconst g-top-enemy-pop-parity 15)			;The difference between our total pop and the highest total pop of any enemy, > 0 means we have superiority
-		(defconst g-team-military-parity 16)			;NOT USED YET! The difference between our team's military pop and the military pop of the opposing team with the highest military, > 0 means we have superiority
-		(defconst g-team-pop-parity 17)					;NOT USED YET! The difference between our team's total pop and the total pop of the opposing team with the highest total pop, > 0 means we have superiority
-		(defconst g-attacker-military-parity 18)		;The difference between our military pop and the military pop of the enemy attacking us, > 0 means we have superiority, 999 means we aren't under attack
-		(defconst g-attacker-pop-parity 19)				;The difference between our total pop and the total pop of the enemy attacking us, > 0 means we have superiority, 999 means we aren't under attack
-		(defconst g-target-age-parity 20)				;Determines whether we are ahead or behind in age, compared to our target enemy
+		(defconst g-enemy-buildings-in-town 12)			;Determines enemy buildings within custom-sn-peaceful-town-size, not sn-maximum-town-size
+		(defconst g-enemy-units-in-town 13)				;Determines enemy units within custom-sn-peaceful-town-size, not sn-maximum-town-size
+		(defconst g-target-military-parity 14)			;The difference between our military pop and the military pop of the target player, > 0 means we have superiority
+		(defconst g-target-pop-parity 15)				;The difference between our total pop and the total pop of the target player, > 0 means we have superiority
+		(defconst g-top-enemy-military-parity 16)		;The difference between our military pop and the highest military pop of any enemy, > 0 means we have superiority
+		(defconst g-top-enemy-pop-parity 17)			;The difference between our total pop and the highest total pop of any enemy, > 0 means we have superiority
+		(defconst g-team-military-parity 18)			;NOT USED YET! The difference between our team's military pop and the military pop of the opposing team with the highest military, > 0 means we have superiority
+		(defconst g-team-pop-parity 19)					;NOT USED YET! The difference between our team's total pop and the total pop of the opposing team with the highest total pop, > 0 means we have superiority
+		(defconst g-attacker-military-parity 20)		;The difference between our military pop and the military pop of the enemy attacking us, > 0 means we have superiority, 999 means we aren't under attack
+		(defconst g-attacker-pop-parity 21)				;The difference between our total pop and the total pop of the enemy attacking us, > 0 means we have superiority, 999 means we aren't under attack
+		(defconst g-target-age-parity 22)				;Determines whether we are ahead or behind in age, compared to our target enemy
 			(defconst WE-ARE-BEHIND 0)
 			(defconst WE-ARE-EQUAL 1)
 			(defconst WE-ARE-AHEAD 2)
-		(defconst g-top-enemy-age-parity 21)			;Determines whether we are ahead or behind in age, compared to our most advanced enemy
+		(defconst g-top-enemy-age-parity 23)			;Determines whether we are ahead or behind in age, compared to our most advanced enemy
 			;WE-ARE-BEHIND = 0
 			;WE-ARE-EQUAL = 1
 			;WE-ARE-AHEAD = 2
-		(defconst g-town-relocated 22)					;If the town has been relocated elsewhere on the map to recover
-			;NO = 0
-			;YES = 1
-		(defconst g-scouting-status 23)					;What we are currently trying to scout
+		(defconst g-scouting-status 24)					;What we are currently trying to scout
 			(defconst FIND-RESOURCES 3)
 			(defconst SCOUT-TOWN 4)
 			(defconst ALL-RESOURCES-FOUND 5)
@@ -6941,179 +7432,164 @@
 			(defconst RESCOUT-ENEMY 14)
 			(defconst AUTO-SCOUT 20)
 			(defconst DONT-SCOUT 99)
-		(defconst g-scouting-distance 24)				;Distance for the scout around the town center
-		(defconst g-duc-scouting 25)					;Steps to go through for DUC scouting
+		(defconst g-scouting-distance 25)				;Distance for the scout around the town center
+		(defconst g-duc-scouting 26)					;Steps to go through for DUC scouting
 			(defconst START 1)
 			(defconst SET-POINT 2)
 			(defconst TARGETING-POINT 3)				;Current scout (1, 2, or 3) has been sent to a point
 			(defconst STOP-DUC-SCOUTING 4)				;used if DUC scouting sends scout on inefficient scouting routes
 			;RESET = 99
-		(defconst g-scouting-direction 26)				;The direction the scout will scout around the TC
+		(defconst g-scouting-direction 27)				;The direction the scout will scout around the TC
 			(defconst CLOCKWISE -1)
 			(defconst COUNTERCLOCKWISE 1)
 			(defconst SWITCH 2)
-		(defconst g-flag 27)
+		(defconst g-flag 28)
 			(defconst SCOUT-1-TARGET-SET 1)
 			(defconst SCOUT-2-TARGET-SET 2)
 			(defconst SCOUT-3-TARGET-SET 4)
-		(defconst g-current-scout-goal 28)				;detects whether we're tasking scout 1, 2, or 3
-		(defconst g-current-scout-id 29)				;stores the scout ID that g-current-scout-goal is set to
-		(defconst g-claim-sheep 30)
+		(defconst g-current-scout-goal 29)				;detects whether we're tasking scout 1, 2, or 3
+		(defconst g-current-scout-id 30)				;stores the scout ID that g-current-scout-goal is set to
+		(defconst g-claim-sheep 31)
 			;NO = 0
 			(defconst FOUND-SHEEP 1)		;found sheep to claim
 			(defconst SEND-SCOUT-1 2)		;scout 1 is sent to claim sheep
 			(defconst SEND-SCOUT-2 3)		;scout 2 is sent to claim sheep
 			(defconst SEND-SCOUT-3 4)		;scout 3 is sent to claim sheep
 			(defconst SEND-VILLAGER 5)		;villager is sent to claim sheep if we don't have scouts
-		(defconst g-gaia-sheep-id 31)					;stores the ID of the sheep to claim
-		(defconst g-sheep-found-count 32)				;stores the total number of livestock found 
-		(defconst g-current-sheep-count 33)				;stores the current number of alive livestock we have
-		(defconst g-current-sheep-id 34)	;stores the ID of the sheep we're currently gathering
-		(defconst g-next-sheep-id 35)			;stores the ID of the sheep we will gather next
-		(defconst g-boar-found-count 36)				;stores the total number of boar found near our town
-		(defconst g-current-boar-count 37)				;stores the current number of alive boar that currently exist near our town
-		(defconst g-deer-found-count 38)				;stores the total number of deer found near our town
-		(defconst g-current-deer-count 39)				;stores the current number of alive deer that currently exist near our town
-		(defconst g-min-forest-distance 40)				;Distance to the nearest forest tree
+		(defconst g-gaia-sheep-id 32)					;stores the ID of the sheep to claim
+		(defconst g-sheep-found-count 33)				;stores the total number of livestock found 
+		(defconst g-current-sheep-count 34)				;stores the current number of alive livestock we have
+		(defconst g-current-sheep-id 35)				;stores the ID of the sheep we're currently gathering
+		(defconst g-next-sheep-id 36)					;stores the ID of the sheep we will gather next
+		(defconst g-boar-found-count 37)				;stores the total number of boar found near our town
+		(defconst g-current-boar-count 38)				;stores the current number of alive boar that currently exist near our town
+		(defconst g-deer-found-count 39)				;stores the total number of deer found near our town
+		(defconst g-current-deer-count 40)				;stores the current number of alive deer that currently exist near our town
 
-		(defconst g-temp 41)							;Used as temporary storage
-		(defconst g-temp-2 42)							;Used as temporary storage
-		(defconst g-temp-3 43)							;Used as temporary storage
-		(defconst g-temp-4 44)							;Used as temporary storage
-		(defconst i 45)									;Used as an index for jump rule loops
-		(defconst j 46)									;Used as an index for jump rule loops
-		(defconst g-rule-pass-count 47)					;The number of passes the AI has made
-		(defconst g-position 48)						;determines flank/pocket position, used to communicate position with allies
-			;Flank = 1
-			;Pocket = 2
-		(defconst g-threat-elapsed-time 49)				;time since last attack on the map
-		(defconst g-threat-player 50)					;player that last attacked us anywhere on the map
-		(defconst g-threat-source-class 51)				;class of the unit that last attacked
-		(defconst g-threat-target-class 52)				;class of our unit that was last attacked
-		(defconst g-local-total 53)						;number of objects in local list
-		(defconst g-local-last 54)						;number of objects found in last local search
-		(defconst g-remote-total 55)					;number of objects in remote list
-		(defconst g-remote-last 56)						;number of objects found in last remote search
-		(defconst g-scout1-id 57)						;the map ID of our first scout (usually our primary scout), goal is set to -2 when dead
-		(defconst g-scout2-id 58)						;the map ID of our second scout (usually a sheep), goal is set to -1 when unused
-		(defconst g-scout3-id 59)						;the map ID of our third scout (usually a sheep), goal is set to -1 when unused			
-		(defconst g-dark-strategy 60)					;goals 58-64 use same values as goal 2
-		(defconst g-early-feudal-strategy 61)
-		(defconst g-mid-feudal-strategy 62)
-		(defconst g-early-castle-strategy 63)
-		(defconst g-mid-castle-strategy 64)
-		(defconst g-early-imperial-strategy 65)
-		(defconst g-mid-imperial-strategy 66)
-		(defconst g-late-imperial-strategy 67)
-		(defconst g-desired-num-food-vils 68)
-		(defconst g-desired-num-wood-vils 69)
-		(defconst g-desired-num-stone-vils 70)
-		(defconst g-desired-num-gold-vils 71)
-		(defconst g-deer-pushing-status 72)				;tracks the progress of deer luring and hunting
+		(defconst g-deer-pushing-status 41)				;tracks the progress of deer luring and hunting
 			(defconst SEARCHED-FOR-DEER 1)
 			(defconst FOUND-DEER 2)
 			(defconst SENT-SCOUT-TO-DEER 3)
 			(defconst CHECK-DEER-DISTANCE 4)
 			(defconst FOUND-DEER-HUNTER 5)
 			(defconst SHOOT-DEER 6)
-		(defconst g-current-deer-id 73)					;ID of deer being lured by scout
-		(defconst g-desired-num-military 74)
-		(defconst g-desired-num-navy 75)
-		(defconst g-desired-num-villager 76)
-		(defconst g-desired-num-trade-cart 77)
-		(defconst g-desired-num-militia 78)
-		(defconst g-desired-num-spearman 79)
-		(defconst g-desired-num-eagle-warrior 80)
-		(defconst g-desired-num-condottiero 81)
-		(defconst g-desired-num-archer 82)
-		(defconst g-desired-num-skirmisher 83)
-		(defconst g-desired-num-cavalry-archer 84)
-		(defconst g-desired-num-hand-cannoneer 85)
-		(defconst g-desired-num-slinger 86)
-		(defconst g-desired-num-genitour 87)
-		(defconst g-desired-num-scout-cavalry 88)
-		(defconst g-desired-num-knight 89)
-		(defconst g-desired-num-camel 90)
-		(defconst g-desired-num-battle-elephant 91)
-		(defconst g-desired-num-steppe-lancer 92)
-		(defconst g-desired-num-unique-unit 93)
-		(defconst g-desired-num-battering-ram 94)
-		(defconst g-desired-num-mangonel 95)
-		(defconst g-desired-num-scorpion 96)
-		(defconst g-desired-num-bombard-cannon 97)
-		(defconst g-desired-num-trebuchet 98)
-		(defconst g-desired-num-monk 99)
-		(defconst g-desired-num-missionary 100)
-		(defconst g-desired-num-fishing-ship 101)
-		(defconst g-desired-num-transport-ship 102)
-		(defconst g-desired-num-trade-cog 103)
-		(defconst g-desired-num-galley 104)
-		(defconst g-desired-num-fire-ship 105)
-		(defconst g-desired-num-demolition-ship 106)
-		(defconst g-desired-num-cannon-galleon 107)
-		(defconst g-desired-num-unique-ship 108)
-		(defconst g-desired-num-primary-unit 109)
-		(defconst g-desired-num-support-unit 110)
-		(defconst g-desired-num-infantry 111)
-		(defconst g-desired-num-foot-archers 112)
-		(defconst g-desired-num-cavalry-archers 113)
-		(defconst g-desired-num-cavalry 114)
-		(defconst g-desired-num-siege 115)
-		(defconst g-desired-num-hand-cannoneers 116)
-		(defconst g-desired-num-monks 117)
-		(defconst g-desired-num-town-center 118)
-		(defconst g-desired-num-house 119)
-		(defconst g-desired-num-mill 120)
-		(defconst g-desired-num-mining-camp 121)
-		(defconst g-desired-num-gold-camp 228)
-		(defconst g-desired-num-stone-camp 229)
-		(defconst g-desired-num-lumber-camp 122)
-		(defconst g-desired-num-dock 123)
-		(defconst g-desired-num-farm 124)
-		(defconst g-desired-num-blacksmith 125)
-		(defconst g-desired-num-market 126)
-		(defconst g-desired-num-monastery 127)
-		(defconst g-desired-num-university 128)
-		(defconst g-desired-num-wonder 129)
-		(defconst g-desired-num-barracks 130)
-		(defconst g-desired-num-archery-range 131)
-		(defconst g-desired-num-stable 132)
-		(defconst g-desired-num-siege-workshop 133)
-		(defconst g-desired-num-outpost 134)
-		(defconst g-desired-num-watch-tower 135)
-		(defconst g-desired-num-bombard-tower 136)
-		(defconst g-desired-num-castle 137)
-		(defconst g-desired-num-feitoria 138)
-		(defconst g-desired-num-krepost 139)
-		(defconst g-point-x 140)
-		(defconst g-point-y 141)
-		(defconst g-point2-x 142)
-		(defconst g-point2-y 143)
-		(defconst g-point3-x 144)
-		(defconst g-point3-y 145)
-		(defconst g-point4-x 369)
-		(defconst g-point4-y 372)
-		(defconst g-place-point-x 146)		;stores the location of where the next building should be placed with up-build place-point
-		(defconst g-place-point-y 147)		;stores the location of where the next building should be placed with up-build place-point
-		(defconst g-place-point-used 148)	;indicates whether a building needs to be placed with up-build place-point
-		(defconst g-scout1-target-x 149)	;x location where scout 1 is being sent
-		(defconst g-scout1-target-y 150)	;y location where scout 1 is being sent
-		(defconst g-scout2-target-x 151)	;x location where scout 2 is being sent
-		(defconst g-scout2-target-y 152)	;y location where scout 2 is being sent
-		(defconst g-scout3-target-x 153)	;x location where scout 3 is being sent
-		(defconst g-scout3-target-y 154)	;y location where scout 3 is being sent
-		(defconst g-sheep-gather-x 155)		;x location where sheep should gather to wait to be gathered
-		(defconst g-sheep-gather-y 156)		;y location where sheep should gather to wait to be gathered
-		(defconst g-gather-point-x 157)		;x location where defensive soldiers will gather, also used as retreat point
-		(defconst g-gather-point-y 158)		;y location where defensive soldiers will gather, also used as retreat point
-		(defconst g-target-enemy-x 159)		;x location of nearest target player TC, or position-flank if no target player TC found
-		(defconst g-target-enemy-y 160)		;y location of nearest target player TC, or position-flank if no target player TC found
-		(defconst g-required-num-villager 161)
-		(defconst g-true-housing-headroom 162)
-		(defconst g-escrow 163)
-		(defconst g-far-boar 164)
-		(defconst g-boar-hunting-conditions-met 165)
-		(defconst g-boar-hunt-status 166)
+		(defconst g-current-deer-id 42)					;ID of deer being lured by scout
+		(defconst g-min-forest-distance 43)				;Distance to the nearest forest tree
+		(defconst g-rule-pass-count 44)					;The number of passes the AI has made
+		(defconst g-town-relocated 45)					;If the town has been relocated elsewhere on the map to recover
+			;NO = 0
+			;YES = 1
+		(defconst g-position 46)						;determines flank/pocket position, used to communicate position with allies
+			;Flank = 1
+			;Pocket = 2
+		(defconst g-threat-elapsed-time 47)				;time since last attack on the map
+		(defconst g-threat-player 48)					;player that last attacked us anywhere on the map
+		(defconst g-threat-source-class 49)				;class of the unit that last attacked
+		(defconst g-threat-target-class 50)				;class of our unit that was last attacked
+		(defconst g-scout1-id 51)						;the map ID of our first scout (usually our primary scout), goal is set to -2 when dead
+		(defconst g-scout2-id 52)						;the map ID of our second scout (usually a sheep), goal is set to -1 when unused
+		(defconst g-scout3-id 53)						;the map ID of our third scout (usually a sheep), goal is set to -1 when unused			
+		(defconst g-dark-strategy 54)					;goals 58-64 use same values as goal 2
+		(defconst g-early-feudal-strategy 55)
+		(defconst g-mid-feudal-strategy 56)
+		(defconst g-early-castle-strategy 57)
+		(defconst g-mid-castle-strategy 58)
+		(defconst g-early-imperial-strategy 59)
+		(defconst g-mid-imperial-strategy 60)
+		(defconst g-late-imperial-strategy 61)
+		(defconst g-desired-num-food-vils 62)
+		(defconst g-desired-num-wood-vils 63)
+		(defconst g-desired-num-stone-vils 64)
+		(defconst g-desired-num-gold-vils 65)
+		(defconst g-desired-num-military 66)
+		(defconst g-desired-num-navy 67)
+		(defconst g-desired-num-villager 68)
+		(defconst g-desired-num-trade-cart 69)
+		(defconst g-desired-num-militia 70)
+		(defconst g-desired-num-spearman 71)
+		(defconst g-desired-num-eagle-warrior 72)
+		(defconst g-desired-num-condottiero 73)
+		(defconst g-desired-num-archer 74)
+		(defconst g-desired-num-skirmisher 75)
+		(defconst g-desired-num-cavalry-archer 76)
+		(defconst g-desired-num-hand-cannoneer 77)
+		(defconst g-desired-num-slinger 78)
+		(defconst g-desired-num-genitour 79)
+		(defconst g-desired-num-scout-cavalry 80)
+		(defconst g-desired-num-knight 81)
+		(defconst g-desired-num-camel 82)
+		(defconst g-desired-num-battle-elephant 83)
+		(defconst g-desired-num-steppe-lancer 84)
+		(defconst g-desired-num-unique-unit 85)
+		(defconst g-desired-num-battering-ram 86)
+		(defconst g-desired-num-mangonel 87)
+		(defconst g-desired-num-scorpion 88)
+		(defconst g-desired-num-bombard-cannon 89)
+		(defconst g-desired-num-trebuchet 90)
+		(defconst g-desired-num-monk 91)
+		(defconst g-desired-num-missionary 92)
+		(defconst g-desired-num-fishing-ship 93)
+		(defconst g-desired-num-transport-ship 94)
+		(defconst g-desired-num-trade-cog 95)
+		(defconst g-desired-num-galley 96)
+		(defconst g-desired-num-fire-ship 97)
+		(defconst g-desired-num-demolition-ship 98)
+		(defconst g-desired-num-cannon-galleon 99)
+		(defconst g-desired-num-unique-ship 100)
+		(defconst g-desired-num-primary-unit 101)
+		(defconst g-desired-num-support-unit 102)
+		(defconst g-desired-num-infantry 103)
+		(defconst g-desired-num-foot-archers 104)
+		(defconst g-desired-num-cavalry-archers 105)
+		(defconst g-desired-num-cavalry 106)
+		(defconst g-desired-num-siege 107)
+		(defconst g-desired-num-hand-cannoneers 108)
+		(defconst g-desired-num-monks 109)
+		(defconst g-desired-num-town-center 110)
+		(defconst g-desired-num-house 111)
+		(defconst g-desired-num-mill 112)
+		(defconst g-desired-num-mining-camp 113)
+		(defconst g-desired-num-gold-camp 114)
+		(defconst g-desired-num-stone-camp 115)
+		(defconst g-desired-num-lumber-camp 116)
+		(defconst g-desired-num-dock 117)
+		(defconst g-desired-num-farm 118)
+		(defconst g-desired-num-blacksmith 119)
+		(defconst g-desired-num-market 120)
+		(defconst g-desired-num-monastery 121)
+		(defconst g-desired-num-university 122)
+		(defconst g-desired-num-wonder 123)
+		(defconst g-desired-num-barracks 124)
+		(defconst g-desired-num-archery-range 125)
+		(defconst g-desired-num-stable 126)
+		(defconst g-desired-num-siege-workshop 127)
+		(defconst g-desired-num-outpost 128)
+		(defconst g-desired-num-watch-tower 129)
+		(defconst g-desired-num-bombard-tower 130)
+		(defconst g-desired-num-castle 131)
+		(defconst g-desired-num-feitoria 132)
+		(defconst g-desired-num-krepost 133)
+		(defconst g-place-point-x 134)		;stores the location of where the next building should be placed with up-build place-point
+		(defconst g-place-point-y 135)		;stores the location of where the next building should be placed with up-build place-point
+		(defconst g-place-point-used 136)	;indicates whether a building needs to be placed with up-build place-point
+		(defconst g-scout1-target-x 137)	;x location where scout 1 is being sent
+		(defconst g-scout1-target-y 138)	;y location where scout 1 is being sent
+		(defconst g-scout2-target-x 139)	;x location where scout 2 is being sent
+		(defconst g-scout2-target-y 140)	;y location where scout 2 is being sent
+		(defconst g-scout3-target-x 141)	;x location where scout 3 is being sent
+		(defconst g-scout3-target-y 142)	;y location where scout 3 is being sent
+		(defconst g-sheep-gather-x 143)		;x location where sheep should gather to wait to be gathered
+		(defconst g-sheep-gather-y 144)		;y location where sheep should gather to wait to be gathered
+		(defconst g-gather-point-x 145)		;x location where defensive soldiers will gather, also used as retreat point
+		(defconst g-gather-point-y 146)		;y location where defensive soldiers will gather, also used as retreat point
+		(defconst g-target-enemy-x 147)		;x location of nearest target player TC, or position-flank if no target player TC found
+		(defconst g-target-enemy-y 148)		;y location of nearest target player TC, or position-flank if no target player TC found
+		(defconst g-required-num-villager 149)
+		(defconst g-true-housing-headroom 150)
+		(defconst g-escrow 151)
+		(defconst g-far-boar 152)
+		(defconst g-boar-hunting-conditions-met 153)
+		(defconst g-boar-hunt-status 154)
 			(defconst MAX-BOAR-HUNT-DISTANCE 38)
 			(defconst NEAR-BOAR-HUNT-DISTANCE 24)
 			#load-if-not-defined MONGOL-CIV
@@ -7129,86 +7605,79 @@
 			(defconst TARGET-BOAR 4)
 			(defconst LURE-BOAR 5)
 			(defconst ASSIST-HUNTING-BOAR 6)
-		(defconst g-current-boar-id 167)
-		(defconst g-boar-lurer-id 168)
-		(defconst g-desired-future-food-vils 169)
-		(defconst g-desired-future-wood-vils 170)
-		(defconst g-desired-future-stone-vils 171)
-		(defconst g-desired-future-gold-vils 172)
-		(defconst g-previous-villager-count 173)
-		(defconst g-food-cost 174)
-		(defconst g-wood-cost 175)
-		(defconst g-stone-cost 176)
-		(defconst g-gold-cost 177)
-		(defconst g-strategy-type 178)
+		(defconst g-current-boar-id 155)
+		(defconst g-boar-lurer-id 156)
+		(defconst g-desired-future-food-vils 157)
+		(defconst g-desired-future-wood-vils 158)
+		(defconst g-desired-future-stone-vils 159)
+		(defconst g-desired-future-gold-vils 160)
+		(defconst g-previous-villager-count 161)
+		(defconst g-strategy-type 162)
 			;(defconst DRUSH 101)	;already defined with g-current-strategy 
 			(defconst FLUSH 102)
 			(defconst FAST-CASTLE 103)
 			(defconst FAST-IMPERIAL 104)
-		(defconst g-tarkan-line 179)		;counts castle and stable tarkans
-		(defconst g-mangonel-line 180)		;counts WK onagers with mangonels and siege onagers
-		(defconst g-unique-ship-line 181)
-		(defconst g-skirmisher-line 182)	;includes WK imperial skirmisher
-		(defconst g-eagle-scout-line 183)	;includes WK eagle warrior
-		(defconst g-genitour-line 184)
-		(defconst g-battle-elephant-line 185)
-		(defconst g-fire-galley-line 186)
-		(defconst g-demolition-raft-line 187)
-		(defconst g-watch-tower-line 188)	;counts watch tower, guard tower, and keep
-		(defconst g-camel-line 189)			;includes WK imperial camel
-		(defconst g-unique-unit-line 190)
-		(defconst g-siege-class 191)		;counts all siege weapons (siege-class excludes several siege weapons)
-		(defconst g-save-for-support-unit-techs 193)
-		(defconst g-food-delta 194)
-		(defconst g-wood-delta 195)
-		(defconst g-stone-delta 196)
-		(defconst g-gold-delta 197)
-		(defconst g-primary-unit 198)
-		(defconst g-support-unit 199)
-		(defconst g-previous-support-unit 326)
-		(defconst g-required-attack-num 200)
-		(defconst g-stop-attack-num 201)
-		(defconst g-attack-method-flag 202)
+		(defconst g-tarkan-line 163)		;counts castle and stable tarkans
+		(defconst g-mangonel-line 164)		;counts WK onagers with mangonels and siege onagers
+		(defconst g-unique-ship-line 165)
+		(defconst g-skirmisher-line 166)	;includes WK imperial skirmisher
+		(defconst g-eagle-scout-line 167)	;includes WK eagle warrior
+		(defconst g-genitour-line 168)
+		(defconst g-battle-elephant-line 169)
+		(defconst g-fire-galley-line 170)
+		(defconst g-demolition-raft-line 171)
+		(defconst g-watch-tower-line 172)	;counts watch tower, guard tower, and keep
+		(defconst g-camel-line 173)			;includes WK imperial camel
+		(defconst g-unique-unit-line 174)
+		(defconst g-siege-class 175)		;counts all siege weapons (siege-class excludes several siege weapons)
+		(defconst g-save-for-support-unit-techs 176)
+		(defconst g-primary-unit 177)
+		(defconst g-support-unit 178)
+		(defconst g-previous-support-unit 179)
+		(defconst g-required-attack-num 180)
+		(defconst g-stop-attack-num 181)
+		(defconst g-attack-method-flag 182)
 			(defconst USE-TSA 1)
 			(defconst USE-ATTACK-GROUPS 2)
-			(defconst USE-DUC 4)
-		(defconst g-attack-objective 192)
+			(defconst USE-ATTACK-NOW 4)
+			(defconst USE-DUC 8)
+		(defconst g-attack-objective 183)
 			(defconst ATTACK-TARGET-ENEMY 1)
 			(defconst ATTACK-POCKET 2)
 			(defconst HELP-ALLY-DEFEND 3)
 			(defconst HELP-ALLY-ATTACK 4)
-		(defconst g-resign 203)
+		(defconst g-resign 184)
 			;0 = NO
 			(defconst ASK-FOR-RES 1)
 			(defconst DECIDE-TO-RESIGN 2)
 			(defconst CHAT-FAREWELL 3)
 			(defconst RESIGN 4)
-		(defconst g-closest-enemy 204)
-		(defconst g-closest-enemy-building-distance 205)
-		(defconst g-nearest-enemy-defenses-distance 206)
-		(defconst g-gather-inside 207)
+		(defconst g-closest-enemy 185)
+		(defconst g-closest-enemy-building-distance 186)
+		(defconst g-nearest-enemy-defenses-distance 187)
+		(defconst g-gather-inside 188)
 			(defconst UNGARRISON 2)
-		(defconst g-initial-chat-delay 208)
-		(defconst g-get-enemy-locations 209)
+		(defconst g-initial-chat-delay 189)
+		(defconst g-get-enemy-locations 190)
 			(defconst BEGIN-FINDING-PLAYERS 0)
 			(defconst DONE-FINDING-PLAYERS 9)
-		(defconst g-enemy-strategy 210)
-		(defconst g-enemy-strategy-type 211)
-		(defconst g-enemy-swordsmen-count 212)			;militia, woad raider, throwing axemen, berserk, shotel warrior, gbeto, karambit warrior, foot konnik
-		(defconst g-enemy-spearmen-count 213)			;spearman, kamayuk
-		(defconst g-enemy-eagle-warrior-count 214)
-		(defconst g-enemy-condottiero-count 215)
-		(defconst g-enemy-foot-archers-count 216)		;archer, longbowman, chu-ko-nu, plumed archer, janissary, rattan archer
-		(defconst g-enemy-skirmishers-count 217)		;skirmisher, genitour
-		(defconst g-enemy-cavalry-archers-count 218)	;cavalry archer, arambai, war wagon, mangudai, conquistador, kipchak
-		(defconst g-enemy-hand-cannoneer-slinger-count 219)	;hand cannoneer, slinger
-		(defconst g-enemy-light-cavalry-count 220)		;scout cavalry
-		(defconst g-enemy-heavy-cavalry-count 221)		;knight, tarkan, magyar huszar, boyar, konnik, keshik, steppe lancer
-		(defconst g-enemy-camel-count 222)				;camel
-		(defconst g-enemy-elephants-count 223)			;battle elephant, elephant archer, ballista elephant, war elephant
-		(defconst g-enemy-field-siege-count 224)		;mangonel, scorpion, organ gun
-		(defconst g-enemy-special-unique-unit-count 225);jaguar warrior, camel archer, cataphract, huskarl, genoese crossbowman, samurai, leitis, mameluke, teutonic knight
-		(defconst g-enemy-special-unique-unit-flag 226)
+		(defconst g-enemy-strategy 191)
+		(defconst g-enemy-strategy-type 192)
+		(defconst g-enemy-swordsmen-count 193)			;militia, woad raider, throwing axemen, berserk, shotel warrior, gbeto, karambit warrior, foot konnik
+		(defconst g-enemy-spearmen-count 194)			;spearman, kamayuk
+		(defconst g-enemy-eagle-warrior-count 195)
+		(defconst g-enemy-condottiero-count 196)
+		(defconst g-enemy-foot-archers-count 197)		;archer, longbowman, chu-ko-nu, plumed archer, janissary, rattan archer
+		(defconst g-enemy-skirmishers-count 198)		;skirmisher, genitour
+		(defconst g-enemy-cavalry-archers-count 199)	;cavalry archer, arambai, war wagon, mangudai, conquistador, kipchak
+		(defconst g-enemy-hand-cannoneer-slinger-count 200)	;hand cannoneer, slinger
+		(defconst g-enemy-light-cavalry-count 201)		;scout cavalry
+		(defconst g-enemy-heavy-cavalry-count 202)		;knight, tarkan, magyar huszar, boyar, konnik, keshik, steppe lancer
+		(defconst g-enemy-camel-count 203)				;camel
+		(defconst g-enemy-elephants-count 204)			;battle elephant, elephant archer, ballista elephant, war elephant
+		(defconst g-enemy-field-siege-count 205)		;mangonel, scorpion, organ gun
+		(defconst g-enemy-special-unique-unit-count 206);jaguar warrior, camel archer, cataphract, huskarl, genoese crossbowman, samurai, leitis, mameluke, teutonic knight
+		(defconst g-enemy-special-unique-unit-flag 207)
 			(defconst JAGUAR-WARRIOR-FLAG 1)
 			(defconst CAMEL-ARCHER-FLAG 2)
 			(defconst CATAPHRACT-FLAG 4)
@@ -7218,29 +7687,25 @@
 			(defconst LEITIS-FLAG 64)
 			(defconst MAMELUKE-FLAG 128)
 			(defconst TEUTONIC-KNIGHT-FLAG 256)
-		(defconst g-enemy-monks-count 227)				;monk, missionary
-		(defconst g-primary-enemy-threat 230)
-		(defconst g-constant-train-unit 231)
-		(defconst g-desired-num-constant-train-unit 232)
-		(defconst g-desired-num-constant-train-unit-goal 233)
-		(defconst g-max-food-needed 234)
-		(defconst g-max-wood-needed 235)
-		(defconst g-max-stone-needed 236)
-		(defconst g-max-gold-needed 237)
-		(defconst g-important-techs-food-needed 238)
-		(defconst g-important-techs-wood-needed 239)
-		(defconst g-important-techs-stone-needed 240)
-		(defconst g-important-techs-gold-needed 241)
-		(defconst g-food-needed 242)
-		(defconst g-wood-needed 243)
-		(defconst g-stone-needed 244)
-		(defconst g-gold-needed 245)
-		(defconst g-team-partner 246)
-		(defconst g-team-partner-identity 247)	;uses same constants as goal 420
-		(defconst g-projectile-retreat 248)
-		(defconst g-first-attack-launched 249)
-		(defconst g-allow-queued-villagers 250)
-		(defconst g-primary-unit-tech-progress 251)
+		(defconst g-enemy-monks-count 208)				;monk, missionary
+		(defconst g-primary-enemy-threat 209)
+		(defconst g-constant-train-unit 210)
+		(defconst g-desired-num-constant-train-unit 211)
+		(defconst g-desired-num-constant-train-unit-goal 212)
+		(defconst g-max-food-needed 213)
+		(defconst g-max-wood-needed 214)
+		(defconst g-max-stone-needed 215)
+		(defconst g-max-gold-needed 216)
+		(defconst g-important-techs-food-needed 217)
+		(defconst g-important-techs-wood-needed 218)
+		(defconst g-important-techs-stone-needed 219)
+		(defconst g-important-techs-gold-needed 220)
+		(defconst g-team-partner 221)
+		(defconst g-team-partner-identity 222)	;uses same constants as goal 420
+		(defconst g-projectile-retreat 223)
+		(defconst g-first-attack-launched 224)
+		(defconst g-allow-queued-villagers 225)
+		(defconst g-primary-unit-tech-progress 226)
 			(defconst REQUIRED-FEUDAL-COMPLETE 9)
 			(defconst PRIORITY-FEUDAL-COMPLETE 19)
 			(defconst SECONDARY-FEUDAL-COMPLETE 29)
@@ -7253,94 +7718,94 @@
 			(defconst PRIORITY-IMPERIAL-COMPLETE 99)
 			(defconst SECONDARY-IMPERIAL-COMPLETE 109)
 			(defconst ALL-IMPERIAL-COMPLETE 119)
-		(defconst g-support-unit-tech-progress 252)
-		(defconst g-eco-tech-progress 253)
-		(defconst g-current-age-primary-unit-tech-progress 254)
+		(defconst g-support-unit-tech-progress 227)
+		(defconst g-eco-tech-progress 228)
+		(defconst g-current-age-primary-unit-tech-progress 229)
 			(defconst INCOMPLETE 0)
 			(defconst REQUIRED-COMPLETE 1)
 			(defconst PRIORITY-COMPLETE 2)
 			(defconst SECONDARY-COMPLETE 3)
 			(defconst ALL-COMPLETE 4)
-		(defconst g-current-age-support-unit-tech-progress 255)
-		(defconst g-current-age-eco-tech-progress 256)
-		(defconst g-primary-unit-class 257)
-		(defconst g-support-unit-class 258)
-		(defconst g-militia-tech-progress 259)
-		(defconst g-spearman-tech-progress 260)
-		(defconst g-eagle-warrior-tech-progress 261)
-		(defconst g-condottiero-tech-progress 262)
-		(defconst g-archer-tech-progress 263)
-		(defconst g-skirmisher-tech-progress 264)
-		(defconst g-cavalry-archer-tech-progress 265)
-		(defconst g-hand-cannoneer-tech-progress 266)
-		(defconst g-slinger-tech-progress 267)
-		(defconst g-genitour-tech-progress 268)
-		(defconst g-scout-cavalry-tech-progress 269)
-		(defconst g-knight-tech-progress 270)
-		(defconst g-camel-tech-progress 271)
-		(defconst g-battle-elephant-tech-progress 272)
-		(defconst g-steppe-lancer-tech-progress 273)
-		(defconst g-unique-unit-tech-progress 274)
-		(defconst g-min-military-pop 275)
-		(defconst g-max-working-town-centers 276)
-		(defconst g-max-working-markets 277)
-		(defconst g-max-working-monasteries 278)
-		(defconst g-max-working-barracks 279)
-		(defconst g-max-working-archery-ranges 280)
-		(defconst g-max-working-stables 281)
-		(defconst g-max-working-siege-workshops 282)
-		(defconst g-max-working-castles 283)
-		(defconst g-max-working-docks 284)
-		(defconst g-villager-training 285)
+		(defconst g-current-age-support-unit-tech-progress 230)
+		(defconst g-current-age-eco-tech-progress 231)
+		(defconst g-primary-unit-class 232)
+		(defconst g-support-unit-class 233)
+		(defconst g-militia-tech-progress 234)
+		(defconst g-spearman-tech-progress 235)
+		(defconst g-eagle-warrior-tech-progress 236)
+		(defconst g-condottiero-tech-progress 237)
+		(defconst g-archer-tech-progress 238)
+		(defconst g-skirmisher-tech-progress 239)
+		(defconst g-cavalry-archer-tech-progress 240)
+		(defconst g-hand-cannoneer-tech-progress 241)
+		(defconst g-slinger-tech-progress 242)
+		(defconst g-genitour-tech-progress 243)
+		(defconst g-scout-cavalry-tech-progress 244)
+		(defconst g-knight-tech-progress 245)
+		(defconst g-camel-tech-progress 246)
+		(defconst g-battle-elephant-tech-progress 247)
+		(defconst g-steppe-lancer-tech-progress 248)
+		(defconst g-unique-unit-tech-progress 249)
+		(defconst g-min-military-pop 250)
+		(defconst g-max-working-town-centers 251)
+		(defconst g-max-working-markets 252)
+		(defconst g-max-working-monasteries 253)
+		(defconst g-max-working-barracks 254)
+		(defconst g-max-working-archery-ranges 255)
+		(defconst g-max-working-stables 256)
+		(defconst g-max-working-siege-workshops 257)
+		(defconst g-max-working-castles 258)
+		(defconst g-max-working-docks 259)
+		(defconst g-villager-training 260)
 			;OFF = 0
 			(defconst LIMITED-TRAINING 1)
 			(defconst TRAIN-WITHOUT-ESCROW 2)
 			(defconst LIMITED-TRAIN-WITH-ESCROW 3)
 			(defconst TRAIN-WITH-ESCROW 4)
-		(defconst g-place-control-used 286)
-		(defconst g-traded 287)
-		(defconst g-total-objects-food-needed 288)
-		(defconst g-total-objects-wood-needed 289)
-		(defconst g-total-objects-stone-needed 290)
-		(defconst g-total-objects-gold-needed 291)
-		(defconst g-total-techs-food-needed 292)
-		(defconst g-total-techs-wood-needed 293)
-		(defconst g-total-techs-stone-needed 294)
-		(defconst g-total-techs-gold-needed 295)
-		(defconst g-current-farming-gathering-rate 296)
-		(defconst g-current-wood-gathering-rate 297)
-		(defconst g-current-stone-gathering-rate 298)
-		(defconst g-current-gold-gathering-rate 299)
-		(defconst g-required-num-food-vils 300)
-		(defconst g-required-num-wood-vils 301)
-		(defconst g-required-num-stone-vils 302)
-		(defconst g-required-num-gold-vils 303)
-		(defconst g-total-needed-villagers 304)
-		(defconst g-percent-dynamic-gathering 305)
-		(defconst g-map-size-squared 306)
-		(defconst g-total-decaying-hunt-food 307)
-		(defconst g-recent-food-gathered 308)
-		(defconst g-recent-wood-gathered 309)
-		(defconst g-recent-stone-gathered 310)
-		(defconst g-recent-gold-gathered 311)
-		(defconst g-total-food-gathered 312)
-		(defconst g-total-wood-gathered 313)
-		(defconst g-total-stone-gathered 314)
-		(defconst g-total-gold-gathered 315)
-		(defconst g-previous-garrisonable-building-count 316)
-		(defconst g-food-escrow-type 317)
+		(defconst g-place-control-used 261)
+		(defconst g-traded 262)
+		(defconst g-total-objects-food-needed 263)
+		(defconst g-total-objects-wood-needed 264)
+		(defconst g-total-objects-stone-needed 265)
+		(defconst g-total-objects-gold-needed 266)
+		(defconst g-total-techs-food-needed 267)
+		(defconst g-total-techs-wood-needed 268)
+		(defconst g-total-techs-stone-needed 269)
+		(defconst g-total-techs-gold-needed 270)
+		(defconst g-current-farming-gathering-rate 271)
+		(defconst g-current-wood-gathering-rate 272)
+		(defconst g-current-stone-gathering-rate 273)
+		(defconst g-current-gold-gathering-rate 274)
+		(defconst g-required-num-food-vils 275)
+		(defconst g-required-num-wood-vils 276)
+		(defconst g-required-num-stone-vils 277)
+		(defconst g-required-num-gold-vils 278)
+		(defconst g-total-needed-villagers 279)
+		(defconst g-percent-dynamic-gathering 280)
+		(defconst g-map-size-squared 281)
+		(defconst g-total-decaying-hunt-food 282)
+		(defconst g-recent-food-gathered 283)
+		(defconst g-recent-wood-gathered 284)
+		(defconst g-recent-stone-gathered 285)
+		(defconst g-recent-gold-gathered 286)
+		(defconst g-total-food-gathered 287)
+		(defconst g-total-wood-gathered 288)
+		(defconst g-total-stone-gathered 289)
+		(defconst g-total-gold-gathered 290)
+		(defconst g-previous-garrisonable-building-count 291)
+		(defconst g-food-escrow-type 292)
 			;OFF = 0
 			(defconst IMMEDIATE 1)
 			(defconst ACCUMULATED 2)
-		(defconst g-wood-escrow-type 318)
-		(defconst g-stone-escrow-type 319)
-		(defconst g-gold-escrow-type 320)
-		(defconst g-barracks-next-unit 321)
-		(defconst g-archery-range-next-unit 322)
-		(defconst g-stable-next-unit 323)
-		(defconst g-siege-workshop-next-unit 324)
-		(defconst g-dock-next-unit 325)
-		(defconst g-attack-coordination 327)
+		(defconst g-wood-escrow-type 293)
+		(defconst g-stone-escrow-type 294)
+		(defconst g-gold-escrow-type 295)
+		(defconst g-barracks-next-unit 296)
+		(defconst g-archery-range-next-unit 297)
+		(defconst g-stable-next-unit 298)
+		(defconst g-siege-workshop-next-unit 299)
+		(defconst g-dock-next-unit 300)
+		(defconst g-attack-coordination 301)
 			; OFF = 0
 			(defconst ATTACK-STARTED 1)
 			(defconst SOLDIERS-GATHERED 2)
@@ -7352,134 +7817,395 @@
 			(defconst STOP-PATROL 9)
 			(defconst STOP-ATTACKING 11)
 			(defconst RETREAT 12)
-		(defconst g-attack-target-id 328)
-		(defconst g-usable-farm-count 329)
-		(defconst g-usable-farm-count-total 330)
-		(defconst g-current-gold-camp-total 331)
-		(defconst g-current-stone-camp-total 332)
-		(defconst g-build-line-rule-id 333)
-		(defconst g-place-point-rule-id 334)
-		(defconst g-place-control-rule-id 335)
-		(defconst g-place-forward-rule-id 336)
-		(defconst g-end-use-resources-rule-id 337)
-		(defconst g-place-control-bldg 338)
-		(defconst g-place-point-bldg 339)
-		(defconst g-mill-construction-rule-id 340)
-		(defconst g-mc-construction-rule-id 341)
-		(defconst g-lc-construction-rule-id 342)			
-		(defconst g-stone-camp-construction-rule-id 343)	
-		; (defconst g-primary-unit-score 344)			
-		; (defconst g-primary-unit-score-goal 345)		
-		; (defconst g-next-most-effective-unit 346)
-		; (defconst g-next-most-effective-unit-score 347)
-		; (defconst g-seen-enemy-military-pop 348)
-		; (defconst g-previous-seen-enemy-military-pop 349)
+		(defconst g-attack-target-id 302)
+		(defconst g-usable-farm-count 303)
+		(defconst g-usable-farm-count-total 304)
+		(defconst g-current-gold-camp-total 305)
+		(defconst g-current-stone-camp-total 306)
+		(defconst g-place-control-bldg 307)
+		(defconst g-place-point-bldg 308)
+		(defconst g-local-total 309)					;number of objects in local list
+		(defconst g-local-last 310)						;number of objects found in last local search
+		(defconst g-remote-total 311)					;number of objects in remote list
+		(defconst g-remote-last 312)					;number of objects found in last remote search
+		;Single Goals: 313-340
+			(defconst g-temp 313)
+			(defconst g-temp2 314)
+			(defconst g-temp3 315)
+			(defconst g-temp4 316)
+			(defconst g-temp5 317)
+			(defconst g-temp6 318)
+			(defconst g-loop-counter 319)
+			(defconst g-loop-counter2 320)
+			(defconst i 319)
+			(defconst j 320)
 
-		(defconst g-build-line-type 350)					;type of method used to place buildings with Build Line, also functions as an on/off switch for Build Line construction
-			(defconst BUILD-LINE-POINT-NORMAL 1)					;imitate up-build place-point for normal buildings
-			(defconst BUILD-LINE-POINT-MINING-DROPSITE 2)			;imitate up-build place-point for gold and stone dropsites
-			(defconst BUILD-LINE-POINT-LUMBER-DROPSITE 3)			;imitate up-build place-point for wood dropsites
-			(defconst BUILD-LINE-POINT-MILL-DROPSITE 4)				;imitate up-build place-point for food dropsites
-			(defconst BUILD-LINE-NORMAL 5)							;imitate up-build place-normal
-			(defconst BUILD-LINE-FORWARD 6)							;imitate up-build place-forward
-			(defconst BUILD-LINE-CONTROL 7)							;imitate up-build place-control
-			(defconst BUILD-LINE-FARM 8)							;placement for farms
-		(defconst g-build-line-bldg 351)					;building to be constructed
-		(defconst g-build-line-bldg-foundation 352)			;foundation ID of building to be constructed (required for town centers, gates, etc.)
-		(defconst g-build-line-zone-radius 353)				;current radius we are checking to build the building from g-build-line-point-x
-		(defconst g-build-line-max-zone-radius 354)			;maximum zone radius before Build Line gives up
-		; (defconst g-build-line-expand 355)					;determines whether the zone radius can increase
-		(defconst g-build-line-expand-direction 356)		;imitates sn-placement-fail-delta
-			(defconst NO-DIRECTION 0)
-			(defconst TOWARD-TC 1)
-			(defconst HALF-TOWARD-TC 2)
-			(defconst AWAY-FROM-TC 3)
-			(defconst TOWARD-TARGET 4)
-			(defconst TOWARD-CENTER 5)
-			(defconst AWAY-FROM-TARGET 6)
-			(defconst AWAY-FROM-CENTER 7)
-		(defconst g-build-line-enemy-bldg-distance 357)		;distance buildings must be placed from enemy buildings		
-		(defconst g-build-line-min-distance 358)			;min distance the building may be constructed from the home TC			
-		(defconst g-build-line-max-distance 359)			;max distance the building may be constructed from the home TC
-		(defconst g-build-line-escrow 360)
-		(defconst g-build-line-point-x 361)
-		(defconst g-build-line-point-y 362)
-		(defconst g-build-line-size 363)
+			;Attacking.per
+			(defconst g-required-attack-num-reduction 321)
+			(defconst g-required-attack-num-increase 322)
+			(defconst g-new-tsa-size 321)
+			(defconst g-projectile-player 321)
+			(defconst g-projectile-tower-id 322)
+			(defconst g-closest-enemy-building-distance 323)
 
-		;Build Line (Dropsites only)
-		(defconst g-build-line-resource-type 364)			;resource type to place building by (used with up-gaia-type-count)
-		(defconst g-build-line-resource-id 365)				;map ID of resource found
-		(defconst g-build-line-backup-resource-id 366)		;used to find a second possible tree to build lumber camp nearby
-		(defconst g-build-line-dropsite-distance 367)		;distance new building must be from other dropsites for the same resource
-		(defconst g-build-line-net-dropsite-distance 368)	;tracks net camp distance of available dropsite locations. Formula: Distance to flank/center minus (2 * distance to town center)
+			;Building Construction.per
+			(defconst g-checkpoint 321)
+			(defconst g-total-num-houses 322)
+			(defconst g-loop-counter-is-odd 323)
+			(defconst g-num-tiles 324)
+			(defconst g-pending-houses 327)
+			(defconst g-vil1-id 321)
+			(defconst g-vil2-id 322)
+			(defconst g-vil3-id 323)
+			(defconst g-percent-desired-barracks-built 324)
+			(defconst g-percent-desired-ranges-built 325)
+			(defconst g-percent-desired-stables-built 326)
+			(defconst g-new-houses-needed 321)
+			(defconst g-current-houses 323)
+			; (defconst g-pending-houses 329)
+			(defconst g-current-gold-mine-map-id 322)
+			(defconst g-mine-distance-to-enemy 322)
+			(defconst g-soldier-gather-point-distance-to-enemy 323)
+			(defconst g-furthest-wood-dropsite-distance 321)
+			(defconst g-furthest-mining-dropsite-distance 321)
+			(defconst g-pending-farms 322)
+			(defconst g-current-farms 323)
 
-		;Build Line (Non Dropsites only)
-		(defconst g-build-line-player 364)
-		(defconst g-build-line-control-bldg 365)
-		(defconst g-build-line-control-bldg-distance 366)
-		(defconst g-build-line-allow-beyond-town 367)
-		(defconst g-build-line-min-separation 368)
-		
-			; (defconst g- 373)
-			; (defconst g- 374)
-			; (defconst g- 375)
-			; (defconst g- 376)
-			; (defconst g- 377)
-			; (defconst g- 378)
-			; (defconst g- 379)
-			; (defconst g- 380)
-			; (defconst g- 381)
-			; (defconst g- 382)
-			; (defconst g- 383)
-			; (defconst g- 384)
-			; (defconst g- 385)
-			; (defconst g- 386)
-			; (defconst g- 387)
-			; (defconst g- 388)
-			; (defconst g- 389)
-			; (defconst g- 390)
-			; (defconst g- 391)
+			;Desired Object Counts.per
+			(defconst g-total-gold-dropsites 321)
+			(defconst g-needed-gold-dropsites 322)
+			(defconst g-total-stone-dropsites 321)
+			(defconst g-needed-stone-dropsites 322)
+			(defconst g-total-wood-dropsites 321)
+			(defconst g-needed-wood-dropsites 322)
+			(defconst g-num-tcs 321)
+			(defconst g-num-mills 322)
+			(defconst g-desired-num-siege-workshop-units 321)
+			(defconst g-new-tcs-needed 321)
+			(defconst g-total-desired-military-count 321)
+			(defconst g-desired-military-adjustment-factor 322)
+
+			;DUC.per
+			(defconst g-current-scout-goal 321)				;detects whether we're tasking scout 1, 2, or 3
+			(defconst g-current-scout-id 322)				;stores the scout ID that g-current-scout-goal is set to
+			(defconst g-current-scout-num 323)
+			(defconst g-cross-tiles-amount 324)
+			(defconst g-adjusted-scouting-distance 325)
+			(defconst g-wrong-sheep-id 326)
+			(defconst g-enemy-strength-near-tc 321)
+			(defconst g-our-strength-near-tc 322)
+			(defconst g-building-avoidance-radius 323)
+			(defconst g-projectile-retreat 324)
+
+			;Escrow.per
+			(defconst g-prior-wood-escrow-type 321)
+			(defconst g-prior-food-escrow-type 322)
+			(defconst g-prior-gold-escrow-type 323)
+			(defconst g-prior-stone-escrow-type 324)
+
+			;Gathering.per
+			(defconst g-min-number-foragers 322)
+			(defconst g-food-price 321)
+			(defconst g-wood-price 322)
+			(defconst g-stone-price 323)
+			(defconst g-min-gold-to-sell 324)
+			(defconst g-traded 325)
+			(defconst g-wood-needed-for-farms 321)
+			(defconst g-gather-rate 322)
+			(defconst g-available-training-time 323)
+			(defconst g-excess-resource-amount 321)
+			(defconst g-current-farming-gathering-rate 322)
+			(defconst g-current-wood-gathering-rate 323)
+			(defconst g-current-stone-gathering-rate 324)
+			(defconst g-current-gold-gathering-rate 325)
+			(defconst g-percent-static-gathering 321)
+			(defconst g-total-dynamic-gathering-vils 322)
+			(defconst g-total-desired-future-vils 323)
+			(defconst g-calculated-desired-num-vils 324)
+			(defconst g-next-villager-resource-assignment 325)
+			(defconst g-food-current-to-future-villager-ratio 326)
+			(defconst g-wood-current-to-future-villager-ratio 327)
+			(defconst g-stone-current-to-future-villager-ratio 328)
+			(defconst g-gold-current-to-future-villager-ratio 329)
+			(defconst g-lowest-current-to-future-villager-ratio 330)
+			(defconst g-gathering-percentage-sum 331)
+
+			;Goals.per
+			(defconst g-selected-general 321)
+			(defconst g-adjusted-military-parity 321)
+			(defconst g-adjusted-pop-parity 322)
+			(defconst g-adjusted-peaceful-town-size 321)
+			(defconst g-scout-distance-increase-timer-length 321)
+			(defconst g-housing-support 321)
+			(defconst g-current-pop 322)
+			(defconst g-queued-pop 323)
+			(defconst g-far-boar 321)
+			(defconst g-boar-hunting-conditions-met 322)
+			(defconst g-num-enemies 321)
+			(defconst g-average-num-enemy-military 322)
+			(defconst g-sum-enemy-military-counts 323)
+			(defconst g-ratio-enemy-military 324)
+			(defconst g-lowest-ally-distance 321)
+			(defconst g-top-enemy-military-type 321)
+			(defconst g-weighted-top-enemy-military-type 322)
+			(defconst g-current-enemy-military-type-count 323)
+			(defconst g-previous-total-food-gathered 321)
+			(defconst g-previous-total-wood-gathered 322)
+			(defconst g-previous-total-stone-gathered 323)
+			(defconst g-previous-total-gold-gathered 324)
+			(defconst g-percent-desired-trained 321)
+			(defconst g-percent-desired-trained 321)
+			(defconst g-lowest-percent-desired-trained 322)
+			(defconst g-enemy-strength-in-town 321)
+			(defconst g-own-strength 322)
+			(defconst g-current-garrisonable-building-count 323)
+
+			;Personality.per
+			(defconst g-initial-chat-delay 322)
+			(defconst g-get-enemy-locations 323)
+				(defconst BEGIN-FINDING-PLAYERS 0)
+				(defconst DONE-FINDING-PLAYERS 9)
+
+			;Resign.per
+			(defconst g-resign 321)
+			(defconst g-team-population-ratio 322)
+
+			;Strategic Numbers.per
+			(defconst g-max-tile-difference 321)
+			(defconst g-temp-tile-difference 322)
+
+			;Technology Research.per
+			(defconst g-desired-num-constant-train-unit 321)
+
+			;Functions/Build Line Lumber.per (also Mining and Mill)
+			(defconst g-sub-checkpoint 322)
+			(defconst g-weighted-distance 323)
+			(defconst g-weighted-distance-from-tc 324)
+
+			;Functions/Build Line.per
+			(defconst g-placement-zone-size-diameter 321)
+			(defconst g-building-placement-radius 322)
+			(defconst g-building-clearance-size 323)
+
+			;Army Micro.per
+			;Universal temp goals
+			(defconst g-current-group-flag-goal-id 321)				;Used throughout DUC code
+			(defconst g-current-group-flag 322)						;Used throughout DUC code
+			(defconst g-current-group-action 323)					;Used throughout DUC code
+			(defconst g-current-group-action-goal-id 324)			;Used throughout DUC code
+			(defconst g-current-group-target-object-id 325)			;Used throughout DUC code
+			(defconst g-current-group-target-object-goal-id 326)	;Used throughout DUC code
+			(defconst g-current-group-type-flag-goal-id 327)		;Used throughout DUC code
+			(defconst g-current-group-type-flag 328)				;Used throughout DUC code
+			(defconst g-current-group-destination-time 329)			;Used throughout DUC code
+			(defconst g-current-group-destination-time-goal-id 330)	;Used throughout DUC code
+			(defconst g-current-group-avoidance-counter 331)		;Used throughout DUC code
+			(defconst g-current-group-avoidance-counter-goal-id 332);Used throughout DUC code
+			;Local Attack Target temp goals
+			(defconst g-current-group-min-range 333)				;Used ONLY in Set Local Attack Target section
+			(defconst g-current-group-target-selection-status 334)	;Used ONLY in Set Local Attack Target section
+				(defconst SKIP 3426)
+				(defconst SEARCH-FOR-POTENTIAL-TARGETS 3427)
+				(defconst FOUND-POTENTIAL-TARGETS 3428)
+				(defconst FOUND-UNITS-TO-TARGET 3429)
+				(defconst FOUND-BUILDINGS-TO-TARGET 3430)
+				(defconst TARGET-UNIT-SET 3431)
+				(defconst TARGET-BUILDING-SET 3432)
+			(defconst g-current-group-potential-target-score 335)	;Used ONLY in Set Local Attack Target section
+			(defconst g-current-group-best-potential-target-score 336)	;Used ONLY in Set Local Attack Target section
+			(defconst g-current-group-current-target-score 337)		;Used ONLY in Set Local Attack Target section
+			(defconst g-current-group-potential-target-id 338)		;Used ONLY in Set Local Attack Target section
+			;Dangerous Object temp goals
+			(defconst g-dangerous-object-id 333)					;Used ONLY in Retreat From Dangerous Object sections
+			(defconst g-dangerous-object-range 334)					;Used in Retreat From Dangerous Object and Check if in Range of Dangerous Object sections
+			(defconst g-current-group-avoidance-location-flag 335)	;Used ONLY in Retreat From Dangerous Object sections
+				(defconst LOC1-REACHABLE-FLAG 1)
+				(defconst LOC1-SAFE-FLAG 2)
+				(defconst LOC2-REACHABLE-FLAG 4)
+				(defconst LOC2-SAFE-FLAG 8)
+			;Combine Groups temp goals
+			(defconst g-current-nearby-group 333)					;Used ONLY in Combine Groups section
+			(defconst g-current-nearby-group-flag 334)				;Used ONLY in Combine Groups section
+			(defconst g-current-nearby-group-flag-goal-id 335)		;Used ONLY in Combine Groups section
+			(defconst g-current-nearby-group-type-flag 336)			;Used ONLY in Combine Groups section
+			(defconst g-current-nearby-group-type-flag-goal-id 337)	;Used ONLY in Combine Groups section
+			;Set Group Destination temp goals
+			(defconst g-current-group-destination-object-id 333)	;Used ONLY in Set Group Destination section
+			(defconst g-current-group-best-destination-score 334)	;Used ONLY in Set Group Destination section
+			(defconst g-current-group-destination-score 335)		;Used ONLY in Set Group Destination section
+			(defconst g-current-group-destination-split-goal 336)	;Used ONLY in Set Group Destination section
+
+		;Resource Goals: 341-352
+			(defconst g-food-cost 341)
+			(defconst g-wood-cost 342)
+			(defconst g-stone-cost 343)
+			(defconst g-gold-cost 344)
+			(defconst g-food-delta 345)
+			(defconst g-wood-delta 346)
+			(defconst g-stone-delta 347)
+			(defconst g-gold-delta 348)
+
+			;Gathering.per
+			(defconst g-food-needed 349)
+			(defconst g-wood-needed 350)
+			(defconst g-gold-needed 351)
+			(defconst g-stone-needed 352)
+
+		;Point Goals: 353-376
+			(defconst g-point-x 369)
+			(defconst g-point-y 370)
+			(defconst g-point2-x 371)
+			(defconst g-point2-y 372)
+			(defconst g-point3-x 373)
+			(defconst g-point3-y 374)
+			(defconst g-point4-x 375)
+			(defconst g-point4-y 376)
+
+			;Building Construction.per
+			(defconst g-selected-build-location-x 353)
+			(defconst g-selected-build-location-y 354)
+			(defconst g-current-tile-to-check-x 355)
+			(defconst g-current-tile-to-check-y 356)
+			(defconst g-gold-mine-x 353)
+			(defconst g-gold-mine-y 354)
+			(defconst g-dropsite-x 353)
+			(defconst g-dropsite-y 354)
+
+			;DUC.per
+			(defconst g-enemy-defensive-building-x 353)
+			(defconst g-enemy-defensive-building-y 354)
+			(defconst g-nearby-unit-x 355)
+			(defconst g-nearby-unit-y 356)
+			(defconst g-retreat-location-x 357)
+			(defconst g-retreat-location-y 358)
+			(defconst g-next-scouting-location-x 353)
+			(defconst g-next-scouting-location-y 354)
+			(defconst g-adjusted-next-scouting-location-x 355)
+			(defconst g-adjusted-next-scouting-location-y 356)
+			(defconst g-explore-point-x 357)
+			(defconst g-explore-point-y 358)
+			(defconst g-push-deer-x 353)
+			(defconst g-push-deer-y 354)
+			(defconst g-sheep-under-tc-x 353)
+			(defconst g-sheep-under-tc-y 354)
+
+			;Strategic Numbers.per
+			(defconst g-min-x 353)
+			(defconst g-min-y 354)
+			(defconst g-max-x 355)
+			(defconst g-max-y 356)
+
+			;Functions/Build Line.per
+			; (defconst g-selected-build-location-x 353)
+			; (defconst g-selected-build-location-y 354)
+			; (defconst g-current-tile-to-check-x 355)
+			; (defconst g-current-tile-to-check-y 356)
+			(defconst g-offset-x 357)
+			(defconst g-offset-y 358)
+			(defconst g-primary-reference-x 353)
+			(defconst g-primary-reference-y	354)
+
+			;Functions/Build Line Lumber.per
+			(defconst g-current-tree-x 353)
+			(defconst g-current-tree-y 354)
+			(defconst g-best-tree-x 355)
+			(defconst g-best-tree-y 356)
+
+			;Army Micro.per
+			(defconst g-current-group-location-x 353)
+			(defconst g-current-group-location-y 354)
+			(defconst g-current-group-location-x-goal-id 355)
+			(defconst g-current-group-location-y-goal-id 356)
+			(defconst g-current-group-destination-x 357)
+			(defconst g-current-group-destination-y 358)
+			(defconst g-current-group-destination-x-goal-id 359)
+			(defconst g-current-group-destination-y-goal-id 360)
+			(defconst g-dangerous-object-x 361)
+			(defconst g-dangerous-object-y 362)
+			(defconst g-current-nearby-group-location-x 363)
+			(defconst g-current-nearby-group-location-y 364)
+			(defconst g-current-nearby-group-location-x-goal-id 365)
+			(defconst g-current-nearby-group-location-y-goal-id 366)
+			(defconst g-dangerous-object-avoidance-location1-x 363)
+    		(defconst g-dangerous-object-avoidance-location1-y 364)
+			(defconst g-dangerous-object-avoidance-location2-x 365)
+    		(defconst g-dangerous-object-avoidance-location2-y 366)
+			(defconst g-dangerous-object-avoidance-location3-x 367)
+			(defconst g-dangerous-object-avoidance-location3-y 368)
+
+		; (defconst g- 377)
+		; (defconst g- 378)
+		; (defconst g- 379)
+		; (defconst g- 380)
+		; (defconst g- 381)
+		; (defconst g- 382)
+		; (defconst g- 383)
+		; (defconst g- 384)
+		; (defconst g- 385)
+		; (defconst g- 386)
+		; (defconst g- 387)
+		; (defconst g- 388)
+		; (defconst g- 389)
+		; (defconst g- 390)
+		; (defconst g- 391)
 		(defconst g-attacking 392)
 			; NO = 0
 			; YES = 1
-			; (defconst g- 393)
-			; (defconst g- 394)
-			; (defconst g- 395)
-			; (defconst g- 396)
-			; (defconst g- 397)
-			; (defconst g- 398)
-			; (defconst g- 399)
-			; (defconst g- 400)
 
-		;Build Standard
-		(defconst g-build-standard-type 401)
-			; (defconst BUILD-STANDARD-NORMAL 101)	;no point having extra code for simple build commands
-			; (defconst BUILD-STANDARD-FORWARD 102)	;no point having extra code for simple build commands
-			(defconst BUILD-STANDARD-CONTROL 103)
-			(defconst BUILD-STANDARD-POINT 104)
-		(defconst g-build-standard-bldg 402)
-		(defconst g-build-standard-bldg-foundation 403)
-		(defconst g-build-standard-assign-builders 404)
-		(defconst g-build-standard-escrow 411)
-		(defconst g-build-standard-control-player 406)
-		(defconst g-build-standard-control-bldg 407)
-		(defconst g-build-standard-control-bldg-distance 408)
-		; don't use 420
+		; (defconst g- 393)
+		; (defconst g- 394)
+		; (defconst g- 395)
+		; (defconst g- 396)
+		; (defconst g- 397)
+		; (defconst g- 398)
+		; (defconst g- 399)
+		; (defconst g- 400)
+		;Build Line goals: 401-419
+			(defconst g-build-line-type 401)					;type of method used to place buildings with Build Line, also functions as an on/off switch for Build Line construction
+				(defconst BUILD-LINE-POINT-NORMAL 1)					;imitate up-build place-point for normal buildings
+				(defconst BUILD-LINE-POINT-MINING-DROPSITE 2)			;imitate up-build place-point for gold and stone dropsites
+				(defconst BUILD-LINE-POINT-LUMBER-DROPSITE 3)			;imitate up-build place-point for wood dropsites
+				(defconst BUILD-LINE-POINT-MILL-DROPSITE 4)				;imitate up-build place-point for food dropsites
+				(defconst BUILD-LINE-NORMAL 5)							;imitate up-build place-normal
+				(defconst BUILD-LINE-FORWARD 6)							;imitate up-build place-forward
+				(defconst BUILD-LINE-CONTROL 7)							;imitate up-build place-control
+				(defconst BUILD-LINE-FARM 8)							;placement for farms
+			(defconst g-build-line-bldg 402)					;building to be constructed
+			(defconst g-build-line-bldg-foundation 403)			;foundation ID of building to be constructed (required for town centers, gates, etc.)
+			(defconst g-build-line-zone-radius 404)				;current radius we are checking to build the building from g-build-line-point-x
+			(defconst g-build-line-max-zone-radius 405)			;maximum zone radius before Build Line gives up
+			; (defconst g-build-line-expand 406)					;determines whether the zone radius can increase
+			(defconst g-build-line-expand-direction 407)		;imitates sn-placement-fail-delta
+				(defconst NO-DIRECTION 0)
+				(defconst TOWARD-TC 1)
+				(defconst HALF-TOWARD-TC 2)
+				(defconst AWAY-FROM-TC 3)
+				(defconst TOWARD-TARGET 4)
+				(defconst TOWARD-CENTER 5)
+				(defconst AWAY-FROM-TARGET 6)
+				(defconst AWAY-FROM-CENTER 7)
+			(defconst g-build-line-enemy-bldg-distance 408)		;distance buildings must be placed from enemy buildings		
+			(defconst g-build-line-min-distance 409)			;min distance the building may be constructed from the home TC			
+			(defconst g-build-line-max-distance 410)			;max distance the building may be constructed from the home TC
+			(defconst g-build-line-escrow 411)
+			(defconst g-build-line-point-x 412)
+			(defconst g-build-line-point-y 413)
+			(defconst g-build-line-size 414)
 
-		;Resources Needed
-		(defconst g-use-res-type 401)
-			(defconst USE-RES-UNIT 201)
-			(defconst USE-RES-BUILDING 202)
-			(defconst USE-RES-RESEARCH 203)
-		(defconst g-use-res-name 402)
-		(defconst g-use-res-time 403)
-		(defconst g-use-res-train-name 404)
-		(defconst g-use-res-percent 405)
-		(defconst g-use-res-level 406)
-		(defconst g-use-res-escrow 411)
+			;Build Line (Dropsites only)
+			(defconst g-build-line-resource-type 415)			;resource type to place building by (used with up-gaia-type-count)
+			(defconst g-build-line-resource-id 416)				;map ID of resource found
+			(defconst g-build-line-backup-resource-id 417)		;used to find a second possible tree to build lumber camp nearby
+			(defconst g-build-line-dropsite-distance 418)		;distance new building must be from other dropsites for the same resource
+			(defconst g-build-line-net-dropsite-distance 419)	;tracks net camp distance of available dropsite locations. Formula: Distance to flank/center minus (2 * distance to town center)
 
-			; (defconst g- 418)
-			; (defconst g- 419)
+			;Build Line (Non Dropsites only)
+			(defconst g-build-line-player 415)
+			(defconst g-build-line-control-bldg 416)
+			(defconst g-build-line-control-bldg-distance 417)
+			(defconst g-build-line-allow-beyond-town 418)
+			(defconst g-build-line-min-separation 419)
+
 		(defconst g-identity 420)			; A goal that assigns an ID to the AI that other AIs can detect to know the AI's identity
 			(defconst DOOMSDAY 42)
 			(defconst UNKNOWN 69)
@@ -7495,100 +8221,153 @@
 			(defconst MELEON 2197)
 			(defconst BARBARIAN 4651)
 			(defconst SUBJUGATOR 5678)
-			; (defconst g- 421)
-			; (defconst g- 422)
-			; (defconst g- 423)
-			; (defconst g- 424)
-			; (defconst g- 425)
-			; (defconst g- 426)
-			; (defconst g- 427)
-			; (defconst g- 428)
-			; (defconst g- 429)
-			; (defconst g- 430)
-			; (defconst g- 431)
-			; (defconst g- 432)
-			; (defconst g- 433)
-			; (defconst g- 434)
-			; (defconst g- 435)
-			; (defconst g- 436)
-			; (defconst g- 437)
-			; (defconst g- 438)
-			; (defconst g- 439)
-			; (defconst g- 440)
-			; (defconst g- 441)
-			; (defconst g- 442)
-			; (defconst g- 443)
-			; (defconst g- 444)
-			; (defconst g- 445)
-			; (defconst g- 446)
-			; (defconst g- 447)
-			; (defconst g- 448)
-			; (defconst g- 449)
-			; (defconst g- 450)
-			; (defconst g- 451)
-			; (defconst g- 452)
-			; (defconst g- 453)
-			; (defconst g- 454)
-			; (defconst g- 455)
-			; (defconst g- 456)
-			; (defconst g- 457)
-			; (defconst g- 458)
-			; (defconst g- 459)
-			; (defconst g- 460)
-			; (defconst g- 461)
-			; (defconst g- 462)
-			; (defconst g- 463)
-			; (defconst g- 464)
-			; (defconst g- 465)
-			; (defconst g- 466)
-			; (defconst g- 467)
-			; (defconst g- 468)
-			; (defconst g- 469)
-			; (defconst g- 470)
-			; (defconst g- 471)
-			; (defconst g- 472)
-			; (defconst g- 473)
-			; (defconst g- 474)
-			; (defconst g- 475)
-			; (defconst g- 476)
-			; (defconst g- 477)
+			
+		;Army Control Goals:
+		(defconst g-group1-flag 421)
+			(defconst DANGEROUS-OBJECT-NEARBY-FLAG 1)
+			(defconst WITHIN-RANGE-OF-DANGEROUS-BUILDING-FLAG 2)
+			(defconst ALLOW-COMBINED-GROUPS-FLAG 4)
+			(defconst FOCUS-SINGLE-TARGET-FLAG 8)
+			(defconst FOCUS-MULTIPLE-TARGETS-FLAG 16)
+			(defconst USE-BOX-FORMATION-FLAG 32)
+			(defconst SCOUT-CLOCKWISE-FLAG 64)
+			(defconst SCOUT-COUNTER-CLOCKWISE-FLAG 128)
+			(defconst RAID-MODE-FLAG 256)
+			(defconst ASSAULT-MODE-FLAG 512)
+			; (defconst  1024)    
+			; (defconst  2048)    
+			; (defconst  4096)    
+			; (defconst  8192)    
+			; (defconst  16384)   
+		(defconst g-group2-flag 422)
+		(defconst g-group3-flag 423)
+		(defconst g-group4-flag 424)
+		(defconst g-group5-flag 425)
+		(defconst g-group6-flag 426)
+		(defconst g-group1-type-flag 427)
+			(defconst MELEE-SOLDIER-GROUP-FLAG 1)
+			(defconst RANGED-SOLDIER-GROUP-FLAG 2)  
+			(defconst RANGED-SIEGE-GROUP-FLAG 4)      
+			(defconst MELEE-INFANTRY-GROUP-FLAG 8)
+			(defconst RANGED-INFANTRY-GROUP-FLAG 16)
+			(defconst FOOT-ARCHER-GROUP-FLAG 32)
+			(defconst CAVALRY-ARCHER-GROUP-FLAG 64)
+			(defconst CAVALRY-GROUP-FLAG 128)
+			(defconst MONK-GROUP-FLAG 256)
+			(defconst RAM-GROUP-FLAG 512)
+			(defconst SCORPION-GROUP-FLAG 1024)
+			(defconst MANGONEL-GROUP-FLAG 2048)
+			(defconst CANNON-GROUP-FLAG 4096)
+			(defconst TREBUCHET-GROUP-FLAG 8192)
+			; (defconst -GROUP-FLAG 16384)
+			; (defconst 32768)          ;Anti-infantry sub-group type, defconsts can only be defined up to 32767
+			; (defconst 65536)          ;Anti-pikemen sub-group type
+			; (defconst 131072)         ;Anti-eagles sub-group type
+			; (defconst 262144)         ;Anti-foot-archers sub-group type
+			; (defconst 524288)         ;Anti-cav-archers sub-group type
+			; (defconst 1048576)        ;Anti-skirms sub-group type
+			; (defconst 2097152)        ;Anti-cavalry sub-group type
+			; (defconst 4194304)        ;Anti-camels sub-group type
+			; (defconst 8388608)        ;Anti-elephants sub-group type
+			; (defconst 16777216)       ;Anti-siege sub-group type
+			; (defconst 33554432)       ;Anti-monks sub-group type
+			; (defconst 67108864)       ;Anti-gunpowder sub-group type
+			; (defconst 134217728)      ;Anti-unique-units sub-group type 
+			; (defconst 268435456)               
+			; (defconst 536870912)               
+			; (defconst 1073741824)
+		(defconst g-group2-type-flag 428)
+		(defconst g-group3-type-flag 429)
+		(defconst g-group4-type-flag 430)
+		(defconst g-group5-type-flag 431)
+		(defconst g-group6-type-flag 432)
+		(defconst g-group1-action 433)
+			(defconst GROUP-GATHER 0)
+			(defconst GROUP-MOVE 1)
+			(defconst GROUP-ATTACK 2)
+			(defconst GROUP-RETREAT-FROM-OBJECT 3)
+		(defconst g-group2-action 434)
+		(defconst g-group3-action 435)
+		(defconst g-group4-action 436)
+		(defconst g-group5-action 437)
+		(defconst g-group6-action 438)
+		(defconst g-group1-target-object-id 439)
+		(defconst g-group2-target-object-id 440)
+		(defconst g-group3-target-object-id 441)
+		(defconst g-group4-target-object-id 442)
+		(defconst g-group5-target-object-id 443)
+		(defconst g-group6-target-object-id 444)
+		(defconst g-group1-location-x 445)
+		(defconst g-group1-location-y 446)
+		(defconst g-group2-location-x 447)
+		(defconst g-group2-location-y 448)
+		(defconst g-group3-location-x 449)
+		(defconst g-group3-location-y 450)
+		(defconst g-group4-location-x 451)
+		(defconst g-group4-location-y 452)
+		(defconst g-group5-location-x 453)
+		(defconst g-group5-location-y 454)
+		(defconst g-group6-location-x 455)
+		(defconst g-group6-location-y 456)
+		(defconst g-group1-destination-x 457)
+		(defconst g-group1-destination-y 458)
+		(defconst g-group2-destination-x 459)
+		(defconst g-group2-destination-y 460)
+		(defconst g-group3-destination-x 461)
+		(defconst g-group3-destination-y 462)
+		(defconst g-group4-destination-x 463)
+		(defconst g-group4-destination-y 464)
+		(defconst g-group5-destination-x 465)
+		(defconst g-group5-destination-y 466)
+		(defconst g-group6-destination-x 467)
+		(defconst g-group6-destination-y 468)
+		(defconst g-group1-destination-time 469)
+			(defconst MAX-DESTINATION-TIME 15)
+		(defconst g-group2-destination-time 470)
+		(defconst g-group3-destination-time 471)
+		(defconst g-group4-destination-time 472)
+		(defconst g-group5-destination-time 473)
+		(defconst g-group6-destination-time 474)
+		(defconst g-current-group 475)
+		(defconst g-min-group-size 476)
+		(defconst g-max-group-size 477)
 		(defconst g-position-self-x 478)	
 		(defconst g-position-self-y 479)
-			; (defconst g- 480)
-			; (defconst g- 481)
-			; (defconst g- 482)
-			; (defconst g- 483)
-			; (defconst g- 484)
-			; (defconst g- 485)
-			; (defconst g- 486)
-			; (defconst g- 487)
-			; (defconst g- 488)
-			; (defconst g- 489)
-			; (defconst g- 490)
-			; (defconst g- 491)
-			; (defconst g- 492)
-			; (defconst g- 493)
-			; (defconst g- 494)
-			; (defconst g- 495)
-			; (defconst g- 496)
-			; (defconst g- 497)
-			; (defconst g- 498)
+		(defconst g-group1-avoidance-counter 480)
+		(defconst g-group2-avoidance-counter 481)
+		(defconst g-group3-avoidance-counter 482)
+		(defconst g-group4-avoidance-counter 483)
+		(defconst g-group5-avoidance-counter 484)
+		(defconst g-group6-avoidance-counter 485)
+		(defconst g-recent-target1 486)
+		(defconst g-recent-target2 487)
+		(defconst g-recent-target3 488)
+		(defconst g-recent-target4 489)
+		(defconst g-recent-target5 490)
+		; (defconst g- 491)
+		; (defconst g- 492)
+		; (defconst g- 493)
+		; (defconst g- 494)
+		; (defconst g- 495)
+		; (defconst g- 496)
+		; (defconst g- 497)
+		; (defconst g- 498)
 		(defconst g-michi-cut-priority 499)	; A goal to use with allies to request cutting forests on Michi/Forest Nothing maps	
 			; NO = 0
 			(defconst REQUEST-PRIORITY 4535)
-			; (defconst g- 500)
-			; (defconst g- 501)
-			; (defconst g- 502)
-			; (defconst g- 503)
-			; (defconst g- 504)
-			; (defconst g- 505)
-			; (defconst g- 506)
-			; (defconst g- 507)
-			; (defconst g- 508)
-			; (defconst g- 509)
-			; (defconst g- 510)
-			; (defconst g- 511)
-			; (defconst g- 512)
+		(defconst g-build-line-rule-id 500)
+		(defconst g-place-point-rule-id 501)
+		(defconst g-place-control-rule-id 502)
+		(defconst g-place-forward-rule-id 503)
+		(defconst g-end-use-resources-rule-id 504)
+		(defconst g-mill-construction-rule-id 505)
+		(defconst g-mc-construction-rule-id 506)
+		(defconst g-lc-construction-rule-id 507)			
+		(defconst g-stone-camp-construction-rule-id 508)
+		(defconst g-duc-micro-start-rule-id 509)
+		(defconst g-duc-micro-end-rule-id 510)
+		; (defconst g- 511)
+		; (defconst g- 512)
 
 	;--------------------------------
 	;	Map Type Loading Constants
@@ -8831,7 +9610,7 @@
 		(up-get-point position-flank g-target-enemy-x)
 		)
 
-		(load "The General 3.1/Functions/Reset")
+		(load "The General 1.2/Functions/Reset")
 
 		(defrule
 		(up-compare-goal g-closest-enemy > 0)
@@ -8972,6 +9751,60 @@
 		(set-goal g-stop-attack-num 4)
 		(set-goal g-usable-farm-count 0)
 		(set-goal g-usable-farm-count-total 0)
+		(disable-self)
+		)
+
+		(defrule
+		(true)
+		=>
+		(set-goal g-group1-flag 0)
+		(set-goal g-group2-flag 0)
+		(set-goal g-group3-flag 0)
+		(set-goal g-group4-flag 0)
+		(set-goal g-group5-flag 0)
+		(set-goal g-group6-flag 0)
+		(set-goal g-group1-type-flag 0)
+		(set-goal g-group2-type-flag 0)
+		(set-goal g-group3-type-flag 0)
+		(set-goal g-group4-type-flag 0)
+		(set-goal g-group5-type-flag 0)
+		(set-goal g-group6-type-flag 0)
+		(disable-self)
+		)
+
+		(defrule
+		(true)
+		=>
+		(set-goal g-group1-action PENDING)
+		(set-goal g-group2-action PENDING)
+		(set-goal g-group3-action PENDING)
+		(set-goal g-group4-action PENDING)
+		(set-goal g-group5-action PENDING)
+		(set-goal g-group6-action PENDING)
+		(set-goal g-group1-target-object-id PENDING)
+		(set-goal g-group2-target-object-id PENDING)
+		(set-goal g-group3-target-object-id PENDING)
+		(set-goal g-group4-target-object-id PENDING)
+		(set-goal g-group5-target-object-id PENDING)
+		(set-goal g-group6-target-object-id PENDING)
+		(disable-self)
+		)
+
+		(defrule
+		(true)
+		=>
+		(set-goal g-group1-destination-time 0)
+		(set-goal g-group2-destination-time 0)
+		(set-goal g-group3-destination-time 0)
+		(set-goal g-group4-destination-time 0)
+		(set-goal g-group5-destination-time 0)
+		(set-goal g-group6-destination-time 0)
+		(set-goal g-group1-avoidance-counter 0)
+		(set-goal g-group2-avoidance-counter 0)
+		(set-goal g-group3-avoidance-counter 0)
+		(set-goal g-group4-avoidance-counter 0)
+		(set-goal g-group5-avoidance-counter 0)
+		(set-goal g-group6-avoidance-counter 0)
 		(disable-self)
 		)
 
@@ -9268,7 +10101,7 @@
 		(set-strategic-number sn-sentry-distance-variation 0)			;2
 		(set-strategic-number sn-number-garrison-units 40)				;0
 		(set-strategic-number sn-livestock-defend-priority 1)			;0
-		(set-difficulty-parameter ability-to-maintain-distance 0)
+		(set-difficulty-parameter ability-to-maintain-distance 100)
 		(set-difficulty-parameter ability-to-dodge-missiles 0)
 		(disable-self)
 		)
