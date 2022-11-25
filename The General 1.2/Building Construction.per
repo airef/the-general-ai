@@ -491,8 +491,8 @@
 
 		; 	(defrule
 		; 	(goal g-town-under-attack YES)
-		; 	(unit-type-count 225 == 0)	;dead male builder
-		; 	(unit-type-count 213 == 0)	;dead female builder
+		; 	(unit-type-count dead-male-builder == 0)	;dead male builder
+		; 	(unit-type-count dead-female-builder == 0)	;dead female builder
 		; 	=>
 		; 	(up-assign-builders c: watch-tower c: 1)
 		; 	)
@@ -500,8 +500,8 @@
 		; 	(defrule
 		; 	(goal g-town-under-attack YES)
 		; 	(or
-		; 		(unit-type-count 225 > 0)	;dead male builder
-		; 		(unit-type-count 213 > 0))	;dead female builder
+		; 		(unit-type-count dead-male-builder > 0)	;dead male builder
+		; 		(unit-type-count dead-female-builder > 0))	;dead female builder
 		; 	=>
 		; 	(up-assign-builders c: watch-tower c: 0)
 		; 	)
@@ -2275,6 +2275,31 @@
 		(disable-self)
 		)
 
+	;------------
+	;	Market
+	;------------
+
+		(defrule
+		(up-object-type-count-total c: market g:< g-desired-num-market)
+		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
+		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+		(building-type-count-total market >= 1)
+		(goal g-place-point-used NO)
+		(can-build-with-escrow market)
+		(up-pending-objects c: market < 1)
+		(up-compare-goal g-place-control-rule-id > 0)
+		=>
+		(up-get-point position-corner g-place-point-x)
+		(up-set-target-point g-place-point-x)
+		(set-goal g-place-point-used YES)
+		(set-strategic-number sn-placement-zone-size 2)
+		(set-strategic-number sn-placement-fail-delta 0)
+		(up-build place-point g-escrow c: market)
+		(up-store-type-name c: market)
+		; (up-chat-data-to-player my-player-number CHAT-BUILD-BACKUP-BUILDING c: 7031232)
+		(up-jump-direct g: g-place-control-rule-id)
+		)
+
 	;-----------------
 	;	Watch Tower
 	;-----------------
@@ -2292,25 +2317,34 @@
 
 			(defrule
 			(goal g-town-under-attack NO)
+			(or
+				(up-pending-objects c: watch-tower == 0)
+				(and
+					(unit-type-count dead-male-builder == 0)
+					(unit-type-count dead-female-builder == 0)))
 			=>
 			(up-assign-builders c: watch-tower c: 2)
 			)
 
 			(defrule
 			(goal g-town-under-attack YES)
-			(unit-type-count 225 == 0)	;dead male builder
-			(unit-type-count 213 == 0)	;dead female builder
+			(or
+				(up-pending-objects c: watch-tower == 0)
+				(and
+					(unit-type-count dead-male-builder == 0)
+					(unit-type-count dead-female-builder == 0)))
 			=>
 			(up-assign-builders c: watch-tower c: 1)
 			)
 
 			(defrule
-			(goal g-town-under-attack YES)
+			(up-pending-objects c: watch-tower > 0)
 			(or
-				(unit-type-count 225 > 0)	;dead male builder
-				(unit-type-count 213 > 0))	;dead female builder
+				(unit-type-count dead-male-builder > 0)
+				(unit-type-count dead-female-builder > 0))
 			=>
-			(up-assign-builders c: watch-tower c: 0)
+			(up-assign-builders c: watch-tower c: -1)
+			; (chat-to-player my-player-number CHAT-STOP-SENDING-WATCH-TOWER-BUILDERS)
 			)
 
 			;Build watch tower near closest dropsite to enemy. Also prioritize tower near soldier gather point.
@@ -2432,8 +2466,8 @@
 
 			(defrule
 			(goal g-town-under-attack YES)
-			(unit-type-count 225 == 0)	;dead male builder
-			(unit-type-count 213 == 0)	;dead female builder
+			(unit-type-count dead-male-builder == 0)
+			(unit-type-count dead-female-builder == 0)
 			=>
 			(up-assign-builders c: donjon c: 1)
 			)
@@ -2441,8 +2475,8 @@
 			(defrule
 			(goal g-town-under-attack YES)
 			(or
-				(unit-type-count 225 > 0)	;dead male builder
-				(unit-type-count 213 > 0))	;dead female builder
+				(unit-type-count dead-male-builder > 0)
+				(unit-type-count dead-female-builder > 0))
 			=>
 			(up-assign-builders c: donjon c: 0)
 			)
@@ -2717,6 +2751,36 @@
 		; (chat-to-player my-player-number CHAT-BUILD-BACKUP-TC-WOOD)
 		)
 
+		(defrule
+		(up-pending-objects c: town-center >= 1)
+		(or
+			(goal g-town-under-attack YES)
+			(up-pending-objects c: town-center == 1))
+		(unit-type-count dead-male-builder == 0)
+		(unit-type-count dead-female-builder == 0)
+		=>
+		(up-assign-builders c: town-center-foundation c: 4)
+		)
+
+		(defrule
+		(goal g-town-under-attack NO)
+		(up-pending-objects c: town-center >= 2)
+		(unit-type-count dead-male-builder == 0)
+		(unit-type-count dead-female-builder == 0)
+		=>
+		(up-assign-builders c: town-center-foundation c: 8)
+		)
+
+		(defrule
+		(up-pending-objects c: town-center > 0)
+		(or
+			(unit-type-count dead-male-builder > 0)
+			(unit-type-count dead-female-builder > 0))
+		=>
+		(up-assign-builders c: town-center-foundation c: -1)
+		; (chat-to-player my-player-number CHAT-STOP-SENDING-TC-BUILDERS)
+		)
+
 	;---------------------------------
 	;	Skip Place Control if no TC
 	;---------------------------------
@@ -2758,8 +2822,7 @@
 		(up-store-type-name c: wonder)
 		; (up-chat-data-to-player my-player-number CHAT-BUILD-BACKUP-BUILDING c: 7031232)
 		)
-
-		
+	
 	;------------
 	;	Castle
 	;------------
@@ -2796,6 +2859,24 @@
 		(up-jump-direct g: g-place-forward-rule-id)
 		(up-store-type-name c: castle)
 		; (up-chat-data-to-player my-player-number CHAT-BUILD-BACKUP-BUILDING c: 7031232)
+		)
+
+		(defrule
+		(up-pending-objects c: castle > 0)
+		(unit-type-count dead-male-builder == 0)
+		(unit-type-count dead-female-builder == 0)
+		=>
+		(up-assign-builders c: castle c: 4)
+		)
+
+		(defrule
+		(up-pending-objects c: castle > 0)
+		(or
+			(unit-type-count dead-male-builder > 0)
+			(unit-type-count dead-female-builder > 0))
+		=>
+		(up-assign-builders c: castle c: -1)
+		; (chat-to-player my-player-number CHAT-STOP-SENDING-CASTLE-BUILDERS)
 		)
 		
 	;-------------
@@ -2836,6 +2917,24 @@
 			(up-jump-direct g: g-place-forward-rule-id)
 			(up-store-type-name c: krepost)
 			; (up-chat-data-to-player my-player-number CHAT-BUILD-BACKUP-BUILDING c: 7031232)
+			)
+
+			(defrule
+			(up-pending-objects c: krepost > 0)
+			(unit-type-count dead-male-builder == 0)
+			(unit-type-count dead-female-builder == 0)
+			=>
+			(up-assign-builders c: krepost c: 4)
+			)
+
+			(defrule
+			(up-pending-objects c: krepost > 0)
+			(or
+				(unit-type-count dead-male-builder > 0)
+				(unit-type-count dead-female-builder > 0))
+			=>
+			(up-assign-builders c: krepost c: -1)
+			; (chat-to-player my-player-number CHAT-STOP-SENDING-KREPOST-BUILDERS)
 			)
 
 		#end-if
@@ -2888,6 +2987,24 @@
 		; (up-chat-data-to-player my-player-number CHAT-BUILD-BACKUP-BUILDING c: 7031232)
 		)
 
+		; (defrule
+		; (up-pending-objects c: siege-workshop > 0)
+		; (unit-type-count dead-male-builder == 0)
+		; (unit-type-count dead-female-builder == 0)
+		; =>
+		; (up-assign-builders c: siege-workshop c: 1)
+		; )
+
+		; (defrule
+		; (up-pending-objects c: siege-workshop > 0)
+		; (or
+		; 	(unit-type-count dead-male-builder > 0)
+		; 	(unit-type-count dead-female-builder > 0))
+		; =>
+		; (up-assign-builders c: siege-workshop c: -1)
+		; (chat-to-player my-player-number CHAT-STOP-SENDING-SIEGE-WORKSHOP-BUILDERS)
+		; )
+
 	;----------------
 	;	University
 	;----------------
@@ -2909,6 +3026,24 @@
 		(up-store-type-name c: university)
 		; (up-chat-data-to-player my-player-number CHAT-BUILD-BACKUP-BUILDING c: 7031232)
 		)
+
+		; (defrule
+		; (up-pending-objects c: university > 0)
+		; (unit-type-count dead-male-builder == 0)
+		; (unit-type-count dead-female-builder == 0)
+		; =>
+		; (up-assign-builders c: university c: 1)
+		; )
+
+		; (defrule
+		; (up-pending-objects c: university > 0)
+		; (or
+		; 	(unit-type-count dead-male-builder > 0)
+		; 	(unit-type-count dead-female-builder > 0))
+		; =>
+		; (up-assign-builders c: university c: -1)
+		; (chat-to-player my-player-number CHAT-STOP-SENDING-UNIVERSITY-BUILDERS)
+		; )
 
 	;---------------
 	;	Monastery
@@ -2949,6 +3084,24 @@
 		(up-store-type-name c: monastery)
 		; (up-chat-data-to-player my-player-number CHAT-BUILD-BACKUP-BUILDING c: 7031232)
 		)
+
+		; (defrule
+		; (up-pending-objects c: monastery > 0)
+		; (unit-type-count dead-male-builder == 0)
+		; (unit-type-count dead-female-builder == 0)
+		; =>
+		; (up-assign-builders c: monastery c: 1)
+		; )
+
+		; (defrule
+		; (up-pending-objects c: monastery > 0)
+		; (or
+		; 	(unit-type-count dead-male-builder > 0)
+		; 	(unit-type-count dead-female-builder > 0))
+		; =>
+		; (up-assign-builders c: monastery c: -1)
+		; (chat-to-player my-player-number CHAT-STOP-SENDING-MONASTERY-BUILDERS)
+		; )
 
 	;--------------
 	;	Barracks
@@ -3089,6 +3242,24 @@
 		; (up-chat-data-to-player my-player-number CHAT-BUILD-BACKUP-BUILDING c: 7031232)
 		)
 
+		(defrule
+		(up-pending-objects c: barracks > 0)
+		(unit-type-count dead-male-builder == 0)
+		(unit-type-count dead-female-builder == 0)
+		=>
+		(up-assign-builders c: barracks c: 1)
+		)
+
+		; (defrule
+		; (up-pending-objects c: barracks > 0)
+		; (or
+		; 	(unit-type-count dead-male-builder > 0)
+		; 	(unit-type-count dead-female-builder > 0))
+		; =>
+		; (up-assign-builders c: barracks c: -1)
+		; (chat-to-player my-player-number CHAT-STOP-SENDING-BARRACKS-BUILDERS)
+		; )
+
 	;-------------------
 	;	Archery Range
 	;-------------------
@@ -3096,7 +3267,13 @@
 		(load "The General 1.2/Functions/Reset")
 
 		(defrule
-		(true)
+		(or
+			(up-compare-goal g-strategy-type != FAST-CASTLE)
+			(or
+				(building-type-count archery-range > 0)
+				(current-age >= castle-age)))
+		(unit-type-count dead-male-builder == 0)
+		(unit-type-count dead-female-builder == 0)
 		=>
 		(up-assign-builders c: archery-range c: 1)
 		)
@@ -3105,9 +3282,21 @@
 		(goal g-strategy-type FAST-CASTLE)
 		(building-type-count archery-range == 0)
 		(current-age == feudal-age)
+		(unit-type-count dead-male-builder == 0)
+		(unit-type-count dead-female-builder == 0)
 		=>
 		(up-assign-builders c: archery-range c: 2)
 		)
+
+		; (defrule
+		; (up-pending-objects c: archery-range > 0)
+		; (or
+		; 	(unit-type-count dead-male-builder > 0)
+		; 	(unit-type-count dead-female-builder > 0))
+		; =>
+		; (up-assign-builders c: archery-range c: -1)
+		; (chat-to-player my-player-number CHAT-STOP-SENDING-ARCHERY-RANGE-BUILDERS)
+		; )
 
 		(defrule
 		(or
@@ -3295,7 +3484,13 @@
 		(load "The General 1.2/Functions/Reset")
 
 		(defrule
-		(true)
+		(or
+			(up-compare-goal g-strategy-type != FAST-CASTLE)
+			(or
+				(building-type-count stable > 0)
+				(current-age >= castle-age)))
+		(unit-type-count dead-male-builder == 0)
+		(unit-type-count dead-female-builder == 0)
 		=>
 		(up-assign-builders c: stable c: 1)
 		)
@@ -3304,9 +3499,21 @@
 		(goal g-strategy-type FAST-CASTLE)
 		(building-type-count stable == 0)
 		(current-age == feudal-age)
+		(unit-type-count dead-male-builder == 0)
+		(unit-type-count dead-female-builder == 0)
 		=>
 		(up-assign-builders c: stable c: 2)
 		)
+
+		; (defrule
+		; (up-pending-objects c: stable > 0)
+		; (or
+		; 	(unit-type-count dead-male-builder > 0)
+		; 	(unit-type-count dead-female-builder > 0))
+		; =>
+		; (up-assign-builders c: stable c: -1)
+		; (chat-to-player my-player-number CHAT-STOP-SENDING-STABLE-BUILDERS)
+		; )
 
 		(defrule
 		(goal g-primary-unit-class cavalry-class)
@@ -3460,7 +3667,6 @@
 		(defrule
 		(current-age >= feudal-age)
 		=>
-		(up-assign-builders c: market c: 1)
 		(up-setup-cost-data 1 g-food-cost)
 		(up-add-object-cost c: town-center-foundation c: 1)
 		)
@@ -3471,6 +3677,38 @@
 		(current-age == feudal-age)
 		=>
 		(up-assign-builders c: market c: 2)
+		)
+
+		(defrule
+		(or
+			(up-compare-goal g-strategy-type != FAST-CASTLE)
+			(or
+				(building-type-count market > 0)
+				(current-age >= castle-age)))
+		(unit-type-count dead-male-builder == 0)
+		(unit-type-count dead-female-builder == 0)
+		=>
+		(up-assign-builders c: market c: 1)
+		)
+
+		(defrule
+		(goal g-strategy-type FAST-CASTLE)
+		(building-type-count market == 0)
+		(current-age == feudal-age)
+		(unit-type-count dead-male-builder == 0)
+		(unit-type-count dead-female-builder == 0)
+		=>
+		(up-assign-builders c: market c: 2)
+		)
+
+		(defrule
+		(up-pending-objects c: market > 0)
+		(or
+			(unit-type-count dead-male-builder > 0)
+			(unit-type-count dead-female-builder > 0))
+		=>
+		(up-assign-builders c: market c: -1)
+		; (chat-to-player my-player-number CHAT-STOP-SENDING-MARKET-BUILDERS)
 		)
 
 		(defrule
@@ -3525,40 +3763,37 @@
 		; (up-chat-data-to-player my-player-number CHAT-BUILD-BACKUP-BUILDING c: 7031232)
 		)
 
-		(defrule
-		(up-object-type-count-total c: market g:< g-desired-num-market)
-		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
-		(building-type-count-total market >= 1)
-		(can-build-with-escrow market)
-		(up-pending-objects c: market < 1)
-		(up-compare-goal g-place-forward-rule-id > 0)
-		=>
-		(set-strategic-number sn-placement-to-center 1)
-		(set-strategic-number sn-placement-zone-size 5)
-		(up-set-placement-data my-player-number -1 c: -128)
-		(set-strategic-number sn-placement-fail-delta 0)
-		(up-build place-control g-escrow c: market)
-		(up-jump-direct g: g-place-forward-rule-id)
-		(up-store-type-name c: market)
-		; (up-chat-data-to-player my-player-number CHAT-BUILD-BACKUP-BUILDING c: 7031232)
-		)
-
 	;----------------
 	;	Blacksmith
 	;----------------
 
 		(defrule
-		(true)
+		(or
+			(up-compare-goal g-strategy-type != FAST-CASTLE)
+			(current-age >= castle-age))
+		(unit-type-count dead-male-builder == 0)
+		(unit-type-count dead-female-builder == 0)
 		=>
 		(up-assign-builders c: blacksmith c: 1)
 		)
 
 		(defrule
+		(goal g-strategy-type FAST-CASTLE)
 		(current-age == feudal-age)
-		(up-compare-goal g-strategy-type >= FAST-CASTLE)
+		(unit-type-count dead-male-builder == 0)
+		(unit-type-count dead-female-builder == 0)
 		=>
 		(up-assign-builders c: blacksmith c: 2)
+		)
+
+		(defrule
+		(up-pending-objects c: blacksmith > 0)
+		(or
+			(unit-type-count dead-male-builder > 0)
+			(unit-type-count dead-female-builder > 0))
+		=>
+		(up-assign-builders c: blacksmith c: -1)
+		; (chat-to-player my-player-number CHAT-STOP-SENDING-BLACKSMITH-BUILDERS)
 		)
 
 		(defrule

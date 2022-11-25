@@ -3069,15 +3069,29 @@
     )
 
     (defrule
-    (up-group-size g: g-current-group > 0)
-    (or
-        (up-compare-flag g-current-group-type-flag == MELEE-SOLDIER-GROUP-FLAG)
-        (or
-            (up-compare-flag g-current-group-type-flag == SCORPION-GROUP-FLAG)
-            (up-compare-flag g-current-group-type-flag == MANGONEL-GROUP-FLAG)))
+    (up-group-size g: g-current-group > 3)
+    (up-compare-flag g-current-group-type-flag == MELEE-SOLDIER-GROUP-FLAG)
     =>
     (up-modify-flag g-current-group-flag c:- FOCUS-SINGLE-TARGET-FLAG)
     (up-modify-flag g-current-group-flag c:+ FOCUS-MULTIPLE-TARGETS-FLAG)
+    )
+
+    (defrule
+    (up-group-size g: g-current-group <= 3)
+    (up-compare-flag g-current-group-type-flag == MELEE-SOLDIER-GROUP-FLAG)
+    =>
+    (up-modify-flag g-current-group-flag c:+ FOCUS-SINGLE-TARGET-FLAG)
+    (up-modify-flag g-current-group-flag c:- FOCUS-MULTIPLE-TARGETS-FLAG)
+    )
+
+    (defrule
+    (up-group-size g: g-current-group > 0)
+    (or
+        (up-compare-flag g-current-group-type-flag == SCORPION-GROUP-FLAG)
+        (up-compare-flag g-current-group-type-flag == MANGONEL-GROUP-FLAG))
+    =>
+    (up-modify-flag g-current-group-flag c:- FOCUS-SINGLE-TARGET-FLAG)    ;Temporary
+    (up-modify-flag g-current-group-flag c:+ FOCUS-MULTIPLE-TARGETS-FLAG) ;Eventually code better multiple targets code
     ; (up-modify-flag g-current-group-flag c:- FOCUS-SEPARATE-TARGETS-FLAG)
     )
 
@@ -3164,7 +3178,7 @@
     
     (defrule
     (up-group-size g: g-current-group > 0)
-    (up-compare-flag g-current-group-type-flag != MELEE-SOLDIER-GROUP-FLAG)
+    (up-compare-flag g-current-group-type-flag != MELEE-SOLDIER-GROUP-FLAG) 
     (up-compare-flag g-current-group-type-flag != RANGED-SOLDIER-GROUP-FLAG)
     =>
     (up-jump-rule 10)
@@ -3203,6 +3217,7 @@
         )
 
             (defrule
+            (false)
             (up-group-size g: g-current-group > 0)
             (up-compare-flag g-current-group-flag != SCOUT-CLOCKWISE-FLAG)
             (up-compare-flag g-current-group-flag != SCOUT-COUNTER-CLOCKWISE-FLAG)
@@ -4301,59 +4316,83 @@
     (up-find-remote c: mining-camp c: 10)
     (up-find-remote c: building-class c: 40)
     (up-find-remote c: tower-class c: 40)
-    (up-find-remote c: gate-class c: 10)
-    (up-find-remote c: wall-class c: 40)
-    (up-get-search-state g-local-total)
-    (set-strategic-number sn-focus-player-number 1)
     )
 
-        ;Search for other enemy objects if we found < 40 objects
+    ;If target player buildings found, don't search for other player buildings
+    (defrule
+    (up-group-size g: g-current-group > 0)
+    (goal g-current-group-destination-split-goal 77777)
+    (player-in-game target-player)
+    (stance-toward target-player enemy)
+    (up-compare-goal g-local-total > 0)
+    =>
+    (up-jump-rule 4)
+    )
+
+        ;If no target player buildings found, search for target player walls and towers and search for other players
         (defrule
         (up-group-size g: g-current-group > 0)
         (goal g-current-group-destination-split-goal 77777)
-        (up-compare-sn sn-focus-player-number s:!= sn-target-player-number)
-        (player-in-game focus-player)
-        (stance-toward focus-player enemy)
-        (up-compare-goal g-remote-total < 40)
+        (player-in-game target-player)
+        (stance-toward target-player enemy)
+        (up-compare-goal g-local-total == 0)
         =>
+        (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
         (up-set-target-point g-current-group-destination-x)
         (up-filter-distance c: 20 c: -1)
-        (up-find-remote c: lumber-camp c: 10)
-        (up-find-remote c: mining-camp c: 10)
-        (up-find-remote c: building-class c: 40)
-        (up-find-remote c: tower-class c: 40)
         (up-find-remote c: gate-class c: 10)
         (up-find-remote c: wall-class c: 40)
         (up-get-search-state g-local-total)
+        (set-strategic-number sn-focus-player-number 1)
         )
 
-        (defrule
-        (up-group-size g: g-current-group > 0)
-        (goal g-current-group-destination-split-goal 77777)
-        (player-in-game focus-player)
-        (stance-toward focus-player enemy)
-        (or
-            (up-compare-flag g-current-group-flag == RAID-MODE-FLAG)
+            ;Search for other enemy objects if we found < 40 objects
+            (defrule
+            (up-group-size g: g-current-group > 0)
+            (goal g-current-group-destination-split-goal 77777)
+            (up-compare-sn sn-focus-player-number s:!= sn-target-player-number)
+            (player-in-game focus-player)
+            (stance-toward focus-player enemy)
+            (up-compare-goal g-remote-total < 40)
+            =>
+            (up-set-target-point g-current-group-destination-x)
+            (up-filter-distance c: 20 c: -1)
+            (up-find-remote c: lumber-camp c: 10)
+            (up-find-remote c: mining-camp c: 10)
+            (up-find-remote c: building-class c: 40)
+            (up-find-remote c: tower-class c: 40)
+            (up-find-remote c: gate-class c: 10)
+            (up-find-remote c: wall-class c: 40)
+            (up-get-search-state g-local-total)
+            )
+
+            (defrule
+            (up-group-size g: g-current-group > 0)
+            (goal g-current-group-destination-split-goal 77777)
+            (player-in-game focus-player)
+            (stance-toward focus-player enemy)
             (or
-                (up-compare-flag g-current-group-type-flag == RANGED-SOLDIER-GROUP-FLAG)
-                (up-compare-flag g-current-group-type-flag == MONK-GROUP-FLAG)))
-        =>
-        (up-remove-objects search-remote object-data-language-id == lang-id-town-center)    ;removes TC and all TC annex pieces
-        (up-remove-objects search-remote object-data-type == castle)
-        (up-remove-objects search-remote object-data-type == krepost)
-        (up-remove-objects search-remote object-data-class == tower-class)
-        (up-get-search-state g-local-total)
-        )
+                (up-compare-flag g-current-group-flag == RAID-MODE-FLAG)
+                (or
+                    (up-compare-flag g-current-group-type-flag == RANGED-SOLDIER-GROUP-FLAG)
+                    (up-compare-flag g-current-group-type-flag == MONK-GROUP-FLAG)))
+            =>
+            (up-remove-objects search-remote object-data-language-id == lang-id-town-center)    ;removes TC and all TC annex pieces
+            (up-remove-objects search-remote object-data-type == castle)
+            (up-remove-objects search-remote object-data-type == krepost)
+            (up-remove-objects search-remote object-data-class == tower-class)
+            (up-get-search-state g-local-total)
+            )
 
-        (defrule
-        (up-group-size g: g-current-group > 0)
-        (goal g-current-group-destination-split-goal 77777)
-        (up-compare-sn sn-focus-player-number < 8)
-        (up-compare-goal g-remote-total < 40)
-        =>
-        (up-modify-sn sn-focus-player-number c:+ 1)
-        (up-jump-rule -3)
-        )
+            (defrule
+            (up-group-size g: g-current-group > 0)
+            (goal g-current-group-destination-split-goal 77777)
+            (up-compare-sn sn-focus-player-number < 8)
+            (up-compare-goal g-remote-total < 40)
+            =>
+            (up-modify-sn sn-focus-player-number c:+ 1)
+            (up-jump-rule -3)
+            )
 
     ;Remove unreachable objects
     (defrule
@@ -6282,8 +6321,8 @@
         (or
             (up-object-data object-data-speed > 0)
             (up-object-data object-data-class == unpacked-trebuchet-class))
-        (up-object-data object-data-hitpoints < 25)
-        (up-object-data object-data-distance < 5)
+        (up-object-data object-data-hitpoints < 8)
+        (up-object-data object-data-distance < 3)
         (up-object-data object-data-range < 3)
         (false)
         =>
@@ -6338,6 +6377,7 @@
         (up-find-remote c: castle c: 5)
         (up-find-remote c: krepost c: 5)
         (up-find-remote c: tower-class c: 25)
+        (up-remove-objects search-remote object-data-type == outpost)
         (up-remove-objects search-remote object-data-hitpoints <= 0)
         (up-remove-objects search-remote object-data-status != status-ready)
         (up-get-search-state g-local-total)
@@ -6800,6 +6840,7 @@
         (up-find-remote c: castle c: 5)
         (up-find-remote c: krepost c: 5)
         (up-find-remote c: tower-class c: 25)
+        (up-remove-objects search-remote object-data-type == outpost)
         (up-remove-objects search-remote object-data-hitpoints <= 0)
         (up-get-search-state g-local-total)
         )
@@ -8427,6 +8468,7 @@
             (up-find-remote c: town-center c: 5)
             (up-find-remote c: tower-class c: 30)
             (up-remove-objects search-remote object-data-type == outpost)
+            (up-remove-objects search-remote object-data-id g:== g-current-group-target-object-id)
             (up-get-search-state g-local-total)
             )
 
@@ -8536,7 +8578,7 @@
         (up-compare-flag g-current-group-type-flag == RAM-GROUP-FLAG)
         =>
         (up-get-search-state g-local-total)
-        (up-jump-rule 10)
+        (up-jump-rule 11)
         )
         
             (defrule
@@ -8619,6 +8661,17 @@
                 ; (up-chat-data-to-all "TC range %d" g: g-temp2)
                 )
 
+                ;If the group is not ranged, add 4 to the range of the defensive building to account for melee units moving around to surround units they are attacking
+                (defrule
+                (up-group-size g: g-current-group > 0)
+                (goal g-current-group-target-selection-status FOUND-POTENTIAL-TARGETS)
+                (up-set-target-object search-local g: g-loop-counter)
+                (up-set-target-object search-remote g: g-loop-counter2)
+                (up-compare-flag g-current-group-type-flag == MELEE-SOLDIER-GROUP-FLAG)
+                =>
+                (up-modify-goal g-temp2 c:+ 4)
+                )
+
                 ;If removed object is the current target, reset target
                 (defrule
                 (false)
@@ -8659,7 +8712,7 @@
                 (set-goal g-loop-counter2 0)
                 (set-goal g-temp2 999)
                 (set-goal g-temp3 999)
-                (up-jump-rule -6)
+                (up-jump-rule -7)
                 )
                 (defrule
                 (up-group-size g: g-current-group > 0)
@@ -8678,7 +8731,7 @@
                 (set-goal g-loop-counter2 0)
                 (set-goal g-temp2 999)
                 (set-goal g-temp3 999)
-                (up-jump-rule -7)
+                (up-jump-rule -8)
                 )
                 
                 (defrule
@@ -8690,7 +8743,7 @@
                 (up-point-distance g-point-x g-point2-x g:> g-temp3)    ;group is closer to unit than enemy defensive building
                 =>
                 (up-modify-goal g-loop-counter2 c:+ 1)
-                (up-jump-rule -8)
+                (up-jump-rule -9)
                 )
                 
                 (defrule
@@ -8709,7 +8762,7 @@
                 =>
                 (up-modify-goal g-loop-counter c:+ 1)
                 (set-goal g-loop-counter2 0)
-                (up-jump-rule -9)
+                (up-jump-rule -10)
                 )
 
     ;----------------
@@ -8836,6 +8889,7 @@
             (up-compare-goal g-remote-total > 0)
             (up-compare-goal g-current-group-target-selection-status >= FOUND-UNITS-TO-TARGET)
             (up-set-target-by-id g: g-current-group-target-object-id)
+            (up-compare-flag g-current-group-flag != WITHIN-RANGE-OF-DANGEROUS-BUILDING-FLAG)
             =>
             (up-remove-objects search-remote object-data-id g:== g-current-group-target-object-id)
             (up-add-object-by-id search-remote g: g-current-group-target-object-id)
@@ -8965,6 +9019,7 @@
                 (up-modify-goal g-temp2 c:* 4)
                 (up-modify-goal g-current-group-potential-target-score g:- g-temp2) ;larger distances = lower priority
                 (up-get-object-data object-data-base-attack g-temp2)
+                (up-modify-goal g-temp2 c:* 2)
                 (up-modify-goal g-current-group-potential-target-score g:+ g-temp2) ;larger attack = higher priority
                 (up-get-object-data object-data-strike-armor g-temp2)
                 (up-modify-goal g-current-group-potential-target-score g:- g-temp2) ;larger melee armor = lower priority
@@ -8980,7 +9035,7 @@
                 (up-set-target-object search-remote g: g-loop-counter)
                 =>
                 (up-get-object-data object-data-hitpoints g-temp2)
-                (up-modify-goal g-temp2 c:/ 10)
+                (up-modify-goal g-temp2 c:/ 15)
                 (up-modify-goal g-current-group-potential-target-score g:- g-temp2) ;larger HP = lower priority
                 (up-get-object-data object-data-speed g-temp2)
                 (up-modify-goal g-temp2 c:/ 10)
@@ -9012,7 +9067,11 @@
                 (up-set-target-object search-remote g: g-loop-counter)
                 (or
                     (up-object-data object-data-base-type == cataphract)
-                    (up-object-data object-data-base-type == jaguar-warrior))
+                    (or
+                        (up-object-data object-data-base-type == jaguar-warrior)
+                        (or
+                            (up-object-data object-data-base-type == hand-cannoneer)
+                            (up-object-data object-data-base-type == slinger))))
                 (up-object-data object-data-distance <= 4)  ;try to kill cataphracts or jaguar warriors if they are close
                 =>
                 (up-modify-goal g-current-group-potential-target-score c:+ 10)
@@ -9333,7 +9392,7 @@
                 (up-set-target-object search-remote g: g-loop-counter)
                 =>
                 (up-get-object-data object-data-hitpoints g-temp2)
-                (up-modify-goal g-temp2 c:/ 10)
+                (up-modify-goal g-temp2 c:/ 15)
                 (up-modify-goal g-current-group-potential-target-score g:- g-temp2) ;larger HP = lower priority
                 (up-get-object-data object-data-range g-temp2)
                 (up-modify-goal g-temp2 c:/ 2)
@@ -9379,9 +9438,9 @@
                 (up-compare-flag g-current-group-type-flag == CAVALRY-GROUP-FLAG)
                 (up-set-target-object search-remote g: g-loop-counter)
                 (up-object-data object-data-base-type == spearman)
-                (up-object-data object-data-distance <= 4)  ;try to kill spearmen
+                ; (up-object-data object-data-distance <= 6)  ;try to kill spearmen
                 =>
-                (up-modify-goal g-current-group-potential-target-score c:+ 10)
+                (up-modify-goal g-current-group-potential-target-score c:+ 20)
                 )
                 (defrule
                 (up-group-size g: g-current-group > 0)
@@ -9389,12 +9448,9 @@
                 (up-compare-goal g-current-group-target-selection-status >= FOUND-UNITS-TO-TARGET)
                 (up-compare-flag g-current-group-type-flag == CAVALRY-GROUP-FLAG)
                 (up-set-target-object search-remote g: g-loop-counter)
-                (or
-                    (up-object-data object-data-base-type == spearman)
-                    (up-object-data object-data-base-type == camel))
-                (up-object-data object-data-distance > 4)   ;avoid spearmen and camels if they are far away
+                (up-object-data object-data-base-type == camel)
                 =>
-                (up-modify-goal g-current-group-potential-target-score c:- 10)
+                (up-modify-goal g-current-group-potential-target-score c:+ 10)
                 )
                 (defrule
                 (up-group-size g: g-current-group > 0)
@@ -9510,7 +9566,9 @@
                 (up-compare-goal g-current-group-target-selection-status >= FOUND-UNITS-TO-TARGET)
                 (up-compare-flag g-current-group-type-flag == RAM-GROUP-FLAG)
                 (up-set-target-object search-remote g: g-loop-counter)
-                (up-object-data object-data-base-type == feudal-battering-ram)
+                (or
+                    (up-object-data object-data-base-type == feudal-battering-ram)
+                    (up-object-data object-data-base-type == armored-elephant))
                 =>
                 (up-modify-goal g-current-group-potential-target-score c:+ 150)
                 )
@@ -9758,7 +9816,6 @@
                 =>
                 (up-modify-goal g-current-group-potential-target-score c:+ 30)
                 )
-                
                 
             ;-------------
             ;   Cannons
@@ -10157,15 +10214,21 @@
                 (up-compare-goal g-current-group-target-selection-status >= FOUND-UNITS-TO-TARGET)
                 (up-set-target-object search-remote g: g-loop-counter)
                 =>
-                (up-get-object-data object-data-class g-temp2)
                 (up-get-fact game-time 0 g-temp5)
                 (up-get-fact player-number 0 g-temp6)
-                (up-log-data 0 CHAT-LOG-ENTRY c: 0)
+                (up-log-data 0 CHAT-LOOP-LOG-ENTRY c: 0)
                 (up-log-data 0 CHAT-LOG-TIME g: g-temp5)
                 (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
-                (up-log-data 0 CHAT-NEW-BEST-TARGET-CLASS g: g-temp2)
-                (up-log-data 0 CHAT-NEW-BEST-TARGET-SCORE g: g-current-group-potential-target-score)
+                (up-get-object-data object-data-id g-temp2)
+                (up-log-data 0 CHAT-POTENTIAL-TARGET-ID g: g-temp2)
+                ; (up-chat-data-to-all CHAT-POTENTIAL-TARGET-ID g: g-temp2)
+                (up-get-object-data object-data-upgrade-type g-temp2)
+                (up-log-data 0 CHAT-POTENTIAL-TARGET-TYPE g: g-temp2)
+                ; (up-chat-data-to-all CHAT-POTENTIAL-TARGET-TYPE g: g-temp2)
+                (up-get-object-data object-data-class g-temp2)
+                (up-log-data 0 CHAT-POTENTIAL-TARGET-CLASS g: g-temp2)
                 ; (up-chat-data-to-all CHAT-NEW-BEST-TARGET-CLASS g: g-temp2)
+                (up-log-data 0 CHAT-POTENTIAL-TARGET-SCORE g: g-current-group-potential-target-score)
                 ; (up-chat-data-to-all CHAT-NEW-BEST-TARGET-SCORE g: g-current-group-potential-target-score)
                 )
 
@@ -10179,6 +10242,16 @@
                 =>
                 (up-modify-goal g-current-group-best-potential-target-score g:= g-current-group-potential-target-score)
                 (up-get-object-data object-data-id g-current-group-potential-target-id)
+                (up-log-data 0 CHAT-NEW-BEST-TARGET-ID g: g-current-group-potential-target-id)
+                ; (up-chat-data-to-all CHAT-NEW-BEST-TARGET-ID g: g-current-group-potential-target-id)
+                (up-get-object-data object-data-upgrade-type g-temp2)
+                (up-log-data 0 CHAT-NEW-BEST-TARGET-TYPE g: g-temp2)
+                ; (up-chat-data-to-all CHAT-NEW-BEST-TARGET-TYPE g: g-temp2)
+                (up-get-object-data object-data-class g-temp2)
+                (up-log-data 0 CHAT-NEW-BEST-TARGET-CLASS g: g-temp2)
+                ; (up-chat-data-to-all CHAT-NEW-BEST-TARGET-CLASS g: g-temp2)
+                (up-log-data 0 CHAT-NEW-BEST-TARGET-SCORE g: g-current-group-potential-target-score)
+                ; (up-chat-data-to-all CHAT-NEW-BEST-TARGET-SCORE g: g-current-group-potential-target-score)
                 )
 
                 ;Repeat Loop
@@ -10219,14 +10292,40 @@
             ; )
 
             (defrule
+            (timer-triggered t-5-sec)
             (up-group-size g: g-current-group > 0)
             (up-compare-goal g-remote-total > 0)
-            (up-set-target-by-id g: g-current-group-target-object-id)       
+            (up-compare-flag g-current-group-flag == FOCUS-MULTIPLE-TARGETS-FLAG)
+            (up-set-target-by-id g: g-current-group-target-object-id)
+            (up-modify-goal g-temp5 g:= g-current-group-min-range) 
+            (up-modify-goal g-temp5 c:+ 4)      
+            (up-object-data object-data-distance g:> g-temp5)
+            (up-set-target-by-id g: g-current-group-potential-target-id)
+            ; (up-object-data object-data-id g:!= g-current-group-target-object-id)
+            (up-compare-goal g-current-group-target-selection-status >= FOUND-UNITS-TO-TARGET)
+            (up-compare-goal g-current-group-target-selection-status < TARGET-UNIT-SET)
+            =>
+            (up-get-object-data object-data-id g-current-group-target-object-id)
+            (up-set-indirect-goal g: g-current-group-target-object-goal-id g: g-current-group-target-object-id)
+            (set-goal g-current-group-target-selection-status TARGET-UNIT-SET)
+            (up-get-fact game-time 0 g-temp5)
+            (up-get-fact player-number 0 g-temp6)
+            (up-log-data 0 CHAT-LOG-ENTRY c: 0)
+            (up-log-data 0 CHAT-LOG-TIME g: g-temp5)
+            (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
+            (up-log-data 0 CHAT-NEW-TARGET1A g: g-current-group)
+            ; (up-chat-data-to-all CHAT-NEW-TARGET1A g: g-current-group)
+            )
+            (defrule
+            (up-group-size g: g-current-group > 0)
+            (up-compare-goal g-remote-total > 0)
+            (up-compare-flag g-current-group-flag == FOCUS-MULTIPLE-TARGETS-FLAG)
+            (up-set-target-by-id g: g-current-group-target-object-id)
+            (up-modify-goal g-temp5 g:= g-current-group-min-range) 
+            (up-modify-goal g-temp5 c:+ 4)      
             (or
-                (up-compare-flag g-current-group-flag == FOCUS-SINGLE-TARGET-FLAG)
-                (or
-                    (up-object-data object-data-distance > 8)
-                    (up-object-data object-data-speed == 0)))
+                (up-object-data object-data-distance g:> g-temp5)
+                (up-object-data object-data-speed == 0))
             (up-set-target-by-id g: g-current-group-potential-target-id)
             (up-object-data object-data-id g:!= g-current-group-target-object-id)
             (up-compare-goal g-current-group-target-selection-status >= FOUND-UNITS-TO-TARGET)
@@ -10240,12 +10339,13 @@
             (up-log-data 0 CHAT-LOG-ENTRY c: 0)
             (up-log-data 0 CHAT-LOG-TIME g: g-temp5)
             (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
-            (up-log-data 0 CHAT-NEW-TARGET1 g: g-current-group)
-            ; (up-chat-data-to-all CHAT-NEW-TARGET1 g: g-current-group)
+            (up-log-data 0 CHAT-NEW-TARGET1B g: g-current-group)
+            ; (up-chat-data-to-all CHAT-NEW-TARGET1B g: g-current-group)
             )
             (defrule
             (up-group-size g: g-current-group > 0)
             (up-compare-goal g-remote-total > 0)
+            (up-compare-flag g-current-group-flag == FOCUS-SINGLE-TARGET-FLAG)
             (up-set-target-by-id g: g-current-group-target-object-id)
             (up-set-target-by-id g: g-current-group-potential-target-id)
             (up-object-data object-data-id g:!= g-current-group-target-object-id)
@@ -10378,23 +10478,27 @@
     ;   Attack Target
     ;-------------------
 
-        (defrule
-        (up-group-size g: g-current-group > 0)
-        (up-compare-goal g-current-group-target-selection-status >= TARGET-UNIT-SET)
-        (up-set-target-by-id g: g-current-group-target-object-id)
-        (up-compare-flag g-current-group-flag != FOCUS-SINGLE-TARGET-FLAG)
-        (up-compare-flag g-current-group-flag != FOCUS-MULTIPLE-TARGETS-FLAG)
-        ; (up-compare-flag g-current-group-flag != FOCUS-SEPARATE-TARGETS-FLAG)
-        =>
-        (up-get-fact game-time 0 g-loop-counter)
-        (up-get-fact player-number 0 g-loop-counter2)
-        (up-log-data 0 CHAT-LOG-ENTRY c: 0)
-        (up-log-data 0 CHAT-LOG-TIME g: g-loop-counter)
-        (up-log-data 0 CHAT-LOG-PLAYER g: g-loop-counter2)
-        (up-log-data 0 CHAT-NO-TARGET-FOCUS-FLAGS g: g-current-group)
-        ; (up-chat-data-to-all CHAT-NO-TARGET-FOCUS-FLAGS g: g-current-group)
-        (set-goal g-temp5 123)
-        )
+        ;-----------
+        ;   Debug
+        ;-----------
+
+            (defrule
+            (up-group-size g: g-current-group > 0)
+            (up-compare-goal g-current-group-target-selection-status >= TARGET-UNIT-SET)
+            (up-set-target-by-id g: g-current-group-target-object-id)
+            (up-compare-flag g-current-group-flag != FOCUS-SINGLE-TARGET-FLAG)
+            (up-compare-flag g-current-group-flag != FOCUS-MULTIPLE-TARGETS-FLAG)
+            ; (up-compare-flag g-current-group-flag != FOCUS-SEPARATE-TARGETS-FLAG)
+            =>
+            (up-modify-flag g-current-group-flag c:+ FOCUS-SINGLE-TARGET-FLAG)
+            (up-get-fact game-time 0 g-loop-counter)
+            (up-get-fact player-number 0 g-loop-counter2)
+            (up-log-data 0 CHAT-LOG-ENTRY c: 0)
+            (up-log-data 0 CHAT-LOG-TIME g: g-loop-counter)
+            (up-log-data 0 CHAT-LOG-PLAYER g: g-loop-counter2)
+            (up-log-data 0 CHAT-NO-TARGET-FOCUS-FLAGS g: g-current-group)
+            ; (up-chat-data-to-all CHAT-NO-TARGET-FOCUS-FLAGS g: g-current-group)
+            )
 
         ;-------------------------
         ;   Focus Single Target
@@ -10407,9 +10511,7 @@
             (up-set-target-by-id g: g-current-group-target-object-id)
             (up-compare-flag g-current-group-type-flag != MONK-GROUP-FLAG)
             (up-compare-flag g-current-group-type-flag != TREBUCHET-GROUP-FLAG)
-            (or
-                (up-compare-flag g-current-group-flag == FOCUS-SINGLE-TARGET-FLAG)
-                (goal g-temp5 123)) ;no target focus flags set
+            (up-compare-flag g-current-group-flag == FOCUS-SINGLE-TARGET-FLAG)
             =>
             (up-modify-sn sn-number-tasked-units c:= 0)
             (up-set-group search-local g: g-current-group)
@@ -10486,9 +10588,7 @@
             (up-compare-goal g-current-group-target-selection-status >= TARGET-UNIT-SET)
             (up-set-target-by-id g: g-current-group-target-object-id)
             (up-compare-flag g-current-group-type-flag == TREBUCHET-GROUP-FLAG)
-            (or
-                (up-compare-flag g-current-group-flag == FOCUS-SINGLE-TARGET-FLAG)
-                (goal g-temp5 123)) ;no target focus flags set
+            (up-compare-flag g-current-group-flag == FOCUS-SINGLE-TARGET-FLAG)
             =>
             (up-modify-sn sn-number-tasked-units c:= 0)
             (up-set-group search-local g: g-current-group)
@@ -10503,7 +10603,7 @@
             (up-log-data 0 CHAT-LOG-TIME g: g-loop-counter)
             (up-log-data 0 CHAT-LOG-PLAYER g: g-loop-counter2)
             (up-log-data 0 CHAT-TREBUCHETS-ATTACK-TARGET-1 g: g-current-group)
-            ; (up-chat-data-to-all CHAT-TREBUCHET-ATTACK-TARGET-1 g: g-current-group)
+            ; (up-chat-data-to-all CHAT-TREBUCHETS-ATTACK-TARGET-1 g: g-current-group)
             )
         
         ;----------------------------
@@ -10567,6 +10667,7 @@
                 (up-jump-rule -3)
                 )
 
+            ;Remove any units from group that are already attacking units
             (defrule
             (up-group-size g: g-current-group > 0)
             (up-compare-goal g-current-group-target-selection-status == TARGET-UNIT-SET)
@@ -10786,6 +10887,7 @@
     ;Temp goals:
     ;g-current-group-action
     ;g-current-group-action-goal-id
+    ;g-current-group-gather-status
 
     ;Temp points:
     ;g-current-group-location-x
@@ -10805,6 +10907,7 @@
     (up-get-indirect-goal g: g-current-group-destination-time-goal-id g-current-group-destination-time)
     (up-get-indirect-goal g: g-current-group-location-x-goal-id g-current-group-location-x)
     (up-get-indirect-goal g: g-current-group-location-y-goal-id g-current-group-location-y)
+    (set-goal g-current-group-gather-status 0)
     )
 
     ;Search for any units not near the center of the group
@@ -10818,7 +10921,7 @@
     (up-set-target-point g-current-group-location-x)
     (up-remove-objects search-local object-data-distance < 3)
     (up-get-search-state g-local-total)
-    (up-jump-rule 1)
+    (up-jump-rule 2)
     )
 
         ;If attacking, search for any units not near the center of the group
@@ -10849,10 +10952,19 @@
         (up-get-search-state g-local-total)
         )
 
+    (defrule
+    (timer-triggered t-5-sec)
+    (up-group-size g: g-current-group > 0)
+    (up-compare-goal g-local-total > 0)
+    =>
+    (set-goal g-current-group-gather-status 1)
+    )
+
     ;Check if g-current-group-location-x is near enemy defensive building
     (defrule
     (timer-triggered t-5-sec)
     (up-group-size g: g-current-group > 0)
+    (goal g-current-group-gather-status 1)
     =>
     (up-set-target-point g-current-group-location-x)
     (up-full-reset-search)
@@ -10864,10 +10976,12 @@
         (up-group-size g: g-current-group > 0)
         (player-in-game focus-player)
         (stance-toward focus-player enemy)
+        (goal g-current-group-gather-status 1)
         =>
         (up-filter-distance c: -1 c: 12)
         (up-find-remote c: town-center c: 40)
         (up-find-remote c: tower-class c: 40)
+        (up-remove-objects search-remote object-data-type == outpost)
         (up-filter-distance c: -1 c: 14)
         (up-find-remote c: castle c: 40)
         (up-find-remote c: krepost c: 40)
@@ -10877,6 +10991,7 @@
         (defrule
         (timer-triggered t-5-sec)
         (up-group-size g: g-current-group > 0)
+        (goal g-current-group-gather-status 1)
         (up-compare-sn sn-focus-player-number < 8)
         =>
         (up-modify-sn sn-focus-player-number c:+ 1)
@@ -10886,6 +11001,7 @@
     (defrule
     (timer-triggered t-5-sec)
     (up-group-size g: g-current-group > 0)
+    (goal g-current-group-gather-status 1)
     (up-set-target-object search-remote c: 0)
     =>
     (up-get-point position-object g-point2-x)
@@ -10894,28 +11010,30 @@
     (up-copy-point g-current-group-location-x g-point2-x)
     )
 
-    (defrule
-    (timer-triggered t-5-sec)
-    (up-group-size g: g-current-group > 0)
-    (goal g-current-group-action GROUP-ATTACK)
-    (up-set-target-by-id g: g-current-group-target-object-id)
-    =>
-    (up-get-point position-object g-point2-x)
-    (up-lerp-tiles g-point2-x g-current-group-location-x c: 10)   ;find a point away from our target to gather units
-    (up-copy-point g-current-group-location-x g-point2-x)
-    (up-bound-precise-point g-current-group-location-x 0 c: 1)
-    ; (up-send-flare g-current-group-location-x)
-    )
+    ; (defrule
+    ; (timer-triggered t-5-sec)
+    ; (up-group-size g: g-current-group > 0)
+    ; (goal g-current-group-action GROUP-ATTACK)
+    ; (up-set-target-by-id g: g-current-group-target-object-id)
+    ; =>
+    ; (up-get-point position-object g-point2-x)
+    ; (up-lerp-tiles g-point2-x g-current-group-location-x c: 10)   ;find a point away from our target to gather units
+    ; (up-copy-point g-current-group-location-x g-point2-x)
+    ; (up-bound-precise-point g-current-group-location-x 0 c: 1)
+    ; ; (up-send-flare g-current-group-location-x)
+    ; )
 
     ;Check if g-current-group-location-x is inaccessible
     (defrule
     (timer-triggered t-5-sec)
     (up-group-size g: g-current-group > 0)
+    (goal g-current-group-gather-status 1)
     =>
     (up-full-reset-search)
     (set-goal g-point-x PENDING)
     (set-goal g-point-y PENDING)
     (up-set-group search-local g: g-current-group)
+    (up-get-search-state g-local-total)
     (up-clean-search search-local object-data-point-x search-order-asc)
     (up-get-group-size g: g-current-group g-temp)
     (up-modify-goal g-temp c:z/ 2)  ;get index of unit that is in the middle of the group, according to its x coordinate location
@@ -10925,9 +11043,10 @@
     (defrule
     (timer-triggered t-5-sec)
     (up-group-size g: g-current-group > 0)
+    (goal g-current-group-gather-status 1)
     (up-set-target-object search-local g: g-temp)
     (or
-        (up-path-distance g-current-group-location-x 0 == 65535)    ;inaccessible
+        (up-path-distance g-current-group-location-x 1 == 65535)    ;inaccessible
         (or
             (up-compare-goal g-current-group-location-x <= PENDING)
             (up-compare-goal g-current-group-destination-time >= MAX-DESTINATION-TIME)))
@@ -10947,6 +11066,7 @@
     (defrule
     (timer-triggered t-5-sec)
     (up-group-size g: g-current-group > 0)
+    (goal g-current-group-gather-status 1)
     (up-compare-goal g-local-total > 0)
     (up-compare-goal g-current-group-location-x > PENDING)
     (up-compare-goal g-point-x <= PENDING)    ;g-point-x is only set if g-current-group-location-x is inaccessible
@@ -10969,6 +11089,7 @@
     (defrule
     (timer-triggered t-5-sec)
     (up-group-size g: g-current-group > 0)
+    (goal g-current-group-gather-status 1)
     (up-compare-goal g-local-total > 0)
     (up-compare-goal g-point-x > PENDING)
     =>
@@ -11029,22 +11150,23 @@
     ; )
 
     ;If group is trying to gather, check if any units are still > 3 tiles from group center
-    (defrule
-    (up-group-size g: g-current-group > 0)
-    (goal g-current-group-action GROUP-GATHER)
-    =>
-    (up-full-reset-search)
-    (up-set-group search-local g: g-current-group)
-    (up-set-target-point g-current-group-location-x)
-    (up-remove-objects search-local object-data-distance <= 3)
-    (up-remove-objects search-local object-data-class == packed-trebuchet-class)
-    (up-remove-objects search-local object-data-class == unpacked-trebuchet-class)
-    (up-remove-objects search-local object-data-class == petard-class)
-    (up-remove-objects search-local object-data-class == monastery-class)
-    (up-remove-objects search-local object-data-class == monk-with-relic-class)
-    (up-remove-objects search-local object-data-class == siege-weapon-class)
-    (up-get-search-state g-local-total)
-    )
+    ; (defrule
+    ; (up-group-size g: g-current-group > 0)
+    ; (goal g-current-group-action GROUP-GATHER)
+    ; (up-compare-goal g-current-group-gather-status != 1)
+    ; =>
+    ; (up-full-reset-search)
+    ; (up-set-group search-local g: g-current-group)
+    ; (up-set-target-point g-current-group-location-x)
+    ; (up-remove-objects search-local object-data-distance <= 3)
+    ; (up-remove-objects search-local object-data-class == packed-trebuchet-class)
+    ; (up-remove-objects search-local object-data-class == unpacked-trebuchet-class)
+    ; (up-remove-objects search-local object-data-class == petard-class)
+    ; (up-remove-objects search-local object-data-class == monastery-class)
+    ; (up-remove-objects search-local object-data-class == monk-with-relic-class)
+    ; (up-remove-objects search-local object-data-class == siege-weapon-class)
+    ; (up-get-search-state g-local-total)
+    ; )
 
     ; ;If no units in group are > 3 tiles from group center, consider group gathered. Set group to aggressive and reset group's action.
     ; (defrule
@@ -11072,13 +11194,30 @@
     (defrule
     (up-group-size g: g-current-group > 0)
     (goal g-current-group-action GROUP-GATHER)
+    (up-point-distance g-current-group-location-x g-position-self-x <= 30)
     =>
     (up-full-reset-search)
     (up-get-group-size g: g-current-group g-temp2)
     (up-modify-goal g-temp2 c:- 10)     ;g-temp2 = precise distance when group is considered gathered
     (up-modify-goal g-temp2 c:max 0)    ;should increase when groups are larger
-    (up-modify-goal g-temp2 c:* 5)      ;calculation: if groups are <= 10 units, set distance to 250
-    (up-modify-goal g-temp2 c:+ 300)                ; if groups are > 10 units, distance = 250 + 5 x (size of group - 10)
+    (up-modify-goal g-temp2 c:* 5)      ;calculation: if groups are <= 10 units, set distance to 300
+    (up-modify-goal g-temp2 c:+ 300)                ; if groups are > 10 units, distance = 300 + 5 x (size of group - 10)
+    (up-set-group search-local g: g-current-group)
+    (up-set-target-point g-current-group-location-x)
+    (up-remove-objects search-local object-data-precise-distance g:<= g-temp2)
+    (up-get-search-state g-local-total)
+    )
+    (defrule
+    (up-group-size g: g-current-group > 0)
+    (goal g-current-group-action GROUP-GATHER)
+    (up-point-distance g-current-group-location-x g-position-self-x > 30)
+    =>
+    (up-full-reset-search)
+    (up-get-group-size g: g-current-group g-temp2)
+    (up-modify-goal g-temp2 c:- 10)     ;g-temp2 = precise distance when group is considered gathered
+    (up-modify-goal g-temp2 c:max 0)    ;should increase when groups are larger
+    (up-modify-goal g-temp2 c:* 5)      ;calculation: if groups are <= 10 units, set distance to 450
+    (up-modify-goal g-temp2 c:+ 450)                ; if groups are > 10 units, distance = 450 + 5 x (size of group - 10)
     (up-set-group search-local g: g-current-group)
     (up-set-target-point g-current-group-location-x)
     (up-remove-objects search-local object-data-precise-distance g:<= g-temp2)
@@ -11104,6 +11243,7 @@
 
     ;Increase destination time while gathering
     (defrule
+    (timer-triggered t-5-sec)
     (up-group-size g: g-current-group > 0)
     (goal g-current-group-action GROUP-GATHER)
     (up-compare-goal g-current-group-destination-time < MAX-DESTINATION-TIME)
@@ -11226,7 +11366,6 @@
     )
 
     (defrule
-    (up-group-size g: g-current-group > 0)
     (up-group-size g: g-current-group > 6)
     (up-compare-flag g-current-group-flag == USE-BOX-FORMATION-FLAG)
     =>
@@ -11268,7 +11407,7 @@
     (up-group-size g: g-current-group > 0)
     (goal g-current-group-action PENDING)
     =>
-    (up-chat-data-to-all "Group %d Action: none" g: g-current-group)
+    (up-chat-data-to-all CHAT-GROUP-ACTION-NONE g: g-current-group)
     )
 
     (defrule
@@ -11276,7 +11415,7 @@
     (up-group-size g: g-current-group > 0)
     (goal g-current-group-action GROUP-GATHER)
     =>
-    (up-chat-data-to-all "Group %d Action: gathering" g: g-current-group)
+    (up-chat-data-to-all CHAT-GROUP-ACTION-GATHERING g: g-current-group)
     )
 
     (defrule
@@ -11284,7 +11423,7 @@
     (up-group-size g: g-current-group > 0)
     (goal g-current-group-action GROUP-MOVE)
     =>
-    (up-chat-data-to-all "Group %d Action: moving" g: g-current-group)
+    (up-chat-data-to-all CHAT-GROUP-ACTION-MOVING g: g-current-group)
     )
 
     (defrule
@@ -11292,7 +11431,7 @@
     (up-group-size g: g-current-group > 0)
     (goal g-current-group-action GROUP-ATTACK)
     =>
-    (up-chat-data-to-all "Group %d Action: attacking" g: g-current-group)
+    (up-chat-data-to-all CHAT-GROUP-ACTION-ATTACKING g: g-current-group)
     )
 
     (defrule
@@ -11300,88 +11439,88 @@
     (up-group-size g: g-current-group > 0)
     (goal g-current-group-action GROUP-RETREAT-FROM-OBJECT)
     =>
-    (up-chat-data-to-all "Group %d Action: retreating" g: g-current-group)
-    )
-
-    (defrule
-    (taunt-detected 1 222)
-    (up-compare-flag g-current-group-type-flag == MELEE-SOLDIER-GROUP-FLAG)
-    =>
-    (up-chat-data-to-all "Melee soldier group %d" g: g-current-group)
-    )
-
-    (defrule
-    (taunt-detected 1 222)
-    (up-compare-flag g-current-group-type-flag == RANGED-SOLDIER-GROUP-FLAG)
-    =>
-    (up-chat-data-to-all "Ranged soldier group %d" g: g-current-group)
-    )
-
-    (defrule
-    (taunt-detected 1 222)
-    (up-compare-flag g-current-group-type-flag == FOOT-ARCHER-GROUP-FLAG)
-    =>
-    (up-chat-data-to-all "Foot archer group %d" g: g-current-group)
-    )
-
-    (defrule
-    (taunt-detected 1 222)
-    (up-compare-flag g-current-group-type-flag == CAVALRY-ARCHER-GROUP-FLAG)
-    =>
-    (up-chat-data-to-all "Cav archer group %d" g: g-current-group)
-    )
-
-    (defrule
-    (taunt-detected 1 222)
-    (up-compare-flag g-current-group-type-flag == CAVALRY-GROUP-FLAG)
-    =>
-    (up-chat-data-to-all "Cavalry group %d" g: g-current-group)
-    )
-
-    (defrule
-    (taunt-detected 1 222)
-    (up-compare-flag g-current-group-type-flag == MONK-GROUP-FLAG)
-    =>
-    (up-chat-data-to-all "Monk group %d" g: g-current-group)
-    )
-
-    (defrule
-    (taunt-detected 1 222)
-    (up-compare-flag g-current-group-type-flag == RAM-GROUP-FLAG)
-    =>
-    (up-chat-data-to-all "Ram group %d" g: g-current-group)
-    )
-
-    (defrule
-    (taunt-detected 1 222)
-    (up-compare-flag g-current-group-type-flag == SCORPION-GROUP-FLAG)
-    =>
-    (up-chat-data-to-all "Scorpion group %d" g: g-current-group)
-    )
-
-    (defrule
-    (taunt-detected 1 222)
-    (up-compare-flag g-current-group-type-flag == MANGONEL-GROUP-FLAG)
-    =>
-    (up-chat-data-to-all "Mangonel group %d" g: g-current-group)
-    )
-
-    (defrule
-    (taunt-detected 1 222)
-    (up-compare-flag g-current-group-type-flag == CANNON-GROUP-FLAG)
-    =>
-    (up-chat-data-to-all "Cannon group %d" g: g-current-group)
-    )
-
-    (defrule
-    (taunt-detected 1 222)
-    (up-compare-flag g-current-group-type-flag == TREBUCHET-GROUP-FLAG)
-    =>
-    (up-chat-data-to-all "Trebuchet group %d" g: g-current-group)
+    (up-chat-data-to-all CHAT-GROUP-ACTION-RETREATING g: g-current-group)
     )
 
     (defrule
     (taunt-detected 1 223)
+    (up-compare-flag g-current-group-type-flag == MELEE-INFANTRY-GROUP-FLAG)
+    =>
+    (up-chat-data-to-all CHAT-MELEE-INFANTRY-GROUP g: g-current-group)
+    )
+
+    (defrule
+    (taunt-detected 1 223)
+    (up-compare-flag g-current-group-type-flag == RANGED-INFANTRY-GROUP-FLAG)
+    =>
+    (up-chat-data-to-all CHAT-RANGED-INFANTRY-GROUP g: g-current-group)
+    )
+
+    (defrule
+    (taunt-detected 1 223)
+    (up-compare-flag g-current-group-type-flag == FOOT-ARCHER-GROUP-FLAG)
+    =>
+    (up-chat-data-to-all CHAT-FOOT-ARCHER-GROUP g: g-current-group)
+    )
+
+    (defrule
+    (taunt-detected 1 223)
+    (up-compare-flag g-current-group-type-flag == CAVALRY-ARCHER-GROUP-FLAG)
+    =>
+    (up-chat-data-to-all CHAT-CAV-ARCHER-GROUP g: g-current-group)
+    )
+
+    (defrule
+    (taunt-detected 1 223)
+    (up-compare-flag g-current-group-type-flag == CAVALRY-GROUP-FLAG)
+    =>
+    (up-chat-data-to-all CHAT-CAVALRY-GROUP g: g-current-group)
+    )
+
+    (defrule
+    (taunt-detected 1 223)
+    (up-compare-flag g-current-group-type-flag == MONK-GROUP-FLAG)
+    =>
+    (up-chat-data-to-all CHAT-MONK-GROUP g: g-current-group)
+    )
+
+    (defrule
+    (taunt-detected 1 223)
+    (up-compare-flag g-current-group-type-flag == RAM-GROUP-FLAG)
+    =>
+    (up-chat-data-to-all CHAT-RAM-GROUP g: g-current-group)
+    )
+
+    (defrule
+    (taunt-detected 1 223)
+    (up-compare-flag g-current-group-type-flag == SCORPION-GROUP-FLAG)
+    =>
+    (up-chat-data-to-all CHAT-SCORPION-GROUP g: g-current-group)
+    )
+
+    (defrule
+    (taunt-detected 1 223)
+    (up-compare-flag g-current-group-type-flag == MANGONEL-GROUP-FLAG)
+    =>
+    (up-chat-data-to-all CHAT-MANGONEL-GROUP g: g-current-group)
+    )
+
+    (defrule
+    (taunt-detected 1 223)
+    (up-compare-flag g-current-group-type-flag == CANNON-GROUP-FLAG)
+    =>
+    (up-chat-data-to-all CHAT-CANNON-GROUP g: g-current-group)
+    )
+
+    (defrule
+    (taunt-detected 1 223)
+    (up-compare-flag g-current-group-type-flag == TREBUCHET-GROUP-FLAG)
+    =>
+    (up-chat-data-to-all CHAT-TREBUCHET-GROUP g: g-current-group)
+    )
+
+    (defrule
+    (taunt-detected 1 224)
     (goal g-current-group 1)
     (up-group-size c: 1 > 0)
     =>
@@ -11389,7 +11528,7 @@
     )
 
     (defrule
-    (taunt-detected 1 223)
+    (taunt-detected 1 224)
     (goal g-current-group 2)
     (up-group-size c: 2 > 0)
     =>
@@ -11397,7 +11536,7 @@
     )
 
     (defrule
-    (taunt-detected 1 223)
+    (taunt-detected 1 224)
     (goal g-current-group 3)
     (up-group-size c: 3 > 0)
     =>
@@ -11405,7 +11544,7 @@
     )
 
     (defrule
-    (taunt-detected 1 223)
+    (taunt-detected 1 224)
     (goal g-current-group 4)
     (up-group-size c: 4 > 0)
     =>
@@ -11413,7 +11552,7 @@
     )
 
     (defrule
-    (taunt-detected 1 223)
+    (taunt-detected 1 224)
     (goal g-current-group 5)
     (up-group-size c: 5 > 0)
     =>
@@ -11421,7 +11560,7 @@
     )
 
     (defrule
-    (taunt-detected 1 223)
+    (taunt-detected 1 224)
     (goal g-current-group 6)
     (up-group-size c: 6 > 0)
     =>
@@ -11429,7 +11568,7 @@
     )
 
     (defrule
-    (taunt-detected 1 224)
+    (taunt-detected 1 225)
     (up-group-size g: g-current-group > 0)
     =>
     (up-send-flare g-current-group-destination-x)
@@ -11443,14 +11582,14 @@
     (load "The General 1.2/Functions/Reset DUC")
     
     (defrule
-    (taunt-detected 1 225)
+    (taunt-detected 1 226)
     (up-group-size g: g-current-group > 0)
     =>
     (up-get-indirect-goal g: g-current-group-target-object-goal-id g-current-group-target-object-id)
     )
 
     (defrule
-    (taunt-detected 1 225)
+    (taunt-detected 1 226)
     (up-group-size g: g-current-group > 0)
     (up-set-target-by-id g: g-current-group-target-object-id)
     =>
@@ -11459,12 +11598,12 @@
     )
 
     (defrule
-    (taunt-detected 1 225)
+    (taunt-detected 1 226)
     (up-group-size g: g-current-group > 0)
     (not
         (up-set-target-by-id g: g-current-group-target-object-id))
     =>
-    (up-chat-data-to-all "no target, group %d" g: g-current-group)
+    (up-chat-data-to-all "No target, group %d" g: g-current-group)
     )
 
     (defrule
@@ -11493,12 +11632,6 @@
     )
 
     (defrule
-    (taunt-detected 1 222)
-    =>
-    (acknowledge-taunt 1 222)
-    )
-
-    (defrule
     (taunt-detected 1 223)
     =>
     (acknowledge-taunt 1 223)
@@ -11514,6 +11647,12 @@
     (taunt-detected 1 225)
     =>
     (acknowledge-taunt 1 225)
+    )
+
+    (defrule
+    (taunt-detected 1 226)
+    =>
+    (acknowledge-taunt 1 226)
     )
 
 ;---------------------------------------

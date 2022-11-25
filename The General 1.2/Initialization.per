@@ -48,6 +48,9 @@
 		(defconst female-repairer 222)
 		(defconst male-villager 83)	;same as villager
 		(defconst female-villager 293)
+		
+		(defconst dead-male-builder 225)
+		(defconst dead-female-builder 213)
 
 		;Gaia Animals
 		(defconst sheep 594)
@@ -196,6 +199,9 @@
 			(defconst SICILIANS-CIV 0)
 			(defconst POLES-CIV 0)
 			(defconst BOHEMIANS-CIV 0)
+			(defconst BENGALIS-CIV 0)
+			(defconst DRAVIDIANS-CIV 0)
+			(defconst GURJARAS-CIV 0)
 		#end-if
 
 		#load-if-not-defined DE-AVAILABLE
@@ -305,6 +311,8 @@
 			(defconst obuch 1701)
 			(defconst elite-obuch 1703)
 			(defconst winged-hussar 1707)
+
+			(defconst thirisadai 1750)
 
 			(defconst kamayuk-line -258)
 			(defconst magyar-huszar-line -259)
@@ -560,6 +568,8 @@
 			(defconst elite-obuch 1703)
 			(defconst winged-hussar 1707)
 
+			(defconst thirisadai 1750)
+
 			(defconst genoese-crossbowman-line -262)
 			(defconst elephant-archer-line -261)
 			(defconst boyar-line -260)
@@ -708,6 +718,8 @@
 		;Taunts
 		(defconst TAUNT-37-BUILD-WONDER "A wonder? Dunno why, but okay.")
 		(defconst TAUNT-37-CANT-BUILD-WONDER "Can't build a wonder right now.")
+		(defconst TAUNT-237-DESIRED-UNIT "Desire: %s")
+		(defconst TAUNT-237-DESIRED-AMOUNT "Amount: %d")
 		(defconst TAUNT-246 "Saving for %s")
 		(defconst TAUNT-248-ESCROW-FOOD "Escrow Food: %d")
 		(defconst TAUNT-248-ESCROW-WOOD "Escrow Wood: %d")
@@ -829,6 +841,11 @@
 		(defconst TAUNT-250-LATEI-TRASHUSSARS "I am using hussars to conserve gold.")
 		(defconst TAUNT-250-LATEI-TRASHGENS "I am using genitours to conserve gold.")
 		(defconst TAUNT-250-LATEI-HUSSARS "I am using hussars to conserve gold.")
+		(defconst TAUNT-250-PRIMARY-UNIT "Primary unit: %s")
+		(defconst TAUNT-250-SUPPORT-UNIT "Support unit: %s")
+		(defconst TAUNT-250-NO-PRIMARY-UNIT "Primary unit: None")
+		(defconst TAUNT-250-NO-SUPPORT-UNIT "Support unit: None")
+		(defconst TAUNT-250-ENEMY "The General by Leif Ericson.")
 
 		;Functions
 		(defconst CHAT-LOCAL-LIST-NOT-EMPTY "local list not empty")
@@ -935,9 +952,16 @@
 		(defconst CHAT-UNITS-FOUND-BY-GROUP "Units found by Group: %d")
 		(defconst CHAT-BUILDINGS-FOUND "Buildings found: %d")
 		(defconst CHAT-BUILDINGS-FOUND-BY-GROUP "Buildings found by Group: %d")
+		(defconst CHAT-POTENTIAL-TARGET-ID "New Best Target ID: %d")
+		(defconst CHAT-POTENTIAL-TARGET-TYPE "New Best Target Type: %d")
+		(defconst CHAT-POTENTIAL-TARGET-CLASS "New Best Target Class: %d")
+		(defconst CHAT-POTENTIAL-TARGET-SCORE "New Best Target Score: %d")
+		(defconst CHAT-NEW-BEST-TARGET-ID "New Best Target ID: %d")
+		(defconst CHAT-NEW-BEST-TARGET-TYPE "New Best Target Type: %d")
 		(defconst CHAT-NEW-BEST-TARGET-CLASS "New Best Target Class: %d")
 		(defconst CHAT-NEW-BEST-TARGET-SCORE "New Best Target Score: %d")
-		(defconst CHAT-NEW-TARGET1 "New Target1, group %d")
+		(defconst CHAT-NEW-TARGET1A "New Target1A, group %d")
+		(defconst CHAT-NEW-TARGET1B "New Target1B, group %d")
 		(defconst CHAT-NEW-TARGET2 "New Target2, group %d")
 		(defconst CHAT-NEW-TARGET3 "New Target3, group %d")
 		(defconst CHAT-NEW-TARGET4 "New Target4, group %d")
@@ -973,6 +997,22 @@
 		(defconst CHAT-SEND-SCORPION-UNIT-TO-JOIN-GROUP "Send scorpion to join group %d")
 		(defconst CHAT-SEND-CANNON-UNIT-TO-JOIN-GROUP "Send cannon to join group %d")
 		(defconst CHAT-SEND-TREBUCHET-UNIT-TO-JOIN-GROUP "Send trebuchet to join group %d")
+		(defconst CHAT-GROUP-ACTION-NONE "Group %d Action: none")
+		(defconst CHAT-GROUP-ACTION-GATHERING "Group %d Action: gathering")
+		(defconst CHAT-GROUP-ACTION-MOVING "Group %d Action: moving")
+		(defconst CHAT-GROUP-ACTION-ATTACKING "Group %d Action: attacking")
+		(defconst CHAT-GROUP-ACTION-RETREATING "Group %d Action: retreating")
+		(defconst CHAT-MELEE-INFANTRY-GROUP "Melee infantry group %d")
+		(defconst CHAT-RANGED-INFANTRY-GROUP "Ranged infantry group %d")
+		(defconst CHAT-FOOT-ARCHER-GROUP "Foot archer group %d")
+		(defconst CHAT-CAV-ARCHER-GROUP "Cav archer group %d")
+		(defconst CHAT-CAVALRY-GROUP "Cavalry group %d")
+		(defconst CHAT-MONK-GROUP "Monk group %d")
+		(defconst CHAT-RAM-GROUP "Ram group %d")
+		(defconst CHAT-SCORPION-GROUP "Scorpion group %d")
+		(defconst CHAT-MANGONEL-GROUP "Mangonel group %d")
+		(defconst CHAT-CANNON-GROUP "Cannon group %d")
+		(defconst CHAT-TREBUCHET-GROUP "Trebuchet group %d")
 
 		;Attacking
 		(defconst CHAT-INCREASE-STOP-ATTACK "Increase stop attack number to %d")
@@ -1011,6 +1051,18 @@
 		(defconst CHAT-MILL-FORAGE "forage mill")
 		(defconst CHAT-MILL-DEER "deer mill")
 		(defconst CHAT-NO-LOCATION-FOR-GOLD-CAMP "can't find gold camp location")
+		(defconst CHAT-STOP-SENDING-TC-BUILDERS "Stop sending TC builders")
+		(defconst CHAT-STOP-SENDING-CASTLE-BUILDERS "Stop sending castle builders")
+		(defconst CHAT-STOP-SENDING-KREPOST-BUILDERS "Stop sending krepost builders")
+		(defconst CHAT-STOP-SENDING-SIEGE-WORKSHOP-BUILDERS "Stop sending siege workshop builders")
+		(defconst CHAT-STOP-SENDING-UNIVERSITY-BUILDERS "Stop sending university builders")
+		(defconst CHAT-STOP-SENDING-MONASTERY-BUILDERS "Stop sending monastery builders")
+		(defconst CHAT-STOP-SENDING-BARRACKS-BUILDERS "Stop sending barracks builders")
+		(defconst CHAT-STOP-SENDING-ARCHERY-RANGE-BUILDERS "Stop sending archery range builders")
+		(defconst CHAT-STOP-SENDING-STABLE-BUILDERS "Stop sending stable builders")
+		(defconst CHAT-STOP-SENDING-MARKET-BUILDERS "Stop sending market builders")
+		(defconst CHAT-STOP-SENDING-BLACKSMITH-BUILDERS "Stop sending blacksmith builders")
+		(defconst CHAT-STOP-SENDING-WATCH-TOWER-BUILDERS "Stop sending watch tower builders")
 
 		;Chat
 		(defconst CHAT-DEFEATED "I'm about to be defeated. Keep on without me!")
@@ -1026,6 +1078,7 @@
 		(defconst CHAT-CLOSEST-ENEMY-BUG "Closest enemy not set properly")
 		(defconst CHAT-LOG "Begin Log")
 		(defconst CHAT-LOG-ENTRY "---Log Entry---")
+		(defconst CHAT-LOOP-LOG-ENTRY "---Loop Log Entry---")
 		(defconst CHAT-LOG-TIME "Log Time: %d")
 		(defconst CHAT-LOG-PLAYER "Log Player: %d")
 		(defconst CHAT-BEGIN-PASS "Begin Pass %d")
@@ -1094,6 +1147,30 @@
 
 		;Nomad
 		(defconst CHAT-NOMAD-MAP-DETECTED "Nomad map detected")
+
+		;Personality
+		(defconst CHAT-CUAUHTEMOC1 "I am Cuauhtemoc.")
+		(defconst CHAT-CUAUHTEMOC2 "I am Cuauhtemoc, Eagle Warrior of Tenochtitlan.")
+		(defconst CHAT-CUAUHTEMOC3 "I am Cuauhtemoc, Jaguar Warrior of Tenochtitlan.")
+		(defconst CHAT-CUAUHTEMOC4 "I am Cuauhtemoc, Emperor of Tenochtitlan.")
+		(defconst CHAT-MONTEZUMA1 "My magicians have foretold it.")
+		(defconst CHAT-MONTEZUMA2 "It is time for a garland war!")
+		(defconst CHAT-EDWARD-LONGSHANKS1 "I see you don't have William Wallace to save you.")
+		(defconst CHAT-EDWARD-LONGSHANKS2 "Good.")
+		(defconst CHAT-EDWARD-LONGSHANKS3 "Wallace? What are you doing here?")
+		(defconst CHAT-EDWARD-LONGSHANKS4 "Your'e not going to turn traitor are you, William Wallace?")
+		(defconst CHAT-HENRY-V1 "For he today that sheds his blood with me shall be my brother.")
+		(defconst CHAT-HENRY-V2 "I look forward to drawing our swords together, my friend.")
+		(defconst CHAT-ARTHUR1 "I am Arthur, King of the Britons.")
+		(defconst CHAT-LA-HIRE1 "La Hire wishes to kill something!")
+		(defconst CHAT-WANG-KON1 "Want to see the might of Goryeo today?")
+		(defconst CHAT-WANG-KON2 "It would be my pleasure to show you.")
+		(defconst CHAT-YI-SUN-SHIN1 "No turtle ships??? Dang.")
+		(defconst CHAT-VIETNAMESE1 "Vietnamese scouts are the best.")
+		(defconst CHAT-VIETNAMESE2 "Found %s.")
+		(defconst CHAT-VIETNAMESE3 "%s is here.")
+		(defconst CHAT-VIETNAMESE4 "Send taunt 16, and I will flare enemy locations again.")
+		(defconst CHAT-VIETNAMESE5 "Here are the enemy locations.")
 
 		;Tribute
 		(defconst CHAT-TRIBUTE-FOOD-FOR-VILS "Sending food to player %d for villagers")
@@ -8034,6 +8111,8 @@
 			(defconst g-current-group-best-destination-score 334)	;Used ONLY in Set Group Destination section
 			(defconst g-current-group-destination-score 335)		;Used ONLY in Set Group Destination section
 			(defconst g-current-group-destination-split-goal 336)	;Used ONLY in Set Group Destination section
+			;Gather Group temp goals
+			(defconst g-current-group-gather-status 333)			;Used ONLY in Gather Group Together section
 
 		;Resource Goals: 341-352
 			(defconst g-food-cost 341)

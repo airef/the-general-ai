@@ -1013,6 +1013,9 @@
 		;Check for towers surrounded by walls
 		;If they exist, set wall defense priorities higher
 		(defrule
+        (or
+            (goal g-attacking NO)
+            (up-compare-flag g-attack-method-flag != USE-DUC))
 		(up-projectile-detected projectile-watch-tower <= 5000)
 		(timer-triggered t-5-sec)
 		=>
@@ -1024,6 +1027,9 @@
 		)
 
 		(defrule
+        (or
+            (goal g-attacking NO)
+            (up-compare-flag g-attack-method-flag != USE-DUC))
 		(up-projectile-detected projectile-watch-tower <= 5000)
 		(up-set-target-object search-remote c: 0)
 		(timer-triggered t-5-sec)
@@ -1040,6 +1046,9 @@
 		)
 
 		(defrule
+        (or
+            (goal g-attacking NO)
+            (up-compare-flag g-attack-method-flag != USE-DUC))
 		(up-projectile-detected projectile-watch-tower <= 5000)
 		(up-compare-goal g-remote-total < 3)
 		(timer-triggered t-5-sec)
@@ -1050,6 +1059,9 @@
 
 		;Get soldiers that are targeteting nearby walled tower
 		(defrule
+        (or
+            (goal g-attacking NO)
+            (up-compare-flag g-attack-method-flag != USE-DUC))
 		(up-projectile-detected projectile-watch-tower <= 5000)
 		(up-compare-goal g-remote-total >= 3)
 		(timer-triggered t-5-sec)
@@ -1071,6 +1083,9 @@
 
 		;Retarget these soldiers against wall instead
 		(defrule
+        (or
+            (goal g-attacking NO)
+            (up-compare-flag g-attack-method-flag != USE-DUC))
 		(up-projectile-detected projectile-watch-tower <= 5000)
 		(up-compare-goal g-remote-total >= 3)
 		(up-compare-goal g-local-total > 0)
@@ -1081,6 +1096,9 @@
 
 		;Get soldiers targeting the walled tower that aren't nearby
 		(defrule
+        (or
+            (goal g-attacking NO)
+            (up-compare-flag g-attack-method-flag != USE-DUC))
 		(up-projectile-detected projectile-watch-tower <= 5000)
 		(up-compare-goal g-remote-total >= 3)
 		(timer-triggered t-5-sec)
@@ -1102,6 +1120,9 @@
 
 		;Try to stop these soldiers from targeting the tower
 		(defrule
+        (or
+            (goal g-attacking NO)
+            (up-compare-flag g-attack-method-flag != USE-DUC))
 		(up-projectile-detected projectile-watch-tower <= 5000)
 		(up-compare-goal g-remote-total >= 3)
 		(up-compare-goal g-local-total > 0)
@@ -1113,7 +1134,9 @@
 		
 		;Reset stand ground units if they don't need to target wall anymore
 		(defrule
-		(true)
+        (or
+            (goal g-attacking NO)
+            (up-compare-flag g-attack-method-flag != USE-DUC))
 		=>
 		(up-full-reset-search)
 		(up-filter-include cmdid-military -1 -1 -1)
@@ -1125,6 +1148,9 @@
 		)
 
 		(defrule
+        (or
+            (goal g-attacking NO)
+            (up-compare-flag g-attack-method-flag != USE-DUC))
 		(up-compare-goal g-local-total > 0)
         (up-set-target-object search-local c: 0)
 		=>
@@ -1133,7 +1159,9 @@
 		
 		;Reset idle stand ground units
 		(defrule
-		(true)
+        (or
+            (goal g-attacking NO)
+            (up-compare-flag g-attack-method-flag != USE-DUC))
 		=>
 		(up-full-reset-search)
 		(up-filter-include cmdid-military -1 -1 -1)
@@ -1145,6 +1173,9 @@
 		)
 
 		(defrule
+        (or
+            (goal g-attacking NO)
+            (up-compare-flag g-attack-method-flag != USE-DUC))
 		(up-compare-goal g-local-total > 0)
         (up-set-target-object search-local c: 0)
 		=>
