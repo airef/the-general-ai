@@ -24,7 +24,7 @@
 ;		    PLACE POINT - LUMBER DROPSITE
 ;=========================<>=========================
 
-	(load "The General 1.2/Functions/Reset")
+	(load "The General 1.2/Functions/Reset Mini")
 
 	;Find trees within a certain distance from the starting TC
     ;Slowly expand until we have at least 30 trees that are good spots for a dropsite
@@ -52,15 +52,15 @@
         (up-filter-status c: status-resource c: list-active)
         (up-find-resource c: wood c: 40)
         (up-get-search-state g-local-total)
-        (set-goal i 0)
-		(up-modify-goal j g:= g-remote-total)
+        (set-goal g-loop-counter 0)
+		(up-modify-goal g-loop-counter2 g:= g-remote-total)
         )
 
             (defrule
             (goal g-temp3 44444)
-            (up-set-target-object search-remote g: i)
-			(up-compare-goal i < 40)
-			(up-compare-goal j > 0)		;trees remaining in remote list to check
+            (up-set-target-object search-remote g: g-loop-counter)
+			(up-compare-goal g-loop-counter < 40)
+			(up-compare-goal g-loop-counter2 > 0)		;trees remaining in remote list to check
             =>
             (up-get-point position-object g-point-x)
 			(up-get-point-terrain g-point-x g-temp4)
@@ -70,7 +70,7 @@
 
                 (defrule
                 (goal g-temp3 44444)
-                (up-set-target-object search-remote g: i)
+                (up-set-target-object search-remote g: g-loop-counter)
                 (up-point-terrain g-point-x != terrain-forest)          ;terrain 6
                 (up-point-terrain g-point-x != terrain-forest-palm)     ;terrain 13
                 (up-point-terrain g-point-x != terrain-forest-jungle)   ;terrain 17
@@ -94,7 +94,7 @@
 
                     (defrule
                     (goal g-temp3 44444)
-                    (up-set-target-object search-remote g: i)
+                    (up-set-target-object search-remote g: g-loop-counter)
                     (up-point-terrain g-point-x != terrain-forest)          ;terrain 6
                     (up-point-terrain g-point-x != terrain-forest-palm)     ;terrain 13
                     (up-point-terrain g-point-x != terrain-forest-jungle)   ;terrain 17
@@ -119,7 +119,7 @@
 
                     (defrule
                     (goal g-temp3 44444)
-                    (up-set-target-object search-remote g: i)
+                    (up-set-target-object search-remote g: g-loop-counter)
                     (up-point-terrain g-point-x != terrain-forest)          ;terrain 6
                     (up-point-terrain g-point-x != terrain-forest-palm)     ;terrain 13
                     (up-point-terrain g-point-x != terrain-forest-jungle)   ;terrain 17
@@ -138,7 +138,7 @@
                     (defrule
                     (goal g-temp3 44444)
                     (goal g-temp 4341)
-                    (up-set-target-object search-remote g: i)
+                    (up-set-target-object search-remote g: g-loop-counter)
                     (up-point-terrain g-point-x != terrain-forest-rainforest)       ;terrain 56
                     (up-point-terrain g-point-x != terrain-forest-mediterranean)    ;terrain 88
                     (up-point-terrain g-point-x != terrain-forest-bush)             ;terrain 89
@@ -159,12 +159,12 @@
             (defrule
             (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
             (goal g-temp3 44443)   ;tree doesn't have forest terrain
-            (up-set-target-object search-remote g: i)
-            (up-compare-goal i < 40)
-			(up-compare-goal j > 0)		;trees remaining in remote list to check
+            (up-set-target-object search-remote g: g-loop-counter)
+            (up-compare-goal g-loop-counter < 40)
+			(up-compare-goal g-loop-counter2 > 0)		;trees remaining in remote list to check
             =>
-            (up-remove-objects search-remote object-data-index g:== i)
-			(up-modify-goal j c:- 1)
+            (up-remove-objects search-remote object-data-index g:== g-loop-counter)
+			(up-modify-goal g-loop-counter2 c:- 1)
             (set-goal g-temp3 44444)
             (up-jump-rule -4)
             )
@@ -173,9 +173,9 @@
             (defrule
             (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
             (goal g-temp3 44444)
-            (up-set-target-object search-remote g: i)
-            (up-compare-goal i < 40)
-			(up-compare-goal j > 0)		;trees remaining in remote list to check
+            (up-set-target-object search-remote g: g-loop-counter)
+            (up-compare-goal g-loop-counter < 40)
+			(up-compare-goal g-loop-counter2 > 0)		;trees remaining in remote list to check
             =>
             (up-get-point position-object g-point-x)
             (up-set-target-point g-point-x)
@@ -194,13 +194,13 @@
             (defrule
             (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
             (goal g-temp3 44444)
-            (up-set-target-object search-remote g: i)
-            (up-compare-goal i < 40)
-			(up-compare-goal j > 0)		;trees remaining in remote list to check
+            (up-set-target-object search-remote g: g-loop-counter)
+            (up-compare-goal g-loop-counter < 40)
+			(up-compare-goal g-loop-counter2 > 0)		;trees remaining in remote list to check
             (up-compare-goal g-local-total > 0)
             =>
-            (up-remove-objects search-remote object-data-index g:== i)
-			(up-modify-goal j c:- 1)
+            (up-remove-objects search-remote object-data-index g:== g-loop-counter)
+			(up-modify-goal g-loop-counter2 c:- 1)
             (up-jump-rule -6)
             )
 
@@ -209,9 +209,9 @@
             (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 			(goal g-build-line-bldg town-center)
             (goal g-temp3 44444)
-            (up-set-target-object search-remote g: i)
-            (up-compare-goal i < 40)
-			(up-compare-goal j > 0)		;trees remaining in remote list to check
+            (up-set-target-object search-remote g: g-loop-counter)
+            (up-compare-goal g-loop-counter < 40)
+			(up-compare-goal g-loop-counter2 > 0)		;trees remaining in remote list to check
             =>
             (up-get-point position-object g-point-x)
 			(up-get-point-elevation g-point-x g-temp)
@@ -221,13 +221,13 @@
             (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 			(goal g-build-line-bldg town-center)
             (goal g-temp3 44444)
-            (up-set-target-object search-remote g: i)
-            (up-compare-goal i < 40)
-			(up-compare-goal j > 0)		;trees remaining in remote list to check
+            (up-set-target-object search-remote g: g-loop-counter)
+            (up-compare-goal g-loop-counter < 40)
+			(up-compare-goal g-loop-counter2 > 0)		;trees remaining in remote list to check
             (up-compare-goal g-temp > 0)
             =>
-            (up-remove-objects search-remote object-data-index g:== i)
-			(up-modify-goal j c:- 1)
+            (up-remove-objects search-remote object-data-index g:== g-loop-counter)
+			(up-modify-goal g-loop-counter2 c:- 1)
             (up-jump-rule -8)
             )
 
@@ -235,9 +235,9 @@
             (defrule
             (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
             (goal g-temp3 44444)
-            (up-set-target-object search-remote g: i)
-            (up-compare-goal i < 40)
-			(up-compare-goal j > 0)		;trees remaining in remote list to check
+            (up-set-target-object search-remote g: g-loop-counter)
+            (up-compare-goal g-loop-counter < 40)
+			(up-compare-goal g-loop-counter2 > 0)		;trees remaining in remote list to check
             =>
             (set-strategic-number sn-focus-player-number 1)
             (up-remove-objects search-remote object-data-index == 39)   ;remove last tree in remote list to check (if any) to make room to add enemy military unit or building
@@ -246,9 +246,9 @@
                 (defrule
                 (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
                 (goal g-temp3 44444)
-                (up-set-target-object search-remote g: i)
-            	(up-compare-goal i < 40)
-				(up-compare-goal j > 0)		;trees remaining in remote list to check
+                (up-set-target-object search-remote g: g-loop-counter)
+            	(up-compare-goal g-loop-counter < 40)
+				(up-compare-goal g-loop-counter2 > 0)		;trees remaining in remote list to check
 				(player-in-game focus-player)
                 (stance-toward focus-player enemy)
                 =>
@@ -263,15 +263,15 @@
                 (defrule
                 (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
                 (goal g-temp3 44444)
-                (up-set-target-object search-remote g: i)
-            	(up-compare-goal i < 40)
-				(up-compare-goal j > 0)		;trees remaining in remote list to check
+                (up-set-target-object search-remote g: g-loop-counter)
+            	(up-compare-goal g-loop-counter < 40)
+				(up-compare-goal g-loop-counter2 > 0)		;trees remaining in remote list to check
 				(player-in-game focus-player)
                 (stance-toward focus-player enemy)
                 (up-compare-goal g-remote-last > 0)		;found enemy units nearby tree
                 =>
-                (up-remove-objects search-remote object-data-index g:== i)
-				(up-modify-goal j c:- 1)
+                (up-remove-objects search-remote object-data-index g:== g-loop-counter)
+				(up-modify-goal g-loop-counter2 c:- 1)
                 (up-remove-objects search-remote object-data-cmdid == cmdid-military)
                 (up-jump-rule -11)
                 )
@@ -279,10 +279,10 @@
                 (defrule
                 (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
                 (goal g-temp3 44444)
-                (up-set-target-object search-remote g: i)
-            	(up-compare-goal i < 40)
-				(up-compare-goal j > 0)		;trees remaining in remote list to check
-                (up-compare-sn sn-focus-player-number < 8)
+                (up-set-target-object search-remote g: g-loop-counter)
+            	(up-compare-goal g-loop-counter < 40)
+				(up-compare-goal g-loop-counter2 > 0)		;trees remaining in remote list to check
+                (up-compare-sn sn-focus-player-number < MAX-PLAYERS)
                 =>
                 (up-modify-sn sn-focus-player-number c:+ 1)
                 (up-jump-rule -3)
@@ -292,9 +292,9 @@
             (defrule
             (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
             (goal g-temp3 44444)
-            (up-set-target-object search-remote g: i)
-            (up-compare-goal i < 40)
-			(up-compare-goal j > 0)		;trees remaining in remote list to check
+            (up-set-target-object search-remote g: g-loop-counter)
+            (up-compare-goal g-loop-counter < 40)
+			(up-compare-goal g-loop-counter2 > 0)		;trees remaining in remote list to check
             =>
             (set-strategic-number sn-focus-player-number 1)
             (up-remove-objects search-remote object-data-index == 39)   ;remove last tree in remote list to check (if any) to make room to add enemy military unit or building
@@ -303,9 +303,9 @@
                 (defrule
                 (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
                 (goal g-temp3 44444)
-                (up-set-target-object search-remote g: i)
-            	(up-compare-goal i < 40)
-				(up-compare-goal j > 0)		;trees remaining in remote list to check
+                (up-set-target-object search-remote g: g-loop-counter)
+            	(up-compare-goal g-loop-counter < 40)
+				(up-compare-goal g-loop-counter2 > 0)		;trees remaining in remote list to check
 				(player-in-game focus-player)
                 (stance-toward focus-player enemy)
                 =>
@@ -321,15 +321,15 @@
                 (defrule
                 (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
                 (goal g-temp3 44444)
-                (up-set-target-object search-remote g: i)
-            	(up-compare-goal i < 40)
-				(up-compare-goal j > 0)		;trees remaining in remote list to check
+                (up-set-target-object search-remote g: g-loop-counter)
+            	(up-compare-goal g-loop-counter < 40)
+				(up-compare-goal g-loop-counter2 > 0)		;trees remaining in remote list to check
 				(player-in-game focus-player)
                 (stance-toward focus-player enemy)
                 (up-compare-goal g-remote-last > 0)		;found enemy units nearby tree
                 =>
-                (up-remove-objects search-remote object-data-index g:== i)
-				(up-modify-goal j c:- 1)
+                (up-remove-objects search-remote object-data-index g:== g-loop-counter)
+				(up-modify-goal g-loop-counter2 c:- 1)
                 (up-remove-objects search-remote object-data-cmdid == cmdid-military-building)
                 (up-jump-rule -15)
                 )
@@ -337,9 +337,9 @@
                 (defrule
                 (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
                 (goal g-temp3 44444)
-                (up-set-target-object search-remote g: i)
-            	(up-compare-goal i < 40)
-				(up-compare-goal j > 0)		;trees remaining in remote list to check
+                (up-set-target-object search-remote g: g-loop-counter)
+            	(up-compare-goal g-loop-counter < 40)
+				(up-compare-goal g-loop-counter2 > 0)		;trees remaining in remote list to check
 				(player-in-game focus-player)
                 (stance-toward focus-player enemy)
                 =>
@@ -355,27 +355,27 @@
                 (defrule
                 (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
                 (goal g-temp3 44444)
-                (up-set-target-object search-remote g: i)
-            	(up-compare-goal i < 40)
-				(up-compare-goal j > 0)		;trees remaining in remote list to check
+                (up-set-target-object search-remote g: g-loop-counter)
+            	(up-compare-goal g-loop-counter < 40)
+				(up-compare-goal g-loop-counter2 > 0)		;trees remaining in remote list to check
 				(player-in-game focus-player)
                 (stance-toward focus-player enemy)
                 (up-compare-goal g-remote-last > 0)		;found enemy units nearby tree
                 =>
-                (up-remove-objects search-remote object-data-index g:== i)
-				(up-modify-goal j c:- 1)
+                (up-remove-objects search-remote object-data-index g:== g-loop-counter)
+				(up-modify-goal g-loop-counter2 c:- 1)
                 (up-remove-objects search-remote object-data-cmdid == cmdid-civilian-building)
-                (up-modify-goal i c:+ 1)
+                (up-modify-goal g-loop-counter c:+ 1)
                 (up-jump-rule -17)
                 )
                 
                 (defrule
                 (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
                 (goal g-temp3 44444)
-                (up-set-target-object search-remote g: i)
-            	(up-compare-goal i < 40)
-				(up-compare-goal j > 0)		;trees remaining in remote list to check
-                (up-compare-sn sn-focus-player-number < 8)
+                (up-set-target-object search-remote g: g-loop-counter)
+            	(up-compare-goal g-loop-counter < 40)
+				(up-compare-goal g-loop-counter2 > 0)		;trees remaining in remote list to check
+                (up-compare-sn sn-focus-player-number < MAX-PLAYERS)
                 =>
                 (up-modify-sn sn-focus-player-number c:+ 1)
                 (up-jump-rule -5)
@@ -386,10 +386,10 @@
             (or
                 (goal g-temp3 44443)
                 (goal g-temp3 44444))
-            (up-modify-goal i c:+ 1)
-            (up-set-target-object search-remote g: i)
-            (up-compare-goal i < 40)
-			(up-compare-goal j > 0)		;trees remaining in remote list to check
+            (up-modify-goal g-loop-counter c:+ 1)
+            (up-set-target-object search-remote g: g-loop-counter)
+            (up-compare-goal g-loop-counter < 40)
+			(up-compare-goal g-loop-counter2 > 0)		;trees remaining in remote list to check
             =>
             (set-goal g-temp3 44444)
             (up-jump-rule -19)
@@ -409,7 +409,7 @@
 	    (up-set-target-point g-position-self-x)
         (up-reset-filters)
 	    (set-goal g-temp3 44444)
-        (set-goal i 0)
+        (set-goal g-loop-counter 0)
         (up-modify-goal g-build-line-min-distance c:+ 1)
         (up-modify-goal g-build-line-max-distance c:+ 1)
         (up-jump-rule -21)
@@ -424,7 +424,7 @@
     (goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
     (goal g-temp3 44444)
     =>
-    (set-goal i 0)
+    (set-goal g-loop-counter 0)
 	(set-goal g-build-line-net-dropsite-distance -500)
 	(set-goal g-build-line-resource-id PENDING)
 	(set-goal g-build-line-backup-resource-id PENDING)
@@ -436,7 +436,7 @@
 		(goal g-map-style NOMAD)
 		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 		(goal g-temp3 44444)
-        (up-set-target-object search-remote g: i)
+        (up-set-target-object search-remote g: g-loop-counter)
 		=>
 		(up-set-target-point g-position-self-x)
 		(up-get-object-data object-data-distance g-temp)
@@ -451,7 +451,7 @@
 		(up-compare-goal g-map-style != NOMAD)
 		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 		(goal g-temp3 44444)
-        (up-set-target-object search-remote g: i)
+        (up-set-target-object search-remote g: g-loop-counter)
 		(up-compare-goal g-remote-total >= 10)
 		=>
 		(up-set-target-point g-position-self-x)
@@ -465,7 +465,7 @@
 		(defrule
 		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 		(goal g-temp3 44444)
-        (up-set-target-object search-remote g: i)
+        (up-set-target-object search-remote g: g-loop-counter)
 		(up-compare-goal g-build-line-net-dropsite-distance g:< g-temp2)
 		=>
         (up-get-object-data object-data-id g-build-line-resource-id)
@@ -475,9 +475,10 @@
 		(defrule
 		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 		(goal g-temp3 44444)
-		(up-compare-goal i < 40)
+		(up-modify-goal g-loop-counter c:+ 1)
+        (up-set-target-object search-remote g: g-loop-counter)
+		(up-compare-goal g-loop-counter < 40)
 		=>
-		(up-modify-goal i c:+ 1)
         (set-goal g-temp PENDING)
         (set-goal g-temp2 PENDING)
 		(up-jump-rule -4)
@@ -490,7 +491,7 @@
     (goal g-temp3 44444)
 	(up-set-target-by-id g: g-build-line-resource-id)
     =>
-    (set-goal i 0)
+    (set-goal g-loop-counter 0)
 	(set-goal g-build-line-net-dropsite-distance -500)
 	(set-goal g-build-line-backup-resource-id PENDING)
     (set-goal g-temp PENDING)
@@ -504,7 +505,7 @@
 		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 		(goal g-temp3 44444)
 		(up-set-target-by-id g: g-build-line-resource-id)
-        (up-set-target-object search-remote g: i)
+        (up-set-target-object search-remote g: g-loop-counter)
 		=>
 		(up-set-target-point g-position-self-x)
 		(up-get-object-data object-data-distance g-temp)
@@ -521,7 +522,7 @@
 		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 		(goal g-temp3 44444)
 		(up-set-target-by-id g: g-build-line-resource-id)
-        (up-set-target-object search-remote g: i)
+        (up-set-target-object search-remote g: g-loop-counter)
 		(up-compare-goal g-remote-total >= 10)
 		=>
 		(up-set-target-point g-position-self-x)
@@ -537,7 +538,7 @@
 		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 		(goal g-temp3 44444)
 		(up-set-target-by-id g: g-build-line-resource-id)
-        (up-set-target-object search-remote g: i)
+        (up-set-target-object search-remote g: g-loop-counter)
 		(up-compare-goal g-build-line-net-dropsite-distance g:< g-temp2)
 		(up-point-distance g-point-x g-point2-x >= 15)
 		=>
@@ -549,15 +550,16 @@
 		(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
 		(goal g-temp3 44444)
 		(up-set-target-by-id g: g-build-line-resource-id)
-		(up-compare-goal i < 40)
+		(up-modify-goal g-loop-counter c:+ 1)
+        (up-set-target-object search-remote g: g-loop-counter)
+		(up-compare-goal g-loop-counter < 40)
 		=>
-		(up-modify-goal i c:+ 1)
         (set-goal g-temp PENDING)
         (set-goal g-temp2 PENDING)
 		(up-jump-rule -4)
 		)
 
-	(load "The General 1.2/Functions/Reset")
+	(load "The General 1.2/Functions/Reset Mini")
 	
 		;Get midpoint of nearby trees at possible lumber camp location, store in g-build-line-point-x
 		(defrule
@@ -574,7 +576,7 @@
 		(up-filter-status c: status-resource c: list-active)
 		(up-find-resource g: g-build-line-resource-type c: 40)
 		(up-get-search-state g-local-total)
-		(set-goal j 0)
+		(set-goal g-loop-counter2 0)
 		(up-get-point position-zero g-build-line-point-x)
 		)
 		
@@ -584,14 +586,14 @@
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-by-id g: g-build-line-resource-id)
-			(up-set-target-object search-remote g: j)
-			(up-compare-goal j g:< g-remote-total)
-			(up-compare-goal j < 40)
+			(up-set-target-object search-remote g: g-loop-counter2)
+			(up-compare-goal g-loop-counter2 g:< g-remote-total)
+			(up-compare-goal g-loop-counter2 < 40)
 			=>
 			(up-get-point position-object g-point-x)
 			(up-modify-goal g-build-line-point-x g:+ g-point-x)
 			(up-modify-goal g-build-line-point-y g:+ g-point-y)
-			(up-modify-goal j c:+ 1)
+			(up-modify-goal g-loop-counter2 c:+ 1)
 			(up-jump-rule -1)
 			)
 		
@@ -612,7 +614,7 @@
 			;Test constructing camp at midpoint, then slowly test locations further away
 			;in an increasing zone, similar to place-point
 			
-			(load "The General 1.2/Functions/Reset")
+			(load "The General 1.2/Functions/Reset Mini")
 		
 			(defrule
 			(goal g-build-line-type BUILD-LINE-POINT-LUMBER-DROPSITE)
@@ -623,8 +625,8 @@
 			(up-compare-goal g-build-line-point-y > -1)
 			=>
 			(set-goal g-build-line-zone-radius 0)
-			(set-goal i 0)
-			(set-goal j 0)
+			(set-goal g-loop-counter 0)
+			(set-goal g-loop-counter2 0)
 			(up-get-point-elevation g-build-line-point-x g-temp)
 			)
 			
@@ -776,12 +778,12 @@
 					(up-compare-goal g-build-line-point-x > -1)
 					(up-compare-goal g-build-line-point-y > -1)
 					(goal g-temp3 44451)
-					(up-compare-goal i g:< g-build-line-zone-radius)
+					(up-compare-goal g-loop-counter g:< g-build-line-zone-radius)
 					=>
-					(up-modify-goal i c:+ 1)
+					(up-modify-goal g-loop-counter c:+ 1)
 					(up-copy-point g-point-x g-build-line-point-x)
-					(up-modify-goal g-point-x g:- i)
-					(up-modify-goal g-point-y g:- j)
+					(up-modify-goal g-point-x g:- g-loop-counter)
+					(up-modify-goal g-point-y g:- g-loop-counter2)
 					(up-bound-point g-point-x g-point-x)
 					(set-goal g-temp3 44446)
 					(up-jump-rule -8)
@@ -795,13 +797,13 @@
 					(up-can-build g-build-line-escrow g: g-build-line-bldg)
 					(up-set-target-by-id g: g-build-line-resource-id)
 					(goal g-temp3 44451)
-					(up-compare-goal j g:< g-build-line-zone-radius)
+					(up-compare-goal g-loop-counter2 g:< g-build-line-zone-radius)
 					=>
-					(up-modify-goal j c:+ 1)
-					(up-modify-goal i g:neg g-build-line-zone-radius)
+					(up-modify-goal g-loop-counter2 c:+ 1)
+					(up-modify-goal g-loop-counter g:neg g-build-line-zone-radius)
 					(up-copy-point g-point-x g-build-line-point-x)
-					(up-modify-goal g-point-x g:- i)
-					(up-modify-goal g-point-y g:- j)
+					(up-modify-goal g-point-x g:- g-loop-counter)
+					(up-modify-goal g-point-y g:- g-loop-counter2)
 					(up-bound-point g-point-x g-point-x)
 					(set-goal g-temp3 44446)
 					(up-jump-rule -9)
@@ -855,8 +857,8 @@
 				(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
 				=>
 				(up-modify-goal g-build-line-zone-radius c:+ 1)
-				(up-modify-goal i g:neg g-build-line-zone-radius)
-				(up-modify-goal j g:neg g-build-line-zone-radius)
+				(up-modify-goal g-loop-counter g:neg g-build-line-zone-radius)
+				(up-modify-goal g-loop-counter2 g:neg g-build-line-zone-radius)
 				(up-get-point-elevation g-build-line-point-x g-temp)
 				(up-jump-rule -13)
 				)

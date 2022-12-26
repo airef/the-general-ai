@@ -22,7 +22,7 @@
 ;		    PLACE POINT - MINING DROPSITE
 ;=========================<>=========================
 
-	(load "The General 1.2/Functions/Reset")
+	(load "The General 1.2/Functions/Reset Mini")
 	
 	(defrule
 	(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
@@ -37,7 +37,7 @@
 	(up-filter-distance c: -1 g: g-build-line-max-distance)
 	(up-find-resource g: g-build-line-resource-type c: 39)
 	(up-get-search-state g-local-total)
-	(set-goal i 0)
+	(set-goal g-loop-counter 0)
 	(set-goal g-build-line-net-dropsite-distance -500)
 	(set-goal g-build-line-resource-id -1)
 	)
@@ -53,8 +53,8 @@
 			(up-gaia-type-count g: g-build-line-resource-type > 0)
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
-			(up-set-target-object search-remote g: i)
-			(up-compare-goal i < 40)
+			(up-set-target-object search-remote g: g-loop-counter)
+			(up-compare-goal g-loop-counter < 40)
 			=>
 			(up-set-target-point g-position-self-x)
 			(up-get-object-data object-data-distance g-temp)
@@ -72,8 +72,8 @@
 			(up-gaia-type-count g: g-build-line-resource-type > 0)
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
-			(up-set-target-object search-remote g: i)
-			(up-compare-goal i < 40)
+			(up-set-target-object search-remote g: g-loop-counter)
+			(up-compare-goal g-loop-counter < 40)
 			=>
 			(up-set-target-point g-position-self-x)
 			(up-get-object-data object-data-distance g-temp)
@@ -90,8 +90,8 @@
 			(up-gaia-type-count g: g-build-line-resource-type > 0)
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
-			(up-set-target-object search-remote g: i)
-			(up-compare-goal i < 40)
+			(up-set-target-object search-remote g: g-loop-counter)
+			(up-compare-goal g-loop-counter < 40)
 			(up-compare-goal g-build-line-net-dropsite-distance g:< g-temp2)
 			=>
 			(up-modify-goal g-build-line-net-dropsite-distance g:= g-temp2)
@@ -104,9 +104,9 @@
 			(up-gaia-type-count g: g-build-line-resource-type > 0)
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
-			(up-modify-goal i c:+ 1)
-			(up-set-target-object search-remote g: i)
-			(up-compare-goal i < 40)
+			(up-modify-goal g-loop-counter c:+ 1)
+			(up-set-target-object search-remote g: g-loop-counter)
+			(up-compare-goal g-loop-counter < 40)
 			=>
 			(up-jump-rule -4)
 			)
@@ -161,7 +161,7 @@
 		=>
 		(up-remove-objects search-remote object-data-id g:== g-build-line-resource-id)
 		(set-goal g-build-line-resource-id -1)
-		(set-goal i 0)
+		(set-goal g-loop-counter 0)
 		(set-goal g-build-line-net-dropsite-distance -500)
 		(up-jump-rule -7)
 		)
@@ -212,7 +212,7 @@
 			(up-remove-objects search-remote object-data-id g:== g-build-line-resource-id)
 			(up-remove-objects search-remote object-data-cmdid == cmdid-military)
 			(set-goal g-build-line-resource-id -1)
-			(set-goal i 0)
+			(set-goal g-loop-counter 0)
 			(set-goal g-build-line-net-dropsite-distance -500)
 			(up-jump-rule -10)
 			)
@@ -224,7 +224,7 @@
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-by-id g: g-build-line-resource-id)
-			(up-compare-sn sn-focus-player-number < 8)
+			(up-compare-sn sn-focus-player-number < MAX-PLAYERS)
 			=>
 			(up-modify-sn sn-focus-player-number c:+ 1)
 			(up-jump-rule -3)
@@ -275,7 +275,7 @@
 			(up-remove-objects search-remote object-data-id g:== g-build-line-resource-id)
 			(up-remove-objects search-remote object-data-cmdid == cmdid-military-building)
 			(set-goal g-build-line-resource-id -1)
-			(set-goal i 0)
+			(set-goal g-loop-counter 0)
 			(set-goal g-build-line-net-dropsite-distance -500)
 			(up-jump-rule -14)
 			)
@@ -312,7 +312,7 @@
 			(up-remove-objects search-remote object-data-id g:== g-build-line-resource-id)
 			(up-remove-objects search-remote object-data-cmdid == cmdid-civilian-building)
 			(set-goal g-build-line-resource-id -1)
-			(set-goal i 0)
+			(set-goal g-loop-counter 0)
 			(set-goal g-build-line-net-dropsite-distance -500)
 			(up-jump-rule -16)
 			)
@@ -324,13 +324,13 @@
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
 			(up-set-target-by-id g: g-build-line-resource-id)
-			(up-compare-sn sn-focus-player-number < 8)
+			(up-compare-sn sn-focus-player-number < MAX-PLAYERS)
 			=>
 			(up-modify-sn sn-focus-player-number c:+ 1)
 			(up-jump-rule -5)
 			)
 			
-	(load "The General 1.2/Functions/Reset")
+	(load "The General 1.2/Functions/Reset Mini")
 	
 	;Get midpoint of gold/stone mines at gold/stone mining location, store in g-build-line-point-x
 	(defrule
@@ -348,7 +348,7 @@
 	(up-filter-status c: status-resource c: list-active)
 	(up-find-resource g: g-build-line-resource-type c: 25)
 	(up-get-search-state g-local-total)
-	(set-goal j 0)
+	(set-goal g-loop-counter2 0)
 	(up-get-point position-zero g-build-line-point-x)
 	)
 	
@@ -360,14 +360,14 @@
 		(up-can-build g-build-line-escrow g: g-build-line-bldg)
 		(building-type-count town-center > 0)
 		(up-set-target-by-id g: g-build-line-resource-id)
-		(up-set-target-object search-remote g: j)
-		(up-compare-goal j g:< g-remote-total)
-		(up-compare-goal j < 25)
+		(up-set-target-object search-remote g: g-loop-counter2)
+		(up-compare-goal g-loop-counter2 g:< g-remote-total)
+		(up-compare-goal g-loop-counter2 < 25)
 		=>
 		(up-get-point position-object g-point-x)
 		(up-modify-goal g-build-line-point-x g:+ g-point-x)
 		(up-modify-goal g-build-line-point-y g:+ g-point-y)
-		(up-modify-goal j c:+ 1)
+		(up-modify-goal g-loop-counter2 c:+ 1)
 		(up-jump-rule -1)
 		)
 	
@@ -390,7 +390,7 @@
 	;Test constructing camp at midpoint, then slowly test locations further away
 	;in an increasing zone, similar to place-point
 	
-	(load "The General 1.2/Functions/Reset")
+	(load "The General 1.2/Functions/Reset Mini")
 	
 	(defrule
 	(goal g-build-line-type BUILD-LINE-POINT-MINING-DROPSITE)
@@ -398,8 +398,8 @@
 	(up-gaia-type-count g: g-build-line-resource-type > 0)
 	(up-pending-objects g: g-build-line-bldg == 0)
 	=>
-	(up-modify-goal i g:neg g-build-line-zone-radius)
-	(up-modify-goal j g:neg g-build-line-zone-radius)
+	(up-modify-goal g-loop-counter g:neg g-build-line-zone-radius)
+	(up-modify-goal g-loop-counter2 g:neg g-build-line-zone-radius)
 	(set-goal g-build-line-zone-radius 0)
 	)
 	
@@ -464,12 +464,12 @@
 		(up-set-target-by-id g: g-build-line-resource-id)
 		(up-compare-goal g-build-line-point-x > -1)
 		(up-compare-goal g-build-line-point-y > -1)
-		(up-compare-goal i g:< g-build-line-zone-radius)
+		(up-compare-goal g-loop-counter g:< g-build-line-zone-radius)
 		=>
-		(up-modify-goal i c:+ 1)
+		(up-modify-goal g-loop-counter c:+ 1)
 		(up-copy-point g-point-x g-build-line-point-x)
-		(up-modify-goal g-point-x g:- i)
-		(up-modify-goal g-point-y g:- j)
+		(up-modify-goal g-point-x g:- g-loop-counter)
+		(up-modify-goal g-point-y g:- g-loop-counter2)
 		(up-bound-point g-point-x g-point-x)
 		(up-jump-rule -3)
 		)
@@ -480,13 +480,13 @@
 		(up-pending-objects g: g-build-line-bldg == 0)
 		(up-can-build g-build-line-escrow g: g-build-line-bldg)
 		(up-set-target-by-id g: g-build-line-resource-id)
-		(up-compare-goal j g:< g-build-line-zone-radius)
+		(up-compare-goal g-loop-counter2 g:< g-build-line-zone-radius)
 		=>
-		(up-modify-goal j c:+ 1)
-		(up-modify-goal i g:neg g-build-line-zone-radius)
+		(up-modify-goal g-loop-counter2 c:+ 1)
+		(up-modify-goal g-loop-counter g:neg g-build-line-zone-radius)
 		(up-copy-point g-point-x g-build-line-point-x)
-		(up-modify-goal g-point-x g:- i)
-		(up-modify-goal g-point-y g:- j)
+		(up-modify-goal g-point-x g:- g-loop-counter)
+		(up-modify-goal g-point-y g:- g-loop-counter2)
 		(up-bound-point g-point-x g-point-x)
 		(up-jump-rule -4)
 		)
@@ -535,8 +535,8 @@
 		(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
 		=>
 		(up-modify-goal g-build-line-zone-radius c:+ 1)
-		(up-modify-goal i g:neg g-build-line-zone-radius)
-		(up-modify-goal j g:neg g-build-line-zone-radius)
+		(up-modify-goal g-loop-counter g:neg g-build-line-zone-radius)
+		(up-modify-goal g-loop-counter2 g:neg g-build-line-zone-radius)
 		(up-jump-rule -8)
 		)
 

@@ -141,59 +141,87 @@
     (up-modify-sn sn-maximum-town-size c:max 32)
     )
 
+    #load-if-defined TEST-LATER
+
+        (load "The General 1.2/Functions/Reset")
+
+        (defrule
+        (current-age >= castle-age)
+        (goal g-enemy-buildings-in-town 0)
+        (building-type-count town-center > 0)
+        =>
+        (up-full-reset-search)
+        (up-find-local c: town-center c: 10)
+        (set-goal g-loop-counter 0)
+        (set-goal g-temp 0)
+        (set-goal g-temp2 0)
+        (set-goal g-temp3 0)
+        )
+
+            (defrule
+            (current-age >= castle-age)
+            (goal g-enemy-buildings-in-town 0)
+            (building-type-count town-center > 0)
+            (up-set-target-object search-local g: g-loop-counter)
+            =>
+            (up-get-object-data object-data-point-x g-temp)
+            (up-modify-goal g-temp g:- g-position-self-x)   ;get difference between position-self-b and TC location-b
+            (up-modify-goal g-temp2 g:neg g-temp)   ;get opposite result of g-temp
+            (up-modify-goal g-temp g:max g-temp2)   ;get absolute value of difference between position-self-x and TC location-x
+            (up-modify-goal g-temp3 g:max g-temp)
+            (up-get-object-data object-data-point-y g-temp)
+            (up-modify-goal g-temp g:- g-position-self-y)   ;get difference between position-self-y and TC location-y
+            (up-modify-goal g-temp2 g:neg g-temp)   ;get opposite result of g-temp
+            (up-modify-goal g-temp g:max g-temp2)   ;get absolute value of difference between position-self-y and TC location-y
+            (up-modify-goal g-temp3 g:max g-temp)
+            )
+
+            (defrule
+            (current-age >= castle-age)
+            (goal g-enemy-buildings-in-town 0)
+            (building-type-count town-center > 0)
+            (up-modify-goal g-loop-counter c:+ 1)
+            (up-set-target-object search-local g: g-loop-counter)
+            (up-compare-goal g-loop-counter <= 10)
+            =>
+            (up-jump-rule -2)
+            )
+
+        (defrule
+        (current-age >= castle-age)
+        (goal g-enemy-buildings-in-town 0)
+        (building-type-count town-center > 0)
+        (up-modify-goal g-temp3 c:+ 3)  ;to account for farms around TC
+        (up-compare-sn custom-sn-peaceful-town-size g:< g-temp3)
+        =>
+        (up-modify-sn sn-safe-town-size g:max g-temp3)
+        (up-modify-sn custom-sn-peaceful-town-size g:max g-temp3)
+        (up-modify-sn sn-maximum-town-size g:max g-temp3)
+        )
+
+    #end-if
+
     ;Reduced town size if enemy towers in town
     (defrule
     (military-population < 6)
     (goal g-attacking NO)
-    (up-building-type-in-town c: watch-tower >= 1)
+    (or
+        (up-building-type-in-town c: watch-tower >= 1)
+        (up-building-type-in-town c: donjon >= 1))
     (up-compare-sn sn-maximum-town-size > 12)
     =>
     (up-modify-sn sn-maximum-town-size c:- 1)
     (up-modify-sn sn-safe-town-size s:min sn-maximum-town-size)
     (up-modify-sn custom-sn-peaceful-town-size s:min sn-maximum-town-size)
-    (up-chat-data-to-player my-player-number CHAT-REDUCE-TS-FOR-TOWERS s: sn-maximum-town-size)
+    ; (up-chat-data-to-player my-player-number CHAT-REDUCE-TS-FOR-TOWERS s: sn-maximum-town-size)
     )
-
-    ; (load "The General 1.2/Functions/Reset")
-
-    ; (defrule
-    ; (timer-triggered t-5-sec)
-    ; (building-type-count town-center > 0)
-    ; =>
-    ; (up-set-target-point g-position-self-x)
-    ; (set-goal g-temp 40)
-    ; (up-modify-goal g-temp s:max custom-sn-peaceful-town-size)
-    ; (up-filter-distance c: -1 g: g-temp)    ;only search within 40 tiles or custom-sn-peaceful-town-size, whichever is larger
-    ; (up-full-reset-search)
-    ; (up-find-local c: town-center c: 40)
-    ; (up-find-local c: castle c: 40)
-    ; (up-find-local c: tower-class c: 40)
-    ; (up-filter-status c: status-pending c: list-active)
-    ; (up-find-status-local c: town-center c: 40)
-    ; (up-find-status-local c: castle c: 40)
-    ; (up-find-status-local c: tower-class c: 40)
-    ; (up-clean-search search-local object-data-distance search-order-desc)
-    ; )
-
-    ; (defrule
-    ; (timer-triggered t-5-sec)
-    ; (building-type-count town-center > 0)
-    ; (up-set-target-object search-local c: 0)
-    ; (up-get-object-data object-data-distance g-temp)
-    ; (up-compare-sn custom-sn-peaceful-town-size g:< g-temp)
-    ; =>
-    ; (up-modify-sn custom-sn-peaceful-town-size g:= g-temp)
-    ; (up-modify-sn custom-sn-peaceful-town-size c:min 40)
-    ; (up-modify-sn sn-maximum-town-size s:max custom-sn-peaceful-town-size)
-    ; (up-modify-sn sn-safe-town-size s:max custom-sn-peaceful-town-size)
-    ; )
 
 ;-------------------------------
 ;   SN-NUMBER-EXPLORE-GROUPS
 ;   SN-CAP-CIVILIAN-EXPLORERS
 ;-------------------------------
 
-    (load "The General 1.2/Functions/Reset")
+    (load "The General 1.2/Functions/Reset Mini")
 
     ;Explore with all scouts if game is early and we haven't found enemy
     (defrule
@@ -338,7 +366,7 @@
 ;   SN-HOME-EXPLORATION-TIME
 ;------------------------------
 
-    (load "The General 1.2/Functions/Reset")
+    (load "The General 1.2/Functions/Reset Mini")
 
     (defrule
     (building-type-count-total town-center > 0)
@@ -386,7 +414,7 @@
     (up-modify-sn sn-lumber-camp-max-distance s:= custom-sn-peaceful-town-size)
     )
 
-    (load "The General 1.2/Functions/Reset")
+    (load "The General 1.2/Functions/Reset Mini")
 
         ;Increase sn-lumber-camp-max-distance if we don't have any forest inside the distance
         (defrule
@@ -489,7 +517,7 @@
     ; (up-chat-data-to-player my-player-number CHAT-CAMP-MINING-PEACEFUL-DISTANCE s: sn-mining-camp-max-distance)
     )
 
-    (load "The General 1.2/Functions/Reset")
+    (load "The General 1.2/Functions/Reset Mini")
 
         ;Increase sn-mining-camp-max-distance if we don't have any gold inside the distance
         (defrule
@@ -522,7 +550,7 @@
         (up-jump-rule -2)
         )
 
-    (load "The General 1.2/Functions/Reset")
+    (load "The General 1.2/Functions/Reset Mini")
 
         ;Increase sn-mining-camp-max-distance if we don't have any stone inside the distance
         (defrule
@@ -658,147 +686,6 @@
     (set-strategic-number sn-allow-adjacent-dropsites 1)
     )
 
-;--------------------------------
-;   SN-TASK-UNGROUPED-SOLDIERS
-;--------------------------------
-
-    ; (load "The General 1.2/Functions/Reset")
-
-    ;If villagers are gathering near soldier gather point, periodically tell soldiers to spread out
-    ; (defrule
-    ; (up-compare-goal g-gather-point-x >= 0)
-    ; (up-point-distance g-gather-point-x g-position-self-x > 5)
-    ; =>
-    ; (up-set-target-point g-gather-point-x)
-    ; (up-full-reset-search)
-    ; (up-filter-distance c: -1 c: 5)
-    ; (up-find-local c: villager-class c: 1)
-    ; (up-get-search-state g-local-total)
-    ; )
-
-    ; (defrule
-    ; (timer-triggered t-spread-soldiers)
-    ; (up-compare-goal g-gather-point-x >= 0)
-    ; (up-point-distance g-position-self-x g-gather-point-x > 5)
-    ; =>
-    ; (set-strategic-number sn-task-ungrouped-soldiers 0)
-    ; (disable-timer t-spread-soldiers)
-    ; )
-
-    ; (defrule
-    ; (timer-triggered t-30-sec)
-    ; (up-compare-goal g-gather-point-x >= 0)
-    ; (up-point-distance g-position-self-x g-gather-point-x > 5)
-    ; (military-population > 1)
-    ; (goal g-attacking NO)
-    ; (up-compare-goal g-local-total > 0)
-    ; =>
-    ; (set-strategic-number sn-task-ungrouped-soldiers 1)
-    ; (enable-timer t-spread-soldiers 1)
-    ; )
-
-;--------------------------------------
-;   SN-PERCENT-BUILDING-CANCELLATION
-;--------------------------------------
-
-    ; (load "The General 1.2/Functions/Reset")
-
-    ; (defrule
-    ; (strategic-number sn-percent-building-cancellation > 30)
-    ; (or
-    ;     (goal g-town-under-attack NO)
-    ;     (up-compare-goal g-top-enemy-military-parity >= 0))
-    ; =>
-    ; (set-strategic-number sn-percent-building-cancellation 30)
-    ; )
-
-    ; ;Find a tower under construction
-    ; (defrule
-    ; (strategic-number sn-percent-building-cancellation > 0)
-    ; (goal g-town-under-attack YES)
-    ; (up-pending-objects c: tower-class > 0)
-    ; (up-compare-goal g-top-enemy-military-parity < 0)
-    ; =>
-    ; (up-full-reset-search)
-    ; (up-filter-status c: status-pending c: list-active)
-    ; (up-find-local c: tower-class c: 1)
-    ; )
-
-    ; ;See if there are villagers building it
-    ; (defrule
-    ; (strategic-number sn-percent-building-cancellation < 100)
-    ; (goal g-town-under-attack YES)
-    ; (up-pending-objects c: tower-class > 0)
-    ; (up-compare-goal g-top-enemy-military-parity < 0)
-    ; (up-set-target-object search-local c: 0)
-    ; =>
-    ; (up-get-point position-object g-point-x)
-    ; (up-set-target-point g-point-x)
-    ; (set-strategic-number sn-focus-player-number my-player-number)
-    ; (up-reset-search 0 0 1 1)
-    ; (up-reset-filters)
-    ; (up-filter-distance c: -1 c: 2)
-    ; (up-find-remote c: villager-class c: 1)
-    ; (up-get-search-state g-local-total)
-    ; )
-
-    ; ;If builders are found but they are under attack, increase sn-percent-building-cancellation
-    ; (defrule
-    ; (strategic-number sn-percent-building-cancellation < 70)
-    ; (goal g-town-under-attack YES)
-    ; (up-pending-objects c: tower-class > 0)
-    ; (up-compare-goal g-top-enemy-military-parity < 0)
-    ; (up-set-target-object search-local c: 0)
-    ; (up-set-target-object search-remote c: 0)
-    ; (up-object-data object-data-attacker-count > 0)
-    ; =>
-    ; (set-strategic-number sn-percent-building-cancellation 70)
-    ; )
-
-    ; ;If no builders nearby, assume they have been killed and cancel the tower
-    ; (defrule
-    ; (strategic-number sn-percent-building-cancellation < 100)
-    ; (goal g-town-under-attack YES)
-    ; (up-pending-objects c: tower-class > 0)
-    ; (up-compare-goal g-top-enemy-military-parity < 0)
-    ; (up-set-target-object search-local c: 0)
-    ; (goal g-remote-total 0) ;no nearby builders
-    ; =>
-    ; (set-strategic-number sn-percent-building-cancellation 100)
-    ; )
-
-;-------------------------------------
-;   CUSTOM-SN-COUNTERING-PREFERENCE
-;-------------------------------------
-
-    (defrule
-    (player-in-game any-ally)
-    (strategic-number custom-sn-countering-preference != 0)
-    =>
-    (set-strategic-number custom-sn-countering-preference 0)
-    )
-
-    (defrule
-    (not
-        (player-in-game any-ally))
-    (strategic-number custom-sn-countering-preference != 100)
-    =>
-    (set-strategic-number custom-sn-countering-preference 100)
-    )
-
-    ;Adjust score more if low military or defensive
-    (defrule
-    (current-age >= feudal-age)
-    (strategic-number custom-sn-countering-preference > 0)
-    (or
-        (military-population g:< g-min-military-pop)
-        (or
-            (goal g-game-focus DEFENSIVE)
-            (up-compare-goal g-target-military-parity < -5)))
-    =>
-    (up-modify-sn custom-sn-countering-preference c:%* 150)
-    )
-
 ;---------------------------------
 ;   SN-PREFERRED-TRADE-DISTANCE
 ;---------------------------------
@@ -806,5 +693,5 @@
     (defrule
     (building-type-count market > 1)
     =>
-    (set-strategic-number sn-preferred-trade-distance EIGHTY-PERCENT-MAP-SIZE)
+    (set-strategic-number sn-preferred-trade-distance NINETY-PERCENT-MAP-SIZE)
     )

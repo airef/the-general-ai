@@ -170,7 +170,7 @@
     ;   Initial Scouting For Resources
     ;------------------------------------
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
         (up-compare-goal g-duc-scouting != STOP-DUC-SCOUTING)
@@ -202,7 +202,7 @@
                     (up-set-target-by-id g: g-scout3-id)))
             (up-compare-goal g-duc-scouting != STOP-DUC-SCOUTING)
             =>
-            (set-goal i 1)                                          ;increments through each scout (1 = first scout, 2 = second scout, 3 = third scout)
+            (set-goal g-loop-counter 1)                                          ;increments through each scout (1 = first scout, 2 = second scout, 3 = third scout)
             (set-goal g-current-scout-goal g-scout1-id)
             (up-modify-goal g-current-scout-id g:= g-scout1-id)
             )
@@ -231,14 +231,14 @@
             (defrule
             (or
                 (and
-                    (goal i 1)  ;loop is looking at first scout
+                    (goal g-loop-counter 1)  ;loop is looking at first scout
                     (goal g-claim-sheep SEND-SCOUT-1))
                 (or
                     (and
-                        (goal i 2)  ;loop is looking at second scout
+                        (goal g-loop-counter 2)  ;loop is looking at second scout
                         (goal g-claim-sheep SEND-SCOUT-2))
                     (and
-                        (goal i 3)  ;loop is looking at third scout
+                        (goal g-loop-counter 3)  ;loop is looking at third scout
                         (goal g-claim-sheep SEND-SCOUT-3))))
             =>
             (up-jump-rule 31)
@@ -266,7 +266,7 @@
                 (defrule
                 (goal g-duc-scouting RESET)
                 (up-set-target-by-id g: g-current-scout-id)
-                (goal i 1)
+                (goal g-loop-counter 1)
                 (up-compare-flag g-flag == SCOUT-1-TARGET-SET)
                 =>
                 (set-goal g-duc-scouting TARGETING-POINT)
@@ -276,7 +276,7 @@
                 (defrule
                 (goal g-duc-scouting RESET)
                 (up-set-target-by-id g: g-current-scout-id)
-                (goal i 2)
+                (goal g-loop-counter 2)
                 (up-compare-flag g-flag == SCOUT-2-TARGET-SET)
                 =>
                 (set-goal g-duc-scouting TARGETING-POINT)
@@ -286,7 +286,7 @@
                 (defrule
                 (goal g-duc-scouting RESET)
                 (up-set-target-by-id g: g-current-scout-id)
-                (goal i 3)
+                (goal g-loop-counter 3)
                 (up-compare-flag g-flag == SCOUT-3-TARGET-SET)
                 =>
                 (set-goal g-duc-scouting TARGETING-POINT)
@@ -306,11 +306,11 @@
                 (set-goal g-duc-scouting START)
                 (up-get-point position-object g-point-x)            ;Store the scout's position, will be changed to the next point to be explored
                 (set-goal g-temp 9)                                 ;distance for up-cross-tiles in next rule
-                (up-modify-goal g-temp2 g:= i)                     ;make sure scout 2 goes in opposite direction from scout 1 and 3, i = current scout in loop
-                (up-modify-goal g-temp2 c:mod 2)                   ;if i = 1 or 3, then result = 1; if i = 2, then result = 0
-                (up-modify-goal g-temp2 c:* 2)                     ;if i = 1 or 3, then result = 2; if i = 2, then result = 0
-                (up-modify-goal g-temp2 c:- 1)                     ;if i = 1 or 3, then result = 1, if i = 2, then result = -1
-                (up-modify-goal g-temp g:* g-temp2)                ;if i = 2, then g-temp will be negated, which will switch the direction in next rule
+                (up-modify-goal g-temp2 g:= g-loop-counter)                     ;make sure scout 2 goes in opposite direction from scout 1 and 3, g-loop-counter = current scout in loop
+                (up-modify-goal g-temp2 c:mod 2)                   ;if g-loop-counter = 1 or 3, then result = 1; if g-loop-counter = 2, then result = 0
+                (up-modify-goal g-temp2 c:* 2)                     ;if g-loop-counter = 1 or 3, then result = 2; if g-loop-counter = 2, then result = 0
+                (up-modify-goal g-temp2 c:- 1)                     ;if g-loop-counter = 1 or 3, then result = 1, if g-loop-counter = 2, then result = -1
+                (up-modify-goal g-temp g:* g-temp2)                ;if g-loop-counter = 2, then g-temp will be negated, which will switch the direction in next rule
                 (up-modify-goal g-temp g:* g-scouting-direction)    ;clockwise = -1, counterclockwise = 1)
                 (up-modify-goal g-temp3 g:= g-scouting-distance)
                 )
@@ -319,7 +319,7 @@
                 ;Sheep scout around TC at set distances
                 ;Scouts 1, 2, and 3 (if not sheep) are set at different radiuses and increase as g-scouting-distance increases
                 (defrule
-                (goal i 2) ;second scout
+                (goal g-loop-counter 2) ;second scout
                 (goal g-duc-scouting START)
                 (up-set-target-by-id g: g-current-scout-id)   ;current scout found and is alive
                 (building-type-count-total town-center > 0)
@@ -328,7 +328,7 @@
                 (set-goal g-temp3 13)     ;always keep first sheep scout at 13 tiles from TC
                 )
                 (defrule
-                (goal i 3)  ;third scout
+                (goal g-loop-counter 3)  ;third scout
                 (goal g-duc-scouting START)
                 (up-set-target-by-id g: g-current-scout-id)   ;current scout found and is alive
                 (building-type-count-total town-center > 0)
@@ -338,8 +338,8 @@
                 )
                 (defrule
                 (or
-                    (goal i 2)  ;second scout
-                    (goal i 3)) ;third scout
+                    (goal g-loop-counter 2)  ;second scout
+                    (goal g-loop-counter 3)) ;third scout
                 (goal g-duc-scouting START)
                 (up-set-target-by-id g: g-current-scout-id)   ;current scout found and is alive
                 (building-type-count-total town-center > 0)
@@ -347,7 +347,7 @@
                 (up-modify-goal g-temp3 c:+ 8)     ;increase scouting distance for scout 1 or 2 by 4 if we have a third scout
                 )
                 (defrule
-                (goal i 3)  ;third scout
+                (goal g-loop-counter 3)  ;third scout
                 (goal g-duc-scouting START)
                 (up-set-target-by-id g: g-current-scout-id)   ;current scout found and is alive
                 (building-type-count-total town-center > 0)
@@ -432,7 +432,7 @@
 
                 ;Send Scout 1 to the explore point
                 (defrule
-                (goal i 1)                                      ;first scout
+                (goal g-loop-counter 1)                                      ;first scout
                 (goal g-duc-scouting SET-POINT)
                 (up-set-target-by-id g: g-current-scout-id)     ;current scout found and is alive
                 (building-type-count-total town-center > 0)
@@ -449,7 +449,7 @@
                 ;Send Scout 2 to the explore point
                 ;Set point 8 tiles further than g-scouting-distance so that exploration doesn't overlap with scout 1
                 (defrule
-                (goal i 2)                                      ;second scout
+                (goal g-loop-counter 2)                                      ;second scout
                 (goal g-duc-scouting SET-POINT)
                 (up-set-target-by-id g: g-current-scout-id)     ;current scout found and is alive
                 (building-type-count-total town-center > 0)
@@ -466,7 +466,7 @@
                 ;Send Scout 3 to the explore point
                 ;Set point 16 tiles further than g-scouting-distance so that exploration doesn't overlap with scout 1 or scout 2
                 (defrule
-                (goal i 3)                                      ;third scout
+                (goal g-loop-counter 3)                                      ;third scout
                 (goal g-duc-scouting SET-POINT)
                 (up-set-target-by-id g: g-current-scout-id)     ;current scout found and is alive
                 (building-type-count-total town-center > 0)
@@ -490,7 +490,7 @@
 
                 ;If the explore point is near NW or SW border
                 (defrule
-                (goal i 1)                                      ;First scout in loop
+                (goal g-loop-counter 1)                                      ;First scout in loop
                 (game-time > 90)                                ;allow exploring along border if scouting reaches the border early, we likely started near the border of the map, so we want to guarantee that we explore it
                 (goal g-duc-scouting TARGETING-POINT)
                 (up-set-target-by-id g: g-current-scout-id)     ;current scout found and is alive
@@ -507,7 +507,7 @@
                 
                 ;If the explore point is near NE or SE border
                 (defrule
-                (goal i 1)                                      ;First scout in loop
+                (goal g-loop-counter 1)                                      ;First scout in loop
                 (game-time > 90)                                ;allow exploring along border if scouting reaches the border early, we likely started near the border of the map, so we want to guarantee that we explore it
                 (goal g-duc-scouting TARGETING-POINT)
                 (up-set-target-by-id g: g-current-scout-id)     ;current scout found and is alive
@@ -536,7 +536,7 @@
 
                 ;Store explore point in g-point-x
                 (defrule
-                (goal i 1)
+                (goal g-loop-counter 1)
                 (goal g-duc-scouting TARGETING-POINT)
                 (up-compare-goal g-scout1-target-x >= 0)
                 (up-compare-goal g-scout1-target-y >= 0)
@@ -544,7 +544,7 @@
                 (up-copy-point g-point-x g-scout1-target-x)
                 )
                 (defrule
-                (goal i 2)
+                (goal g-loop-counter 2)
                 (goal g-duc-scouting TARGETING-POINT)
                 (up-compare-goal g-scout2-target-x >= 0)
                 (up-compare-goal g-scout2-target-y >= 0)
@@ -552,7 +552,7 @@
                 (up-copy-point g-point-x g-scout2-target-x)
                 )
                 (defrule
-                (goal i 3)
+                (goal g-loop-counter 3)
                 (goal g-duc-scouting TARGETING-POINT)
                 (up-compare-goal g-scout3-target-x >= 0)
                 (up-compare-goal g-scout3-target-y >= 0)
@@ -575,7 +575,7 @@
                 ;Reset scouting if current scout is idle
                 ;Scout 1
                 (defrule
-                (goal i 1)
+                (goal g-loop-counter 1)
                 (goal g-duc-scouting TARGETING-POINT)
                 (up-set-target-by-id g: g-current-scout-id)     ;scout is alive
                 (building-type-count-total town-center > 0)
@@ -586,7 +586,7 @@
                 )
                 ;Scout 2
                 (defrule
-                (goal i 2)
+                (goal g-loop-counter 2)
                 (goal g-duc-scouting TARGETING-POINT)
                 (up-set-target-by-id g: g-current-scout-id)     ;scout is alive
                 (building-type-count-total town-center > 0)
@@ -597,7 +597,7 @@
                 )
                 ;Scout 3
                 (defrule
-                (goal i 3)
+                (goal g-loop-counter 3)
                 (goal g-duc-scouting TARGETING-POINT)
                 (up-set-target-by-id g: g-current-scout-id)     ;scout is alive
                 (building-type-count-total town-center > 0)
@@ -611,7 +611,7 @@
 
                 ;Scout 1
                 (defrule
-                (goal i 1)
+                (goal g-loop-counter 1)
                 (goal g-duc-scouting TARGETING-POINT)
                 (up-set-target-by-id g: g-current-scout-id)     ;current scout found and is alive
                 (building-type-count-total town-center > 0)
@@ -623,7 +623,7 @@
                 )
                 ;Scout 2
                 (defrule
-                (goal i 2)
+                (goal g-loop-counter 2)
                 (goal g-duc-scouting TARGETING-POINT)
                 (up-set-target-by-id g: g-current-scout-id)     ;current scout found and is alive
                 (building-type-count-total town-center > 0)
@@ -635,7 +635,7 @@
                 )
                 ;Scout 3
                 (defrule
-                (goal i 3)
+                (goal g-loop-counter 3)
                 (goal g-duc-scouting TARGETING-POINT)
                 (up-set-target-by-id g: g-current-scout-id)     ;current scout found and is alive
                 (building-type-count-total town-center > 0)
@@ -665,10 +665,10 @@
             ;------------------------
 
                 (defrule
-                (up-compare-goal i < 3)
+                (up-compare-goal g-loop-counter < 3)
                 (up-compare-goal g-duc-scouting != STOP-DUC-SCOUTING)
                 =>
-                (up-modify-goal i c:+ 1)
+                (up-modify-goal g-loop-counter c:+ 1)
                 (up-modify-goal g-current-scout-goal c:+ 1)
                 (up-get-indirect-goal g: g-current-scout-goal g-current-scout-id)
                 (set-goal g-temp -1)
@@ -683,7 +683,7 @@
     ;   Sheep DUC
     ;---------------
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
 
         ;This section controls the movement of sheep and how villagers gather the sheep
 
@@ -775,7 +775,7 @@
         (up-set-target-by-id g: g-current-sheep-id)
         =>
         (up-get-object-data object-data-precise-distance g-temp3)
-        (set-goal i 0)
+        (set-goal g-loop-counter 0)
         )
 
             ;Pick point away from current sheep location, if necessary
@@ -787,13 +787,13 @@
             (up-object-data object-data-distance >= 2)	;next sheep too far away from TC
             (up-set-target-by-id g: g-current-sheep-id)
             (up-compare-goal g-temp3 < 75)
-            (up-compare-goal i < 3)
+            (up-compare-goal g-loop-counter < 3)
             =>
             (up-modify-goal g-point-y c:+ 1)
             (up-bound-point g-point-x g-point-x)
             (up-set-target-point g-point-x)
             (up-get-object-data object-data-precise-distance g-temp3)
-            (up-modify-goal i c:+ 1)
+            (up-modify-goal g-loop-counter c:+ 1)
             (up-jump-rule -1)
             )
 
@@ -804,7 +804,7 @@
         (up-set-target-by-id g: g-next-sheep-id)
         (up-object-data object-data-idling == 1)	;next sheep is idle
         (up-object-data object-data-distance >= 2)	;next sheep too far away from TC
-        (goal i 5)
+        (goal g-loop-counter 5)
         =>
         (up-get-point position-self g-point-x)
         (up-modify-goal g-point-x c:- 1)			;Get point a little bit away from the TC center
@@ -826,7 +826,7 @@
         (up-target-point g-point-x action-default -1 -1)
         )
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
 
         ;Get sheep to send to sheep gather point (exclude the current sheep to gather)
         (defrule
@@ -871,7 +871,7 @@
 
         ;Retask shepherds if they target a sheep too far from town center
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
 
         ;First, determine if any sheep are incorrectly being targeted
         (defrule
@@ -971,7 +971,7 @@
     ;   Push Deer
     ;---------------
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
         
         (defrule
         (goal g-scouting-status PUSH-DEER)
@@ -981,7 +981,7 @@
         (goal g-current-deer-id PENDING)
         (goal g-claim-sheep NO)
         =>
-        (set-goal i 0)
+        (set-goal g-loop-counter 0)
         (up-set-target-point g-position-self-x)
         (up-full-reset-search)
         )
@@ -993,7 +993,7 @@
             (up-compare-goal g-current-deer-count > 0)
             (goal g-current-deer-id PENDING)
             (goal g-claim-sheep NO)
-            (up-set-target-by-id g: i)
+            (up-set-target-by-id g: g-loop-counter)
             (up-object-data object-data-class == deer-class)
             (up-object-data object-data-carry > 0)
             (up-object-data object-data-hitpoints > 0)
@@ -1002,7 +1002,7 @@
             (up-get-object-data object-data-point-y g-point-y)
             (up-point-explored g-point-x != explored-no)
             =>
-            (up-add-object-by-id search-remote g: i)
+            (up-add-object-by-id search-remote g: g-loop-counter)
             )
 
             (defrule
@@ -1012,9 +1012,9 @@
             (up-compare-goal g-current-deer-count > 0)
             (goal g-current-deer-id PENDING)
             (goal g-claim-sheep NO)
-            (up-compare-goal i g:< g-map-size-squared)
+            (up-compare-goal g-loop-counter g:< g-id-loop-max-objects)
             =>
-            (up-modify-goal i c:+ 1)
+            (up-modify-goal g-loop-counter c:+ 1)
             (up-jump-rule -2)
             )
 
@@ -1200,7 +1200,7 @@
     ;   Boar Hunting
     ;------------------
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
         (not
@@ -1250,7 +1250,7 @@
         (up-compare-goal g-current-boar-count > 0)
         =>
         (set-goal g-current-boar-id PENDING)
-        (set-goal i 0)
+        (set-goal g-loop-counter 0)
         (up-set-target-point g-position-self-x)
         (up-full-reset-search)
         )
@@ -1260,7 +1260,7 @@
             ; (dropsite-min-distance live-boar <= MAX-BOAR-HUNT-DISTANCE)
             (up-compare-goal g-current-boar-count > 0)
             (goal g-current-boar-id PENDING)
-            (up-set-target-by-id g: i)
+            (up-set-target-by-id g: g-loop-counter)
             (up-object-data object-data-class == boar-class)
             (up-object-data object-data-carry > 0)
             (up-object-data object-data-hitpoints > 0)
@@ -1269,7 +1269,7 @@
             (up-get-object-data object-data-point-y g-point-y)
             (up-point-explored g-point-x != explored-no)
             =>
-            (up-add-object-by-id search-remote g: i)
+            (up-add-object-by-id search-remote g: g-loop-counter)
             )
 
             (defrule
@@ -1277,9 +1277,9 @@
             ; (dropsite-min-distance live-boar <= MAX-BOAR-HUNT-DISTANCE)
             (up-compare-goal g-current-boar-count > 0)
             (goal g-current-boar-id PENDING)
-            (up-compare-goal i g:< g-map-size-squared)
+            (up-compare-goal g-loop-counter g:< g-id-loop-max-objects)
             =>
-            (up-modify-goal i c:+ 1)
+            (up-modify-goal g-loop-counter c:+ 1)
             (up-jump-rule -2)
             )
 
@@ -1309,7 +1309,7 @@
         ; (chat-local-to-self CHAT-BOAR-SET-BOAR)
         )
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
         (goal g-boar-hunt-status SET-BOAR-ID)
@@ -1519,6 +1519,597 @@
             
         #end-if
 
+;=========================<>=========================
+;			       RETASK VILLAGERS
+;=========================<>=========================
+
+    ;----------------------------
+    ;   Ensure Enough Foragers
+    ;----------------------------
+
+        ; (load "The General 1.2/Functions/Reset Mini")
+
+        ; (defrule
+        ; (current-age == dark-age)
+        ; (building-type-count-total mill > 0)
+        ; (up-gaia-type-count c: forage-class > 0)
+        ; (unit-type-count villager >= 16)
+        ; =>
+        ; (up-get-fact unit-type-count villager g-temp)
+        ; (up-modify-goal g-temp c:- 15)
+        ; (up-modify-goal g-temp c:min 4)
+        ; (up-get-fact unit-type-count villager-builder g-temp2)
+        ; (up-modify-goal g-temp g:- g-temp2)
+        ; )
+
+        ; (defrule
+        ; (current-age == dark-age)
+        ; (building-type-count-total mill > 0)
+        ; (up-gaia-type-count c: forage-class > 0)
+        ; (unit-type-count villager >= 16)
+        ; (unit-type-count villager-forager g:< g-temp)
+        ; =>
+        ; (up-full-reset-search)
+        ; (up-set-target-point g-position-self-x)
+        ; (up-filter-distance c: -1 c: 20)
+        ; (up-find-local c: mill c: 1)
+        ; (up-filter-status c: status-pending c: list-active)
+        ; (up-find-status-local c: mill c: 1)
+        ; (set-goal g-temp2 23947)
+        ; )
+
+        ; (defrule
+        ; (goal g-temp2 23947)
+        ; (building-type-count-total mill > 0)
+        ; (up-gaia-type-count c: forage-class > 0)
+        ; (up-set-target-object search-local c: 0)
+        ; =>
+        ; (up-get-point position-object g-point-x)
+        ; (up-set-target-point g-point-x)
+        ; (up-full-reset-search)
+        ; (up-filter-status c: status-resource c: list-active)
+        ; (up-filter-distance c: -1 c: 5)
+        ; (up-find-resource c: forage-class c: 6)
+        ; (up-clean-search search-remote object-data-distance search-order-asc)
+        ; (up-remove-objects search-remote object-data-index == 0) ;remove closest bush because it often is blocked by the mill
+        ; (up-get-search-state g-local-total)
+        ; (set-goal g-temp2 23948)
+        ; )        
+
+        ; (defrule
+        ; (goal g-temp2 23948)
+        ; (building-type-count-total mill > 0)
+        ; (up-gaia-type-count c: forage-class > 0)
+        ; (up-compare-goal g-remote-total > 0)
+        ; (up-set-target-object search-remote c: 0)
+        ; =>
+        ; (up-reset-search 1 1 0 0)
+        ; (up-reset-filters)
+        ; (up-find-local c: female-shepherd c: 1)
+        ; (up-find-local c: male-shepherd c: 1)
+        ; (up-find-local c: female-hunter c: 1)
+        ; (up-find-local c: male-hunter c: 1)
+        ; (up-remove-objects search-local object-data-index > 0)
+        ; (up-get-search-state g-local-total)
+        ; (set-goal g-temp2 23949)
+        ; )
+
+        ; (defrule
+        ; (goal g-temp2 23949)
+        ; (building-type-count-total mill > 0)
+        ; (up-gaia-type-count c: forage-class > 0)
+        ; (up-compare-goal g-local-total == 1)
+        ; (up-compare-goal g-remote-total > 0)
+        ; (up-set-target-object search-remote c: 0)
+        ; =>
+        ; (up-target-objects 0 action-default -1 -1)
+        ; )
+
+    ;---------------------------
+    ;   Retask Early Foragers
+    ;---------------------------
+
+        ;Retask when gathering from forage bushes without mill
+        (load "The General 1.2/Functions/Reset Mini")
+
+        (defrule
+        (unit-type-count villager-forager > 0)
+        (building-type-count town-center > 0)
+        (building-type-count mill == 0)
+        (up-compare-goal g-sheep-found-count > 0)
+        (unit-type-count villager-shepherd <= 5)
+        (current-age == dark-age)
+        (unit-type-count villager < 13)
+        =>
+        (up-full-reset-search)
+        (up-find-local c: male-forager c: 20)
+        (up-find-local c: female-forager c: 20)
+        (up-remove-objects search-local object-data-carry < 5)      ;only retask when villagers are close to their capacity
+        (up-remove-objects search-local object-data-carry >= 10)    ;don't retask villager that are dropping off resources
+        (set-strategic-number sn-focus-player-number my-player-number)
+        (up-find-remote c: town-center c: 1)
+        (up-get-search-state g-local-total)
+        (set-goal g-temp 53640)
+        )
+
+        (defrule
+        (goal g-temp 53640)
+        (up-compare-goal g-local-total > 0)
+        (up-set-target-object search-remote c: 0)
+        =>
+        (up-target-objects 1 action-garrison -1 -1)
+        ; (chat-local-to-self "retask early foragers")
+        )
+
+    ;-------------------------
+    ;   Retask Far Foragers
+    ;-------------------------
+
+        ;Retask when gathering from forage bushes away from mill
+        (load "The General 1.2/Functions/Reset Mini")
+
+        (defrule
+        (unit-type-count villager-forager > 0)
+        (building-type-count town-center > 0)
+        (building-type-count mill > 0)
+        (up-compare-goal g-sheep-found-count > 0)
+        (unit-type-count villager-shepherd <= 5)
+        (current-age == dark-age)
+        (unit-type-count villager < 13)
+        =>
+        (up-full-reset-search)
+        (up-find-local c: male-forager c: 20)
+        (up-find-local c: female-forager c: 20)
+        (up-remove-objects search-local object-data-carry < 5)      ;only retask when villagers are close to their capacity
+        (up-remove-objects search-local object-data-carry >= 10)    ;don't retask villager that are dropping off resources
+        (up-get-search-state g-local-total)
+        (set-goal g-loop-counter 0)
+        (set-goal g-temp 53641)
+        )
+
+            (defrule
+            (goal g-temp 53641)
+            (up-compare-goal g-loop-counter g:< g-local-total)
+            (up-set-target-object search-local g: g-loop-counter)
+            (current-age == dark-age)
+            =>
+            (up-get-point position-object g-point-x)
+            (up-set-target-point g-point-x)
+            (up-filter-distance c: -1 c: 6)
+            (set-strategic-number sn-focus-player-number my-player-number)
+            (up-find-remote c: mill c: 1)
+            (up-find-remote c: town-center c: 1)
+            (up-filter-status c: status-pending c: list-active)
+            (up-find-status-remote c: mill c: 1)
+            (up-find-status-remote c: town-center-foundation c: 1)
+            (up-get-search-state g-local-total)
+            )
+
+            (defrule
+            (goal g-temp 53641)
+            (up-compare-goal g-loop-counter g:< g-local-total)
+            (up-set-target-object search-local g: g-loop-counter)
+            (goal g-remote-total 0)
+            (current-age == dark-age)
+            =>
+            (up-remove-objects search-local object-data-index g:!= g-loop-counter)
+            (up-reset-search 0 0 1 1)
+            (up-reset-filters)
+            (set-strategic-number sn-focus-player-number my-player-number)
+            (up-find-remote c: town-center c: 1)
+            (set-goal g-temp 53642)
+            )
+
+            (defrule
+            (goal g-temp 53642)
+            (up-compare-goal g-loop-counter g:< g-local-total)
+            (up-set-target-object search-local g: g-loop-counter)
+            (up-set-target-object search-remote c: 0)
+            =>
+            (up-remove-objects search-local object-data-index g:!= g-loop-counter)
+            (up-target-objects 1 action-garrison -1 -1)
+            ; (chat-local-to-self "retask far foragers")
+            (up-jump-rule 1)
+            )
+
+            (defrule
+            (goal g-temp 53641)
+            (up-compare-goal g-loop-counter g:< g-local-total)
+            (up-compare-goal g-loop-counter < 40)
+            (current-age == dark-age)
+            =>
+            (up-modify-goal g-loop-counter c:+ 1)
+            (up-jump-rule -4)
+            )
+
+    ;---------------------------
+    ;   Ensure Enough Hunters
+    ;---------------------------
+
+        ; (load "The General 1.2/Functions/Reset Mini")
+
+        ; (defrule
+        ; (unit-type-count villager-forager > 4)
+        ; (unit-type-count villager-hunter < 4)
+        ; (dropsite-min-distance hunting < 5)
+        ; =>
+        ; (up-full-reset-search)
+        ; (up-find-local c: male-forager c: 20)
+        ; (up-find-local c: female-forager c: 20)
+        ; (up-remove-objects search-local object-data-carry >= 3)
+        ; (up-set-target-point g-position-self-x)
+        ; (up-filter-distance c: -3 c: 8)
+        ; (up-filter-status c: status-gather c: list-inactive)
+        ; (up-find-resource c: boar-class c: 1)
+        ; (up-find-resource c: deer-class c: 1)
+        ; (up-remove-objects search-local object-data-index > 0)
+        ; (up-remove-objects search-remote object-data-carry < 10)
+        ; (up-clean-search search-remote object-data-distance search-order-asc)
+        ; (up-get-search-state g-local-total)
+        ; )
+
+        ; (defrule
+        ; (unit-type-count villager-forager > 4)
+        ; (unit-type-count villager-hunter < 4)
+        ; (dropsite-min-distance hunting < 6)
+        ; (up-compare-goal g-local-total > 0)
+        ; (up-set-target-object search-remote c: 0)
+        ; =>
+        ; (up-target-objects 1 action-default -1 -1)
+        ; )
+
+    ;------------------------------
+    ;   Retask Early Lumberjacks
+    ;------------------------------
+
+        (load "The General 1.2/Functions/Reset Mini")
+
+        (defrule
+        (building-type-count town-center > 0)
+        (unit-type-count villager-wood > 0)
+        (current-age == dark-age)
+        (unit-type-count villager <= VILS-FOR-LUMBER-CAMP)
+        (strategic-number sn-wood-gatherer-percentage == 0)
+        (or
+            (dropsite-min-distance food < 4)
+            (or
+                (dropsite-min-distance hunting < 4)
+                (up-compare-goal g-usable-farm-count > 0)))
+        =>
+        (up-find-local c: male-lumberjack c: 20)
+        (up-find-local c: female-lumberjack c: 20)
+        (up-get-search-state g-local-total)
+        )
+
+        (defrule
+        (building-type-count town-center > 0)
+        (unit-type-count villager-wood > 0)
+        (current-age == dark-age)
+        (unit-type-count villager <= VILS-FOR-LUMBER-CAMP)
+        (strategic-number sn-wood-gatherer-percentage == 0)
+        (or
+            (dropsite-min-distance food < 4)
+            (or
+                (dropsite-min-distance hunting < 4)
+                (up-compare-goal g-usable-farm-count > 0)))
+        (up-compare-goal g-local-total > 0)
+        =>
+        (set-strategic-number sn-focus-player-number my-player-number)
+        (up-reset-search 0 0 1 1)
+        (up-reset-filters)
+        (up-find-remote c: town-center c: 1)
+        )
+
+        (defrule
+        (building-type-count town-center > 0)
+        (unit-type-count villager-wood > 0)
+        (current-age == dark-age)
+        (unit-type-count villager <= VILS-FOR-LUMBER-CAMP)
+        (strategic-number sn-wood-gatherer-percentage == 0)
+        (or
+            (dropsite-min-distance food < 4)
+            (or
+                (dropsite-min-distance hunting < 4)
+                (up-compare-goal g-usable-farm-count > 0)))
+        (up-compare-goal g-local-total > 0)
+        (up-set-target-object search-remote c: 0)
+        =>
+        (up-target-objects 1 action-garrison -1 -1)
+        ; (chat-local-to-self "retask early lumberjacks")
+        )
+
+    ;-----------------
+    ;   Retask Far Lumberjacks
+    ;-----------------
+
+        (load "The General 1.2/Functions/Reset Mini")
+
+        ;Retask lumberjacks when gathering wood away from a dropsite
+        (defrule
+        (unit-type-count villager-wood > 0)
+        (building-type-count town-center > 0)
+        (building-type-count lumber-camp > 0)
+        (dropsite-min-distance wood < 7)
+        (current-age == dark-age)
+        =>
+        (up-full-reset-search)
+        (up-find-local c: male-lumberjack c: 20)
+        (up-find-local c: female-lumberjack c: 20)
+        (up-remove-objects search-local object-data-carry < 5)      ;only retask when villagers are close to their capacity
+        (up-remove-objects search-local object-data-carry >= 10)    ;don't retask villager that are dropping off resources
+        (up-get-search-state g-local-total)
+        (set-goal g-loop-counter 0)
+        (set-goal g-temp 53643)
+        )
+
+            (defrule
+            (goal g-temp 53643)
+            (up-compare-goal g-loop-counter g:< g-local-total)
+            (up-set-target-object search-local g: g-loop-counter)
+            (current-age == dark-age)
+            =>
+            (up-get-point position-object g-point-x)
+            (up-set-target-point g-point-x)
+            (up-filter-distance c: -1 c: 7)
+            (set-strategic-number sn-focus-player-number my-player-number)
+            (up-find-remote c: lumber-camp c: 1)
+            (up-find-remote c: town-center c: 1)
+            (up-filter-status c: status-pending c: list-active)
+            (up-find-status-remote c: lumber-camp c: 1)
+            (up-find-status-remote c: town-center-foundation c: 1)
+            (up-get-search-state g-local-total)
+            )
+
+            (defrule
+            (goal g-temp 53643)
+            (up-compare-goal g-loop-counter g:< g-local-total)
+            (up-set-target-object search-local g: g-loop-counter)
+            (goal g-remote-total 0)
+            (current-age == dark-age)
+            =>
+            (up-remove-objects search-local object-data-index g:!= g-loop-counter)
+            (up-reset-search 0 0 1 1)
+            (up-reset-filters)
+            (set-strategic-number sn-focus-player-number my-player-number)
+            (up-find-remote c: town-center c: 1)
+            (set-goal g-temp 53644)
+            )
+
+            (defrule
+            (goal g-temp 53644)
+            (up-compare-goal g-loop-counter g:< g-local-total)
+            (up-set-target-object search-local g: g-loop-counter)
+            (up-set-target-object search-remote c: 0)
+            =>
+            (up-remove-objects search-local object-data-index g:!= g-loop-counter)
+            (up-target-objects 1 action-garrison -1 -1)
+            ; (chat-local-to-self "retask far lumberjacks")
+            (up-jump-rule 1)
+            )
+
+            (defrule
+            (goal g-temp 53643)
+            (up-compare-goal g-loop-counter g:< g-local-total)
+            (up-compare-goal g-loop-counter < 40)
+            (current-age == dark-age)
+            =>
+            (up-modify-goal g-loop-counter c:+ 1)
+            (up-jump-rule -4)
+            )
+            
+    ;----------------------------
+    ;   Retask Far Gold Miners
+    ;----------------------------
+
+        (load "The General 1.2/Functions/Reset Mini")
+
+        ;Retask gold miners when gathering gold away from a dropsite
+        (defrule
+        (unit-type-count villager-gold > 0)
+        (building-type-count town-center > 0)
+        (building-type-count mining-camp > 0)
+        (dropsite-min-distance gold < 7)
+        (current-age == dark-age)
+        =>
+        (up-full-reset-search)
+        (up-find-local c: male-gold-miner c: 20)
+        (up-find-local c: female-gold-miner c: 20)
+        (up-remove-objects search-local object-data-carry < 5)      ;only retask when villagers are close to their capacity
+        (up-remove-objects search-local object-data-carry >= 10)    ;don't retask villager that are dropping off resources
+        (up-get-search-state g-local-total)
+        (set-goal g-loop-counter 0)
+        (set-goal g-temp 53645)
+        )
+
+            (defrule
+            (goal g-temp 53645)
+            (up-compare-goal g-loop-counter g:< g-local-total)
+            (up-set-target-object search-local g: g-loop-counter)
+            (current-age == dark-age)
+            =>
+            (up-get-point position-object g-point-x)
+            (up-set-target-point g-point-x)
+            (up-filter-distance c: -1 c: 7)
+            (set-strategic-number sn-focus-player-number my-player-number)
+            (up-find-remote c: mining-camp c: 1)
+            (up-find-remote c: town-center c: 1)
+            (up-filter-status c: status-pending c: list-active)
+            (up-find-status-remote c: mining-camp c: 1)
+            (up-find-status-remote c: town-center-foundation c: 1)
+            (up-get-search-state g-local-total)
+            )
+
+            (defrule
+            (goal g-temp 53645)
+            (up-compare-goal g-loop-counter g:< g-local-total)
+            (up-set-target-object search-local g: g-loop-counter)
+            (goal g-remote-total 0)
+            (current-age == dark-age)
+            =>
+            (up-remove-objects search-local object-data-index g:!= g-loop-counter)
+            (up-reset-search 0 0 1 1)
+            (up-reset-filters)
+            (set-strategic-number sn-focus-player-number my-player-number)
+            (up-find-remote c: town-center c: 1)
+            (set-goal g-temp 53646)
+            )
+
+            (defrule
+            (goal g-temp 53646)
+            (up-compare-goal g-loop-counter g:< g-local-total)
+            (up-set-target-object search-local g: g-loop-counter)
+            (up-set-target-object search-remote c: 0)
+            =>
+            (up-remove-objects search-local object-data-index g:!= g-loop-counter)
+            (up-target-objects 1 action-garrison -1 -1)
+            ; (chat-local-to-self "retask far gold miners")
+            (up-jump-rule 1)
+            )
+
+            (defrule
+            (goal g-temp 53645)
+            (up-compare-goal g-loop-counter g:< g-local-total)
+            (up-compare-goal g-loop-counter < 40)
+            (current-age == dark-age)
+            =>
+            (up-modify-goal g-loop-counter c:+ 1)
+            (up-jump-rule -4)
+            )
+            
+    ;-----------------------------
+    ;   Retask Far Stone Miners
+    ;-----------------------------
+
+        (load "The General 1.2/Functions/Reset Mini")
+
+        ;Retask stone miners when gathering stone away from a dropsite
+        (defrule
+        (unit-type-count villager-stone > 0)
+        (building-type-count town-center > 0)
+        (building-type-count mining-camp > 0)
+        (dropsite-min-distance stone < 7)
+        (current-age == dark-age)
+        =>
+        (up-full-reset-search)
+        (up-find-local c: male-stone-miner c: 20)
+        (up-find-local c: female-stone-miner c: 20)
+        (up-remove-objects search-local object-data-carry < 5)      ;only retask when villagers are close to their capacity
+        (up-remove-objects search-local object-data-carry >= 10)    ;don't retask villager that are dropping off resources
+        (up-get-search-state g-local-total)
+        (set-goal g-loop-counter 0)
+        (set-goal g-temp 53647)
+        )
+
+            (defrule
+            (goal g-temp 53647)
+            (up-compare-goal g-loop-counter g:< g-local-total)
+            (up-set-target-object search-local g: g-loop-counter)
+            (current-age == dark-age)
+            =>
+            (up-get-point position-object g-point-x)
+            (up-set-target-point g-point-x)
+            (up-filter-distance c: -1 c: 7)
+            (set-strategic-number sn-focus-player-number my-player-number)
+            (up-find-remote c: mining-camp c: 1)
+            (up-find-remote c: town-center c: 1)
+            (up-filter-status c: status-pending c: list-active)
+            (up-find-status-remote c: mining-camp c: 1)
+            (up-find-status-remote c: town-center-foundation c: 1)
+            (up-get-search-state g-local-total)
+            )
+
+            (defrule
+            (goal g-temp 53647)
+            (up-compare-goal g-loop-counter g:< g-local-total)
+            (up-set-target-object search-local g: g-loop-counter)
+            (goal g-remote-total 0)
+            (current-age == dark-age)
+            =>
+            (up-remove-objects search-local object-data-index g:!= g-loop-counter)
+            (up-reset-search 0 0 1 1)
+            (up-reset-filters)
+            (set-strategic-number sn-focus-player-number my-player-number)
+            (up-find-remote c: town-center c: 1)
+            (set-goal g-temp 53648)
+            )
+
+            (defrule
+            (goal g-temp 53648)
+            (up-compare-goal g-loop-counter g:< g-local-total)
+            (up-set-target-object search-local g: g-loop-counter)
+            (up-set-target-object search-remote c: 0)
+            =>
+            (up-remove-objects search-local object-data-index g:!= g-loop-counter)
+            (up-target-objects 1 action-garrison -1 -1)
+            ; (chat-local-to-self "retask far stone miners")
+            (up-jump-rule 1)
+            )
+
+            (defrule
+            (goal g-temp 53647)
+            (up-compare-goal g-loop-counter g:< g-local-total)
+            (up-compare-goal g-loop-counter < 40)
+            (current-age == dark-age)
+            =>
+            (up-modify-goal g-loop-counter c:+ 1)
+            (up-jump-rule -4)
+            )
+
+    ;----------------------------------
+    ;   Task Villagers to Idle Farms
+    ;----------------------------------
+
+        (load "The General 1.2/Functions/Reset Mini")
+
+        (defrule
+        (timer-triggered t-5-sec)
+        (up-compare-goal g-usable-farm-count > 0)
+        (goal g-town-under-attack NO)
+        (up-object-type-count c: villager-farmer g:< g-desired-num-food-vils)
+        =>
+        (up-full-reset-search)
+        (up-modify-sn sn-focus-player-number c:= my-player-number)
+        (up-find-remote c: farm c: 40)
+        (up-remove-objects search-remote object-data-tasks-count > 0)
+        (up-get-search-state g-local-total)
+        )
+
+        (defrule
+        (timer-triggered t-5-sec)
+        (up-compare-goal g-usable-farm-count > 0)
+        (goal g-town-under-attack NO)
+        (up-set-target-object search-remote c: 0)
+        (up-object-type-count c: villager-farmer g:< g-desired-num-food-vils)
+        =>
+        (up-get-point position-object g-point-x)
+        (up-set-target-point g-point-x)
+        (up-reset-search 1 1 0 0)
+        (up-reset-filters)
+        (up-filter-exclude -1 actionid-build orderid-explore -1)
+        (up-filter-distance c: -1 c: 7)
+        (up-find-local c: male-forager c: 3)
+        (up-find-local c: female-forager c: 3)
+        (up-find-local c: male-hunter c: 3)
+        (up-find-local c: female-hunter c: 3)
+        (up-find-local c: male-shepherd c: 3)
+        (up-find-local c: female-shepherd c: 3)
+        (up-find-local c: male-fisherman c: 3)
+        (up-find-local c: female-fisherman c: 3)
+        (up-clean-search search-local object-data-distance search-order-asc)
+        (up-remove-objects search-local object-data-index > 0)
+        )
+
+        (defrule
+        (timer-triggered t-5-sec)
+        (up-compare-goal g-usable-farm-count > 0)
+        (goal g-town-under-attack NO)
+        (up-set-target-object search-local c: 0)
+        (up-set-target-object search-remote c: 0)
+        (up-object-type-count c: villager-farmer g:< g-desired-num-food-vils)
+        =>
+        (up-target-objects 1 action-default -1 -1)
+        ; (chat-local-to-self "task vils to farms")
+        )
 
 
 ;=========================<>=========================
@@ -1529,7 +2120,7 @@
     ;   Delete Far Lumber Camps
     ;-----------------------------
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
         (goal g-first-attack-launched YES)
@@ -1539,15 +2130,15 @@
         (up-full-reset-search)
         (up-find-local c: lumber-camp c: 20)
         (up-get-search-state g-local-total)
-        (set-goal i 0)
+        (set-goal g-loop-counter 0)
         )
 
             (defrule
             (goal g-first-attack-launched YES)
 			(wood-amount >= 100)
-            (up-compare-goal i g:< g-local-total)
+            (up-compare-goal g-loop-counter g:< g-local-total)
             (building-type-count lumber-camp > 1)
-            (up-set-target-object search-local g: i)
+            (up-set-target-object search-local g: g-loop-counter)
             =>
             (up-get-point position-object g-point-x)
             (up-set-target-point g-point-x)
@@ -1565,26 +2156,26 @@
 			;Otherwise, keep lumber camp around if we have several trees within 10 tiles
             (defrule
             (goal g-first-attack-launched YES)
-            (up-compare-goal i g:< g-local-total)
+            (up-compare-goal g-loop-counter g:< g-local-total)
             (building-type-count lumber-camp > 1)
-            (up-set-target-object search-local g: i)
+            (up-set-target-object search-local g: g-loop-counter)
             (up-object-data object-data-type == lumber-camp)
             (goal g-remote-total 0)             ;no nearby trees found
 			(wood-amount >= 100)
             =>
-            (up-remove-objects search-local object-data-index g:!= i)
+            (up-remove-objects search-local object-data-index g:!= g-loop-counter)
             (up-target-point 0 action-delete -1 -1)
             (up-jump-rule 1)
             )
 
             (defrule
             (goal g-first-attack-launched YES)
-            (up-compare-goal i g:< g-local-total)
+            (up-compare-goal g-loop-counter g:< g-local-total)
             (building-type-count lumber-camp > 1)
-            (up-set-target-object search-local g: i)
-			(up-compare-goal i < 40)
+            (up-set-target-object search-local g: g-loop-counter)
+			(up-compare-goal g-loop-counter < 40)
 			=>
-            (up-modify-goal i c:+ 1)
+            (up-modify-goal g-loop-counter c:+ 1)
             (up-jump-rule -3)
             )
 
@@ -1592,7 +2183,7 @@
     ;   Delete Far Mining Camps
     ;-----------------------------
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
         (goal g-first-attack-launched YES)
@@ -1601,14 +2192,14 @@
         (up-full-reset-search)
         (up-find-local c: mining-camp c: 20)
         (up-get-search-state g-local-total)
-        (set-goal i 0)
+        (set-goal g-loop-counter 0)
         )
 
             (defrule
             (goal g-first-attack-launched YES)
-            (up-compare-goal i g:< g-local-total)
+            (up-compare-goal g-loop-counter g:< g-local-total)
             (building-type-count mining-camp > 1)
-            (up-set-target-object search-local g: i)
+            (up-set-target-object search-local g: g-loop-counter)
             =>
             (up-get-point position-object g-point-x)
             (up-set-target-point g-point-x)
@@ -1624,24 +2215,24 @@
 
             (defrule
             (goal g-first-attack-launched YES)
-            (up-compare-goal i g:< g-local-total)
+            (up-compare-goal g-loop-counter g:< g-local-total)
             (building-type-count mining-camp > 1)
-            (up-set-target-object search-local g: i)
+            (up-set-target-object search-local g: g-loop-counter)
             (up-compare-goal g-remote-total > 0)             ;nearby mines found
             =>
-            (up-modify-goal i c:+ 1)
+            (up-modify-goal g-loop-counter c:+ 1)
             (up-jump-rule -2)
             )
             
             (defrule
             (goal g-first-attack-launched YES)
-            (up-compare-goal i g:< g-local-total)
+            (up-compare-goal g-loop-counter g:< g-local-total)
             (building-type-count mining-camp > 1)
-            (up-set-target-object search-local g: i)
+            (up-set-target-object search-local g: g-loop-counter)
             (up-object-data object-data-type == mining-camp)
             (goal g-remote-total 0)             ;no nearby trees found
             =>
-            (up-remove-objects search-local object-data-index g:!= i)
+            (up-remove-objects search-local object-data-index g:!= g-loop-counter)
             (up-target-point 0 action-delete -1 -1)
             )
 
@@ -1652,7 +2243,7 @@
         ;If villager is close to carrying capacity and
         ;dropsite isn't constructed, help construct it
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
 
         ;Mining Camps
         (defrule
@@ -1699,7 +2290,7 @@
         (up-target-objects 0 action-default -1 -1)
         )
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
 
         ;Lumber Camps
         (defrule
@@ -1738,7 +2329,7 @@
         (up-target-objects 0 action-default -1 -1)
         )
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
 
         ;First lumber camp
         (defrule
@@ -1777,7 +2368,7 @@
         (up-target-objects 1 action-default -1 -1)
         )
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
 
         ;Mills
         (defrule
@@ -1824,7 +2415,7 @@
     ;   Enemy TC Retreat
     ;----------------------
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
         
         (defrule
         (or
@@ -1837,7 +2428,7 @@
         (up-full-reset-search)
         (up-find-remote c: town-center c: 20)
         (up-remove-objects search-remote object-data-hitpoints < 480)   ;remove town centers that can't be garrisoned
-        (set-goal i 0)				;look at first building and track progress through loop
+        (set-goal g-loop-counter 0)				;look at first building and track progress through loop
         (up-get-search-state g-local-total)
         )
         
@@ -1845,7 +2436,7 @@
             (defrule
             (or
                 (not
-                    (up-set-target-object search-remote g: i))	;cannot find any more enemy defensive buildings
+                    (up-set-target-object search-remote g: g-loop-counter))	;cannot find any more enemy defensive buildings
                 (or
                     (goal g-remote-total 0)
                     (or
@@ -1859,7 +2450,7 @@
             
             ;Search for our units and enemy units near TC
             (defrule
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             ; (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
             =>
@@ -1881,7 +2472,7 @@
 
             ;We have no units near TC, check next TC
             (defrule
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
             (goal g-local-total 0)
@@ -1891,7 +2482,7 @@
 
             ;Calculate numbers of soldiers near TC
             (defrule
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
             (up-compare-goal g-local-total > 0)
@@ -1904,7 +2495,7 @@
             )
 
             (defrule
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             ; (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
             (up-compare-goal g-local-total > 0)
@@ -1914,7 +2505,7 @@
             )
 
             (defrule
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             ; (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
             (up-compare-goal g-local-total > 0)
@@ -1925,7 +2516,7 @@
 
             ;Check if we should retreat from TC
             (defrule
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
             (up-compare-goal g-temp2 g:< g-temp)      ;enemy strength near TC is stronger than ours
@@ -1934,21 +2525,21 @@
             )
 
             (defrule
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
             (up-compare-goal g-temp2 g:> g-temp)      ;enemy strength near TC is weaker than ours
             =>
             (up-remove-objects search-remote object-data-type != town-center)
             (up-get-search-state g-local-total)
-            (up-modify-goal i c:+ 1)
+            (up-modify-goal g-loop-counter c:+ 1)
             (up-jump-rule -8)
             )
 
             ;Get extra projectile avoidance radius, based on width of building
             (defrule
             (goal g-projectile-retreat YES)
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
             (or
@@ -1960,7 +2551,7 @@
 
             (defrule
             (goal g-projectile-retreat YES)
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
             (up-object-data object-data-type == krepost)
@@ -1970,7 +2561,7 @@
 
             (defrule
             (goal g-projectile-retreat YES)
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
             (up-object-data object-data-class == tower-class)
@@ -1981,7 +2572,7 @@
             ;g-temp3 equals full projectile avoidance radius
             (defrule
             (goal g-projectile-retreat YES)
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
             =>
@@ -1992,7 +2583,7 @@
                 
             (defrule
             (goal g-projectile-retreat YES)
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             (up-compare-goal g-remote-total > 0)
             (up-object-data object-data-type == town-center)
             =>
@@ -2010,7 +2601,7 @@
             
             (defrule
             (goal g-projectile-retreat YES)
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
+            (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             (up-compare-goal g-remote-total > 0)
             (up-object-data object-data-type == town-center)
             (up-get-object-data object-data-range g-temp3)
@@ -2026,309 +2617,19 @@
             )
 
             (defrule
-            (up-set-target-object search-remote g: i)	;found enemy defensive building
             (up-compare-goal g-remote-total > 0)
-            (up-compare-goal i < 40)
+            (up-modify-goal g-loop-counter c:+ 1)
+            (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
+            (up-compare-goal g-loop-counter < 40)
             =>
             (set-goal g-projectile-retreat NO)
             (up-get-search-state g-local-total)
-            (up-modify-goal i c:+ 1)
             (up-jump-rule -15)
             )
 
-
-
-
-        ; ;Add strength of melee and siege weapons to see if we should retreat from enemy TC at all
-        ; (defrule
-        ; (true)
-        ; =>
-        ; (set-goal g-projectile-retreat NO)
-        ; (up-get-fact unit-type-count cavalry-class g-temp)
-        ; (up-get-fact unit-type-count infantry-class g-temp2)
-        ; (up-modify-goal g-temp g:+ g-temp2)
-        ; (up-get-fact unit-type-count siege-weapon-class g-temp2)
-        ; (up-modify-goal g-temp2 c:* 5)
-        ; (up-modify-goal g-temp g:+ g-temp2)
-        ; (up-get-fact unit-type-count trebuchet-set g-temp2)
-        ; (up-modify-goal g-temp2 c:* 10)
-        ; (up-modify-goal g-temp g:+ g-temp2)
-        ; )
-
-        ; (defrule
-        ; (true)
-        ; =>
-        ; (set-goal g-projectile-retreat NO)
-        ; (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
-        ; (up-full-reset-search)
-        ; (up-find-remote c: town-center c: 20)
-        ; (up-remove-objects search-remote object-data-hitpoints < 480)   ;remove town centers that can't be garrisoned
-        ; (set-goal i 0)				;look at first building and track progress through loop
-        ; (set-goal g-temp2 0)       ;for use in later rule
-        ; (up-get-search-state g-local-total)
-        ; )
-
-        ;     ;Loop through all target player TCs to find nearby units that should retreat
-        ;     (defrule
-        ;     (or
-        ;         (not
-        ;             (up-set-target-object search-remote g: i))	;cannot find any more enemy defensive buildings
-        ;         (goal g-remote-total 0))
-        ;     =>
-        ;     (up-jump-rule 18)
-        ;     )
-
-        ;         (defrule
-        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
-        ;         (up-compare-goal g-remote-total > 0)
-        ;         =>
-        ;         (up-reset-search 1 1 0 0)
-        ;         (up-reset-filters)
-        ;         (up-get-point position-object g-point-x)
-        ;         (up-set-target-point g-point-x)
-        ;         (up-filter-distance c: -1 c: 6)
-        ;         (up-find-local c: battering-ram c: 1)
-        ;         (up-get-search-state g-local-total)
-        ;         )
-                
-        ;         (defrule
-        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
-        ;         (up-compare-goal g-remote-total > 0)
-        ;         (up-compare-goal g-local-total > 0)			;battering ram near a TC
-        ;         (up-object-data object-data-type == town-center)
-        ;         =>
-        ;         (up-set-defense-priority c: town-center c: 5000)
-        ;         )
-
-        ;         (defrule
-        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
-        ;         (up-compare-goal g-remote-total > 0)
-        ;         (or
-        ;             (up-object-data object-data-type == town-center)
-        ;             (up-object-data object-data-type == castle))
-        ;         =>
-        ;         (set-goal g-temp2 283)     ;extra distance from middle of building to corner of the building (sqrt(2) * 2 * 100 to convert to precise distance)
-        ;         )                           ;this must be added to the range of the building to get the danger radius of the enemy building
-
-        ;         (defrule
-        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
-        ;         (up-compare-goal g-remote-total > 0)
-        ;         (up-object-data object-data-type == krepost)
-        ;         =>
-        ;         (set-goal g-temp2 212)     ;extra distance from middle of building to corner of the building (sqrt(2) * 1.5 * 100 to convert to precise distance)
-        ;         )                           ;this must be added to the range of the building to get the danger radius of the enemy building
-
-        ;         (defrule
-        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
-        ;         (up-compare-goal g-remote-total > 0)
-        ;         (up-object-data object-data-class == tower-class)
-        ;         =>
-        ;         (set-goal g-temp2 71)      ;extra distance from middle of building to corner of the building (sqrt(2) * 0.5 * 100 to convert to precise distance)
-        ;         )                           ;this must be added to the range of the building to get the danger radius of the enemy building
-
-        ;         (defrule
-        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
-        ;         (up-compare-goal g-remote-total > 0)
-        ;         =>
-        ;         (up-get-object-data object-data-range g-temp3)
-        ;         (up-modify-goal g-temp3 c:* 100)           ;change to precise distance
-        ;         (up-modify-goal g-temp3 g:+ g-temp2)      ;add distance from middle of building to corner of building, see rules above
-        ;         )
-                
-        ;         (defrule
-        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
-        ;         (up-compare-goal g-remote-total > 0)
-        ;         (or
-        ;             (goal g-local-total 0)				        ;battering ram not found near enemy defensive building
-        ;             (up-object-data object-data-type != town-center))
-        ;         (up-object-data object-data-type == town-center)
-        ;         (or
-        ;             (up-compare-goal g-temp < 15)				;melee and siege army strength, only retreat with small strength
-        ;             (up-compare-goal g-target-pop-parity < 30))
-        ;         =>
-        ;         (set-goal g-projectile-retreat YES)
-        ;         )
-                
-        ;         (defrule
-        ;         (goal g-projectile-retreat YES)
-        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
-        ;         (up-compare-goal g-remote-total > 0)
-        ;         (or
-        ;             (up-object-data object-data-type == town-center)
-        ;             (goal g-local-total 0))		    ;battering ram found near enemy defensive building
-        ;         =>
-        ;         (up-reset-search 1 1 0 0)
-        ;         (up-reset-filters)
-        ;         (up-get-point position-object g-point-x)
-        ;         (up-set-target-point g-point-x)
-        ;         (up-find-local c: all-units-class c: 240)
-        ;         (up-remove-objects search-local object-data-speed == 0)		;remove buildings
-        ;         (up-remove-objects search-local object-data-pierce-armor >= 20)	;remove rams
-        ;         (up-remove-objects search-local object-data-attack-stance == stance-no-attack)  ;units on no attack stance are already retreating from building
-        ;         (up-remove-objects search-local object-data-class == livestock-class)
-        ;         (up-remove-objects search-local object-data-precise-distance g:> g-temp3)		;remove all objects outside range of defensive building
-        ;         )
-                
-        ;         (defrule
-        ;         (goal g-projectile-retreat YES)
-        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
-        ;         (up-object-data object-data-type != town-center)
-        ;         (up-compare-goal g-local-total > 0)		    ;battering ram found near enemy defensive building
-        ;         =>
-        ;         (up-reset-search 1 1 0 0)
-        ;         (up-reset-filters)
-        ;         (up-get-point position-object g-point-x)
-        ;         (up-set-target-point g-point-x)
-        ;         (up-find-local c: all-units-class c: 240)
-        ;         (up-remove-objects search-local object-data-speed == 0)		;remove buildings
-        ;         (up-remove-objects search-local object-data-pierce-armor >= 20)	;remove rams
-        ;         (up-remove-objects search-local object-data-attack-stance == stance-no-attack)  ;units on no attack stance are already retreating from building
-        ;         (up-remove-objects search-local object-data-class == livestock-class)
-        ;         (up-remove-objects search-local object-data-class == infantry-class)
-        ;         (up-remove-objects search-local object-data-class == cavalry-class)
-        ;         (up-remove-objects search-local object-data-precise-distance g:> g-temp3)		;remove all objects outside range of defensive building
-        ;         )
-
-        ;         (defrule
-        ;         (goal g-projectile-retreat YES)
-        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
-        ;         (up-compare-goal g-remote-total > 0)
-        ;         (up-object-data object-data-type == town-center)
-        ;         (up-compare-goal g-temp >= 25)				;melee and siege army strength, only allow 50+ HP units to attack TCs if we have very large strength
-        ;         (or
-        ;             (up-compare-goal g-target-pop-parity >= 50)
-        ;             (players-population target-player <= 25))
-        ;         (up-set-target-object search-local c: 0)	;found a unit close to the enemy building
-        ;         (military-population >= 20)                 ;only allow units to not retreat if we have a decent military
-        ;         =>
-        ;         (up-remove-objects search-local object-data-hitpoints > 50)
-        ;         )
-
-        ;         (defrule
-        ;         (goal g-projectile-retreat YES)
-        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
-        ;         (up-compare-goal g-remote-total > 0)
-        ;         (up-object-data object-data-type == town-center)
-        ;         (up-projectile-detected projectile-town-center < 2000)
-        ;         (up-compare-goal g-temp >= 25)				;melee and siege army strength, only allow 70+ HP units to attack TCs if we have large strength
-        ;         (up-compare-goal g-target-pop-parity >= 25)
-        ;         (up-set-target-object search-local c: 0)	;found a unit close to the enemy building
-        ;         (military-population >= 12)                 ;only allow units to not retreat if we have a decent military
-        ;         =>
-        ;         (up-remove-objects search-local object-data-hitpoints > 70)
-        ;         )
-
-        ;         (defrule
-        ;         (goal g-projectile-retreat YES)
-        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
-        ;         (up-compare-goal g-remote-total > 0)
-        ;         (up-object-data object-data-type == town-center)
-        ;         (or
-        ;             (up-projectile-detected projectile-town-center >= 2000)
-        ;             (nor
-        ;                 (up-projectile-detected projectile-town-center >= 5000)     ;if neither of these facts are true
-        ;                 (up-projectile-detected projectile-town-center < 5000)))    ;then TC projectiles have never been detected
-        ;         (up-set-target-object search-local c: 0)	;found a unit close to the enemy TC
-        ;         (military-population >= 12)                 ;only allow units to not retreat if we have a decent military
-        ;         =>
-        ;         (up-remove-objects search-local object-data-hitpoints > 70)
-        ;         )
-
-        ;         (defrule
-        ;         (goal g-projectile-retreat YES)
-        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
-        ;         (up-compare-goal g-remote-total > 0)
-        ;         (up-object-data object-data-class == tower-class)
-        ;         (or
-        ;             (and
-        ;                 (up-compare-goal g-temp >= 20)				;melee and siege army strength, only allow melee units if we have large strength
-        ;                 (up-compare-goal g-target-military-parity > 0))
-        ;             (goal g-game-focus DEFENSIVE))
-        ;         (up-set-target-object search-local c: 0)	;found a unit close to the enemy building
-        ;         (military-population >= 12)                 ;only allow units to not retreat if we have a decent military
-        ;         =>
-        ;         (up-remove-objects search-local object-data-range == 0) ;only allow melee units to attack towers
-        ;         )
-
-        ;         (defrule
-        ;         (goal g-projectile-retreat YES)
-        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
-        ;         (up-compare-goal g-remote-total > 0)
-        ;         (up-object-data object-data-class == tower-class)
-        ;         (or
-        ;             (up-compare-goal g-target-military-parity > 15)
-        ;             (or
-        ;                 (goal g-game-focus DEFENSIVE)
-        ;                 (research-completed ri-obsidian-arrows)))
-        ;         (up-set-target-object search-local c: 0)	;found a unit close to the enemy building
-        ;         (military-population >= 25)                 ;only allow units to not retreat if we have a decent military
-        ;         =>
-        ;         (up-remove-objects search-local object-data-hitpoints >= 30) ;only allow healthy units to attack towers
-        ;         )
-
-        ;         (defrule
-        ;         (goal g-projectile-retreat YES)
-        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
-        ;         (up-compare-goal g-remote-total > 0)
-        ;         (or
-        ;             (up-object-data object-data-type == castle)
-        ;             (up-object-data object-data-type == krepost))
-        ;         (or
-        ;             (and
-        ;                 (up-compare-goal g-temp >= 35)				;melee and siege army strength, only allow melee units if we have large strength
-        ;                 (up-compare-goal g-target-military-parity > 10))
-        ;             (goal g-game-focus DEFENSIVE))
-        ;         (up-set-target-object search-local c: 0)	;found a unit close to the enemy building
-        ;         (military-population >= 20)                 ;only allow units to not retreat if we have a decent military
-        ;         =>
-        ;         (up-remove-objects search-local object-data-range == 0) ;only allow melee units to attack
-        ;         )
-
-        ;         (defrule
-        ;         (goal g-projectile-retreat YES)
-        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
-        ;         (up-compare-goal g-remote-total > 0)
-        ;         (or
-        ;             (up-object-data object-data-type == castle)
-        ;             (up-object-data object-data-type == krepost))
-        ;         (or
-        ;             (up-compare-goal g-target-military-parity > 35)
-        ;             (research-completed ri-obsidian-arrows))
-        ;         (up-set-target-object search-local c: 0)	;found a unit close to the enemy building
-        ;         (military-population >= 25)                 ;only allow units to not retreat if we have a decent military
-        ;         =>
-        ;         (up-remove-objects search-local object-data-hitpoints >= 40) ;only allow healthy units to attack
-        ;         )
-                
-        ;         (defrule
-        ;         (goal g-projectile-retreat YES)
-        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
-        ;         (up-compare-goal g-remote-total > 0)
-        ;         (up-get-object-data object-data-range g-temp3)
-        ;         (up-modify-goal g-temp3 c:+ 6)
-        ;         (up-set-target-object search-local c: 0)	;find a unit close to the enemy building
-        ;         =>
-        ;         (up-copy-point g-point3-x g-point-x)		;store enemy defensive building location in g-point3-x
-        ;         (up-get-point position-object g-point2-x)
-        ;         (up-lerp-tiles g-point3-x g-point2-x g: g-temp3)	;find point g-temp3 tiles away from enemy building (building's range + 6)
-        ;         (up-cross-tiles g-point3-x g-point2-x c: 3)	;so that units don't always retreat to the same spot
-        ;         (up-bound-point g-point3-x g-point3-x)
-        ;         (up-target-point g-point3-x action-move -1 stance-no-attack)
-        ;         )
-
-        ;         (defrule
-        ;         (up-set-target-object search-remote g: i)	;found enemy defensive building
-        ;         (up-compare-goal g-remote-total > 0)
-        ;         (up-compare-goal i < 40)
-        ;         =>
-        ;         (set-goal g-projectile-retreat NO)
-        ;         (up-modify-goal i c:+ 1)
-        ;         (up-jump-rule -19)
-        ;         )
-
         ;Reset attack stance for units that successfully retreated
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
         (goal g-attacking YES)
@@ -2344,7 +2645,7 @@
         (up-find-remote c: castle c: 40)
         (up-find-remote c: krepost c: 40)
         (up-find-remote c: tower-class c: 40)
-        (set-goal i 0)				;look at first defensive building and track progress through loop
+        (set-goal g-loop-counter 0)				;look at first defensive building and track progress through loop
         )
 
         ;Loop through all target player TCs, remove any units that are still too close to an enemy TC	
@@ -2352,7 +2653,7 @@
         (goal g-attacking YES)
         (up-compare-flag g-attack-method-flag != USE-DUC)
         (up-set-target-object search-local c: 0)	;we still have units in search local set to No Attack Stance
-        (up-set-target-object search-remote g: i)	;found enemy defensive building
+        (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
         =>
         (up-get-point position-object g-point-x)	;get enemy defensive building location
         (up-set-target-point g-point-x)
@@ -2362,7 +2663,7 @@
         (up-remove-objects search-local object-data-id g:== g-scout1-id)
         (up-remove-objects search-local object-data-id g:== g-scout2-id)
         (up-remove-objects search-local object-data-id g:== g-scout3-id)
-        (up-modify-goal i c:+ 1)
+        (up-modify-goal g-loop-counter c:+ 1)
         (set-goal g-temp 439)
         (up-jump-rule -1)
         )
@@ -2377,7 +2678,7 @@
         (up-target-point 0 action-none -1 stance-aggressive)
         )
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
         (goal g-attacking NO)
@@ -2406,7 +2707,7 @@
 
         ;Failsafe, in case we have idle units set to No Attack Stance but are <= 11 tiles from an enemy TC
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
         (or
@@ -2439,7 +2740,7 @@
     ;   Soldiers Gather Point
     ;---------------------------
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
         (timer-triggered t-10-sec)
@@ -2456,23 +2757,23 @@
     ;   End of Attack Retreat
     ;---------------------------
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
         (goal g-attack-coordination RETREAT)
         =>
-        (set-goal i 900)
+        (set-goal g-loop-counter 900)
         )
 
             (defrule
             (goal g-attack-coordination RETREAT)
-            (up-compare-goal i >= 900)
-            (up-compare-goal i <= 960)
+            (up-compare-goal g-loop-counter >= 900)
+            (up-compare-goal g-loop-counter <= 960)
             =>
             (up-full-reset-search)
             (up-filter-exclude -1 actionid-explore orderid-explore -1)
             (up-filter-include cmdid-military -1 -1 monastery-class)
-            (up-find-local g: i c: 240)
+            (up-find-local g: g-loop-counter c: 240)
             (up-remove-objects search-local object-data-class == warship-class)
             (up-get-search-state g-local-total)
             )
@@ -2480,7 +2781,7 @@
             (defrule
             (goal g-attack-coordination RETREAT)
             (up-compare-goal g-local-total > 0)
-            (up-compare-goal i != cavalry-class)
+            (up-compare-goal g-loop-counter != cavalry-class)
             (up-set-target-object search-local c: 0)
             =>
             (up-target-point g-position-self-x action-move -1 -1)
@@ -2489,7 +2790,7 @@
             (defrule
             (goal g-attack-coordination RETREAT)
             (up-compare-goal g-local-total > 0)
-            (goal i cavalry-class)
+            (goal g-loop-counter cavalry-class)
             (up-set-target-object search-local c: 0)
             =>
             (up-target-point g-gather-point-x action-move -1 stance-no-attack)
@@ -2497,10 +2798,10 @@
 
             (defrule
             (goal g-attack-coordination RETREAT)
-            (up-compare-goal i >= 900)
-            (up-compare-goal i < 960)
+            (up-compare-goal g-loop-counter >= 900)
+            (up-compare-goal g-loop-counter < 960)
             =>
-            (up-modify-goal i c:+ 1)
+            (up-modify-goal g-loop-counter c:+ 1)
             (up-jump-rule -4)
             )
 
@@ -2514,7 +2815,7 @@
     ;   Villagers Target Battering Rams
     ;-------------------------------------
 
-        (load "The General 1.2/Functions/Reset")
+        (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
         (or
@@ -2528,7 +2829,7 @@
             (or
                 (players-unit-type-count any-enemy battering-ram-line > 0)
                 (players-unit-type-count any-enemy armored-elephant-line > 0))
-            (up-compare-sn sn-focus-player-number <= 8)
+            (up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
             (nand
                 (player-in-game focus-player)
                 (stance-toward focus-player enemy))
@@ -2541,7 +2842,7 @@
             (or
                 (players-unit-type-count any-enemy battering-ram-line > 0)
                 (players-unit-type-count any-enemy armored-elephant-line > 0))
-            (up-compare-sn sn-focus-player-number <= 8)
+            (up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
             (player-in-game focus-player)
             (stance-toward focus-player enemy)
             =>
@@ -2557,7 +2858,7 @@
             (or
                 (players-unit-type-count any-enemy battering-ram-line > 0)
                 (players-unit-type-count any-enemy armored-elephant-line > 0))
-            (up-compare-sn sn-focus-player-number < 8)
+            (up-compare-sn sn-focus-player-number < MAX-PLAYERS)
             (player-in-game focus-player)
             (stance-toward focus-player enemy)
             (up-compare-goal g-remote-total == 0)
@@ -2570,7 +2871,7 @@
             (or
                 (players-unit-type-count any-enemy battering-ram-line > 0)
                 (players-unit-type-count any-enemy armored-elephant-line > 0))
-            (up-compare-sn sn-focus-player-number <= 8)
+            (up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
             (player-in-game focus-player)
             (stance-toward focus-player enemy)
             (up-compare-goal g-remote-total > 0)
@@ -2590,7 +2891,7 @@
             (or
                 (players-unit-type-count any-enemy battering-ram-line > 0)
                 (players-unit-type-count any-enemy armored-elephant-line > 0))
-            (up-compare-sn sn-focus-player-number <= 8)
+            (up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
             (player-in-game focus-player)
             (stance-toward focus-player enemy)
             (up-compare-goal g-remote-total > 0)
@@ -2598,5 +2899,5 @@
             (up-compare-goal g-local-total > 0)
             =>
             (up-target-objects 0 action-default -1 -1)
-            (chat-to-player my-player-number CHAT-TARGET-RAM-WITH-VILLAGERS)
+            ; (chat-to-player my-player-number CHAT-TARGET-RAM-WITH-VILLAGERS)
             )

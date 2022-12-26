@@ -4,6 +4,8 @@
 ;				        RESET
 ;=========================<>=========================
 
+	(load "The General 1.2/Functions/Reset")
+
 	(defrule
 	(true)
 	=>
@@ -81,7 +83,7 @@
 	(set-goal g-desired-num-stable 0)
 	(set-goal g-desired-num-siege-workshop 0)
 	(set-goal g-desired-num-outpost 0)
-	(set-goal g-desired-num-watch-tower 0)
+	(set-goal g-desired-num-tower 0)
 	)
 
 	(defrule
@@ -118,7 +120,7 @@
 			=>
 			(up-get-fact unit-type-count-total stable-tarkan g-temp)
 			(up-modify-goal g-tarkan-line g:+ g-temp)
-			(up-get-fact unit-type-count-total elite-stable-tarkan g-temp)
+			(up-get-fact unit-type-count-total stable-elite-tarkan g-temp)
 			(up-modify-goal g-tarkan-line g:+ g-temp)
 			)
 
@@ -298,17 +300,17 @@
 		#end-if
 		
 	;------------------------
-	;	g-watch-tower-line
+	;	g-tower-line
 	;------------------------
 
 		(defrule
 		(true)
 		=>
-		(up-get-fact unit-type-count-total watch-tower g-watch-tower-line)
+		(up-get-fact unit-type-count-total TOWER-TYPE g-tower-line)
 		(up-get-fact unit-type-count-total guard-tower g-temp)
-		(up-modify-goal g-watch-tower-line g:+ g-temp)
+		(up-modify-goal g-tower-line g:+ g-temp)
 		(up-get-fact unit-type-count-total keep g-temp)
-		(up-modify-goal g-watch-tower-line g:+ g-temp)
+		(up-modify-goal g-tower-line g:+ g-temp)
 		)
 		
 	;------------------
@@ -368,7 +370,7 @@
 			=>
 			(up-get-fact unit-type-count-total stable-tarkan g-temp)
 			(up-modify-goal g-unique-unit-line g:+ g-temp)
-			(up-get-fact unit-type-count-total elite-stable-tarkan g-temp)
+			(up-get-fact unit-type-count-total stable-elite-tarkan g-temp)
 			(up-modify-goal g-unique-unit-line g:+ g-temp)
 			)
 
@@ -507,7 +509,7 @@
 			(or
 				(goal g-current-strategy MIDI-HALBS)
 				(or
-					(goal g-current-strategy BOOM-IMPERIAL)
+					(goal g-current-strategy BOOMI-IMPERIAL)
 					(goal g-current-strategy LATEI-TRASHALBS))))
 		=>
 		(set-goal g-primary-unit spearman)
@@ -534,7 +536,7 @@
 							(goal g-current-strategy EARLYI-EL-DORADO)
 							(or
 								(goal g-current-strategy MIDI-EAGLES)
-								(goal g-current-strategy BOOM-EAGLES)))))))
+								(goal g-current-strategy BOOMC-EAGLES)))))))
 		=>
 		(set-goal g-primary-unit eagle-warrior)
 		)
@@ -555,7 +557,7 @@
 					(or
 						(goal g-current-strategy EARLYI-ARBINGER)
 						(or
-							(goal g-current-strategy BOOM-XBOWS)
+							(goal g-current-strategy BOOMC-XBOWS)
 							(goal g-current-strategy LATEI-TRASHBOWS))))))
 		=>
 		(set-goal g-primary-unit archer)
@@ -654,7 +656,7 @@
 						(goal g-current-strategy EARLYI-PALASTORM)
 						(or
 							(goal g-current-strategy MIDI-PALADINS)
-							(goal g-current-strategy BOOM-KNIGHTS))))))
+							(goal g-current-strategy BOOMC-KNIGHTS))))))
 		=>
 		(set-goal g-primary-unit knight)
 		)
@@ -670,7 +672,7 @@
 						(goal g-current-strategy EARLYI-CAMELSTORM)
 						(or
 							(goal g-current-strategy MIDI-CAMELS)
-							(goal g-current-strategy BOOM-CAMELS))))))
+							(goal g-current-strategy BOOMC-CAMELS))))))
 		=>
 		(set-goal g-primary-unit camel)
 		)
@@ -887,8 +889,7 @@
 	;--------------------
 
 		(defrule
-		(current-age == castle-age)
-		(up-compare-goal g-age-status >= MID-CASTLE)
+		(goal g-age-status MID-CASTLE)
 		(goal g-town-under-attack NO)
 		(up-compare-goal g-target-military-parity > 5)
 		(up-compare-goal g-target-pop-parity > 20)
@@ -897,6 +898,23 @@
 			(and
 				(up-compare-goal g-game-focus != BOOM)
 				(military-population >= 12)))
+		(building-type-count-total town-center > 0)
+		=>
+		(set-goal g-desired-num-battering-ram 1)
+		(up-modify-goal g-desired-num-military c:- 1)
+		(up-modify-goal g-desired-num-military c:max 0)
+		)
+
+		(defrule
+		(goal g-age-status MID-CASTLE)
+		(goal g-town-under-attack NO)
+		(goal g-game-focus AGGRESSIVE)
+		(up-compare-goal g-target-military-parity > -3)
+		(up-compare-goal g-target-pop-parity < 0)
+		(or
+			(players-building-type-count target-player town-center > 2)
+			(players-building-type-count target-player castle > 0))
+		(military-population >= 12)
 		(building-type-count-total town-center > 0)
 		=>
 		(set-goal g-desired-num-battering-ram 1)
@@ -918,8 +936,7 @@
 		)
 
 		(defrule
-		(current-age == castle-age)
-		(up-compare-goal g-age-status >= MID-CASTLE)
+		(goal g-age-status MID-CASTLE)
 		(goal g-town-under-attack NO)
 		(up-compare-goal g-primary-unit-class != archery-class)
 		(up-compare-goal g-primary-unit-class != archery-cannon-class)
@@ -1080,7 +1097,7 @@
 			(or
 				(goal g-previous-strategy MIDI-HALBS)
 				(or
-					(goal g-previous-strategy BOOM-IMPERIAL)
+					(goal g-previous-strategy BOOMI-IMPERIAL)
 					(goal g-previous-strategy LATEI-TRASHALBS))))
 		=>
 		(up-modify-goal g-desired-num-spearman g:= g-desired-num-military)
@@ -1200,7 +1217,7 @@
 			(or
 				(goal g-previous-strategy MIDI-ARBS)
 				(or
-					(goal g-previous-strategy BOOM-XBOWS)
+					(goal g-previous-strategy BOOMC-XBOWS)
 					(goal g-previous-strategy LATEI-TRASHBOWS))))
 		=>
 		(up-modify-goal g-desired-num-archer g:= g-desired-num-military)
@@ -1376,7 +1393,7 @@
 				(or
 					(goal g-previous-strategy MIDC-KNIGHTS)
 					(or
-						(goal g-previous-strategy BOOM-KNIGHTS)
+						(goal g-previous-strategy BOOMC-KNIGHTS)
 						(or
 							(goal g-previous-strategy EARLYI-PALASTORM)
 							(goal g-previous-strategy MIDI-PALADINS))))))
@@ -1406,7 +1423,7 @@
 				(or
 					(goal g-previous-strategy MIDC-CAMELS)
 					(or
-						(goal g-previous-strategy BOOM-CAMELS)
+						(goal g-previous-strategy BOOMC-CAMELS)
 						(or
 							(goal g-previous-strategy EARLYI-CAMELSTORM)
 							(goal g-previous-strategy MIDI-CAMELS))))))
@@ -1763,7 +1780,7 @@
 	;	Adjust Military Numbers
 	;-----------------------------
 	
-		(load "The General 1.2/Functions/Reset")
+		(load "The General 1.2/Functions/Reset Mini")
 
 		(defrule
 		(current-age >= feudal-age)
@@ -2411,7 +2428,7 @@
 	;	Town Centers
 	;------------------
 
-		(load "The General 1.2/Functions/Reset")
+		(load "The General 1.2/Functions/Reset Mini")
 
 		;Rebuild
 		(defrule
@@ -2664,7 +2681,7 @@
 	;	Houses
 	;------------
 
-		(load "The General 1.2/Functions/Reset")
+		(load "The General 1.2/Functions/Reset Mini")
 
 		(defrule
 		(true)
@@ -2827,7 +2844,7 @@
 	;	Mills
 	;-----------
 
-		(load "The General 1.2/Functions/Reset")
+		(load "The General 1.2/Functions/Reset Mini")
 
 		;We want mill if we have a lumber camp or we have excess wood and it's time to gather berries
 		#load-if-defined JAPANESE-CIV
@@ -2900,7 +2917,7 @@
 
 		#end-if
 
-		(load "The General 1.2/Functions/Reset")
+		(load "The General 1.2/Functions/Reset Mini")
 
 		;We want second mill if we have extra berries
 		(defrule
@@ -3023,7 +3040,7 @@
 		(set-goal g-desired-num-stone-camp 2)
 		)
 
-		(load "The General 1.2/Functions/Reset")
+		(load "The General 1.2/Functions/Reset Mini")
 
 		;Request enough mining camps to ensure max 8 gold miners per mining camp or TC
 		;First find how many TCs and mining camps are close to gold, stored in g-temp
@@ -3051,19 +3068,19 @@
 			(up-filter-status c: status-pending c: list-active)
 			(up-find-status-local c: town-center-foundation c: 5)
 			(up-get-search-state g-local-total)
-			(set-goal i 0)
+			(set-goal g-loop-counter 0)
 			(up-modify-goal g-temp g:= g-current-gold-camp-total)
 			)
 
 				(defrule
-				(up-compare-goal i g:< g-local-total)
+				(up-compare-goal g-loop-counter g:< g-local-total)
 				(up-compare-goal g-desired-num-gold-vils > 5)
 				(dropsite-min-distance gold < 255)	;still gold on the map
 				(or
 					(building-type-count-total town-center >= 2)
 					(unit-type-count villager >= 60))
 				(up-compare-goal g-current-gold-camp-total < 3)
-				(up-set-target-object search-local g: i)
+				(up-set-target-object search-local g: g-loop-counter)
 				=>
 				(up-get-point position-object g-point-x)
 				(up-set-target-point g-point-x)
@@ -3076,33 +3093,33 @@
 				)
 
 				(defrule
-				(up-compare-goal i g:< g-local-total)
+				(up-compare-goal g-loop-counter g:< g-local-total)
 				(up-compare-goal g-desired-num-gold-vils > 5)
 				(dropsite-min-distance gold < 255)	;still gold on the map
 				(or
 					(building-type-count-total town-center >= 2)
 					(unit-type-count villager >= 60))
 				(up-compare-goal g-current-gold-camp-total < 3)
-				(up-set-target-object search-local g: i)
+				(up-set-target-object search-local g: g-loop-counter)
 				(up-compare-goal g-remote-total > 0)            ;gold mines found
 				=>
-				(up-modify-goal i c:+ 1)
+				(up-modify-goal g-loop-counter c:+ 1)
 				(up-modify-goal g-temp c:+ 1)
 				(up-jump-rule -2)
 				)
 
 				(defrule
-				(up-compare-goal i g:< g-local-total)
+				(up-compare-goal g-loop-counter g:< g-local-total)
 				(up-compare-goal g-desired-num-gold-vils > 5)
 				(dropsite-min-distance gold < 255)	;still gold on the map
 				(or
 					(building-type-count-total town-center >= 2)
 					(unit-type-count villager >= 60))
 				(up-compare-goal g-current-gold-camp-total < 3)
-				(up-set-target-object search-local g: i)
+				(up-set-target-object search-local g: g-loop-counter)
 				(goal g-remote-total 0)            ;no gold found
 				=>
-				(up-modify-goal i c:+ 1)
+				(up-modify-goal g-loop-counter c:+ 1)
 				(up-jump-rule -3)
 				)
 
@@ -3126,7 +3143,7 @@
 		(up-modify-goal g-desired-num-gold-camp c:+ 1)
 		)
 
-		(load "The General 1.2/Functions/Reset")
+		(load "The General 1.2/Functions/Reset Mini")
 
 		;Request enough mining camps to ensure max 8 stone miners per mining camp or TC
 		;First find how many TCs are close to stone, stored in g-temp
@@ -3154,19 +3171,19 @@
 			(up-filter-status c: status-pending c: list-active)
 			(up-find-status-local c: town-center-foundation c: 5)
 			(up-get-search-state g-local-total)
-			(set-goal i 0)
+			(set-goal g-loop-counter 0)
 			(up-modify-goal g-temp g:= g-current-stone-camp-total)
 			)
 
 				(defrule
-				(up-compare-goal i g:< g-local-total)
+				(up-compare-goal g-loop-counter g:< g-local-total)
 				(up-compare-goal g-desired-num-stone-vils > 3)
 				(dropsite-min-distance stone < 255)	;still stone on the map
 				(or
 					(building-type-count-total town-center >= 2)
 					(unit-type-count villager >= 70))
 				(up-compare-goal g-current-stone-camp-total < 2)
-				(up-set-target-object search-local g: i)
+				(up-set-target-object search-local g: g-loop-counter)
 				=>
 				(up-get-point position-object g-point-x)
 				(up-set-target-point g-point-x)
@@ -3179,33 +3196,33 @@
 				)
 
 				(defrule
-				(up-compare-goal i g:< g-local-total)
+				(up-compare-goal g-loop-counter g:< g-local-total)
 				(up-compare-goal g-desired-num-stone-vils > 3)
 				(dropsite-min-distance stone < 255)	;still stone on the map
 				(or
 					(building-type-count-total town-center >= 2)
 					(unit-type-count villager >= 70))
 				(up-compare-goal g-current-stone-camp-total < 2)
-				(up-set-target-object search-local g: i)
+				(up-set-target-object search-local g: g-loop-counter)
 				(up-compare-goal g-remote-total > 0)            ;stone mines found
 				=>
-				(up-modify-goal i c:+ 1)
+				(up-modify-goal g-loop-counter c:+ 1)
 				(up-modify-goal g-temp c:+ 1)
 				(up-jump-rule -2)
 				)
 
 				(defrule
-				(up-compare-goal i g:< g-local-total)
+				(up-compare-goal g-loop-counter g:< g-local-total)
 				(up-compare-goal g-desired-num-stone-vils > 3)
 				(dropsite-min-distance stone < 255)	;still stone on the map
 				(or
 					(building-type-count-total town-center >= 2)
 					(unit-type-count villager >= 70))
 				(up-compare-goal g-current-stone-camp-total < 2)
-				(up-set-target-object search-local g: i)
+				(up-set-target-object search-local g: g-loop-counter)
 				(goal g-remote-total 0)            ;no stone found
 				=>
-				(up-modify-goal i c:+ 1)
+				(up-modify-goal g-loop-counter c:+ 1)
 				(up-jump-rule -3)
 				)
 
@@ -3243,7 +3260,7 @@
 	;	Lumber Camps
 	;------------------
 
-		(load "The General 1.2/Functions/Reset")
+		(load "The General 1.2/Functions/Reset Mini")
 
 		(defrule
 		(game-time > 30)
@@ -3275,7 +3292,7 @@
 		(up-modify-goal g-desired-num-lumber-camp c:max 2)
 		)
 
-		(load "The General 1.2/Functions/Reset")
+		(load "The General 1.2/Functions/Reset Mini")
 
 		;Request enough lumber camps to ensure max 8 lumberjacks per lumber camp or TC
 		;First find how many TCs are close to wood, stored in g-temp
@@ -3289,16 +3306,16 @@
 		(up-filter-status c: status-pending c: list-active)
 		(up-find-status-local c: town-center c: 5)
 		(up-get-search-state g-local-total)
-		(set-goal i 0)
+		(set-goal g-loop-counter 0)
 		(set-goal g-temp 0)
 		)
 
 			(defrule
-			(up-compare-goal i g:< g-local-total)
+			(up-compare-goal g-loop-counter g:< g-local-total)
 			(unit-type-count villager-wood > 16)
 			(building-type-count town-center > 0)
 			(dropsite-min-distance wood < 255)	;still wood on the map
-			(up-set-target-object search-local g: i)
+			(up-set-target-object search-local g: g-loop-counter)
 			=>
 			(up-get-point position-object g-point-x)
 			(up-set-target-point g-point-x)
@@ -3312,27 +3329,27 @@
 			)
 
 			(defrule
-			(up-compare-goal i g:< g-local-total)
+			(up-compare-goal g-loop-counter g:< g-local-total)
 			(unit-type-count villager-wood > 16)
 			(building-type-count town-center > 0)
 			(dropsite-min-distance wood < 255)	;still wood on the map
-			(up-set-target-object search-local g: i)
+			(up-set-target-object search-local g: g-loop-counter)
 			(up-compare-goal g-remote-total >= 6)            ;6+ trees found
 			=>
-			(up-modify-goal i c:+ 1)
+			(up-modify-goal g-loop-counter c:+ 1)
 			(up-modify-goal g-temp c:+ 1)
 			(up-jump-rule -2)
 			)
 
 			(defrule
-			(up-compare-goal i g:< g-local-total)
+			(up-compare-goal g-loop-counter g:< g-local-total)
 			(unit-type-count villager-wood > 16)
 			(building-type-count town-center > 0)
 			(dropsite-min-distance wood < 255)	;still wood on the map
-			(up-set-target-object search-local g: i)
+			(up-set-target-object search-local g: g-loop-counter)
 			(up-compare-goal g-remote-total < 6)            ;6+ trees found
 			=>
-			(up-modify-goal i c:+ 1)
+			(up-modify-goal g-loop-counter c:+ 1)
 			(up-jump-rule -3)
 			)
 
@@ -3383,7 +3400,7 @@
 	;	Farms
 	;-----------
 
-		(load "The General 1.2/Functions/Reset")
+		(load "The General 1.2/Functions/Reset Mini")
 
 		;Start with total food vils and reduce if we have shepherds, foragers, or hunters
 		(defrule
@@ -3417,7 +3434,7 @@
 		)
 
 		;Subtract needed farms if we have forage bushes near mill or have foragers
-		(load "The General 1.2/Functions/Reset")
+		(load "The General 1.2/Functions/Reset Mini")
 
 		(defrule
 		(up-compare-goal g-desired-num-farm > 0)
@@ -3530,7 +3547,7 @@
 		(up-modify-goal g-desired-num-farm c:min 11)
 		)
 
-		(load "The General 1.2/Functions/Reset")
+		(load "The General 1.2/Functions/Reset Mini")
 
 		;Build more mills if we need a lot of farms
 		;First, find how many farms our TCs and mills can support
@@ -3607,7 +3624,9 @@
 		(defrule
 		(up-compare-goal g-age-status >= TO-CASTLE)
 		(up-compare-goal g-strategy-type >= FAST-CASTLE)
-		(up-compare-goal g-current-strategy < 1100)	;Not a boom strategy
+		(or
+			(up-compare-goal g-current-strategy < BOOMC-STRATS-START)	;Not a boom strategy
+			(up-compare-goal g-current-strategy > BOOMI-STRATS-END))
 		(or
 			(goal g-primary-unit-class archery-class)
 			(goal g-primary-unit-class cavalry-archer-class))
@@ -3641,7 +3660,9 @@
 			(goal g-primary-unit-class archery-class)
 			(goal g-primary-unit-class cavalry-archer-class))
 		(up-compare-goal g-primary-unit != my-unique-unit)
-		(up-compare-goal g-current-strategy < 1100)	;Not a boom strategy
+		(or
+			(up-compare-goal g-current-strategy < BOOMC-STRATS-START)	;Not a boom strategy
+			(up-compare-goal g-current-strategy > BOOMI-STRATS-END))
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
@@ -3655,7 +3676,8 @@
 			(goal g-primary-unit-class archery-class)
 			(goal g-primary-unit-class cavalry-archer-class))
 		(up-compare-goal g-primary-unit != my-unique-unit)
-		(up-compare-goal g-current-strategy >= 1100)	;boom strategy
+		(up-compare-goal g-current-strategy >= BOOMC-STRATS-START)	;boom strategy
+		(up-compare-goal g-current-strategy <= BOOMI-STRATS-END)
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
@@ -3669,7 +3691,9 @@
 			(goal g-support-unit-class archery-class)
 			(goal g-support-unit-class cavalry-archer-class))
 		(up-compare-goal g-support-unit != my-unique-unit)
-		(up-compare-goal g-current-strategy < 1100)	;Not a boom strategy
+		(or
+			(up-compare-goal g-current-strategy < BOOMC-STRATS-START)	;Not a boom strategy
+			(up-compare-goal g-current-strategy > BOOMI-STRATS-END))
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		; (up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
@@ -3832,7 +3856,9 @@
 		(defrule
 		(up-compare-goal g-age-status >= TO-CASTLE)
 		(goal g-primary-unit-class cavalry-class)
-		(up-compare-goal g-current-strategy < 1100)	;Not a boom strategy
+		(or
+			(up-compare-goal g-current-strategy < BOOMC-STRATS-START)	;Not a boom strategy
+			(up-compare-goal g-current-strategy > BOOMI-STRATS-END))
 		(up-compare-goal g-primary-unit != my-unique-unit)
 		=>
 		(up-modify-goal g-desired-num-stable c:max 2)
@@ -3852,7 +3878,9 @@
 		(up-compare-goal g-age-status >= MID-CASTLE)
 		(goal g-primary-unit-class cavalry-class)
 		(up-compare-goal g-primary-unit != my-unique-unit)
-		(up-compare-goal g-current-strategy < 1100)	;Not a boom strategy
+		(or
+			(up-compare-goal g-current-strategy < BOOMC-STRATS-START)	;Not a boom strategy
+			(up-compare-goal g-current-strategy > BOOMI-STRATS-END))
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
@@ -3864,7 +3892,8 @@
 		(up-compare-goal g-age-status >= MID-CASTLE)
 		(goal g-primary-unit-class cavalry-class)
 		(up-compare-goal g-primary-unit != my-unique-unit)
-		(up-compare-goal g-current-strategy >= 1100)	;boom strategy
+		(up-compare-goal g-current-strategy >= BOOMC-STRATS-START)	;boom strategy
+		(up-compare-goal g-current-strategy <= BOOMI-STRATS-END)
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
@@ -3876,7 +3905,9 @@
 		(up-compare-goal g-age-status >= MID-CASTLE)
 		(goal g-support-unit-class cavalry-class)
 		(up-compare-goal g-support-unit != my-unique-unit)
-		(up-compare-goal g-current-strategy < 1100)	;Not a boom strategy
+		(or
+			(up-compare-goal g-current-strategy < BOOMC-STRATS-START)	;Not a boom strategy
+			(up-compare-goal g-current-strategy > BOOMI-STRATS-END))
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
@@ -4008,7 +4039,9 @@
 		(defrule
 		(up-compare-goal g-age-status >= TO-CASTLE)
 		(goal g-primary-unit-class infantry-class)
-		(up-compare-goal g-current-strategy < 1100)	;Not a boom strategy
+		(or
+			(up-compare-goal g-current-strategy < BOOMC-STRATS-START)	;Not a boom strategy
+			(up-compare-goal g-current-strategy > BOOMI-STRATS-END))
 		(up-compare-goal g-primary-unit != my-unique-unit)
 		=>
 		(up-modify-goal g-desired-num-barracks c:max 2)
@@ -4331,7 +4364,11 @@
 		#end-if
 
 		(defrule
-		(wood-amount >= 450)
+		(or
+			(wood-amount >= 450)
+			(or
+				(food-amount >= 1000)
+				(gold-amount >= 800)))
 		(current-age >= castle-age)
 		(building-type-count-total market == 0)
 		=>
@@ -4696,7 +4733,7 @@
 		=>
 		(up-modify-goal g-desired-num-wonder c:max 1)
 		(acknowledge-taunt this-any-ally 37)
-		(chat-to-player this-any-ally TAUNT-37-BUILD-WONDER)
+		(chat-to-player this-any-ally "A wonder? Dunno why, but okay.")
 		)
 
 		(defrule
@@ -4706,17 +4743,17 @@
 		=>
 		(up-modify-goal g-desired-num-wonder c:max 1)
 		(acknowledge-taunt this-any-ally 37)
-		(chat-to-player this-any-ally TAUNT-37-CANT-BUILD-WONDER)
+		(chat-to-player this-any-ally "Can't build a wonder right now.")
 		)
 
-	;-----------------
-	;	Watch Tower
-	;-----------------
+	;------------------------
+	;	Watch Tower/Donjon
+	;------------------------
 
 		(defrule
 		(goal g-town-under-attack NO)
 		(goal g-position FLANK)
-		(up-compare-goal g-desired-num-watch-tower < 1)
+		(up-compare-goal g-desired-num-tower < 1)
 		(up-compare-goal g-enemy-strategy-type < FAST-CASTLE)
 		(up-compare-goal g-age-status >= TO-FEUDAL)
 		(current-age <= feudal-age)
@@ -4725,53 +4762,22 @@
 			(current-age-time < 30))
 		(players-current-age target-player <= feudal-age)
 		=>
-		(up-modify-goal g-desired-num-watch-tower c:max 1)
+		(up-modify-goal g-desired-num-tower c:max 1)
 		)
-
-		; (defrule
-		; (goal g-town-under-attack NO)
-		; (up-compare-goal g-enemy-units-in-town == 0)
-		; (goal g-position FLANK)
-		; (up-compare-goal g-desired-num-watch-tower < 1)
-		; (or
-		; 	(goal g-game-focus DEFENSIVE)
-		; 	(and
-		; 		(up-compare-goal g-target-military-parity <= -8)
-		; 		(military-population < 15)))
-		; (up-compare-goal g-age-status >= TO-FEUDAL)
-		; (up-compare-goal g-age-status <= MID-CASTLE)
-		; (players-current-age target-player <= feudal-age)
-		; =>
-		; (up-modify-goal g-desired-num-watch-tower c:max 1)
-		; )
-
-		; (defrule
-		; (goal g-town-under-attack NO)
-		; (up-compare-goal g-enemy-units-in-town == 0)
-		; (goal g-position FLANK)
-		; (up-compare-goal g-desired-num-watch-tower < 1)
-		; (goal g-first-attack-launched YES)
-		; (military-population < 12)
-		; (up-compare-goal g-target-military-parity > -6)
-		; (current-age < imperial-age)
-		; (up-compare-goal g-age-status >= TO-FEUDAL)
-		; =>
-		; (up-modify-goal g-desired-num-watch-tower c:max 1)
-		; )
 
 		#load-if-defined UP-3-PLAYER-TEAM
 
 			(defrule
 			(goal g-town-under-attack NO)
 			(goal g-position FLANK)
-			(up-compare-goal g-desired-num-watch-tower < 1)
+			(up-compare-goal g-desired-num-tower < 1)
 			(up-compare-goal g-age-status >= TO-FEUDAL)
 			(current-age <= feudal-age)
 			(or
 				(current-age == dark-age)
 				(current-age-time < 30))
 			=>
-			(up-modify-goal g-desired-num-watch-tower c:max 1)
+			(up-modify-goal g-desired-num-tower c:max 1)
 			)
 
 		#end-if
@@ -4781,24 +4787,24 @@
 			(defrule
 			(goal g-town-under-attack NO)
 			(goal g-position FLANK)
-			(up-compare-goal g-desired-num-watch-tower < 1)
+			(up-compare-goal g-desired-num-tower < 1)
 			(up-compare-goal g-age-status >= TO-FEUDAL)
 			(current-age <= feudal-age)
 			(or
 				(current-age == dark-age)
 				(current-age-time < 30))
 			=>
-			(up-modify-goal g-desired-num-watch-tower c:max 1)
+			(up-modify-goal g-desired-num-tower c:max 1)
 			)
 
 		#end-if
 
 		(defrule
 		(goal g-town-under-attack YES)
-		(up-compare-goal g-desired-num-watch-tower >= 1)
+		(up-compare-goal g-desired-num-tower >= 1)
 		(up-compare-goal g-age-status >= TO-FEUDAL)
 		=>
-		(up-modify-goal g-desired-num-watch-tower c:= 0)
+		(up-modify-goal g-desired-num-tower c:= 0)
 		)
 
 		(defrule
@@ -4807,7 +4813,7 @@
 		(civilian-population >= 30)
 		(building-type-count-total town-center >= 2)
 		=>
-		(up-modify-goal g-desired-num-watch-tower c:max 4)
+		(up-modify-goal g-desired-num-tower c:max 4)
 		)
 
 		(defrule
@@ -4816,7 +4822,7 @@
 		(current-age >= feudal-age)
 		(civilian-population >= 25)
 		=>
-		(up-modify-goal g-desired-num-watch-tower c:max 3)
+		(up-modify-goal g-desired-num-tower c:max 3)
 		)
 
 		(defrule
@@ -4825,7 +4831,7 @@
 		(current-age >= feudal-age)
 		(civilian-population >= 20)
 		=>
-		(up-modify-goal g-desired-num-watch-tower c:max 2)
+		(up-modify-goal g-desired-num-tower c:max 2)
 		)
 
 		(defrule
@@ -4834,7 +4840,7 @@
 		(current-age >= feudal-age)
 		(civilian-population >= 10)
 		=>
-		(up-modify-goal g-desired-num-watch-tower c:max 1)
+		(up-modify-goal g-desired-num-tower c:max 1)
 		)
 
 		(defrule
@@ -4847,16 +4853,16 @@
 					(and
 						(goal g-town-under-attack YES)
 						(up-compare-goal g-top-enemy-military-parity < 0)))))
-		(up-compare-goal g-desired-num-watch-tower > 0)
+		(up-compare-goal g-desired-num-tower > 0)
 		=>
-		(set-goal g-desired-num-watch-tower 0)
+		(set-goal g-desired-num-tower 0)
 		)
 
 	;------------
 	;	Castle
 	;------------
 
-		; (load "The General 1.2/Functions/Reset")
+		; (load "The General 1.2/Functions/Reset Mini")
 
 		; (defrule
 		; (up-compare-goal g-age-status >= MID-CASTLE)

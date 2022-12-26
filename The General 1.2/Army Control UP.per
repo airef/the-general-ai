@@ -5847,7 +5847,7 @@
     (up-set-group search-local g: g-current-group)
     (up-clean-search search-local object-data-range search-order-asc)
     (up-set-target-object search-local c: 0)
-    (up-get-object-data object-data-range g-current-group-min-range)
+    (up-get-object-data object-data-range g-current-group-smallest-range)
     )
 
         (defrule
@@ -5855,7 +5855,7 @@
         (up-compare-flag g-current-group-type-flag == RANGED-SIEGE-GROUP-FLAG)
         (up-compare-goal g-remote-total > 0)
         (up-set-target-object search-remote g: g-loop-counter)
-        (up-object-data object-data-range g:< g-current-group-min-range)
+        (up-object-data object-data-range g:< g-current-group-smallest-range)
         (up-object-data object-data-next-attack <= 0)
         =>
         (up-remove-objects search-remote object-data-index g:== g-loop-counter)
@@ -5868,7 +5868,7 @@
         (up-compare-flag g-current-group-type-flag == RANGED-SIEGE-GROUP-FLAG)
         (up-compare-goal g-remote-total > 0)
         (up-set-target-object search-remote g: g-loop-counter)
-        (up-object-data object-data-range g:< g-current-group-min-range)
+        (up-object-data object-data-range g:< g-current-group-smallest-range)
         (up-object-data object-data-target != siege-weapon-class)
         (up-object-data object-data-target != scorpion-class)
         (up-object-data object-data-target != packed-trebuchet-class)
@@ -5947,7 +5947,7 @@
                 (up-compare-flag g-current-group-type-flag == RANGED-SOLDIER-GROUP-FLAG)
                 (up-compare-flag g-current-group-type-flag == SCORPION-GROUP-FLAG))
             (up-object-data object-data-class == tower-class)
-            (up-object-data object-data-range g:< g-current-group-min-range)
+            (up-object-data object-data-range g:< g-current-group-smallest-range)
             (up-compare-goal g-loop-counter <= 39)
             =>
             (up-remove-objects search-remote object-data-index g:== g-loop-counter)
@@ -6018,7 +6018,7 @@
                 (or
                     (up-object-data object-data-type == castle)
                     (up-object-data object-data-type == krepost)))
-            (up-object-data object-data-range g:< g-current-group-min-range)
+            (up-object-data object-data-range g:< g-current-group-smallest-range)
             (up-compare-goal g-loop-counter <= 39)
             =>
             (up-remove-objects search-remote object-data-index g:== g-loop-counter)
@@ -6065,7 +6065,7 @@
             (up-compare-flag g-current-group-type-flag == MANGONEL-GROUP-FLAG)
             (up-object-data object-data-type == castle)
             (or
-                (up-object-data object-data-range g:< g-current-group-min-range)
+                (up-object-data object-data-range g:< g-current-group-smallest-range)
                 (and
                     (up-group-size g: g-current-group >= 5)
                     (up-research-status c: ri-onager >= research-complete)))
@@ -6082,7 +6082,7 @@
             (up-compare-flag g-current-group-type-flag == MANGONEL-GROUP-FLAG)
             (up-object-data object-data-type == krepost)
             (or
-                (up-object-data object-data-range g:< g-current-group-min-range)
+                (up-object-data object-data-range g:< g-current-group-smallest-range)
                 (and
                     (up-group-size g: g-current-group >= 4)
                     (up-research-status c: ri-onager >= research-complete)))
@@ -6715,7 +6715,7 @@
         ;g-current-group-type-flag-goal-id
         ;g-current-group-target-object-id
         ;g-current-group-target-object-goal-id
-        ;g-current-group-min-range
+        ;g-current-group-smallest-range
         ;g-current-group-target-selection-status
 
         ;Temp points:
@@ -6749,8 +6749,8 @@
         (up-set-group search-local g: g-current-group)
         (up-clean-search search-local object-data-range search-order-asc)
         (up-set-target-object search-local c: 0)
-        (up-get-object-data object-data-range g-current-group-min-range)    ;get actual max range of group, instead of a minimum of 11
-        ; (up-modify-goal g-current-group-min-range c:+ 1)         ;increase to account for object radiuses, which artificially increase the unit's range
+        (up-get-object-data object-data-range g-current-group-smallest-range)    ;get actual max range of group, instead of a minimum of 11
+        ; (up-modify-goal g-current-group-smallest-range c:+ 1)         ;increase to account for object radiuses, which artificially increase the unit's range
         (up-full-reset-search)
         (up-get-search-state g-local-total)
         )
@@ -7449,7 +7449,7 @@
                 (up-compare-flag g-current-group-type-flag == SCORPION-GROUP-FLAG))
             (up-object-data object-data-status != status-pending)
             (up-object-data object-data-class == tower-class)
-            (up-object-data object-data-range g:>= g-current-group-min-range)
+            (up-object-data object-data-range g:>= g-current-group-smallest-range)
             (up-compare-goal g-loop-counter <= 39)
             =>
             (up-remove-objects search-remote object-data-index g:== g-loop-counter)
@@ -7539,7 +7539,7 @@
             (up-compare-flag g-current-group-type-flag == RANGED-SOLDIER-GROUP-FLAG)
             (up-object-data object-data-status != status-pending)
             (up-object-data object-data-language-id == lang-id-town-center)
-            (up-object-data object-data-range g:>= g-current-group-min-range)
+            (up-object-data object-data-range g:>= g-current-group-smallest-range)
             (up-compare-goal g-loop-counter <= 39)
             =>
             (up-remove-objects search-remote object-data-index g:== g-loop-counter)
@@ -7576,7 +7576,7 @@
             (or
                 (up-object-data object-data-type == castle)
                 (up-object-data object-data-type == krepost))
-            (up-object-data object-data-range g:>= g-current-group-min-range)
+            (up-object-data object-data-range g:>= g-current-group-smallest-range)
             (up-compare-goal g-loop-counter <= 39)
             =>
             (up-remove-objects search-remote object-data-index g:== g-loop-counter)
@@ -7593,7 +7593,7 @@
             (or
                 (up-object-data object-data-type == castle)
                 (up-object-data object-data-type == krepost))
-            (up-object-data object-data-range g:>= g-current-group-min-range)
+            (up-object-data object-data-range g:>= g-current-group-smallest-range)
             (up-compare-goal g-loop-counter <= 39)
             =>
             (up-remove-objects search-remote object-data-index g:== g-loop-counter)
@@ -7608,7 +7608,7 @@
             (up-compare-flag g-current-group-type-flag == MANGONEL-GROUP-FLAG)
             (up-object-data object-data-status != status-pending)
             (up-object-data object-data-type == castle)
-            (up-object-data object-data-range g:>= g-current-group-min-range)
+            (up-object-data object-data-range g:>= g-current-group-smallest-range)
             (or
                 (up-group-size g: g-current-group < 5)
                 (up-research-status c: ri-onager < research-complete))
@@ -7626,7 +7626,7 @@
             (up-compare-flag g-current-group-type-flag == MANGONEL-GROUP-FLAG)
             (up-object-data object-data-status != status-pending)
             (up-object-data object-data-type == krepost)
-            (up-object-data object-data-range g:>= g-current-group-min-range)
+            (up-object-data object-data-range g:>= g-current-group-smallest-range)
             (or
                 (up-group-size g: g-current-group < 4)
                 (up-research-status c: ri-onager < research-complete))
@@ -7925,7 +7925,7 @@
                 =>
                 (up-get-point position-object g-point-x)
                 (up-get-point-distance g-point-x g-current-group-location-x g-temp)
-                (up-modify-goal g-temp g:min g-current-group-min-range)
+                (up-modify-goal g-temp g:min g-current-group-smallest-range)
                 (up-lerp-tiles g-point-x g-current-group-location-x g: g-temp)   ;get location where group would attack enemy units at
                 (up-set-target-object search-remote g: g-loop-counter2)
                 (up-get-point position-object g-point2-x)       ;g-point2-x = location of dangerous enemy building
@@ -7946,7 +7946,7 @@
                 =>
                 (up-get-point position-object g-point-x)
                 (up-get-point-distance g-point-x g-current-group-location-x g-temp)
-                (up-modify-goal g-temp g:min g-current-group-min-range)
+                (up-modify-goal g-temp g:min g-current-group-smallest-range)
                 (up-lerp-tiles g-point-x g-current-group-location-x g: g-temp)   ;get location where group would attack enemy units at
                 (up-set-target-object search-remote g: g-loop-counter2)
                 (up-get-point position-object g-point2-x)       ;g-point2-x = location of dangerous enemy building

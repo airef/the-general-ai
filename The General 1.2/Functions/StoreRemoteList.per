@@ -26,9 +26,10 @@
     )
 
     (defrule
-    (up-compare-goal g-loop-counter < 39)
-    =>
     (up-modify-goal g-loop-counter c:+ 1)
+    (up-set-target-object search-remote g: g-loop-counter)
+    (up-compare-goal g-loop-counter < 40)
+    =>
     (up-jump-rule -2)
     )
 
@@ -45,7 +46,7 @@
 (up-log-data 0 CHAT-LOG-ENTRY c: 0)
 (up-log-data 0 CHAT-LOG-TIME g: g-temp5)
 (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
-(up-log-data 0 CHAT-STORED-REMOTE-LIST g: g-local-total)
+(up-log-data 0 "Stored %d objects from remote list in group 0" g: g-local-total)
 (up-full-reset-search)
 (up-get-search-state g-local-total)
 (set-goal g-loop-counter 0)

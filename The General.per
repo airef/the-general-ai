@@ -1,4 +1,5 @@
-;                              - THE GENERAL V1.2a -
+;                              - THE GENERAL V1.2b -
+(defconst CHAT-GENERAL-VERSION "The General 1.2b by Leif Ericson")
 ;                                       
 ;                                By  Leif Ericson
 ;				
@@ -44,9 +45,22 @@
 ;
 ;===============================================================================
 
+(defrule
+(true)
+=>
+(up-log-data 0 "Begin Log" c: 0)
+(disable-self)
+)
+
 (load "The General 1.2/UserPatchConst")
 (load "The General 1.2/Game Stats")
+#load-if-defined DE-AVAILABLE
+	(load "The General 1.2/Constants DE")
+#else
+	(load "The General 1.2/Constants UP")
+#end-if
 (load "The General 1.2/Initialization")
+
 (defrule
 (up-compare-goal g-rule-pass-count >= 0)
 =>
@@ -54,7 +68,7 @@
 (up-get-fact player-number 0 g-temp6)
 (up-log-data 0 CHAT-LOG-TIME g: g-temp5)
 (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
-(up-log-data 0 CHAT-BEGIN-PASS g: g-rule-pass-count)
+(up-log-data 0 "Begin Pass %d" g: g-rule-pass-count)
 )
 
 (load "The General 1.2/Desired Object Counts")
@@ -66,6 +80,7 @@
 (load "The General 1.2/Escrow")
 (load "The General 1.2/Unit Training")
 (load "The General 1.2/Gathering")
+(load "The General 1.2/Market Trading")
 (load "The General 1.2/Attacking")
 #load-if-defined DE-AVAILABLE
 	(load "The General 1.2/Army Control DE")
@@ -214,19 +229,19 @@
 )
 
 (defrule
-(true)
-=>
-(up-modify-goal g-rule-pass-count c:+ 1)
-)
-
-(defrule
 (up-compare-goal g-rule-pass-count >= 0)
 =>
 (up-get-fact game-time 0 g-temp5)
 (up-get-fact player-number 0 g-temp6)
 (up-log-data 0 CHAT-LOG-TIME g: g-temp5)
 (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
-(up-log-data 0 CHAT-END-PASS g: g-rule-pass-count)
+(up-log-data 0 "End Pass %d" g: g-rule-pass-count)
+)
+
+(defrule
+(true)
+=>
+(up-modify-goal g-rule-pass-count c:+ 1)
 )
 
 #load-if-defined DE-AVAILABLE

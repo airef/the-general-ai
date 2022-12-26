@@ -1,0 +1,85 @@
+;Temp points:
+;g-current-group-location-x
+;g-current-group-location-y
+;g-current-group-location-x-goal-id
+;g-current-group-location-y-goal-id
+
+;If difference between AI and enemy is greater along the x-axis,
+;get location of middle unit in group according to point-x
+(defrule
+(up-group-size g: g-current-group > 0)
+(up-modify-goal g-temp g:= g-position-self-x)
+(up-modify-goal g-temp g:- g-target-enemy-x)
+(up-modify-goal g-temp2 g:neg g-temp)
+(up-modify-goal g-temp g:max g-temp2)
+(up-modify-goal g-temp3 g:= g-position-self-x)
+(up-modify-goal g-temp3 g:- g-target-enemy-x)
+(up-modify-goal g-temp4 g:neg g-temp3)
+(up-modify-goal g-temp3 g:max g-temp4)
+(up-compare-goal g-temp g:>= g-temp3)   ;x distance is >= y distance
+=>
+(up-set-group search-local g: g-current-group)
+(up-get-search-state g-local-total)
+(up-modify-goal g-local-total c:z/ 2)
+(up-clean-search search-local object-data-point-x search-order-asc)
+)
+;If difference between AI and enemy is greater along the y-axis,
+;get location of middle unit in group according to point-y
+(defrule
+(up-group-size g: g-current-group > 0)
+(up-modify-goal g-temp g:= g-position-self-x)
+(up-modify-goal g-temp g:- g-target-enemy-x)
+(up-modify-goal g-temp2 g:neg g-temp)
+(up-modify-goal g-temp g:max g-temp2)
+(up-modify-goal g-temp3 g:= g-position-self-x)
+(up-modify-goal g-temp3 g:- g-target-enemy-x)
+(up-modify-goal g-temp4 g:neg g-temp3)
+(up-modify-goal g-temp3 g:max g-temp4)
+(up-compare-goal g-temp g:< g-temp3)    ;x distance is less than y distance
+=>
+(up-set-group search-local g: g-current-group)
+(up-get-search-state g-local-total)
+(up-modify-goal g-local-total c:z/ 2)
+(up-clean-search search-local object-data-point-y search-order-asc)
+)
+
+(defrule
+(up-group-size g: g-current-group > 0)
+(up-set-target-object search-local g: g-local-total)
+=>
+(up-get-point position-object g-point-x)
+(up-set-target-point g-point-x)
+(up-set-group search-local g: g-current-group)
+(up-remove-objects search-local object-data-distance >= 6)
+(set-goal g-loop-counter 0)
+(set-goal g-current-group-location-x 0)
+(set-goal g-current-group-location-y 0)
+(set-goal g-temp6 0)
+)
+
+    (defrule
+    (up-group-size g: g-current-group > 0)
+    (up-set-target-object search-local g: g-loop-counter)
+    ; (up-group-size g: g-current-group g:> g-loop-counter)
+    (up-compare-goal g-loop-counter < 40)
+    (up-object-data object-data-point-x >= 0)
+    (up-object-data object-data-point-y >= 0)
+    =>
+    (up-get-object-data object-data-point-x g-temp5)
+    (up-modify-goal g-current-group-location-x g:+ g-temp5)
+    (up-get-object-data object-data-point-y g-temp5)
+    (up-modify-goal g-current-group-location-y g:+ g-temp5)
+    (up-modify-goal g-temp6 c:+ 1)
+    (up-modify-goal g-loop-counter c:+ 1)
+    (up-jump-rule -1)
+    )
+
+(defrule
+(up-group-size g: g-current-group > 0)
+=>
+(up-modify-goal g-current-group-location-x g:/ g-temp6)
+(up-modify-goal g-current-group-location-y g:/ g-temp6)
+(up-set-indirect-goal g: g-current-group-location-x-goal-id g: g-current-group-location-x)
+(up-set-indirect-goal g: g-current-group-location-y-goal-id g: g-current-group-location-y)
+; (up-send-flare g-current-group-location-x)
+)

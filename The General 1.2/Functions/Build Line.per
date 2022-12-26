@@ -133,7 +133,7 @@
 ;		             PLACE NORMAL
 ;=========================<>=========================
 
-	(load "The General 1.2/Functions/Reset")
+	(load "The General 1.2/Functions/Reset Mini")
 
 	;Initialize loop variables
 	(defrule
@@ -141,8 +141,8 @@
 	(building-type-count town-center > 0)
 	(game-time > 5)
 	=>
-	(set-goal i 0)
-	(set-goal j 0)
+	(set-goal g-loop-counter 0)
+	(set-goal g-loop-counter2 0)
 	)
 
 	;Randomize x within custom-sn-peaceful-town-size
@@ -165,13 +165,13 @@
 	(goal g-build-line-type BUILD-LINE-NORMAL)
 	(building-type-count town-center > 0)
 	(game-time > 5)
-	(up-compare-goal i < 10)
+	(up-compare-goal g-loop-counter < 10)
 	(up-modify-goal g-temp g:neg g-build-line-min-distance)
 	(up-compare-goal g-point-x g:>= g-temp)
 	(up-compare-goal g-point-x g:< g-build-line-min-distance)
 	=>
 	(set-goal g-point-x PENDING)
-	(up-modify-goal i c:+ 1)
+	(up-modify-goal g-loop-counter c:+ 1)
 	(up-jump-rule -1)
 	)
 
@@ -195,13 +195,13 @@
 	(goal g-build-line-type BUILD-LINE-NORMAL)
 	(building-type-count town-center > 0)
 	(game-time > 5)
-	(up-compare-goal j < 10)
+	(up-compare-goal g-loop-counter2 < 10)
 	(up-modify-goal g-temp g:neg g-build-line-min-distance)
 	(up-compare-goal g-point-y g:>= g-temp)
 	(up-compare-goal g-point-y g:< g-build-line-min-distance)
 	=>
 	(set-goal g-point-y PENDING)
-	(up-modify-goal j c:+ 1)
+	(up-modify-goal g-loop-counter2 c:+ 1)
 	(up-jump-rule -1)
 	)
 
@@ -210,8 +210,8 @@
 	(goal g-build-line-type BUILD-LINE-NORMAL)
 	(building-type-count town-center > 0)
 	(game-time > 5)
-	(up-compare-goal i < 10)
-	(up-compare-goal j < 10)
+	(up-compare-goal g-loop-counter < 10)
+	(up-compare-goal g-loop-counter2 < 10)
 	=>
 	(up-add-point g-point-x g-position-self-x c: 1)
 	(up-copy-point g-build-line-point-x g-point-x)
@@ -226,7 +226,7 @@
 ;		            PLACE CONTROL
 ;=========================<>=========================
 
-	(load "The General 1.2/Functions/Reset")
+	(load "The General 1.2/Functions/Reset Mini")
 
 	;----------------------------------
 	;	Find primary reference point
@@ -383,7 +383,7 @@
 ;		         PLACE POINT - NORMAL (also places place-normal and place-control)
 ;=========================<>=========================
 
-	(load "The General 1.2/Functions/Reset")
+	(load "The General 1.2/Functions/Reset Mini")
 
 	;Debug chat
 	; (defrule
@@ -396,8 +396,8 @@
 	(defrule
 	(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
 	=>
-	(up-modify-goal i g:neg g-build-line-zone-radius)
-	(up-modify-goal j g:neg g-build-line-zone-radius)
+	(up-modify-goal g-loop-counter g:neg g-build-line-zone-radius)
+	(up-modify-goal g-loop-counter2 g:neg g-build-line-zone-radius)
 	(set-goal g-build-line-zone-radius 0)
 	)
 	
@@ -469,7 +469,7 @@
 			(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
 			(up-can-build g-build-line-escrow g: g-build-line-bldg)
 			(building-type-count town-center > 0)
-			(up-compare-sn sn-focus-player-number < 8)
+			(up-compare-sn sn-focus-player-number < MAX-PLAYERS)
 			=>
 			(up-modify-sn sn-focus-player-number c:+ 1)
 			(up-jump-rule -4)
@@ -620,12 +620,12 @@
 		(up-can-build g-build-line-escrow g: g-build-line-bldg)
 		(up-compare-goal g-build-line-point-x > -1)
 		(up-compare-goal g-build-line-point-y > -1)
-		(up-compare-goal i g:< g-build-line-zone-radius)
+		(up-compare-goal g-loop-counter g:< g-build-line-zone-radius)
 		=>
-		(up-modify-goal i c:+ 1)
+		(up-modify-goal g-loop-counter c:+ 1)
 		(up-copy-point g-point-x g-build-line-point-x)
-		(up-modify-goal g-point-x g:- i)
-		(up-modify-goal g-point-y g:- j)
+		(up-modify-goal g-point-x g:- g-loop-counter)
+		(up-modify-goal g-point-y g:- g-loop-counter2)
 		(up-bound-point g-point-x g-point-x)
 		(up-jump-rule -14)
 		)
@@ -633,13 +633,13 @@
 		(defrule
 		(goal g-build-line-type BUILD-LINE-POINT-NORMAL)
 		(up-can-build g-build-line-escrow g: g-build-line-bldg)
-		(up-compare-goal j g:< g-build-line-zone-radius)
+		(up-compare-goal g-loop-counter2 g:< g-build-line-zone-radius)
 		=>
-		(up-modify-goal j c:+ 1)
-		(up-modify-goal i g:neg g-build-line-zone-radius)
+		(up-modify-goal g-loop-counter2 c:+ 1)
+		(up-modify-goal g-loop-counter g:neg g-build-line-zone-radius)
 		(up-copy-point g-point-x g-build-line-point-x)
-		(up-modify-goal g-point-x g:- i)
-		(up-modify-goal g-point-y g:- j)
+		(up-modify-goal g-point-x g:- g-loop-counter)
+		(up-modify-goal g-point-y g:- g-loop-counter2)
 		(up-bound-point g-point-x g-point-x)
 		(up-jump-rule -15)
 		)
@@ -694,8 +694,8 @@
 		(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
 		=>
 		(up-modify-goal g-build-line-zone-radius c:+ 1)
-		(up-modify-goal i g:neg g-build-line-zone-radius)
-		(up-modify-goal j g:neg g-build-line-zone-radius)
+		(up-modify-goal g-loop-counter g:neg g-build-line-zone-radius)
+		(up-modify-goal g-loop-counter2 g:neg g-build-line-zone-radius)
 		(up-jump-rule -20)
 		)
 
