@@ -8,13 +8,15 @@
     ;   Reset
     ;-----------
 
+        (load "The General 1.2/Functions/Reset")
+
         (defrule
         (true)
         =>
-        (up-modify-goal g-wood-cost g:= g-wood-escrow-type)
-        (up-modify-goal g-food-cost g:= g-food-escrow-type)
-        (up-modify-goal g-gold-cost g:= g-gold-escrow-type)
-        (up-modify-goal g-stone-cost g:= g-stone-escrow-type)
+        (up-modify-goal g-prior-wood-escrow-type g:= g-wood-escrow-type)
+        (up-modify-goal g-prior-food-escrow-type g:= g-food-escrow-type)
+        (up-modify-goal g-prior-gold-escrow-type g:= g-gold-escrow-type)
+        (up-modify-goal g-prior-stone-escrow-type g:= g-stone-escrow-type)
         (set-goal g-wood-escrow-type OFF)
         (set-goal g-food-escrow-type OFF)
         (set-goal g-gold-escrow-type OFF)
@@ -172,14 +174,6 @@
         )
 
         (defrule
-        (goal g-game-focus AGGRESSIVE)
-        (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
-        =>
-        (set-goal g-wood-escrow-type ACCUMULATED)
-        (set-goal g-stone-escrow-type ACCUMULATED)
-        )
-
-        (defrule
         (up-object-type-count-total c: barracks g:< g-desired-num-barracks)
         (building-type-count barracks == 0)
         (or
@@ -194,24 +188,50 @@
         (set-goal g-wood-escrow-type ACCUMULATED)
         )
 
+        #load-if-defined BURGUNDIANS-CIV
+
+            (defrule
+            (up-object-type-count-total c: barracks g:< g-desired-num-barracks)
+            (building-type-count barracks == 0)
+            (up-compare-goal g-desired-num-second-unique-unit > 0)
+            (military-population g:>= g-min-military-pop)
+            =>
+            (set-goal g-wood-escrow-type ACCUMULATED)
+            )
+
+        #end-if
+
         (defrule
         (up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
         (building-type-count archery-range == 0)
-        (or
-            (up-compare-goal g-desired-num-archer > 0)
-            (or
-                (up-compare-goal g-desired-num-skirmisher > 0)
-                (or
-                    (up-compare-goal g-desired-num-cavalry-archer > 0)
-                    (or
-                        (up-compare-goal g-desired-num-hand-cannoneer > 0)
-                        (or
-                            (up-compare-goal g-desired-num-slinger > 0)
-                            (up-compare-goal g-desired-num-genitour > 0))))))
+		(or
+			(up-compare-goal g-desired-num-archer > 0)
+			(or
+				(up-compare-goal g-desired-num-skirmisher > 0)
+				(or
+					(up-compare-goal g-desired-num-cavalry-archer > 0)
+					(or
+						(up-compare-goal g-desired-num-hand-cannoneer > 0)
+						(or
+							(up-compare-goal g-desired-num-genitour > 0)
+							(up-compare-goal g-desired-num-elephant-archer > 0))))))
         (military-population g:>= g-min-military-pop)
         =>
         (set-goal g-wood-escrow-type ACCUMULATED)
         )
+
+        #load-if-defined INCAN-CIV
+
+            (defrule
+            (up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
+            (building-type-count archery-range == 0)
+            (up-compare-goal g-desired-num-second-unique-unit > 0)
+            (military-population g:>= g-min-military-pop)
+            =>
+            (set-goal g-wood-escrow-type ACCUMULATED)
+            )
+
+        #end-if
 
         (defrule
         (up-object-type-count-total c: stable g:< g-desired-num-stable)
@@ -230,11 +250,24 @@
         (set-goal g-wood-escrow-type ACCUMULATED)
         )
 
+        #load-if-defined GURJARAS-CIV
+
+            (defrule
+            (up-object-type-count-total c: stable g:< g-desired-num-stable)
+            (building-type-count stable == 0)
+            (up-compare-goal g-desired-num-second-unique-unit > 0)
+            (military-population g:>= g-min-military-pop)
+            =>
+            (set-goal g-wood-escrow-type ACCUMULATED)
+            )
+
+        #end-if
+
         (defrule
         (up-object-type-count-total c: siege-workshop g:< g-desired-num-siege-workshop)
         (building-type-count siege-workshop == 0)
         (or
-            (up-compare-goal g-desired-num-battering-ram > 0)
+            (up-compare-goal g-desired-num-ram-type > 0)
             (or
                 (up-compare-goal g-desired-num-mangonel > 0)
                 (or
@@ -259,13 +292,24 @@
         (defrule
         (up-object-type-count-total c: monastery g:< g-desired-num-monastery)
         (building-type-count monastery == 0)
-        (or
-            (up-compare-goal g-desired-num-monk > 0)
-            (up-compare-goal g-desired-num-missionary > 0))
+        (up-compare-goal g-desired-num-monk > 0)
         (military-population g:>= g-min-military-pop)
         =>
         (set-goal g-wood-escrow-type ACCUMULATED)
         )
+
+        #load-if-defined SPANISH-CIV
+
+            (defrule
+            (up-object-type-count-total c: monastery g:< g-desired-num-monastery)
+            (building-type-count monastery == 0)
+            (up-compare-goal g-desired-num-second-unique-unit > 0)
+            (military-population g:>= g-min-military-pop)
+            =>
+            (set-goal g-wood-escrow-type ACCUMULATED)
+            )
+
+        #end-if
 
         (defrule
         (goal g-game-focus BOOM)
@@ -455,15 +499,12 @@
         )
 
         (defrule
-        (or
-            (goal g-game-focus BOOM)
-            (or
-                (goal g-game-focus REBUILD)
-                (goal g-game-focus BALANCED)))
+        (up-compare-goal g-game-focus != DEFENSIVE)
         (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
         =>
         (set-goal g-wood-escrow-type IMMEDIATE)
         (set-goal g-stone-escrow-type IMMEDIATE)
+        ; (chat-to-all "imm escrow for TC")
         )
 
         (defrule
@@ -506,14 +547,6 @@
                     (goal g-game-focus DEFENSIVE))))
         (up-object-type-count-total c: castle g:< g-desired-num-castle)
         =>
-        (set-goal g-stone-escrow-type IMMEDIATE)
-        )
-
-        (defrule
-        (goal g-game-focus BALANCED)
-        (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
-        =>
-        (set-goal g-wood-escrow-type IMMEDIATE)
         (set-goal g-stone-escrow-type IMMEDIATE)
         )
 
@@ -562,10 +595,10 @@
         (set-goal g-gold-escrow-type IMMEDIATE)
         )
 
-        ;If switching from Immediate escrow to accumulated, release escrow
+        ;If switching from Immediate escrow to accumulated, release some escrow
         (defrule
         (goal g-wood-escrow-type ACCUMULATED)
-        (goal g-wood-cost IMMEDIATE)	;prior setting
+        (goal g-prior-wood-escrow-type IMMEDIATE)
         =>
         (up-get-fact wood-amount 0 g-temp)
         (up-modify-escrow wood g:= g-temp)
@@ -575,7 +608,7 @@
 
         (defrule
         (goal g-food-escrow-type ACCUMULATED)
-        (goal g-food-cost IMMEDIATE)	;prior setting
+        (goal g-prior-food-escrow-type IMMEDIATE)
         =>
         (up-get-fact food-amount 0 g-temp)
         (up-modify-escrow food g:= g-temp)
@@ -585,7 +618,7 @@
 
         (defrule
         (goal g-gold-escrow-type ACCUMULATED)
-        (goal g-gold-cost IMMEDIATE)	;prior setting
+        (goal g-prior-gold-escrow-type IMMEDIATE)
         =>
         (up-get-fact gold-amount 0 g-temp)
         (up-modify-escrow gold g:= g-temp)
@@ -595,7 +628,7 @@
 
         (defrule
         (goal g-stone-escrow-type ACCUMULATED)
-        (goal g-stone-cost IMMEDIATE)	;prior setting
+        (goal g-prior-stone-escrow-type IMMEDIATE)
         =>
         (up-get-fact stone-amount 0 g-temp)
         (up-modify-escrow stone g:= g-temp)

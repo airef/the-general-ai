@@ -11,8 +11,11 @@
 	(population < TWENTY-FIVE-PERCENT-POP)
 	(players-population any-enemy >= TWENTY-FIVE-PERCENT-POP)
 	(up-get-fact population 0 g-temp)	;Example, say we have 30 pop. We have < 40% of enemy pop if enemy has > 75 pop.
-	(up-modify-goal g-temp c:%* -150)	;Multiply 30 * 1.5 = 45. This equals the min pop difference required to resign (75 minus 30).
-	(up-compare-goal g-top-enemy-pop-parity g:< g-temp)
+	(up-modify-goal g-temp c:%* 150)	;Multiply 30 * 1.5 = 45. This equals the min pop difference required to resign (75 minus 30).
+	(up-get-fact population 0 g-temp2)
+	(up-get-fact-max any-enemy population 0 g-temp3)
+	(up-modify-goal g-temp2 g:- g-temp3)
+	(up-compare-goal g-temp2 g:> g-temp)
 	(or
 		(up-compare-goal g-age-status >= MID-CASTLE)
 		(population < 12))

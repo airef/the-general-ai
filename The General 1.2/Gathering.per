@@ -844,6 +844,16 @@
         (up-setup-cost-data 1 g-food-cost)
         (up-add-object-cost c: town-center-foundation c: 1)
         )
+        #load-if-defined DE-AVAILABLE
+        #load-if-defined BRITON-CIV ;until bug with TC wood cost is fixed for Britons
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+        =>
+        (up-modify-goal g-wood-cost c:max 275)
+        )
+        #end-if
+        #end-if
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
@@ -1133,7 +1143,7 @@
         (up-compare-goal g-tower-line g:< g-desired-num-tower)
         =>
         (up-setup-cost-data 1 g-food-cost)
-        (up-add-object-cost c: TOWER-TYPE c: 1)
+        (up-add-object-cost c: my-tower-type c: 1)
         )
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
@@ -1189,25 +1199,23 @@
         (up-modify-goal g-total-buildings-stone-needed g:+ g-stone-cost)
         )
 
-        #load-if-defined BULGARIANS-CIV
-
-            ;Kreposts
-            (defrule
-            (up-timer-status t-15-sec == timer-triggered)
-            (up-object-type-count-total c: krepost g:< g-desired-num-krepost)
-            =>
-            (up-setup-cost-data 1 g-food-cost)
-            (up-add-object-cost c: krepost c: 1)
-            )
-            (defrule
-            (up-timer-status t-15-sec == timer-triggered)
-            (up-object-type-count-total c: krepost g:< g-desired-num-krepost)
-            (up-resource-amount amount-stone g:< g-stone-cost)
-            =>
-            (up-modify-goal g-total-buildings-stone-needed g:+ g-stone-cost)
-            )
-
-        #end-if
+        ;Unique Buildings
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: my-unique-building g:< g-desired-num-unique-building)
+        =>
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-object-cost c: my-unique-building c: 1)
+        )
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: my-unique-building g:< g-desired-num-unique-building)
+        (up-resource-amount amount-gold g:< g-gold-cost)
+        (up-resource-amount amount-stone g:< g-stone-cost)
+        =>
+        (up-modify-goal g-total-buildings-gold-needed g:+ g-gold-cost)
+        (up-modify-goal g-total-buildings-stone-needed g:+ g-stone-cost)
+        )
 
         ;Add Ongoing Cost of Farms
         (defrule
@@ -2147,6 +2155,66 @@
             (up-modify-goal g-total-units-gold-needed g:+ g-gold-cost)
             )
 
+            #load-if-defined DE-AVAILABLE
+
+                ;Elephant Archer
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-object-type-count c: elephant-archer-line g:< g-desired-num-elephant-archer)
+                (goal g-primary-unit elephant-archer)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: elephant-archer c: 1)
+                (up-get-fact building-type-count archery-range g-temp)
+                (up-modify-goal g-temp c:min 3)
+                (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 for creation times
+                (up-modify-goal g-wood-cost g:* g-temp)
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-wood-cost c:/ ELEPHANT-ARCHER-TIME)  ;divide by creation time
+                (up-modify-goal g-gold-cost c:/ ELEPHANT-ARCHER-TIME)  ;divide by creation time
+                (up-modify-goal g-total-units-wood-needed g:+ g-wood-cost)
+                (up-modify-goal g-total-units-gold-needed g:+ g-gold-cost)
+                )
+
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-object-type-count c: elephant-archer-line g:< g-desired-num-elephant-archer)
+                (goal g-support-unit elephant-archer)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: elephant-archer c: 1)
+                (up-get-fact building-type-count archery-range g-temp)
+                (up-modify-goal g-temp c:min 2)
+                (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 for creation times
+                (up-modify-goal g-wood-cost g:* g-temp)
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-wood-cost c:/ ELEPHANT-ARCHER-TIME)  ;divide by creation time
+                (up-modify-goal g-gold-cost c:/ ELEPHANT-ARCHER-TIME)  ;divide by creation time
+                (up-modify-goal g-total-units-wood-needed g:+ g-wood-cost)
+                (up-modify-goal g-total-units-gold-needed g:+ g-gold-cost)
+                )
+
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-object-type-count c: elephant-archer-line g:< g-desired-num-elephant-archer)
+                (up-compare-goal g-primary-unit != elephant-archer)
+                (up-compare-goal g-support-unit != elephant-archer)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: elephant-archer c: 1)
+                (set-goal g-temp 1)
+                (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+                (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+                (up-modify-goal g-wood-cost g:* g-temp)
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-wood-cost c:/ ELEPHANT-ARCHER-TIME)  ;divide by creation time
+                (up-modify-goal g-gold-cost c:/ ELEPHANT-ARCHER-TIME)  ;divide by creation time
+                (up-modify-goal g-total-units-wood-needed g:+ g-wood-cost)
+                (up-modify-goal g-total-units-gold-needed g:+ g-gold-cost)
+                )
+
+            #end-if
+
             ;Hand Cannoneer
             (defrule
             (up-timer-status t-15-sec == timer-triggered)
@@ -2205,63 +2273,67 @@
             (up-modify-goal g-total-units-gold-needed g:+ g-gold-cost)
             )
 
-            ;Slinger
-            (defrule
-            (up-timer-status t-15-sec == timer-triggered)
-            (up-object-type-count c: slinger g:< g-desired-num-slinger)
-            (goal g-primary-unit slinger)
-            =>
-            (up-setup-cost-data 1 g-food-cost)
-            (up-add-object-cost c: slinger c: 1)
-            (up-get-fact building-type-count archery-range g-temp)
-            (up-modify-goal g-temp c:min 3)
-            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
-            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
-            (up-modify-goal g-wood-cost g:* g-temp)
-            (up-modify-goal g-gold-cost g:* g-temp)
-            (up-modify-goal g-wood-cost c:/ SLINGER-TIME)  ;divide by creation time
-            (up-modify-goal g-gold-cost c:/ SLINGER-TIME)  ;divide by creation time
-            (up-modify-goal g-total-units-wood-needed g:+ g-wood-cost)
-            (up-modify-goal g-total-units-gold-needed g:+ g-gold-cost)
-            )
+            #load-if-defined INCAN-CIV
 
-            (defrule
-            (up-timer-status t-15-sec == timer-triggered)
-            (up-object-type-count c: slinger g:< g-desired-num-slinger)
-            (goal g-support-unit slinger)
-            =>
-            (up-setup-cost-data 1 g-food-cost)
-            (up-add-object-cost c: slinger c: 1)
-            (up-get-fact building-type-count archery-range g-temp)
-            (up-modify-goal g-temp c:min 2)
-            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
-            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
-            (up-modify-goal g-wood-cost g:* g-temp)
-            (up-modify-goal g-gold-cost g:* g-temp)
-            (up-modify-goal g-wood-cost c:/ SLINGER-TIME)  ;divide by creation time
-            (up-modify-goal g-gold-cost c:/ SLINGER-TIME)  ;divide by creation time
-            (up-modify-goal g-total-units-wood-needed g:+ g-wood-cost)
-            (up-modify-goal g-total-units-gold-needed g:+ g-gold-cost)
-            )
+                ;Slinger
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-object-type-count c: slinger g:< g-desired-num-second-unique-unit)
+                (goal g-primary-unit my-second-unique-unit)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: slinger c: 1)
+                (up-get-fact building-type-count archery-range g-temp)
+                (up-modify-goal g-temp c:min 3)
+                (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+                (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+                (up-modify-goal g-wood-cost g:* g-temp)
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-wood-cost c:/ SLINGER-TIME)  ;divide by creation time
+                (up-modify-goal g-gold-cost c:/ SLINGER-TIME)  ;divide by creation time
+                (up-modify-goal g-total-units-wood-needed g:+ g-wood-cost)
+                (up-modify-goal g-total-units-gold-needed g:+ g-gold-cost)
+                )
 
-            (defrule
-            (up-timer-status t-15-sec == timer-triggered)
-            (up-object-type-count c: slinger g:< g-desired-num-slinger)
-            (up-compare-goal g-primary-unit != slinger)
-            (up-compare-goal g-support-unit != slinger)
-            =>
-            (up-setup-cost-data 1 g-food-cost)
-            (up-add-object-cost c: slinger c: 1)
-            (set-goal g-temp 1)
-            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
-            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
-            (up-modify-goal g-wood-cost g:* g-temp)
-            (up-modify-goal g-gold-cost g:* g-temp)
-            (up-modify-goal g-wood-cost c:/ SLINGER-TIME)  ;divide by creation time
-            (up-modify-goal g-gold-cost c:/ SLINGER-TIME)  ;divide by creation time
-            (up-modify-goal g-total-units-wood-needed g:+ g-wood-cost)
-            (up-modify-goal g-total-units-gold-needed g:+ g-gold-cost)
-            )
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-object-type-count c: slinger g:< g-desired-num-second-unique-unit)
+                (goal g-support-unit slinger)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: slinger c: 1)
+                (up-get-fact building-type-count archery-range g-temp)
+                (up-modify-goal g-temp c:min 2)
+                (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+                (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+                (up-modify-goal g-wood-cost g:* g-temp)
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-wood-cost c:/ SLINGER-TIME)  ;divide by creation time
+                (up-modify-goal g-gold-cost c:/ SLINGER-TIME)  ;divide by creation time
+                (up-modify-goal g-total-units-wood-needed g:+ g-wood-cost)
+                (up-modify-goal g-total-units-gold-needed g:+ g-gold-cost)
+                )
+
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-object-type-count c: slinger g:< g-desired-num-second-unique-unit)
+                (up-compare-goal g-primary-unit != slinger)
+                (up-compare-goal g-support-unit != slinger)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: slinger c: 1)
+                (set-goal g-temp 1)
+                (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+                (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+                (up-modify-goal g-wood-cost g:* g-temp)
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-wood-cost c:/ SLINGER-TIME)  ;divide by creation time
+                (up-modify-goal g-gold-cost c:/ SLINGER-TIME)  ;divide by creation time
+                (up-modify-goal g-total-units-wood-needed g:+ g-wood-cost)
+                (up-modify-goal g-total-units-gold-needed g:+ g-gold-cost)
+                )
+
+            #end-if
 
             ;Genitour
             (defrule
@@ -2730,6 +2802,69 @@
 
             #end-if
 
+            #load-if-defined GURJARAS-CIV
+
+                ;Shrivamsha Rider
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-object-type-count c: shrivamsha-rider-line g:< g-desired-num-second-unique-unit)
+                (goal g-primary-unit shrivamsha-rider)
+                (up-research-status c: ri-elite-shrivamsha-rider != research-complete)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: shrivamsha-rider c: 1)
+                (up-get-fact building-type-count stable g-temp)
+                (up-modify-goal g-temp c:min 3)
+                (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 to adjust creation times
+                (up-modify-goal g-food-cost g:* g-temp)
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-food-cost c:/ SHRIVAMSHA-RIDER-TIME)  ;divide by creation time
+                (up-modify-goal g-gold-cost c:/ SHRIVAMSHA-RIDER-TIME)  ;divide by creation time
+                (up-modify-goal g-total-units-food-needed g:+ g-food-cost)
+                (up-modify-goal g-total-units-gold-needed g:+ g-gold-cost)
+                )
+
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-object-type-count c: shrivamsha-rider-line g:< g-desired-num-second-unique-unit)
+                (goal g-support-unit shrivamsha-rider)
+                (up-research-status c: ri-elite-shrivamsha-rider != research-complete)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: shrivamsha-rider c: 1)
+                (up-get-fact building-type-count stable g-temp)
+                (up-modify-goal g-temp c:min 2)
+                (up-modify-goal g-temp c:* 6000)      ;60 seconds per minute, *100 to adjust creation times
+                (up-modify-goal g-food-cost g:* g-temp)
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-food-cost c:/ SHRIVAMSHA-RIDER-TIME)  ;divide by creation time
+                (up-modify-goal g-gold-cost c:/ SHRIVAMSHA-RIDER-TIME)  ;divide by creation time
+                (up-modify-goal g-total-units-food-needed g:+ g-food-cost)
+                (up-modify-goal g-total-units-gold-needed g:+ g-gold-cost)
+                )
+
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-object-type-count c: shrivamsha-rider-line g:< g-desired-num-second-unique-unit)
+                (up-compare-goal g-primary-unit != shrivamsha-rider)
+                (up-compare-goal g-support-unit != shrivamsha-rider)
+                (up-research-status c: ri-elite-shrivamsha-rider != research-complete)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: shrivamsha-rider c: 1)
+                (set-goal g-temp 1)
+                (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+                (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+                (up-modify-goal g-food-cost g:* g-temp)
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-food-cost c:/ SHRIVAMSHA-RIDER-TIME)  ;divide by creation time
+                (up-modify-goal g-gold-cost c:/ SHRIVAMSHA-RIDER-TIME)  ;divide by creation time
+                (up-modify-goal g-total-units-food-needed g:+ g-food-cost)
+                (up-modify-goal g-total-units-gold-needed g:+ g-gold-cost)
+                )
+
+            #end-if
+
         ;------------------
         ;   Castle Units
         ;------------------
@@ -2850,44 +2985,48 @@
             (up-modify-goal g-total-units-gold-needed g:+ g-gold-cost)
             )
 
-            ;Missionary
-            (defrule
-            (up-timer-status t-15-sec == timer-triggered)
-            (up-object-type-count-total c: missionary g:< g-desired-num-missionary)
-            (or
-                (goal g-primary-unit missionary)
-                (goal g-support-unit missionary))
-            (building-type-count monastery > 0)
-            =>
-            (up-setup-cost-data 1 g-food-cost)
-            (up-add-object-cost c: missionary c: 1)
-            (up-get-fact building-type-count monastery g-temp)
-            (up-modify-goal g-temp c:min 2)
-            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
-            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
-            (up-modify-goal g-gold-cost g:* g-temp)
-            (up-modify-goal g-gold-cost c:/ MISSIONARY-TIME)  ;divide by creation time
-            (up-modify-goal g-total-units-gold-needed g:+ g-gold-cost)
-            )
+            #load-if-defined SPANISH-CIV
 
-            (defrule
-            (up-timer-status t-15-sec == timer-triggered)
-            (up-object-type-count-total c: missionary g:< g-desired-num-missionary)
-            (nor
-                (goal g-primary-unit missionary)
-                (goal g-support-unit missionary))
-            (up-compare-goal g-desired-num-missionary >= 5)
-            (building-type-count monastery > 0)
-            =>
-            (up-setup-cost-data 1 g-food-cost)
-            (up-add-object-cost c: missionary c: 1)
-            (set-goal g-temp 1)
-            (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
-            (up-modify-goal g-temp c:* 100)     ;creation times are * 100
-            (up-modify-goal g-gold-cost g:* g-temp)
-            (up-modify-goal g-gold-cost c:/ MISSIONARY-TIME)  ;divide by creation time
-            (up-modify-goal g-total-units-gold-needed g:+ g-gold-cost)
-            )
+                ;Missionary
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-object-type-count-total c: missionary g:< g-desired-num-second-unique-unit)
+                (or
+                    (goal g-primary-unit missionary)
+                    (goal g-support-unit missionary))
+                (building-type-count monastery > 0)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: missionary c: 1)
+                (up-get-fact building-type-count monastery g-temp)
+                (up-modify-goal g-temp c:min 2)
+                (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+                (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-gold-cost c:/ MISSIONARY-TIME)  ;divide by creation time
+                (up-modify-goal g-total-units-gold-needed g:+ g-gold-cost)
+                )
+
+                (defrule
+                (up-timer-status t-15-sec == timer-triggered)
+                (up-object-type-count-total c: missionary g:< g-desired-num-second-unique-unit)
+                (nor
+                    (goal g-primary-unit missionary)
+                    (goal g-support-unit missionary))
+                (up-compare-goal g-desired-num-second-unique-unit >= 5)
+                (building-type-count monastery > 0)
+                =>
+                (up-setup-cost-data 1 g-food-cost)
+                (up-add-object-cost c: missionary c: 1)
+                (set-goal g-temp 1)
+                (up-modify-goal g-temp c:* 60)      ;60 seconds per minute
+                (up-modify-goal g-temp c:* 100)     ;creation times are * 100
+                (up-modify-goal g-gold-cost g:* g-temp)
+                (up-modify-goal g-gold-cost c:/ MISSIONARY-TIME)  ;divide by creation time
+                (up-modify-goal g-total-units-gold-needed g:+ g-gold-cost)
+                )
+
+            #end-if
 
         ;--------------------------
         ;   Siege Workshop Units
@@ -2896,7 +3035,7 @@
             ;Battering Ram
             (defrule
             (up-timer-status t-15-sec == timer-triggered)
-            (up-object-type-count c: battering-ram-line g:< g-desired-num-battering-ram)
+            (up-object-type-count c: battering-ram-line g:< g-desired-num-ram-type)
             (building-type-count siege-workshop > 0)
             =>
             (up-setup-cost-data 1 g-food-cost)
@@ -3108,14 +3247,14 @@
         (up-modify-goal g-total-needed-villagers g:+ g-required-num-stone-vils)
         )
 
-    ;-------------------------------------------
-    ;	GOAL 292: g-percent-dynamic-gathering
-    ;-------------------------------------------
+    ;---------------------------------------
+    ;	GOAL: g-percent-dynamic-gathering
+    ;---------------------------------------
 
         (defrule
         (or
             (and
-                (goal g-first-attack-launched NO)
+                (up-compare-flag g-flag != FIRST-ATTACK-LAUNCHED)
                 (up-compare-goal g-game-focus != DEFENSIVE))
             (or
                 (unit-type-count villager < 35)
@@ -3129,7 +3268,7 @@
 
         (defrule
         (or
-            (goal g-first-attack-launched YES)
+            (up-compare-flag g-flag == FIRST-ATTACK-LAUNCHED)
             (goal g-game-focus DEFENSIVE))
         (unit-type-count villager >= 35)
         (or

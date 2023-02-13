@@ -77,7 +77,7 @@
         (up-log-data 0 CHAT-LOG-TIME g: g-temp5)
         (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
         (up-log-data 0 "Reset all DUC groups" c: 0)
-        (chat-to-all "Reset all DUC groups")
+        ; (chat-to-all "Reset all DUC groups")
         )
 
     (defrule
@@ -129,12 +129,12 @@
     (up-group-size c: 5 > 0)
     (up-group-size c: 6 > 0)
     (up-get-fact military-population 0 g-temp)
-    (up-modify-goal g-temp c:/ 3)
+    (up-modify-goal g-temp c:/ 2)
     (up-compare-goal g-temp > 15)
-    (up-compare-goal g-max-group-size g:< g-temp)
     =>
     (up-modify-goal g-temp c:min 40)
-    (up-modify-goal g-max-group-size g:= g-temp)
+    (up-modify-goal g-temp c:max 15)
+    (up-modify-goal g-max-group-size g:min g-temp)
     (up-modify-goal g-min-group-size g:min g-max-group-size)
     ; (up-chat-data-to-all "Increase max %d" g: g-max-group-size)
     )
@@ -353,6 +353,45 @@
             (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
             (up-log-data 0 CHAT-CREATE-RANGED-INFANTRY-GROUP g: g-current-group)
             ; (up-chat-data-to-self "Ranged Infantry Group ID %d" g: g-current-group)
+            )
+
+            (defrule
+            (up-compare-goal g-duc-micro-start-rule-id > 0)
+            (up-compare-goal g-duc-micro-end-rule-id > 0)
+            (goal g-temp 9)
+            (up-group-size g: g-current-group > 0)
+            =>
+            (up-get-indirect-goal g: g-current-group-flag-goal-id g-current-group-flag)
+            (up-get-indirect-goal g: g-current-group-type-flag-goal-id g-current-group-type-flag)
+            (up-get-indirect-goal g: g-current-group-action-goal-id g-current-group-action)
+            (up-get-indirect-goal g: g-current-group-target-object-goal-id g-current-group-target-object-id)
+            (up-get-indirect-goal g: g-current-group-destination-time-goal-id g-current-group-destination-time)
+            (up-get-indirect-goal g: g-current-group-avoidance-counter-goal-id g-current-group-avoidance-counter)
+            (up-get-indirect-goal g: g-current-group-location-x-goal-id g-current-group-location-x)
+            (up-get-indirect-goal g: g-current-group-location-y-goal-id g-current-group-location-y)
+            (up-get-indirect-goal g: g-current-group-destination-x-goal-id g-current-group-destination-x)
+            (up-get-indirect-goal g: g-current-group-destination-y-goal-id g-current-group-destination-y)
+            )
+
+            (defrule
+            (up-compare-goal g-duc-micro-start-rule-id > 0)
+            (up-compare-goal g-duc-micro-end-rule-id > 0)
+            (goal g-temp 9)
+            (up-group-size g: g-current-group > 0)
+            =>
+            (up-get-group-size g: g-current-group g-temp)
+            (up-log-data 0 CHAT-GROUP-SIZE g: g-temp)
+            (up-log-data 0 CHAT-GROUP-SIZE-DUC g: g-local-total)
+            (up-log-data 0 CHAT-FLAG g: g-current-group-flag)
+            (up-log-data 0 CHAT-TYPE-FLAG g: g-current-group-type-flag)
+            (up-log-data 0 CHAT-ACTION g: g-current-group-action)
+            (up-log-data 0 CHAT-TARGET-OBJECT g: g-current-group-target-object-id)
+            (up-log-data 0 CHAT-DESTINATION-TIME g: g-current-group-destination-time)
+            (up-log-data 0 CHAT-AVOIDANCE-COUNTER g: g-current-group-avoidance-counter)
+            (up-log-data 0 CHAT-LOCATION-X g: g-current-group-location-x)
+            (up-log-data 0 CHAT-LOCATION-Y g: g-current-group-location-y)
+            (up-log-data 0 CHAT-DESTINATION-X g: g-current-group-destination-x)
+            (up-log-data 0 CHAT-DESTINATION-Y g: g-current-group-destination-y)
             (up-jump-direct g: g-duc-micro-end-rule-id)
             )
 
@@ -363,7 +402,7 @@
             =>
             (up-modify-goal g-current-group c:+ 1)
             (set-goal g-temp PENDING)
-            (up-jump-rule -4)
+            (up-jump-rule -6)
             )
 
     ;------------------
@@ -444,6 +483,45 @@
             (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
             (up-log-data 0 CHAT-CREATE-FOOT-ARCHER-GROUP g: g-current-group)
             ; (up-chat-data-to-self "Foot Archer Group ID %d" g: g-current-group)
+            )
+
+            (defrule
+            (up-compare-goal g-duc-micro-start-rule-id > 0)
+            (up-compare-goal g-duc-micro-end-rule-id > 0)
+            (goal g-temp 9)
+            (up-group-size g: g-current-group > 0)
+            =>
+            (up-get-indirect-goal g: g-current-group-flag-goal-id g-current-group-flag)
+            (up-get-indirect-goal g: g-current-group-type-flag-goal-id g-current-group-type-flag)
+            (up-get-indirect-goal g: g-current-group-action-goal-id g-current-group-action)
+            (up-get-indirect-goal g: g-current-group-target-object-goal-id g-current-group-target-object-id)
+            (up-get-indirect-goal g: g-current-group-destination-time-goal-id g-current-group-destination-time)
+            (up-get-indirect-goal g: g-current-group-avoidance-counter-goal-id g-current-group-avoidance-counter)
+            (up-get-indirect-goal g: g-current-group-location-x-goal-id g-current-group-location-x)
+            (up-get-indirect-goal g: g-current-group-location-y-goal-id g-current-group-location-y)
+            (up-get-indirect-goal g: g-current-group-destination-x-goal-id g-current-group-destination-x)
+            (up-get-indirect-goal g: g-current-group-destination-y-goal-id g-current-group-destination-y)
+            )
+
+            (defrule
+            (up-compare-goal g-duc-micro-start-rule-id > 0)
+            (up-compare-goal g-duc-micro-end-rule-id > 0)
+            (goal g-temp 9)
+            (up-group-size g: g-current-group > 0)
+            =>
+            (up-get-group-size g: g-current-group g-temp)
+            (up-log-data 0 CHAT-GROUP-SIZE g: g-temp)
+            (up-log-data 0 CHAT-GROUP-SIZE-DUC g: g-local-total)
+            (up-log-data 0 CHAT-FLAG g: g-current-group-flag)
+            (up-log-data 0 CHAT-TYPE-FLAG g: g-current-group-type-flag)
+            (up-log-data 0 CHAT-ACTION g: g-current-group-action)
+            (up-log-data 0 CHAT-TARGET-OBJECT g: g-current-group-target-object-id)
+            (up-log-data 0 CHAT-DESTINATION-TIME g: g-current-group-destination-time)
+            (up-log-data 0 CHAT-AVOIDANCE-COUNTER g: g-current-group-avoidance-counter)
+            (up-log-data 0 CHAT-LOCATION-X g: g-current-group-location-x)
+            (up-log-data 0 CHAT-LOCATION-Y g: g-current-group-location-y)
+            (up-log-data 0 CHAT-DESTINATION-X g: g-current-group-destination-x)
+            (up-log-data 0 CHAT-DESTINATION-Y g: g-current-group-destination-y)
             (up-jump-direct g: g-duc-micro-end-rule-id)
             )
 
@@ -454,7 +532,7 @@
             =>
             (up-modify-goal g-current-group c:+ 1)
             (set-goal g-temp PENDING)
-            (up-jump-rule -4)
+            (up-jump-rule -6)
             )
 
     ;---------------------
@@ -538,6 +616,45 @@
             (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
             (up-log-data 0 CHAT-CREATE-CAVALRY-ARCHER-GROUP g: g-current-group)
             ; (up-chat-data-to-self "Cav Archer Group ID %d" g: g-current-group)
+            )
+
+            (defrule
+            (up-compare-goal g-duc-micro-start-rule-id > 0)
+            (up-compare-goal g-duc-micro-end-rule-id > 0)
+            (goal g-temp 9)
+            (up-group-size g: g-current-group > 0)
+            =>
+            (up-get-indirect-goal g: g-current-group-flag-goal-id g-current-group-flag)
+            (up-get-indirect-goal g: g-current-group-type-flag-goal-id g-current-group-type-flag)
+            (up-get-indirect-goal g: g-current-group-action-goal-id g-current-group-action)
+            (up-get-indirect-goal g: g-current-group-target-object-goal-id g-current-group-target-object-id)
+            (up-get-indirect-goal g: g-current-group-destination-time-goal-id g-current-group-destination-time)
+            (up-get-indirect-goal g: g-current-group-avoidance-counter-goal-id g-current-group-avoidance-counter)
+            (up-get-indirect-goal g: g-current-group-location-x-goal-id g-current-group-location-x)
+            (up-get-indirect-goal g: g-current-group-location-y-goal-id g-current-group-location-y)
+            (up-get-indirect-goal g: g-current-group-destination-x-goal-id g-current-group-destination-x)
+            (up-get-indirect-goal g: g-current-group-destination-y-goal-id g-current-group-destination-y)
+            )
+
+            (defrule
+            (up-compare-goal g-duc-micro-start-rule-id > 0)
+            (up-compare-goal g-duc-micro-end-rule-id > 0)
+            (goal g-temp 9)
+            (up-group-size g: g-current-group > 0)
+            =>
+            (up-get-group-size g: g-current-group g-temp)
+            (up-log-data 0 CHAT-GROUP-SIZE g: g-temp)
+            (up-log-data 0 CHAT-GROUP-SIZE-DUC g: g-local-total)
+            (up-log-data 0 CHAT-FLAG g: g-current-group-flag)
+            (up-log-data 0 CHAT-TYPE-FLAG g: g-current-group-type-flag)
+            (up-log-data 0 CHAT-ACTION g: g-current-group-action)
+            (up-log-data 0 CHAT-TARGET-OBJECT g: g-current-group-target-object-id)
+            (up-log-data 0 CHAT-DESTINATION-TIME g: g-current-group-destination-time)
+            (up-log-data 0 CHAT-AVOIDANCE-COUNTER g: g-current-group-avoidance-counter)
+            (up-log-data 0 CHAT-LOCATION-X g: g-current-group-location-x)
+            (up-log-data 0 CHAT-LOCATION-Y g: g-current-group-location-y)
+            (up-log-data 0 CHAT-DESTINATION-X g: g-current-group-destination-x)
+            (up-log-data 0 CHAT-DESTINATION-Y g: g-current-group-destination-y)
             (up-jump-direct g: g-duc-micro-end-rule-id)
             )
 
@@ -548,7 +665,7 @@
             =>
             (up-modify-goal g-current-group c:+ 1)
             (set-goal g-temp PENDING)
-            (up-jump-rule -4)
+            (up-jump-rule -6)
             )
 
     ;-------------
@@ -778,6 +895,45 @@
                 (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
                 (up-log-data 0 CHAT-CREATE-MONK-GROUP g: g-current-group)
                 ; (up-chat-data-to-self "Monk Group ID %d" g: g-current-group)
+                )
+
+                (defrule
+                (up-compare-goal g-duc-micro-start-rule-id > 0)
+                (up-compare-goal g-duc-micro-end-rule-id > 0)
+                (goal g-temp 9)
+                (up-group-size g: g-current-group > 0)
+                =>
+                (up-get-indirect-goal g: g-current-group-flag-goal-id g-current-group-flag)
+                (up-get-indirect-goal g: g-current-group-type-flag-goal-id g-current-group-type-flag)
+                (up-get-indirect-goal g: g-current-group-action-goal-id g-current-group-action)
+                (up-get-indirect-goal g: g-current-group-target-object-goal-id g-current-group-target-object-id)
+                (up-get-indirect-goal g: g-current-group-destination-time-goal-id g-current-group-destination-time)
+                (up-get-indirect-goal g: g-current-group-avoidance-counter-goal-id g-current-group-avoidance-counter)
+                (up-get-indirect-goal g: g-current-group-location-x-goal-id g-current-group-location-x)
+                (up-get-indirect-goal g: g-current-group-location-y-goal-id g-current-group-location-y)
+                (up-get-indirect-goal g: g-current-group-destination-x-goal-id g-current-group-destination-x)
+                (up-get-indirect-goal g: g-current-group-destination-y-goal-id g-current-group-destination-y)
+                )
+
+                (defrule
+                (up-compare-goal g-duc-micro-start-rule-id > 0)
+                (up-compare-goal g-duc-micro-end-rule-id > 0)
+                (goal g-temp 9)
+                (up-group-size g: g-current-group > 0)
+                =>
+                (up-get-group-size g: g-current-group g-temp)
+                (up-log-data 0 CHAT-GROUP-SIZE g: g-temp)
+                (up-log-data 0 CHAT-GROUP-SIZE-DUC g: g-local-total)
+                (up-log-data 0 CHAT-FLAG g: g-current-group-flag)
+                (up-log-data 0 CHAT-TYPE-FLAG g: g-current-group-type-flag)
+                (up-log-data 0 CHAT-ACTION g: g-current-group-action)
+                (up-log-data 0 CHAT-TARGET-OBJECT g: g-current-group-target-object-id)
+                (up-log-data 0 CHAT-DESTINATION-TIME g: g-current-group-destination-time)
+                (up-log-data 0 CHAT-AVOIDANCE-COUNTER g: g-current-group-avoidance-counter)
+                (up-log-data 0 CHAT-LOCATION-X g: g-current-group-location-x)
+                (up-log-data 0 CHAT-LOCATION-Y g: g-current-group-location-y)
+                (up-log-data 0 CHAT-DESTINATION-X g: g-current-group-destination-x)
+                (up-log-data 0 CHAT-DESTINATION-Y g: g-current-group-destination-y)
                 (up-jump-direct g: g-duc-micro-end-rule-id)
                 )
 
@@ -788,7 +944,7 @@
                 =>
                 (up-modify-goal g-current-group c:+ 1)
                 (set-goal g-temp PENDING)
-                (up-jump-rule -4)
+                (up-jump-rule -6)
                 )
 
     ;----------
@@ -884,6 +1040,45 @@
                 (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
                 (up-log-data 0 CHAT-CREATE-RAM-GROUP g: g-current-group)
                 ; (up-chat-data-to-self "Ram Group ID %d" g: g-current-group)
+                )
+
+                (defrule
+                (up-compare-goal g-duc-micro-start-rule-id > 0)
+                (up-compare-goal g-duc-micro-end-rule-id > 0)
+                (goal g-temp 9)
+                (up-group-size g: g-current-group > 0)
+                =>
+                (up-get-indirect-goal g: g-current-group-flag-goal-id g-current-group-flag)
+                (up-get-indirect-goal g: g-current-group-type-flag-goal-id g-current-group-type-flag)
+                (up-get-indirect-goal g: g-current-group-action-goal-id g-current-group-action)
+                (up-get-indirect-goal g: g-current-group-target-object-goal-id g-current-group-target-object-id)
+                (up-get-indirect-goal g: g-current-group-destination-time-goal-id g-current-group-destination-time)
+                (up-get-indirect-goal g: g-current-group-avoidance-counter-goal-id g-current-group-avoidance-counter)
+                (up-get-indirect-goal g: g-current-group-location-x-goal-id g-current-group-location-x)
+                (up-get-indirect-goal g: g-current-group-location-y-goal-id g-current-group-location-y)
+                (up-get-indirect-goal g: g-current-group-destination-x-goal-id g-current-group-destination-x)
+                (up-get-indirect-goal g: g-current-group-destination-y-goal-id g-current-group-destination-y)
+                )
+
+                (defrule
+                (up-compare-goal g-duc-micro-start-rule-id > 0)
+                (up-compare-goal g-duc-micro-end-rule-id > 0)
+                (goal g-temp 9)
+                (up-group-size g: g-current-group > 0)
+                =>
+                (up-get-group-size g: g-current-group g-temp)
+                (up-log-data 0 CHAT-GROUP-SIZE g: g-temp)
+                (up-log-data 0 CHAT-GROUP-SIZE-DUC g: g-local-total)
+                (up-log-data 0 CHAT-FLAG g: g-current-group-flag)
+                (up-log-data 0 CHAT-TYPE-FLAG g: g-current-group-type-flag)
+                (up-log-data 0 CHAT-ACTION g: g-current-group-action)
+                (up-log-data 0 CHAT-TARGET-OBJECT g: g-current-group-target-object-id)
+                (up-log-data 0 CHAT-DESTINATION-TIME g: g-current-group-destination-time)
+                (up-log-data 0 CHAT-AVOIDANCE-COUNTER g: g-current-group-avoidance-counter)
+                (up-log-data 0 CHAT-LOCATION-X g: g-current-group-location-x)
+                (up-log-data 0 CHAT-LOCATION-Y g: g-current-group-location-y)
+                (up-log-data 0 CHAT-DESTINATION-X g: g-current-group-destination-x)
+                (up-log-data 0 CHAT-DESTINATION-Y g: g-current-group-destination-y)
                 (up-jump-direct g: g-duc-micro-end-rule-id)
                 )
 
@@ -894,7 +1089,7 @@
                 =>
                 (up-modify-goal g-current-group c:+ 1)
                 (set-goal g-temp PENDING)
-                (up-jump-rule -4)
+                (up-jump-rule -6)
                 )
 
     ;---------------
@@ -991,6 +1186,45 @@
                 (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
                 (up-log-data 0 CHAT-CREATE-SCORPION-GROUP g: g-current-group)
                 ; (up-chat-data-to-self "Scorpion Group ID %d" g: g-current-group)
+                )
+
+                (defrule
+                (up-compare-goal g-duc-micro-start-rule-id > 0)
+                (up-compare-goal g-duc-micro-end-rule-id > 0)
+                (goal g-temp 9)
+                (up-group-size g: g-current-group > 0)
+                =>
+                (up-get-indirect-goal g: g-current-group-flag-goal-id g-current-group-flag)
+                (up-get-indirect-goal g: g-current-group-type-flag-goal-id g-current-group-type-flag)
+                (up-get-indirect-goal g: g-current-group-action-goal-id g-current-group-action)
+                (up-get-indirect-goal g: g-current-group-target-object-goal-id g-current-group-target-object-id)
+                (up-get-indirect-goal g: g-current-group-destination-time-goal-id g-current-group-destination-time)
+                (up-get-indirect-goal g: g-current-group-avoidance-counter-goal-id g-current-group-avoidance-counter)
+                (up-get-indirect-goal g: g-current-group-location-x-goal-id g-current-group-location-x)
+                (up-get-indirect-goal g: g-current-group-location-y-goal-id g-current-group-location-y)
+                (up-get-indirect-goal g: g-current-group-destination-x-goal-id g-current-group-destination-x)
+                (up-get-indirect-goal g: g-current-group-destination-y-goal-id g-current-group-destination-y)
+                )
+
+                (defrule
+                (up-compare-goal g-duc-micro-start-rule-id > 0)
+                (up-compare-goal g-duc-micro-end-rule-id > 0)
+                (goal g-temp 9)
+                (up-group-size g: g-current-group > 0)
+                =>
+                (up-get-group-size g: g-current-group g-temp)
+                (up-log-data 0 CHAT-GROUP-SIZE g: g-temp)
+                (up-log-data 0 CHAT-GROUP-SIZE-DUC g: g-local-total)
+                (up-log-data 0 CHAT-FLAG g: g-current-group-flag)
+                (up-log-data 0 CHAT-TYPE-FLAG g: g-current-group-type-flag)
+                (up-log-data 0 CHAT-ACTION g: g-current-group-action)
+                (up-log-data 0 CHAT-TARGET-OBJECT g: g-current-group-target-object-id)
+                (up-log-data 0 CHAT-DESTINATION-TIME g: g-current-group-destination-time)
+                (up-log-data 0 CHAT-AVOIDANCE-COUNTER g: g-current-group-avoidance-counter)
+                (up-log-data 0 CHAT-LOCATION-X g: g-current-group-location-x)
+                (up-log-data 0 CHAT-LOCATION-Y g: g-current-group-location-y)
+                (up-log-data 0 CHAT-DESTINATION-X g: g-current-group-destination-x)
+                (up-log-data 0 CHAT-DESTINATION-Y g: g-current-group-destination-y)
                 (up-jump-direct g: g-duc-micro-end-rule-id)
                 )
 
@@ -1001,7 +1235,7 @@
                 =>
                 (up-modify-goal g-current-group c:+ 1)
                 (set-goal g-temp PENDING)
-                (up-jump-rule -4)
+                (up-jump-rule -6)
                 )
             
     ;----------------
@@ -1097,6 +1331,45 @@
                 (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
                 (up-log-data 0 CHAT-CREATE-MANGONEL-GROUP g: g-current-group)
                 ; (up-chat-data-to-self "Mangonel Group ID %d" g: g-current-group)
+                )
+
+                (defrule
+                (up-compare-goal g-duc-micro-start-rule-id > 0)
+                (up-compare-goal g-duc-micro-end-rule-id > 0)
+                (goal g-temp 9)
+                (up-group-size g: g-current-group > 0)
+                =>
+                (up-get-indirect-goal g: g-current-group-flag-goal-id g-current-group-flag)
+                (up-get-indirect-goal g: g-current-group-type-flag-goal-id g-current-group-type-flag)
+                (up-get-indirect-goal g: g-current-group-action-goal-id g-current-group-action)
+                (up-get-indirect-goal g: g-current-group-target-object-goal-id g-current-group-target-object-id)
+                (up-get-indirect-goal g: g-current-group-destination-time-goal-id g-current-group-destination-time)
+                (up-get-indirect-goal g: g-current-group-avoidance-counter-goal-id g-current-group-avoidance-counter)
+                (up-get-indirect-goal g: g-current-group-location-x-goal-id g-current-group-location-x)
+                (up-get-indirect-goal g: g-current-group-location-y-goal-id g-current-group-location-y)
+                (up-get-indirect-goal g: g-current-group-destination-x-goal-id g-current-group-destination-x)
+                (up-get-indirect-goal g: g-current-group-destination-y-goal-id g-current-group-destination-y)
+                )
+
+                (defrule
+                (up-compare-goal g-duc-micro-start-rule-id > 0)
+                (up-compare-goal g-duc-micro-end-rule-id > 0)
+                (goal g-temp 9)
+                (up-group-size g: g-current-group > 0)
+                =>
+                (up-get-group-size g: g-current-group g-temp)
+                (up-log-data 0 CHAT-GROUP-SIZE g: g-temp)
+                (up-log-data 0 CHAT-GROUP-SIZE-DUC g: g-local-total)
+                (up-log-data 0 CHAT-FLAG g: g-current-group-flag)
+                (up-log-data 0 CHAT-TYPE-FLAG g: g-current-group-type-flag)
+                (up-log-data 0 CHAT-ACTION g: g-current-group-action)
+                (up-log-data 0 CHAT-TARGET-OBJECT g: g-current-group-target-object-id)
+                (up-log-data 0 CHAT-DESTINATION-TIME g: g-current-group-destination-time)
+                (up-log-data 0 CHAT-AVOIDANCE-COUNTER g: g-current-group-avoidance-counter)
+                (up-log-data 0 CHAT-LOCATION-X g: g-current-group-location-x)
+                (up-log-data 0 CHAT-LOCATION-Y g: g-current-group-location-y)
+                (up-log-data 0 CHAT-DESTINATION-X g: g-current-group-destination-x)
+                (up-log-data 0 CHAT-DESTINATION-Y g: g-current-group-destination-y)
                 (up-jump-direct g: g-duc-micro-end-rule-id)
                 )
 
@@ -1107,7 +1380,7 @@
                 =>
                 (up-modify-goal g-current-group c:+ 1)
                 (set-goal g-temp PENDING)
-                (up-jump-rule -4)
+                (up-jump-rule -6)
                 )
 
     ;----------------
@@ -1203,6 +1476,45 @@
                 (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
                 (up-log-data 0 CHAT-CREATE-TREBUCHET-GROUP g: g-current-group)
                 ; (up-chat-data-to-self "Trebuchet Group ID %d" g: g-current-group)
+                )
+
+                (defrule
+                (up-compare-goal g-duc-micro-start-rule-id > 0)
+                (up-compare-goal g-duc-micro-end-rule-id > 0)
+                (goal g-temp 9)
+                (up-group-size g: g-current-group > 0)
+                =>
+                (up-get-indirect-goal g: g-current-group-flag-goal-id g-current-group-flag)
+                (up-get-indirect-goal g: g-current-group-type-flag-goal-id g-current-group-type-flag)
+                (up-get-indirect-goal g: g-current-group-action-goal-id g-current-group-action)
+                (up-get-indirect-goal g: g-current-group-target-object-goal-id g-current-group-target-object-id)
+                (up-get-indirect-goal g: g-current-group-destination-time-goal-id g-current-group-destination-time)
+                (up-get-indirect-goal g: g-current-group-avoidance-counter-goal-id g-current-group-avoidance-counter)
+                (up-get-indirect-goal g: g-current-group-location-x-goal-id g-current-group-location-x)
+                (up-get-indirect-goal g: g-current-group-location-y-goal-id g-current-group-location-y)
+                (up-get-indirect-goal g: g-current-group-destination-x-goal-id g-current-group-destination-x)
+                (up-get-indirect-goal g: g-current-group-destination-y-goal-id g-current-group-destination-y)
+                )
+
+                (defrule
+                (up-compare-goal g-duc-micro-start-rule-id > 0)
+                (up-compare-goal g-duc-micro-end-rule-id > 0)
+                (goal g-temp 9)
+                (up-group-size g: g-current-group > 0)
+                =>
+                (up-get-group-size g: g-current-group g-temp)
+                (up-log-data 0 CHAT-GROUP-SIZE g: g-temp)
+                (up-log-data 0 CHAT-GROUP-SIZE-DUC g: g-local-total)
+                (up-log-data 0 CHAT-FLAG g: g-current-group-flag)
+                (up-log-data 0 CHAT-TYPE-FLAG g: g-current-group-type-flag)
+                (up-log-data 0 CHAT-ACTION g: g-current-group-action)
+                (up-log-data 0 CHAT-TARGET-OBJECT g: g-current-group-target-object-id)
+                (up-log-data 0 CHAT-DESTINATION-TIME g: g-current-group-destination-time)
+                (up-log-data 0 CHAT-AVOIDANCE-COUNTER g: g-current-group-avoidance-counter)
+                (up-log-data 0 CHAT-LOCATION-X g: g-current-group-location-x)
+                (up-log-data 0 CHAT-LOCATION-Y g: g-current-group-location-y)
+                (up-log-data 0 CHAT-DESTINATION-X g: g-current-group-destination-x)
+                (up-log-data 0 CHAT-DESTINATION-Y g: g-current-group-destination-y)
                 (up-jump-direct g: g-duc-micro-end-rule-id)
                 )
 
@@ -1213,7 +1525,7 @@
                 =>
                 (up-modify-goal g-current-group c:+ 1)
                 (set-goal g-temp PENDING)
-                (up-jump-rule -4)
+                (up-jump-rule -6)
                 )
 
     ;-------------
@@ -1309,6 +1621,45 @@
                 (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
                 (up-log-data 0 CHAT-CREATE-CANNON-GROUP g: g-current-group)
                 ; (up-chat-data-to-self "Cannon Group ID %d" g: g-current-group)
+                )
+
+                (defrule
+                (up-compare-goal g-duc-micro-start-rule-id > 0)
+                (up-compare-goal g-duc-micro-end-rule-id > 0)
+                (goal g-temp 9)
+                (up-group-size g: g-current-group > 0)
+                =>
+                (up-get-indirect-goal g: g-current-group-flag-goal-id g-current-group-flag)
+                (up-get-indirect-goal g: g-current-group-type-flag-goal-id g-current-group-type-flag)
+                (up-get-indirect-goal g: g-current-group-action-goal-id g-current-group-action)
+                (up-get-indirect-goal g: g-current-group-target-object-goal-id g-current-group-target-object-id)
+                (up-get-indirect-goal g: g-current-group-destination-time-goal-id g-current-group-destination-time)
+                (up-get-indirect-goal g: g-current-group-avoidance-counter-goal-id g-current-group-avoidance-counter)
+                (up-get-indirect-goal g: g-current-group-location-x-goal-id g-current-group-location-x)
+                (up-get-indirect-goal g: g-current-group-location-y-goal-id g-current-group-location-y)
+                (up-get-indirect-goal g: g-current-group-destination-x-goal-id g-current-group-destination-x)
+                (up-get-indirect-goal g: g-current-group-destination-y-goal-id g-current-group-destination-y)
+                )
+
+                (defrule
+                (up-compare-goal g-duc-micro-start-rule-id > 0)
+                (up-compare-goal g-duc-micro-end-rule-id > 0)
+                (goal g-temp 9)
+                (up-group-size g: g-current-group > 0)
+                =>
+                (up-get-group-size g: g-current-group g-temp)
+                (up-log-data 0 CHAT-GROUP-SIZE g: g-temp)
+                (up-log-data 0 CHAT-GROUP-SIZE-DUC g: g-local-total)
+                (up-log-data 0 CHAT-FLAG g: g-current-group-flag)
+                (up-log-data 0 CHAT-TYPE-FLAG g: g-current-group-type-flag)
+                (up-log-data 0 CHAT-ACTION g: g-current-group-action)
+                (up-log-data 0 CHAT-TARGET-OBJECT g: g-current-group-target-object-id)
+                (up-log-data 0 CHAT-DESTINATION-TIME g: g-current-group-destination-time)
+                (up-log-data 0 CHAT-AVOIDANCE-COUNTER g: g-current-group-avoidance-counter)
+                (up-log-data 0 CHAT-LOCATION-X g: g-current-group-location-x)
+                (up-log-data 0 CHAT-LOCATION-Y g: g-current-group-location-y)
+                (up-log-data 0 CHAT-DESTINATION-X g: g-current-group-destination-x)
+                (up-log-data 0 CHAT-DESTINATION-Y g: g-current-group-destination-y)
                 (up-jump-direct g: g-duc-micro-end-rule-id)
                 )
 
@@ -1319,7 +1670,7 @@
                 =>
                 (up-modify-goal g-current-group c:+ 1)
                 (set-goal g-temp PENDING)
-                (up-jump-rule -4)
+                (up-jump-rule -6)
                 )
 
 ;-----------------------------
@@ -2251,9 +2602,7 @@
     ;Split group if scouting and larger than 5, reduce scouting group to 4 units
     (defrule
     (up-group-size g: g-current-group > 5)
-    (or
-        (up-compare-flag g-current-group-flag == SCOUT-CLOCKWISE)
-        (up-compare-flag g-current-group-flag == SCOUT-COUNTER-CLOCKWISE))
+    (up-compare-flag g-current-group-flag == SCOUT-MODE)
     =>
     (up-set-group search-local g: g-current-group)
     (up-remove-objects search-local object-data-index >= 4)
@@ -3267,8 +3616,7 @@
     (defrule
     (up-group-size g: g-current-group > 0)
     (up-compare-flag g-current-group-flag != ALLOW-COMBINED-GROUPS)
-    (up-compare-flag g-current-group-flag != SCOUT-CLOCKWISE)
-    (up-compare-flag g-current-group-flag != SCOUT-COUNTER-CLOCKWISE)
+    (up-compare-flag g-current-group-flag != SCOUT-MODE)
     =>
     (up-modify-flag g-current-group-flag c:+ ALLOW-COMBINED-GROUPS)
     )
@@ -3382,13 +3730,13 @@
         ; (up-chat-data-to-self CHAT-SET-MAIN-GROUP g: g-current-group)
         )
 
-    ;SCOUT-CLOCKWISE, and SCOUT-COUNTER-CLOCKWISE
+    ;SCOUT-MODE
     (defrule
     (up-group-size g: g-current-group > 0)
     (up-compare-flag g-current-group-type-flag != MELEE-SOLDIER-GROUP) 
     (up-compare-flag g-current-group-type-flag != RANGED-SOLDIER-GROUP)
     =>
-    (up-jump-rule 14)
+    (up-jump-rule 13)
     )
 
         ;Check for explored target player buildings and nearby enemy units
@@ -3426,7 +3774,7 @@
             (up-filter-distance c: -1 c: 12)
             (up-filter-include cmdid-military -1 -1 -1)
             (up-filter-exclude -1 actionid-explore orderid-explore -1)
-            (up-find-remote c: all-units-class c: 40)
+            (up-find-remote c: any-objects c: 40)
             (up-get-search-state g-local-total)
             (up-modify-goal g-temp2 g:= g-remote-total)
             )
@@ -3443,31 +3791,16 @@
         ;Only allow one group to scout, and don't allow a new group to scout if we already have six groups
         (defrule
         (or
-            (up-compare-flag g-group1-flag == SCOUT-CLOCKWISE)
+            (up-compare-flag g-group1-flag == SCOUT-MODE)
             (or
-                (up-compare-flag g-group2-flag == SCOUT-CLOCKWISE)
+                (up-compare-flag g-group2-flag == SCOUT-MODE)
                 (or
-                    (up-compare-flag g-group3-flag == SCOUT-CLOCKWISE)
+                    (up-compare-flag g-group3-flag == SCOUT-MODE)
                     (or
-                        (up-compare-flag g-group4-flag == SCOUT-CLOCKWISE)
+                        (up-compare-flag g-group4-flag == SCOUT-MODE)
                         (or
-                            (up-compare-flag g-group5-flag == SCOUT-CLOCKWISE)
-                            (up-compare-flag g-group6-flag == SCOUT-CLOCKWISE))))))
-        =>
-        (up-jump-rule 3)
-        )
-        (defrule
-        (or
-            (up-compare-flag g-group1-flag == SCOUT-COUNTER-CLOCKWISE)
-            (or
-                (up-compare-flag g-group2-flag == SCOUT-COUNTER-CLOCKWISE)
-                (or
-                    (up-compare-flag g-group3-flag == SCOUT-COUNTER-CLOCKWISE)
-                    (or
-                        (up-compare-flag g-group4-flag == SCOUT-COUNTER-CLOCKWISE)
-                        (or
-                            (up-compare-flag g-group5-flag == SCOUT-COUNTER-CLOCKWISE)
-                            (up-compare-flag g-group6-flag == SCOUT-COUNTER-CLOCKWISE))))))
+                            (up-compare-flag g-group5-flag == SCOUT-MODE)
+                            (up-compare-flag g-group6-flag == SCOUT-MODE))))))
         =>
         (up-jump-rule 2)
         )
@@ -3491,8 +3824,7 @@
             (defrule
             (false)
             (up-group-size g: g-current-group > 0)
-            (up-compare-flag g-current-group-flag != SCOUT-CLOCKWISE)
-            (up-compare-flag g-current-group-flag != SCOUT-COUNTER-CLOCKWISE)
+            (up-compare-flag g-current-group-flag != SCOUT-MODE)
             ; (or
             ;     (up-compare-goal g-temp < 10)   ;target enemy buildings found
                 (up-compare-goal g-current-group-avoidance-counter >= 5);)
@@ -3503,32 +3835,28 @@
                     (up-compare-goal g-temp2 < 3))) ;nearby enemy military units
             (players-population target-player >= 30)
             =>
-            (up-modify-flag g-current-group-flag c:- SCOUT-CLOCKWISE)
-            (up-modify-flag g-current-group-flag c:+ SCOUT-COUNTER-CLOCKWISE)
+            (up-modify-flag g-current-group-flag c:+ SCOUT-MODE)
             (up-set-indirect-goal g: g-current-group-flag-goal-id g: g-current-group-flag)
             (up-get-fact game-time 0 g-temp5)
             (up-get-fact player-number 0 g-temp6)
             (up-log-data 0 CHAT-LOG-ENTRY c: 0)
             (up-log-data 0 CHAT-LOG-TIME g: g-temp5)
             (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
-            (up-log-data 0 CHAT-GROUP-SCOUT-COUNTER-CLOCKWISE g: g-current-group)
-            ; (up-chat-data-to-self CHAT-GROUP-SCOUT-COUNTER-CLOCKWISE g: g-current-group)
+            (up-log-data 0 CHAT-GROUP-SCOUT g: g-current-group)
+            ; (up-chat-data-to-self CHAT-GROUP-SCOUT g: g-current-group)
             )
 
         ;Stop scouting if we've recently avoided ranged buildings < 3 times or the target player has < 20 pop
         (defrule
         (up-group-size g: g-current-group > 0)
-        (or
-            (up-compare-flag g-current-group-flag == SCOUT-CLOCKWISE)
-            (up-compare-flag g-current-group-flag == SCOUT-COUNTER-CLOCKWISE))
+        (up-compare-flag g-current-group-flag == SCOUT-MODE)
         (or
             ; (and
                 ; (up-compare-goal g-temp >= 10)   ;target enemy buildings found
                 (up-compare-goal g-current-group-avoidance-counter < 3);)
             (players-population target-player < 20))
         =>
-        (up-modify-flag g-current-group-flag c:- SCOUT-CLOCKWISE)
-        (up-modify-flag g-current-group-flag c:- SCOUT-COUNTER-CLOCKWISE)
+        (up-modify-flag g-current-group-flag c:- SCOUT-MODE)
         (up-set-indirect-goal g: g-current-group-flag-goal-id g: g-current-group-flag)
         (up-get-fact game-time 0 g-temp5)
         (up-get-fact player-number 0 g-temp6)
@@ -3541,15 +3869,12 @@
         ;Stop scouting if there are >= 3 nearby enemy military units and the group isn't mounted
         (defrule
         (up-group-size g: g-current-group > 0)
-        (or
-            (up-compare-flag g-current-group-flag == SCOUT-CLOCKWISE)
-            (up-compare-flag g-current-group-flag == SCOUT-COUNTER-CLOCKWISE))
+        (up-compare-flag g-current-group-flag == SCOUT-MODE)
         (up-compare-flag g-current-group-type-flag != CAVALRY-ARCHER-GROUP)
         (up-compare-flag g-current-group-type-flag != CAVALRY-GROUP)
         (up-compare-goal g-temp2 >= 3) ;nearby enemy military units
         =>
-        (up-modify-flag g-current-group-flag c:- SCOUT-CLOCKWISE)
-        (up-modify-flag g-current-group-flag c:- SCOUT-COUNTER-CLOCKWISE)
+        (up-modify-flag g-current-group-flag c:- SCOUT-MODE)
         (up-set-indirect-goal g: g-current-group-flag-goal-id g: g-current-group-flag)
         (up-get-fact game-time 0 g-temp5)
         (up-get-fact player-number 0 g-temp6)
@@ -3561,14 +3886,11 @@
         )
         ; (defrule
         ; (up-group-size g: g-current-group > 0)
-        ; (or
-        ;     (up-compare-flag g-current-group-flag == SCOUT-CLOCKWISE)
-        ;     (up-compare-flag g-current-group-flag == SCOUT-COUNTER-CLOCKWISE))
+        ; (up-compare-flag g-current-group-flag == SCOUT-MODE)
         ; ; (up-compare-goal g-temp >= 10)   ;target enemy buildings found
         ; (up-compare-goal g-current-group-avoidance-counter < 3)
         ; =>
-        ; (up-modify-flag g-current-group-flag c:- SCOUT-CLOCKWISE)
-        ; (up-modify-flag g-current-group-flag c:- SCOUT-COUNTER-CLOCKWISE)
+        ; (up-modify-flag g-current-group-flag c:- SCOUT-MODE)
         ; (up-set-indirect-goal g: g-current-group-flag-goal-id g: g-current-group-flag)
         ; (up-get-fact game-time 0 g-temp5)
         ; (up-get-fact player-number 0 g-temp6)
@@ -3583,7 +3905,8 @@
         (defrule
         (timer-triggered t-10-sec)
         (up-group-size g: g-current-group > 0)
-        (up-compare-flag g-current-group-flag == SCOUT-CLOCKWISE)
+        (up-compare-flag g-current-group-flag == SCOUT-MODE)
+        (up-compare-flag g-current-group-flag == CLOCKWISE)
         (up-compare-goal g-current-group-destination-x >= 0)
         (up-compare-goal g-current-group-destination-y >= 0)
         (up-point-distance g-current-group-location-x g-current-group-destination-x < 6)
@@ -3591,8 +3914,7 @@
             (up-compare-goal g-current-group-destination-x <= 4)
             (up-compare-goal g-current-group-destination-y <= 4))
         =>
-        (up-modify-flag g-current-group-flag c:- SCOUT-CLOCKWISE)
-        (up-modify-flag g-current-group-flag c:+ SCOUT-COUNTER-CLOCKWISE)
+        (up-modify-flag g-current-group-flag c:- CLOCKWISE)
         (up-set-indirect-goal g: g-current-group-flag-goal-id g: g-current-group-flag)
         (up-get-fact game-time 0 g-temp5)
         (up-get-fact player-number 0 g-temp6)
@@ -3606,7 +3928,8 @@
         (defrule
         (timer-triggered t-10-sec)
         (up-group-size g: g-current-group > 0)
-        (up-compare-flag g-current-group-flag == SCOUT-CLOCKWISE)
+        (up-compare-flag g-current-group-flag == SCOUT-MODE)
+        (up-compare-flag g-current-group-flag == CLOCKWISE)
         (up-modify-goal g-temp c:= HUNDRED-PERCENT-MAP-SIZE)
         (up-modify-goal g-temp c:- 4)
         (up-compare-goal g-current-group-destination-x >= 0)
@@ -3616,8 +3939,7 @@
             (up-compare-goal g-current-group-destination-x g:>= g-temp)
             (up-compare-goal g-current-group-destination-y g:>= g-temp))
         =>
-        (up-modify-flag g-current-group-flag c:- SCOUT-CLOCKWISE)
-        (up-modify-flag g-current-group-flag c:+ SCOUT-COUNTER-CLOCKWISE)
+        (up-modify-flag g-current-group-flag c:- CLOCKWISE)
         (up-set-indirect-goal g: g-current-group-flag-goal-id g: g-current-group-flag)
         (up-get-fact game-time 0 g-temp5)
         (up-get-fact player-number 0 g-temp6)
@@ -3631,7 +3953,8 @@
         (defrule
         (timer-triggered t-10-sec)
         (up-group-size g: g-current-group > 0)
-        (up-compare-flag g-current-group-flag == SCOUT-COUNTER-CLOCKWISE)
+        (up-compare-flag g-current-group-flag == SCOUT-MODE)
+        (up-compare-flag g-current-group-flag != CLOCKWISE)
         (up-compare-goal g-current-group-destination-x >= 0)
         (up-compare-goal g-current-group-destination-y >= 0)
         (up-point-distance g-current-group-location-x g-current-group-destination-x < 6)
@@ -3639,8 +3962,7 @@
             (up-compare-goal g-current-group-destination-x <= 4)
             (up-compare-goal g-current-group-destination-y <= 4))
         =>
-        (up-modify-flag g-current-group-flag c:+ SCOUT-CLOCKWISE)
-        (up-modify-flag g-current-group-flag c:- SCOUT-COUNTER-CLOCKWISE)
+        (up-modify-flag g-current-group-flag c:+ CLOCKWISE)
         (up-set-indirect-goal g: g-current-group-flag-goal-id g: g-current-group-flag)
         (up-get-fact game-time 0 g-temp5)
         (up-get-fact player-number 0 g-temp6)
@@ -3654,7 +3976,8 @@
         (defrule
         (timer-triggered t-10-sec)
         (up-group-size g: g-current-group > 0)
-        (up-compare-flag g-current-group-flag == SCOUT-COUNTER-CLOCKWISE)
+        (up-compare-flag g-current-group-flag == SCOUT-MODE)
+        (up-compare-flag g-current-group-flag != CLOCKWISE)
         (up-modify-goal g-temp c:= HUNDRED-PERCENT-MAP-SIZE)
         (up-modify-goal g-temp c:- 4)
         (up-compare-goal g-current-group-destination-x >= 0)
@@ -3664,8 +3987,7 @@
             (up-compare-goal g-current-group-destination-x g:>= g-temp)
             (up-compare-goal g-current-group-destination-y g:>= g-temp))
         =>
-        (up-modify-flag g-current-group-flag c:+ SCOUT-CLOCKWISE)
-        (up-modify-flag g-current-group-flag c:- SCOUT-COUNTER-CLOCKWISE)
+        (up-modify-flag g-current-group-flag c:+ CLOCKWISE)
         (up-set-indirect-goal g: g-current-group-flag-goal-id g: g-current-group-flag)
         (up-get-fact game-time 0 g-temp5)
         (up-get-fact player-number 0 g-temp6)
@@ -3681,12 +4003,9 @@
     (up-group-size g: g-current-group > 0)
     (up-compare-flag g-current-group-type-flag != MELEE-SOLDIER-GROUP)
     (up-compare-flag g-current-group-type-flag != RANGED-SOLDIER-GROUP)
-    (or
-        (up-compare-flag g-current-group-flag == SCOUT-CLOCKWISE)
-        (up-compare-flag g-current-group-flag == SCOUT-COUNTER-CLOCKWISE))
+    (up-compare-flag g-current-group-flag == SCOUT-MODE)
     =>
-    (up-modify-flag g-current-group-flag c:- SCOUT-CLOCKWISE)
-    (up-modify-flag g-current-group-flag c:- SCOUT-COUNTER-CLOCKWISE)
+    (up-modify-flag g-current-group-flag c:- SCOUT-MODE)
     (up-set-indirect-goal g: g-current-group-flag-goal-id g: g-current-group-flag)
     (up-get-fact game-time 0 g-temp5)
     (up-get-fact player-number 0 g-temp6)
@@ -4433,8 +4752,7 @@
     (or
         (up-compare-flag g-current-group-type-flag == RANGED-SOLDIER-GROUP)
         (up-compare-flag g-current-group-type-flag == MONK-GROUP))
-    (up-compare-flag g-current-group-flag != SCOUT-CLOCKWISE)
-    (up-compare-flag g-current-group-flag != SCOUT-COUNTER-CLOCKWISE)
+    (up-compare-flag g-current-group-flag != SCOUT-MODE)
     =>
     (set-goal g-current-group-destination-time 0)
     (up-set-indirect-goal g: g-current-group-destination-time-goal-id c: 0)
@@ -4455,8 +4773,7 @@
     (or
         (up-compare-flag g-current-group-type-flag == MELEE-SOLDIER-GROUP)
         (up-compare-flag g-current-group-type-flag == RANGED-SIEGE-GROUP))
-    (up-compare-flag g-current-group-flag != SCOUT-CLOCKWISE)
-    (up-compare-flag g-current-group-flag != SCOUT-COUNTER-CLOCKWISE)
+    (up-compare-flag g-current-group-flag != SCOUT-MODE)
     =>
     (set-goal g-current-group-destination-time 0)
     (up-set-indirect-goal g: g-current-group-destination-time-goal-id c: 0)
@@ -4478,8 +4795,7 @@
         (or
             (up-compare-flag g-current-group-type-flag == MANGONEL-GROUP)
             (up-compare-flag g-current-group-type-flag == SCORPION-GROUP)))
-    (up-compare-flag g-current-group-flag != SCOUT-CLOCKWISE)
-    (up-compare-flag g-current-group-flag != SCOUT-COUNTER-CLOCKWISE)
+    (up-compare-flag g-current-group-flag != SCOUT-MODE)
     =>
     (set-goal g-current-group-destination-time 0)
     (up-set-indirect-goal g: g-current-group-destination-time-goal-id c: 0)
@@ -4498,8 +4814,7 @@
     (or
         (goal g-current-group-destination-x PENDING)
         (goal g-current-group-destination-y PENDING))
-    (up-compare-flag g-current-group-flag != SCOUT-CLOCKWISE)
-    (up-compare-flag g-current-group-flag != SCOUT-COUNTER-CLOCKWISE)
+    (up-compare-flag g-current-group-flag != SCOUT-MODE)
     =>
     (set-goal g-current-group-destination-time 0)
     (up-set-indirect-goal g: g-current-group-destination-time-goal-id c: 0)
@@ -4546,8 +4861,7 @@
     ; (up-compare-flag g-current-group-flag != ASSAULT-MODE)
     ; (goal g-current-group-action GROUP-RETREAT-FROM-OBJECT)
     ; (up-point-distance g-current-group-location-x g-current-group-destination-x <= 5)
-    ; (up-compare-flag g-current-group-flag != SCOUT-CLOCKWISE)
-    ; (up-compare-flag g-current-group-flag != SCOUT-COUNTER-CLOCKWISE)
+    ; (up-compare-flag g-current-group-flag != SCOUT-MODE)
     ; =>
     ; (set-goal g-current-group-destination-time 0)
     ; (up-set-indirect-goal g: g-current-group-destination-time-goal-id c: 0)
@@ -5419,9 +5733,7 @@
 
     (defrule
     (up-group-size g: g-current-group > 0)
-    (or
-        (up-compare-flag g-current-group-flag == SCOUT-CLOCKWISE)
-        (up-compare-flag g-current-group-flag == SCOUT-COUNTER-CLOCKWISE))
+    (up-compare-flag g-current-group-flag == SCOUT-MODE)
     (player-in-game target-player)
     (stance-toward target-player enemy)
     =>
@@ -5689,7 +6001,8 @@
     (players-building-count target-player > 0)
     (up-set-target-by-id g: g-current-group-destination-object-id)
     (up-compare-goal g-current-group-destination-x >= 0)
-    (up-compare-flag g-current-group-flag == SCOUT-COUNTER-CLOCKWISE)
+    (up-compare-flag g-current-group-flag == SCOUT-MODE)
+    (up-compare-flag g-current-group-flag != CLOCKWISE)
     (up-point-distance g-current-group-location-x g-current-group-destination-x <= 7)
     =>
     (up-get-point position-object g-point-x)
@@ -5697,6 +6010,17 @@
     (up-lerp-tiles g-point-x g-current-group-destination-x c: 25)
     (up-bound-precise-point g-point-x 0 c: 1)
     (up-copy-point g-current-group-destination-x g-point-x)
+    )
+    (defrule
+    (up-group-size g: g-current-group > 0)
+    (goal g-current-group-destination-split-goal 112)   ;exploring around town center
+    (players-building-count target-player > 0)
+    (up-set-target-by-id g: g-current-group-destination-object-id)
+    (up-compare-goal g-current-group-destination-x >= 0)
+    (up-compare-flag g-current-group-flag == SCOUT-MODE)
+    (up-compare-flag g-current-group-flag != CLOCKWISE)
+    (up-point-distance g-current-group-location-x g-current-group-destination-x <= 7)
+    =>
     (set-goal g-current-group-destination-time 0)
     (up-set-indirect-goal g: g-current-group-destination-x-goal-id g: g-current-group-destination-x)
     (up-set-indirect-goal g: g-current-group-destination-y-goal-id g: g-current-group-destination-y)
@@ -5719,7 +6043,8 @@
     (players-building-count target-player > 0)
     (up-set-target-by-id g: g-current-group-destination-object-id)
     (up-compare-goal g-current-group-destination-x >= 0)
-    (up-compare-flag g-current-group-flag == SCOUT-CLOCKWISE)
+    (up-compare-flag g-current-group-flag == SCOUT-MODE)
+    (up-compare-flag g-current-group-flag == CLOCKWISE)
     (up-point-distance g-current-group-location-x g-current-group-destination-x <= 7)
     =>
     (up-get-point position-object g-point-x)
@@ -5727,6 +6052,17 @@
     (up-lerp-tiles g-point-x g-current-group-destination-x c: 25)
     (up-bound-precise-point g-point-x 0 c: 1)
     (up-copy-point g-current-group-destination-x g-point-x)
+    )
+    (defrule
+    (up-group-size g: g-current-group > 0)
+    (goal g-current-group-destination-split-goal 112)   ;exploring around town center
+    (players-building-count target-player > 0)
+    (up-set-target-by-id g: g-current-group-destination-object-id)
+    (up-compare-goal g-current-group-destination-x >= 0)
+    (up-compare-flag g-current-group-flag == SCOUT-MODE)
+    (up-compare-flag g-current-group-flag == CLOCKWISE)
+    (up-point-distance g-current-group-location-x g-current-group-destination-x <= 7)
+    =>
     (set-goal g-current-group-destination-time 0)
     (up-set-indirect-goal g: g-current-group-destination-x-goal-id g: g-current-group-destination-x)
     (up-set-indirect-goal g: g-current-group-destination-y-goal-id g: g-current-group-destination-y)
@@ -5747,7 +6083,8 @@
     (players-building-count target-player > 0)
     (up-set-target-by-id g: g-current-group-destination-object-id)
     (up-compare-goal g-current-group-destination-x >= 0)
-    (up-compare-flag g-current-group-flag == SCOUT-COUNTER-CLOCKWISE)
+    (up-compare-flag g-current-group-flag == SCOUT-MODE)
+    (up-compare-flag g-current-group-flag != CLOCKWISE)
     (up-point-distance g-current-group-location-x g-current-group-destination-x <= 7)
     =>
     (up-get-point position-object g-point-x)
@@ -5755,6 +6092,17 @@
     (up-lerp-tiles g-point-x g-current-group-destination-x c: 15)
     (up-bound-precise-point g-point-x 0 c: 1)
     (up-copy-point g-current-group-destination-x g-point-x)
+    )
+    (defrule
+    (up-group-size g: g-current-group > 0)
+    (up-compare-goal g-current-group-destination-split-goal >= 113)   ;exploring around other building
+    (players-building-count target-player > 0)
+    (up-set-target-by-id g: g-current-group-destination-object-id)
+    (up-compare-goal g-current-group-destination-x >= 0)
+    (up-compare-flag g-current-group-flag == SCOUT-MODE)
+    (up-compare-flag g-current-group-flag != CLOCKWISE)
+    (up-point-distance g-current-group-location-x g-current-group-destination-x <= 7)
+    =>
     (set-goal g-current-group-destination-time 0)
     (up-set-indirect-goal g: g-current-group-destination-x-goal-id g: g-current-group-destination-x)
     (up-set-indirect-goal g: g-current-group-destination-y-goal-id g: g-current-group-destination-y)
@@ -5775,7 +6123,8 @@
     (players-building-count target-player > 0)
     (up-set-target-by-id g: g-current-group-destination-object-id)
     (up-compare-goal g-current-group-destination-x >= 0)
-    (up-compare-flag g-current-group-flag == SCOUT-CLOCKWISE)
+    (up-compare-flag g-current-group-flag == SCOUT-MODE)
+    (up-compare-flag g-current-group-flag == CLOCKWISE)
     (up-point-distance g-current-group-location-x g-current-group-destination-x <= 7)
     =>
     (up-get-point position-object g-point-x)
@@ -5783,6 +6132,17 @@
     (up-lerp-tiles g-point-x g-current-group-destination-x c: 15)
     (up-bound-precise-point g-point-x 0 c: 1)
     (up-copy-point g-current-group-destination-x g-point-x)
+    )
+    (defrule
+    (up-group-size g: g-current-group > 0)
+    (up-compare-goal g-current-group-destination-split-goal >= 113)   ;exploring around other building
+    (players-building-count target-player > 0)
+    (up-set-target-by-id g: g-current-group-destination-object-id)
+    (up-compare-goal g-current-group-destination-x >= 0)
+    (up-compare-flag g-current-group-flag == SCOUT-MODE)
+    (up-compare-flag g-current-group-flag == CLOCKWISE)
+    (up-point-distance g-current-group-location-x g-current-group-destination-x <= 7)
+    =>
     (set-goal g-current-group-destination-time 0)
     (up-set-indirect-goal g: g-current-group-destination-x-goal-id g: g-current-group-destination-x)
     (up-set-indirect-goal g: g-current-group-destination-y-goal-id g: g-current-group-destination-y)
@@ -6301,9 +6661,7 @@
     (up-group-size g: g-current-group > 0)
     (up-compare-goal g-current-group-action == GROUP-ATTACK)
     (up-compare-flag g-current-group-flag == DANGEROUS-OBJECT-NEARBY)
-    (or
-        (up-compare-flag g-current-group-flag == SCOUT-CLOCKWISE)
-        (up-compare-flag g-current-group-flag == SCOUT-COUNTER-CLOCKWISE))
+    (up-compare-flag g-current-group-flag == SCOUT-MODE)
     =>
     (set-goal g-current-group-action PENDING)
     (up-set-indirect-goal g: g-current-group-action-goal-id c: PENDING)
@@ -6713,9 +7071,7 @@
         ;Don't avoid dangerous objects if we are scouting
         (defrule
         (up-group-size g: g-current-group > 0)
-        (or
-            (up-compare-flag g-current-group-flag == SCOUT-CLOCKWISE)
-            (up-compare-flag g-current-group-flag == SCOUT-COUNTER-CLOCKWISE))
+        (up-compare-flag g-current-group-flag == SCOUT-MODE)
         =>
         (up-get-search-state g-local-total)
         (up-get-fact game-time 0 g-temp5)
@@ -6889,7 +7245,7 @@
         (up-reset-filters)
         (up-filter-distance c: -1 c: 12)
         (up-filter-include cmdid-military -1 -1 -1)
-        (up-find-local c: all-units-class c: 50)
+        (up-find-local c: any-objects c: 50)
         (up-get-search-state g-local-total)
         (up-log-data 0 CHAT-LOOP-ID c: 9)
         )
@@ -7657,7 +8013,7 @@
     (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
     (up-log-data 0 CHAT-NO-RETREAT-LOCATIONS-AVAILABLE g: g-current-group)
     (up-log-data 0 CHAT-AVOIDANCE-FLAG g: g-current-group-avoidance-location-flag)
-    (up-chat-data-to-all CHAT-NO-RETREAT-LOCATIONS-AVAILABLE g: g-current-group)
+    ; (up-chat-data-to-all CHAT-NO-RETREAT-LOCATIONS-AVAILABLE g: g-current-group)
     ; (up-chat-data-to-all CHAT-AVOIDANCE-FLAG g: g-current-group-avoidance-location-flag)
     )
 
@@ -8018,7 +8374,7 @@
                 (goal g-current-group-target-selection-status SEARCH-FOR-POTENTIAL-TARGETS)
                 (up-compare-goal g-local-total < 240)
                 =>
-                (up-find-remote c: all-units-class c: 40)
+                (up-find-remote c: any-objects c: 40)
                 (up-clean-search search-remote -1 search-order-asc)
                 (up-get-search-state g-local-total)
                 )
@@ -8285,9 +8641,7 @@
             (or
                 (up-compare-flag g-current-group-flag == DANGEROUS-OBJECT-NEARBY)
                 (up-compare-goal g-current-group-avoidance-counter >= 3))
-            (or
-                (up-compare-flag g-current-group-flag == SCOUT-CLOCKWISE)
-                (up-compare-flag g-current-group-flag == SCOUT-COUNTER-CLOCKWISE))
+            (up-compare-flag g-current-group-flag == SCOUT-MODE)
             =>
             (up-remove-objects search-local object-data-train-site != monastery)
             (up-get-search-state g-local-total)
@@ -8302,12 +8656,10 @@
             (goal g-current-group-target-selection-status SEARCH-FOR-POTENTIAL-TARGETS)
             (up-compare-goal g-local-total > 0)
             (or
-                (up-compare-flag g-current-group-flag == SCOUT-CLOCKWISE)
-                (or
-                    (up-compare-flag g-current-group-flag == SCOUT-COUNTER-CLOCKWISE)
-                    (and
-                        (up-point-distance g-current-group-location-x g-current-group-destination-x >= 6)
-                        (up-compare-flag g-current-group-flag == RAID-MODE))))
+                (up-compare-flag g-current-group-flag == SCOUT-MODE)
+                (and
+                    (up-point-distance g-current-group-location-x g-current-group-destination-x >= 6)
+                    (up-compare-flag g-current-group-flag == RAID-MODE)))
             =>
             (up-remove-objects search-local object-data-cmdid == cmdid-civilian-building)
             (up-remove-objects search-local object-data-cmdid == cmdid-military-building)
@@ -8507,7 +8859,7 @@
                 (up-reset-filters)
                 (set-strategic-number sn-focus-player-number my-player-number)
                 (up-filter-distance c: -1 c: 2)
-                (up-find-remote c: all-units-class c: 10)
+                (up-find-remote c: any-objects c: 10)
                 (up-remove-objects search-remote object-data-hitpoints >= 200)
                 (up-get-search-state g-local-total)
                 )
@@ -8690,7 +9042,7 @@
             (up-filter-distance c: -1 c: 12)
             (up-filter-include cmdid-military -1 -1 -1)
             (set-strategic-number sn-focus-player-number my-player-number)
-            (up-find-remote c: all-units-class c: 50)
+            (up-find-remote c: any-objects c: 50)
             (up-get-search-state g-local-total)
             (up-modify-goal g-temp g:= g-remote-total)
             (up-log-data 0 CHAT-OBJECTS-FOUND-CHECKPOINT c: 10)
@@ -8712,8 +9064,8 @@
             (up-reset-filters)
             (up-filter-distance c: -1 c: 8)
             (set-strategic-number sn-focus-player-number my-player-number)
-            (up-find-local c: battering-ram-line c: 5)
-            (up-find-local c: armored-elephant-line c: 5)
+            (up-find-remote c: battering-ram-line c: 5)
+            (up-find-remote c: armored-elephant-line c: 5)
             (up-get-search-state g-local-total)
             (up-modify-goal g-remote-total c:* 5)
             (up-modify-goal g-temp g:+ g-remote-total)
@@ -9316,8 +9668,7 @@
                     (goal g-current-group-target-selection-status FOUND-POTENTIAL-TARGETS)
                     (up-set-target-object search-remote g: g-loop-counter2)
                     (up-set-target-object search-local g: g-loop-counter)
-                    (up-compare-flag g-current-group-flag != SCOUT-CLOCKWISE)
-                    (up-compare-flag g-current-group-flag != SCOUT-COUNTER-CLOCKWISE)
+                    (up-compare-flag g-current-group-flag != SCOUT-MODE)
                     =>
                     (up-get-point position-object g-point-x)
                     (up-get-point-distance g-point-x g-current-group-location-x g-temp)
@@ -9335,9 +9686,7 @@
                     (goal g-current-group-target-selection-status FOUND-POTENTIAL-TARGETS)
                     (up-set-target-object search-remote g: g-loop-counter2)
                     (up-set-target-object search-local g: g-loop-counter)
-                    (or
-                        (up-compare-flag g-current-group-flag == SCOUT-CLOCKWISE)
-                        (up-compare-flag g-current-group-flag == SCOUT-COUNTER-CLOCKWISE))
+                    (up-compare-flag g-current-group-flag == SCOUT-MODE)
                     =>
                     (up-get-point position-object g-point-x)
                     (up-get-point-distance g-point-x g-current-group-location-x g-temp)
@@ -11415,8 +11764,8 @@
             (up-log-data 0 CHAT-LOG-ENTRY c: 0)
             (up-log-data 0 CHAT-LOG-TIME g: g-loop-counter)
             (up-log-data 0 CHAT-LOG-PLAYER g: g-loop-counter2)
-            (up-log-data 0 CHAT-ATTACK-TARGET-1 g: g-current-group)
-            ; (up-chat-data-to-all CHAT-ATTACK-TARGET-1 g: g-current-group)
+            (up-log-data 0 "Group %d attack target1" g: g-current-group)
+            ; (up-chat-data-to-all "Group %d attack target1" g: g-current-group)
             )
 
             ;Monks
@@ -11466,10 +11815,10 @@
             (up-log-data 0 CHAT-LOG-ENTRY c: 0)
             (up-log-data 0 CHAT-LOG-TIME g: g-loop-counter)
             (up-log-data 0 CHAT-LOG-PLAYER g: g-loop-counter2)
-            (up-log-data 0 CHAT-MONKS-ATTACK-TARGET-1 g: g-current-group)
-            (up-log-data 0 CHAT-ATTACK-WITH-X-MONKS g: g-current-group)
-            ; (up-chat-data-to-all CHAT-MONKS-ATTACK-TARGET-1 g: g-current-group)
-            ; (up-chat-data-to-all CHAT-ATTACK-WITH-X-MONKS g: g-local-total)
+            (up-log-data 0 "Monk group %d attack target1" g: g-current-group)
+            (up-log-data 0 "with %d monks" g: g-current-group)
+            ; (up-chat-data-to-all "Monk group %d attack target1" g: g-current-group)
+            ; (up-chat-data-to-all "with %d monks" g: g-local-total)
             )
 
             ;Trebuchets
@@ -11492,8 +11841,8 @@
             (up-log-data 0 CHAT-LOG-ENTRY c: 0)
             (up-log-data 0 CHAT-LOG-TIME g: g-loop-counter)
             (up-log-data 0 CHAT-LOG-PLAYER g: g-loop-counter2)
-            (up-log-data 0 CHAT-TREBUCHETS-ATTACK-TARGET-1 g: g-current-group)
-            ; (up-chat-data-to-all CHAT-TREBUCHETS-ATTACK-TARGET-1 g: g-current-group)
+            (up-log-data 0 "Trebuchet group %d attack target1" g: g-current-group)
+            ; (up-chat-data-to-all "Trebuchet group %d attack target1" g: g-current-group)
             )
         
         ;----------------------------
@@ -11540,7 +11889,7 @@
                 (up-compare-flag g-current-group-flag == FOCUS-MULTIPLE-TARGETS)
                 (strategic-number sn-focus-player-number <= MAX-PLAYERS)
                 =>
-                (up-find-remote c: all-units-class c: 10)
+                (up-find-remote c: any-objects c: 10)
                 (up-remove-objects search-remote object-data-id g:== g-current-group-target-object-id)
                 (up-get-search-state g-local-total)
                 )
@@ -11631,8 +11980,8 @@
             (up-log-data 0 CHAT-LOG-ENTRY c: 0)
             (up-log-data 0 CHAT-LOG-TIME g: g-temp5)
             (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
-            (up-log-data 0 CHAT-ATTACK-TARGET-2 g: g-current-group)
-            ; (up-chat-data-to-all CHAT-ATTACK-TARGET-2 g: g-current-group)
+            (up-log-data 0 "Group %d attack target2" g: g-current-group)
+            ; (up-chat-data-to-all "Group %d attack target2" g: g-current-group)
             )
 
             ;If we found multiple nearby objects, use aggressive action-patrol
@@ -11658,8 +12007,8 @@
             (up-log-data 0 CHAT-LOG-ENTRY c: 0)
             (up-log-data 0 CHAT-LOG-TIME g: g-temp5)
             (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
-            (up-log-data 0 CHAT-ATTACK-MULTIPLE-TARGETS-1 g: g-current-group)
-            ; (up-chat-data-to-all CHAT-ATTACK-MULTIPLE-TARGETS-1 g: g-current-group)
+            (up-log-data 0 "Group %d attack multiple targets1" g: g-current-group)
+            ; (up-chat-data-to-all "Group %d attack multiple targets1" g: g-current-group)
             )
 
             (defrule
@@ -11689,8 +12038,8 @@
                 (up-log-data 0 CHAT-LOG-ENTRY c: 0)
                 (up-log-data 0 CHAT-LOG-TIME g: g-temp5)
                 (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
-                (up-log-data 0 CHAT-ATTACK-MULTIPLE-TARGETS-2 g: g-current-group)
-                ; (up-chat-data-to-all CHAT-ATTACK-MULTIPLE-TARGETS-2 g: g-current-group)
+                (up-log-data 0 "Group %d attack multiple targets2" g: g-current-group)
+                ; (up-chat-data-to-all "Group %d attack multiple targets2" g: g-current-group)
                 )
 
     ;----------------------------------------------------
@@ -12730,8 +13079,7 @@
             (timer-triggered t-5-sec)
             (up-compare-goal g-local-total > 0)
             (up-group-size g: g-current-group > 0)
-            (up-compare-flag g-current-group-flag != SCOUT-CLOCKWISE)
-            (up-compare-flag g-current-group-flag != SCOUT-COUNTER-CLOCKWISE)
+            (up-compare-flag g-current-group-flag != SCOUT-MODE)
             (up-compare-flag g-current-group-type-flag == MELEE-INFANTRY-GROUP)
             =>
             (up-clean-search search-local -1 search-order-asc)
@@ -12815,8 +13163,7 @@
             (timer-triggered t-5-sec)
             (up-compare-goal g-local-total > 0)
             (up-group-size g: g-current-group > 0)
-            (up-compare-flag g-current-group-flag != SCOUT-CLOCKWISE)
-            (up-compare-flag g-current-group-flag != SCOUT-COUNTER-CLOCKWISE)
+            (up-compare-flag g-current-group-flag != SCOUT-MODE)
             (up-compare-flag g-current-group-type-flag == RANGED-INFANTRY-GROUP)
             =>
             (up-clean-search search-local -1 search-order-asc)
@@ -12898,8 +13245,7 @@
             (timer-triggered t-5-sec)
             (up-compare-goal g-local-total > 0)
             (up-group-size g: g-current-group > 0)
-            (up-compare-flag g-current-group-flag != SCOUT-CLOCKWISE)
-            (up-compare-flag g-current-group-flag != SCOUT-COUNTER-CLOCKWISE)
+            (up-compare-flag g-current-group-flag != SCOUT-MODE)
             (up-compare-flag g-current-group-type-flag == FOOT-ARCHER-GROUP)
             =>
             (up-clean-search search-local -1 search-order-asc)
@@ -12984,8 +13330,7 @@
             (timer-triggered t-5-sec)
             (up-compare-goal g-local-total > 0)
             (up-group-size g: g-current-group > 0)
-            (up-compare-flag g-current-group-flag != SCOUT-CLOCKWISE)
-            (up-compare-flag g-current-group-flag != SCOUT-COUNTER-CLOCKWISE)
+            (up-compare-flag g-current-group-flag != SCOUT-MODE)
             (up-compare-flag g-current-group-type-flag == CAVALRY-ARCHER-GROUP)
             =>
             (up-clean-search search-local -1 search-order-asc)
@@ -13069,8 +13414,7 @@
             (timer-triggered t-5-sec)
             (up-compare-goal g-local-total > 0)
             (up-group-size g: g-current-group > 0)
-            (up-compare-flag g-current-group-flag != SCOUT-CLOCKWISE)
-            (up-compare-flag g-current-group-flag != SCOUT-COUNTER-CLOCKWISE)
+            (up-compare-flag g-current-group-flag != SCOUT-MODE)
             (up-compare-flag g-current-group-type-flag == CAVALRY-GROUP)
             =>
             (up-clean-search search-local -1 search-order-asc)

@@ -20,7 +20,7 @@
 	(current-age-time >= 480)
 	=>
 	(set-goal g-attack-status BEFORE-LATER-CASTLE-ATTACKS)
-	(set-goal g-first-attack-launched YES)
+	(up-modify-flag g-flag c:+ FIRST-ATTACK-LAUNCHED)
 	)
 
 	(defrule
@@ -30,7 +30,7 @@
 	(goal g-attack-status BEFORE-CASTLE-ATTACKS)
 	=>
 	(set-goal g-attack-status BEFORE-LATER-CASTLE-ATTACKS)
-	(set-goal g-first-attack-launched YES)
+	(up-modify-flag g-flag c:+ FIRST-ATTACK-LAUNCHED)
 	)
 
 	(defrule
@@ -40,6 +40,42 @@
 	=>
 	(set-goal g-attack-status BEFORE-IMPERIAL-ATTACKS)
 	)
+
+;=========================<>=========================
+;		  CALCULATE MILITARY AND POP PARITY
+;=========================<>=========================
+
+	;---------------------------------------
+	;	GOAL: g-top-enemy-military-parity
+	;---------------------------------------
+
+		(load "The General 1.2/Functions/Reset Mini")
+
+		;The difference between our military pop and the highest military pop of any enemy, > 0 means we have superiority
+
+		(defrule
+		(player-in-game any-enemy)
+		=>
+		(up-get-fact military-population 0 g-top-enemy-military-parity)
+		(up-get-fact-max any-enemy military-population 0 g-temp)
+		(up-modify-goal g-top-enemy-military-parity g:- g-temp)	;subtract the military population of top enemy from our military population
+		)
+
+	;----------------------------------
+	;	GOAL: g-top-enemy-pop-parity
+	;----------------------------------
+
+		(load "The General 1.2/Functions/Reset Mini")
+
+		;The difference between our total pop and the highest total pop of any enemy, > 0 means we have superiority
+
+		(defrule
+		(player-in-game any-enemy)
+		=>
+		(up-get-fact population 0 g-top-enemy-pop-parity)
+		(up-get-fact-max any-enemy population 0 g-temp)
+		(up-modify-goal g-top-enemy-pop-parity g:- g-temp)	;subtract the total population of top enemy from our total population
+		)
 
 ;=========================<>=========================
 ;		   REQUIRED AND STOP ATTACK NUMBERS
@@ -299,7 +335,9 @@
 			(defrule
 			(current-age >= castle-age)
 			(up-compare-goal g-attack-status > FIRST-CASTLE-ATTACK)
-			(goal g-top-enemy-age-parity WE-ARE-BEHIND)
+			(up-get-fact current-age 0 g-temp)						;store our current age
+			(up-get-fact-max any-enemy current-age 0 g-temp2)		;store current age of most advanced enemy
+			(up-compare-goal g-temp g:< g-temp2)
 			=>
 			(up-modify-goal g-required-attack-num c:+ 5)
 			; (up-chat-data-to-all "Required3 %d" g: g-required-attack-num)
@@ -567,7 +605,7 @@
 	(goal g-attack-coordination STOP-ATTACKING)
 	=>
 	(up-modify-goal g-attack-status c:+ 1)	;move back to previous attack status
-	(up-modify-sn sn-maximum-town-size s:= custom-sn-peaceful-town-size)
+	(up-modify-sn sn-maximum-town-size s:= csn-peaceful-town-size)
 	(up-update-targets)
 	(set-strategic-number sn-number-civilian-militia 4)
 	(set-goal g-attack-coordination RETREAT)
@@ -578,7 +616,7 @@
 		(goal g-attack-coordination STOP-ATTACKING)
 		=>
 		(up-modify-goal g-attack-status c:- 1)	;move back to previous attack status
-		(up-modify-sn sn-maximum-town-size s:= custom-sn-peaceful-town-size)
+		(up-modify-sn sn-maximum-town-size s:= csn-peaceful-town-size)
 		(up-update-targets)
 		(set-strategic-number sn-number-civilian-militia 4)
 		(set-goal g-attack-coordination RETREAT)
@@ -1020,7 +1058,7 @@
 		(up-filter-distance c: -1 c: 10)
 		(up-filter-include cmdid-military -1 -1 -1)
 		(up-filter-exclude -1 actionid-explore orderid-explore -1)
-		(up-find-local c: all-units-class c: 240)
+		(up-find-local c: any-objects c: 240)
 		(up-remove-objects search-local object-data-attack-stance == stance-stand-ground)
 		(up-remove-objects search-local object-data-range > 0)
 		(up-remove-objects search-local object-data-target-id g:!= g-temp2)	;remove soldiers targeting tower with walls around it
@@ -1057,7 +1095,7 @@
 		(up-filter-distance c: 10 c: -1)
 		(up-filter-include cmdid-military -1 -1 -1)
 		(up-filter-exclude -1 actionid-explore orderid-explore -1)
-		(up-find-local c: all-units-class c: 240)
+		(up-find-local c: any-objects c: 240)
 		(up-remove-objects search-local object-data-attack-stance == stance-stand-ground)
 		(up-remove-objects search-local object-data-range > 0)
 		(up-remove-objects search-local object-data-target-id g:!= g-temp2)	;remove soldiers targeting tower with walls around it
@@ -1089,7 +1127,7 @@
 		(up-full-reset-search)
 		(up-filter-include cmdid-military -1 -1 -1)
 		(up-filter-exclude -1 actionid-explore orderid-explore -1)
-		(up-find-local c: all-units-class c: 240)
+		(up-find-local c: any-objects c: 240)
 		(up-remove-objects search-local object-data-attack-stance != stance-stand-ground)
 		(up-remove-objects search-local object-data-target == wall-class)
 		(up-get-search-state g-local-total)
@@ -1114,7 +1152,7 @@
 		(up-full-reset-search)
 		(up-filter-include cmdid-military -1 -1 -1)
 		(up-filter-exclude -1 actionid-explore orderid-explore -1)
-		(up-find-local c: all-units-class c: 240)
+		(up-find-local c: any-objects c: 240)
 		(up-remove-objects search-local object-data-attack-stance != stance-stand-ground)
 		(up-remove-objects search-local object-data-action == actionid-attack)
 		(up-get-search-state g-local-total)

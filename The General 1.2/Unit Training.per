@@ -41,14 +41,14 @@
 	;---------------
 
 		(defrule
-		(goal g-allow-queued-villagers YES)
+		(up-compare-flag g-flag == ALLOW-QUEUED-VILLAGERS)
 		(strategic-number sn-enable-training-queue != 1)
 		=>
 		(set-strategic-number sn-enable-training-queue 1)
 		)
 
 		(defrule
-		(goal g-allow-queued-villagers NO)
+		(up-compare-flag g-flag != ALLOW-QUEUED-VILLAGERS)
 		(strategic-number sn-enable-training-queue != 0)
 		=>
 		(set-strategic-number sn-enable-training-queue 0)
@@ -228,6 +228,19 @@
 			(up-train g-escrow c: bombard-cannon-line)
 			)
 
+			(defrule
+			(or
+				(and
+					(goal g-town-under-attack NO)
+					(military-population g:>= g-min-military-pop))
+				(players-unit-type-count any-enemy unpacked-trebuchet-class >= 2))
+			; (up-object-type-count-total c: trebuchet-set g:< g-desired-num-trebuchet)	;bugged in DE
+			(up-object-type-count c: trebuchet-set g:< g-desired-num-trebuchet)
+			(can-train-with-escrow trebuchet)
+			=>
+			(up-train g-escrow c: trebuchet)
+			)
+
 		#else
 
 			(defrule
@@ -239,19 +252,19 @@
 			(up-train g-escrow c: bombard-cannon)
 			)
 
-		#end-if
+			(defrule
+			(or
+				(and
+					(goal g-town-under-attack NO)
+					(military-population g:>= g-min-military-pop))
+				(players-unit-type-count any-enemy unpacked-trebuchet-class >= 2))
+			(up-object-type-count-total c: trebuchet-set g:< g-desired-num-trebuchet)
+			(can-train-with-escrow trebuchet)
+			=>
+			(up-train g-escrow c: trebuchet)
+			)
 
-		(defrule
-		(or
-			(and
-				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
-			(players-unit-type-count any-enemy unpacked-trebuchet-class >= 2))
-		(up-object-type-count-total c: trebuchet-set g:< g-desired-num-trebuchet)
-		(can-train-with-escrow trebuchet)
-		=>
-		(up-train g-escrow c: trebuchet)
-		)
+		#end-if
 
 		(defrule
 		(up-compare-goal g-siege-workshop-next-unit != 0)
@@ -262,7 +275,7 @@
 		(or
 			(players-unit-type-count any-enemy unpacked-trebuchet-class >= 2)
 			(goal g-attacking YES))
-		(up-object-type-count-total c: battering-ram-line g:< g-desired-num-battering-ram)
+		(up-object-type-count-total c: battering-ram-line g:< g-desired-num-ram-type)
 		(can-train-with-escrow battering-ram-line)
 		=>
 		(up-train g-escrow c: battering-ram-line)
@@ -276,7 +289,7 @@
 				(up-can-train g-escrow g: g-siege-workshop-next-unit)))
 		(up-compare-goal g-enemy-units-in-town < 15)
 		(military-population g:>= g-min-military-pop)
-		(up-object-type-count-total c: battering-ram-line g:< g-desired-num-battering-ram)
+		(up-object-type-count-total c: battering-ram-line g:< g-desired-num-ram-type)
 		(can-train-with-escrow battering-ram-line)
 		=>
 		(up-train g-escrow c: battering-ram-line)
@@ -353,41 +366,13 @@
 		(train transport-ship)
 		)
 
-		#load-if-defined KOREAN-CIV
-
-			(defrule
-			(goal g-dock-next-unit turtle-ship-line)
-			(up-object-type-count-total c: turtle-ship-line g:< g-desired-num-unique-ship)
-			(can-train turtle-ship-line)
-			=>
-			(train turtle-ship-line)
-			)
-
-		#end-if
-
-		#load-if-defined PORTUGUESE-CIV
-
-			(defrule
-			(goal g-dock-next-unit caravel)
-			(up-compare-goal g-unique-ship-line g:< g-desired-num-unique-ship)
-			(can-train caravel)
-			=>
-			(train caravel)
-			)
-
-		#end-if
-
-		#load-if-defined VIKING-CIV
-
-			(defrule
-			(goal g-dock-next-unit longboat-line)
-			(up-object-type-count-total c: longboat-line g:< g-desired-num-unique-ship)
-			(can-train longboat-line)
-			=>
-			(train longboat-line)
-			)
-
-		#end-if
+		(defrule
+		(goal g-dock-next-unit my-unique-ship-line)
+		(up-object-type-count-total c: my-unique-ship-line g:< g-desired-num-unique-ship)
+		(can-train my-unique-ship-line)
+		=>
+		(train my-unique-ship-line)
+		)
 
 	;------------------
 	;	Unique Units
@@ -588,6 +573,26 @@
 		(train steppe-lancer-line)
 		)
 
+		#load-if-defined GURJARAS-CIV
+
+			(defrule
+			(up-compare-goal g-desired-num-second-unique-unit > 0)
+			(unit-type-count-total shrivamsha-rider == 0)
+			(can-train-with-escrow shrivamsha-rider)
+			=>
+			(up-train g-escrow c: shrivamsha-rider)
+			)
+
+			(defrule
+			(goal g-stable-next-unit shrivamsha-rider)
+			(up-object-type-count-total c: shrivamsha-rider-line g:< g-desired-num-second-unique-unit)
+			(can-train shrivamsha-rider)
+			=>
+			(train shrivamsha-rider)
+			)
+
+		#end-if
+
 		(defrule
 		(up-compare-goal g-desired-num-scout-cavalry > 0)
 		(unit-type-count-total scout-cavalry-line == 0)
@@ -636,7 +641,7 @@
 		#load-if-defined SPANISH-CIV
 
 			(defrule
-			(up-compare-goal g-desired-num-missionary > 0)
+			(up-compare-goal g-desired-num-second-unique-unit > 0)
 			(unit-type-count-total missionary == 0)
 			(can-train-with-escrow missionary)
 			=>
@@ -644,7 +649,7 @@
 			)
 
 			(defrule
-			(up-object-type-count-total c: missionary g:< g-desired-num-missionary)
+			(up-object-type-count-total c: missionary g:< g-desired-num-second-unique-unit)
 			(can-train missionary)
 			=>
 			(train missionary)
@@ -655,6 +660,30 @@
 	;-------------
 	;	Archers
 	;-------------
+
+		#load-if-defined DE-AVAILABLE
+
+			(defrule
+			(up-compare-goal g-desired-num-elephant-archer > 0)
+			(unit-type-count-total elephant-archer-line == 0)
+			(can-train-with-escrow elephant-archer-line)
+			=>
+			(up-train g-escrow c: elephant-archer-line)
+			)
+
+			(defrule
+			(up-compare-goal g-archery-range-next-unit != 0)
+			(or
+				(goal g-archery-range-next-unit elephant-archer-line)
+				(not
+					(up-can-train 0 g: g-archery-range-next-unit)))
+			(up-object-type-count-total c: elephant-archer-line g:< g-desired-num-elephant-archer)
+			(can-train elephant-archer-line)
+			=>
+			(train elephant-archer-line)
+			)
+
+		#end-if
 
 		(defrule
 		(up-compare-goal g-desired-num-cavalry-archer > 0)
@@ -699,7 +728,7 @@
 		#load-if-defined INCAN-CIV
 
 			(defrule
-			(up-compare-goal g-desired-num-slinger > 0)
+			(up-compare-goal g-desired-num-second-unique-unit > 0)
 			(unit-type-count-total slinger == 0)
 			(can-train-with-escrow slinger)
 			=>
@@ -712,7 +741,7 @@
 				(goal g-archery-range-next-unit slinger)
 				(not
 					(up-can-train 0 g: g-archery-range-next-unit)))
-			(up-object-type-count-total c: slinger g:< g-desired-num-slinger)
+			(up-object-type-count-total c: slinger g:< g-desired-num-second-unique-unit)
 			(can-train slinger)
 			=>
 			(train slinger)

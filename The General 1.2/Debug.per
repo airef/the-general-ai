@@ -8,19 +8,6 @@
 	;	Taunt 234 - Defense Data
 	;------------------------------
 
-		(defrule
-		(taunt-detected TAUNT-PLAYER 234)
-		(goal g-town-under-attack NO)
-		=>
-		(chat-to-player THIS-ANY-TAUNT-PLAYER "Town is safe")
-		)
-
-		(defrule
-		(taunt-detected TAUNT-PLAYER 234)
-		(goal g-town-under-attack YES)
-		=>
-		(chat-to-player THIS-ANY-TAUNT-PLAYER "Town is under attack")
-		)
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 234)
@@ -35,28 +22,33 @@
 		=>
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Max TS: %d" s: sn-maximum-town-size)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Safe TS: %d" s: sn-safe-town-size)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Peaceful TS: %d" s: custom-sn-peaceful-town-size)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Peaceful TS: %d" s: csn-peaceful-town-size)
 		)
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 234)
 		=>
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Enemy bldgs in town: %d" g: g-enemy-buildings-in-town)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Enemy units in town: %d" g: g-enemy-units-in-town)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Under Attack?: %d" g: g-town-under-attack)
+		)
+
+		(defrule
+		(town-under-attack)
+		(taunt-detected TAUNT-PLAYER 234)
+		=>
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "ES Under Attack")
 		)
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 234)
-		(goal g-gather-inside NO)
 		=>
-		(chat-to-player THIS-ANY-TAUNT-PLAYER "NOT Garrisoning soldiers in buildings")
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Bldgs in town: %d" g: g-enemy-buildings-in-town)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Units in town: %d" g: g-enemy-units-in-town)
 		)
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 234)
-		(goal g-gather-inside YES)
 		=>
-		(chat-to-player THIS-ANY-TAUNT-PLAYER "Garrisoning soldiers in buildings")
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Garrisoning soldiers?: %d" g: g-gather-inside)
 		)
 
 		(defrule
@@ -233,7 +225,7 @@
 		(taunt-detected TAUNT-PLAYER 235)
 		(up-compare-goal g-desired-num-tower > 0)
 		=>
-		(up-store-type-name c: TOWER-TYPE)
+		(up-store-type-name c: my-tower-type)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-DESIRED-OBJECT c: 7031232)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-desired-num-tower)
 		)
@@ -249,15 +241,6 @@
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 235)
-		(up-compare-goal g-desired-num-krepost > 0)
-		=>
-		(up-store-type-name c: krepost)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-DESIRED-OBJECT c: 7031232)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-desired-num-krepost)
-		)
-
-		(defrule
-		(taunt-detected TAUNT-PLAYER 235)
 		(up-compare-goal g-desired-num-castle > 0)
 		=>
 		(up-store-type-name c: castle)
@@ -267,11 +250,11 @@
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 235)
-		(up-compare-goal g-desired-num-feitoria > 0)
+		(up-compare-goal g-desired-num-unique-building > 0)
 		=>
-		(up-store-type-name c: feitoria)
+		(up-store-type-name c: my-unique-building)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-DESIRED-OBJECT c: 7031232)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-desired-num-feitoria)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-desired-num-unique-building)
 		)
 
 		(defrule
@@ -383,22 +366,22 @@
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 237)
-		(up-compare-goal g-desired-num-slinger > 0)
-		=>
-		(up-get-object-type-data c: slinger object-data-upgrade-type g-temp)
-		(up-store-type-name g: g-temp)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-DESIRED-OBJECT c: 7031232)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-desired-num-slinger)
-		)
-
-		(defrule
-		(taunt-detected TAUNT-PLAYER 237)
 		(up-compare-goal g-desired-num-genitour > 0)
 		=>
 		(up-get-object-type-data c: genitour object-data-upgrade-type g-temp)
 		(up-store-type-name g: g-temp)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-DESIRED-OBJECT c: 7031232)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-desired-num-genitour)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 237)
+		(up-compare-goal g-desired-num-elephant-archer > 0)
+		=>
+		(up-get-object-type-data c: elephant-archer object-data-upgrade-type g-temp)
+		(up-store-type-name g: g-temp)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-DESIRED-OBJECT c: 7031232)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-desired-num-elephant-archer)
 		)
 
 		(defrule
@@ -463,12 +446,22 @@
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 237)
-		(up-compare-goal g-desired-num-battering-ram > 0)
+		(up-compare-goal g-desired-num-second-unique-unit > 0)
+		=>
+		(up-get-object-type-data c: my-second-unique-unit object-data-upgrade-type g-temp)
+		(up-store-type-name g: g-temp)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-DESIRED-OBJECT c: 7031232)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-desired-num-second-unique-unit)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 237)
+		(up-compare-goal g-desired-num-ram-type > 0)
 		=>
 		(up-get-object-type-data c: feudal-battering-ram object-data-upgrade-type g-temp)
 		(up-store-type-name g: g-temp)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-DESIRED-OBJECT c: 7031232)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-desired-num-battering-ram)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-desired-num-ram-type)
 		)
 
 		(defrule
@@ -523,16 +516,6 @@
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 237)
-		(up-compare-goal g-desired-num-missionary > 0)
-		=>
-		(up-get-object-type-data c: missionary object-data-upgrade-type g-temp)
-		(up-store-type-name g: g-temp)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-DESIRED-OBJECT c: 7031232)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-desired-num-missionary)
-		)
-
-		(defrule
-		(taunt-detected TAUNT-PLAYER 237)
 		(up-compare-goal g-desired-num-transport-ship > 0)
 		=>
 		(up-get-object-type-data c: transport-ship object-data-upgrade-type g-temp)
@@ -581,61 +564,15 @@
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-desired-num-cannon-galleon)
 		)
 
-		#load-if-defined DRAVIDIANS-CIV
-
-			(defrule
-			(taunt-detected TAUNT-PLAYER 237)
-			(up-compare-goal g-desired-num-unique-ship > 0)
-			=>
-			(up-get-object-type-data c: thirisadai object-data-upgrade-type g-temp)
-			(up-store-type-name g: g-temp)
-			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-DESIRED-OBJECT c: 7031232)
-			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-desired-num-unique-ship)
-			)
-
-		#end-if
-
-		#load-if-defined KOREAN-CIV
-
-			(defrule
-			(taunt-detected TAUNT-PLAYER 237)
-			(up-compare-goal g-desired-num-unique-ship > 0)
-			=>
-			(up-get-object-type-data c: turtle-ship object-data-upgrade-type g-temp)
-			(up-store-type-name g: g-temp)
-			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-DESIRED-OBJECT c: 7031232)
-			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-desired-num-unique-ship)
-			)
-
-		#end-if
-
-		#load-if-defined PORTUGUESE-CIV
-
-			(defrule
-			(taunt-detected TAUNT-PLAYER 237)
-			(up-compare-goal g-desired-num-unique-ship > 0)
-			=>
-			(up-get-object-type-data c: caravel object-data-upgrade-type g-temp)
-			(up-store-type-name g: g-temp)
-			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-DESIRED-OBJECT c: 7031232)
-			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-desired-num-unique-ship)
-			)
-
-		#end-if
-
-		#load-if-defined VIKING-CIV
-
-			(defrule
-			(taunt-detected TAUNT-PLAYER 237)
-			(up-compare-goal g-desired-num-unique-ship > 0)
-			=>
-			(up-get-object-type-data c: longboat object-data-upgrade-type g-temp)
-			(up-store-type-name g: g-temp)
-			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-DESIRED-OBJECT c: 7031232)
-			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-desired-num-unique-ship)
-			)
-
-		#end-if
+		(defrule
+		(taunt-detected TAUNT-PLAYER 237)
+		(up-compare-goal g-desired-num-unique-ship > 0)
+		=>
+		(up-get-object-type-data c: my-unique-ship object-data-upgrade-type g-temp)
+		(up-store-type-name g: g-temp)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-DESIRED-OBJECT c: 7031232)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-desired-num-unique-ship)
+		)
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 237)
@@ -647,289 +584,9 @@
 	;	Taunt 238 - Enemy Units and Strategies
 	;--------------------------------------------
 
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy PENDING)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Unknown")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy DRUSH)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Drush")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy FL-LATHER)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Man-at-arms Rush")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy EARLYI-CHAMPFLOOD)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Champions")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy FL-EYRIES)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Feudal Eagles Rush")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy FC-EAGLES-REVENGE)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: FC Eagles Rush")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy EARLYI-EL-DORADO)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Elite Eagle Warriors")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy FL-RANGER)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Archer Rush")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy FL-GUERILLA)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Archer/Skirm Rush")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy FC-STRONGBOW)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Xbows")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy EARLYI-ARBINGER)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Arbalests")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy FL-SKIRMMETA)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Skirm Rush")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy MIDC-CAV-ARCHERS)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Cav Archers")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy MIDI-CAV-ARCHERS)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Hvy Cav Archers")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy FI-SNIPER)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Hand Cannoneers")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy FL-VULTURE)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Scout Rush")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy FC-KRUSH)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Knight Rush")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy EARLYI-PALASTORM)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Paladins")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy FC-CRUSH)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Camel Rush")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy EARLYI-CAMELSTORM)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Heavy camels")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy MIDC-CIRCUS)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Battle Elephants")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy EARLYI-CIRCUS-STOMP)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Elite Battle Elephants")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy MIDC-UNIQUE)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Unique Units")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-enemy-strategy EARLYI-UNIQUE)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Strategy: Elite Unique Units")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-primary-enemy-threat PENDING)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Threat: None Found")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-primary-enemy-threat g-enemy-swordsmen-count)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Threat: Swordsmen")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-primary-enemy-threat g-enemy-spearmen-count)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Threat: Spearmen")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-primary-enemy-threat g-enemy-eagle-warrior-count)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Threat: Eagle Warriors")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-primary-enemy-threat g-enemy-condottiero-count)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Threat: Condottieri")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-primary-enemy-threat g-enemy-foot-archers-count)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Threat: Foot Archers")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-primary-enemy-threat g-enemy-skirmishers-count)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Threat: Skirmishers")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-primary-enemy-threat g-enemy-cavalry-archers-count)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Threat: Cavalry Archers")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-primary-enemy-threat g-enemy-hand-cannoneer-slinger-count)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Threat: Hand Cannoneers/Slingers")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-primary-enemy-threat g-enemy-light-cavalry-count)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Threat: Light Cavalry")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-primary-enemy-threat g-enemy-heavy-cavalry-count)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Threat: Heavy Cavalry")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-primary-enemy-threat g-enemy-camel-count)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Threat: Camels")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-primary-enemy-threat g-enemy-elephants-count)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Enemy Threat: Elephants")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-primary-enemy-threat g-enemy-field-siege-count)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Threat: Field Siege")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-primary-enemy-threat g-enemy-special-unique-unit-count)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Threat: Unique Units")
-		; )
-
-		; (defrule
-		; (taunt-detected TAUNT-PLAYER 238)
-		; (goal g-primary-enemy-threat g-enemy-monks-count)
-		; =>
-		; (chat-to-player THIS-ANY-TAUNT-PLAYER "Threat: Monks")
-		; )
-
 		(defrule
 		(taunt-detected TAUNT-PLAYER 238)
-		(up-compare-goal g-enemy-swordsmen-count > 0)
+		(up-compare-goal g-enemy-swordsmen-count != 0)
 		=>
 		(up-store-text c: 12401)	;"Infantry"
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
@@ -938,7 +595,7 @@
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 238)
-		(up-compare-goal g-enemy-spearmen-count > 0)
+		(up-compare-goal g-enemy-spearmen-count != 0)
 		=>
 		(up-store-text c: 12427)	;"Spearmen"
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
@@ -947,25 +604,16 @@
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 238)
-		(up-compare-goal g-enemy-eagle-warrior-count > 0)
+		(up-compare-goal g-enemy-eagle-warriors-count != 0)
 		=>
 		(up-store-text c: 12429)	;"Eagle Warriors"
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-enemy-eagle-warrior-count)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-enemy-eagle-warriors-count)
 		)
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 238)
-		(up-compare-goal g-enemy-condottiero-count > 0)
-		=>
-		(up-store-text c: 12432)	;"Condottieri"
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-enemy-condottiero-count)
-		)
-
-		(defrule
-		(taunt-detected TAUNT-PLAYER 238)
-		(up-compare-goal g-enemy-foot-archers-count > 0)
+		(up-compare-goal g-enemy-foot-archers-count != 0)
 		=>
 		(up-store-text c: 12415)	;"Archers"
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
@@ -974,7 +622,7 @@
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 238)
-		(up-compare-goal g-enemy-skirmishers-count > 0)
+		(up-compare-goal g-enemy-skirmishers-count != 0)
 		=>
 		(up-store-type-name c: skirmisher)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
@@ -983,7 +631,7 @@
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 238)
-		(up-compare-goal g-enemy-cavalry-archers-count > 0)
+		(up-compare-goal g-enemy-cavalry-archers-count != 0)
 		=>
 		(up-store-text c: 12428)	;"Cavalry Archers"
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
@@ -992,16 +640,16 @@
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 238)
-		(up-compare-goal g-enemy-hand-cannoneer-slinger-count > 0)
+		(up-compare-goal g-enemy-hand-cannoneers-count != 0)
 		=>
 		(up-store-type-name c: hand-cannoneer)	
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-enemy-hand-cannoneer-slinger-count)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-enemy-hand-cannoneers-count)
 		)
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 238)
-		(up-compare-goal g-enemy-light-cavalry-count > 0)
+		(up-compare-goal g-enemy-light-cavalry-count != 0)
 		=>
 		(up-store-type-name c: light-cavalry)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
@@ -1010,7 +658,7 @@
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 238)
-		(up-compare-goal g-enemy-heavy-cavalry-count > 0)
+		(up-compare-goal g-enemy-heavy-cavalry-count != 0)
 		=>
 		(up-store-type-name c: knight)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
@@ -1019,16 +667,16 @@
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 238)
-		(up-compare-goal g-enemy-camel-count > 0)
+		(up-compare-goal g-enemy-camels-count != 0)
 		=>
 		(up-store-text c: 12430)	;"Camels"
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-enemy-camel-count)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-enemy-camels-count)
 		)
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 238)
-		(up-compare-goal g-enemy-elephants-count > 0)
+		(up-compare-goal g-enemy-elephants-count != 0)
 		=>
 		(up-store-text c: 12405)	;"War Elephants"
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
@@ -1037,7 +685,7 @@
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 238)
-		(up-compare-goal g-enemy-field-siege-count > 0)
+		(up-compare-goal g-enemy-field-siege-count != 0)
 		=>
 		(up-store-text c: 12420)	;"Siege Weapons"
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
@@ -1046,16 +694,79 @@
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 238)
-		(up-compare-goal g-enemy-special-unique-unit-count > 0)
+		(up-compare-goal g-enemy-jaguar-warriors-count != 0)
 		=>
-		(up-store-text c: 12419)	;"Unique Units"
+		(up-store-type-name c: jaguar-warrior)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-enemy-special-unique-unit-count)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-enemy-jaguar-warriors-count)
 		)
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 238)
-		(up-compare-goal g-enemy-monks-count > 0)
+		(up-compare-goal g-enemy-huskarls-count != 0)
+		=>
+		(up-store-type-name c: huskarl)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-enemy-huskarls-count)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 238)
+		(up-compare-goal g-enemy-chakram-throwers-count != 0)
+		=>
+		(up-store-type-name c: chakram-thrower)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-enemy-chakram-throwers-count)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 238)
+		(up-compare-goal g-enemy-samurai-count != 0)
+		=>
+		(up-store-type-name c: samurai)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-enemy-samurai-count)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 238)
+		(up-compare-goal g-enemy-teutonic-knights-count != 0)
+		=>
+		(up-store-type-name c: teutonic-knight)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-enemy-teutonic-knights-count)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 238)
+		(up-compare-goal g-enemy-genoese-crossbowmen-count != 0)
+		=>
+		(up-store-type-name c: genoese-crossbowman)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-enemy-genoese-crossbowmen-count)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 238)
+		(up-compare-goal g-enemy-cataphracts-count != 0)
+		=>
+		(up-store-type-name c: cataphract)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-enemy-cataphracts-count)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 238)
+		(up-compare-goal g-enemy-mamelukes-count != 0)
+		=>
+		(up-store-type-name c: mameluke)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-AMOUNT g: g-enemy-mamelukes-count)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 238)
+		(up-compare-goal g-enemy-monks-count != 0)
 		=>
 		(up-store-text c: 12425)	;"Monks"
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-238-ENEMY-MILITARY-COUNTS c: 7031232)
@@ -1136,18 +847,14 @@
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Desired Food vils: %d" g: g-desired-num-food-vils)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Desired Gold vils: %d" g: g-desired-num-gold-vils)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Desired Stone vils: %d" g: g-desired-num-stone-vils)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Recent Gold: %d" g: g-recent-gold-gathered)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Desired Farms %d" g: g-desired-num-farm)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Usable Farms %d" g: g-usable-farm-count)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Food Gathering Pct: %d" s: sn-food-gatherer-percentage)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Wood Gathering Pct: %d" s: sn-wood-gatherer-percentage)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Gold Gathering Pct: %d" s: sn-gold-gatherer-percentage)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Stone Gathering Pct: %d" s: sn-stone-gatherer-percentage)
-		)
-
-		(defrule
-		(taunt-detected TAUNT-PLAYER 243)
-		=>
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-243 g: g-villager-training)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Vil Escrow State: %d" g: g-villager-training)
 		(acknowledge-taunt THIS-ANY-TAUNT-PLAYER 243)
 		)
 
@@ -1233,13 +940,8 @@
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Target player: %d" s: sn-target-player-number)
 		(up-send-flare g-target-enemy-x)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Focus player: %d" s: sn-focus-player-number)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Num players: %d" c: MAX-PLAYERS)
-		)
-
-		(defrule
-		(taunt-detected TAUNT-PLAYER 247)
-		=>
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-247 g: g-team-position)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Team Position: %d" g: g-position)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Team Partner: %d" g: g-team-partner)
 		(acknowledge-taunt THIS-ANY-TAUNT-PLAYER 247)
 		)
 
@@ -1275,34 +977,79 @@
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 250)
-		(goal g-strategy-type DRUSH)
+		(goal g-current-strategy DRUSH)
 		(up-compare-goal g-current-strategy != DOUCHE)
 		=>
-		(chat-to-player THIS-ANY-TAUNT-PLAYER "I will DRUSH the enemy.")
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "Strategy: Drush")
 		)
 		(defrule
 		(taunt-detected TAUNT-PLAYER 250)
 		(goal g-current-strategy DOUCHE)
+		(up-compare-goal g-attack-status < BEFORE-FEUDAL-ATTACKS)
 		=>
-		(chat-to-player THIS-ANY-TAUNT-PLAYER "I will DOUCHE the enemy.")
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "Strategy: Douche")
 		)
 		(defrule
 		(taunt-detected TAUNT-PLAYER 250)
 		(goal g-strategy-type FLUSH)
+		(up-compare-goal g-current-strategy <= FL-STRATS-END)
 		=>
-		(chat-to-player THIS-ANY-TAUNT-PLAYER "I will FLUSH the enemy.")
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "Strategy: Flush")
+		)
+		(defrule
+		(taunt-detected TAUNT-PLAYER 250)
+		(up-compare-goal g-current-strategy >= EARLYF-STRATS-START)
+		(up-compare-goal g-current-strategy <= MIDF-STRATS-END)
+		=>
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "Strategy: Feudal Aggression")
 		)
 		(defrule
 		(taunt-detected TAUNT-PLAYER 250)
 		(goal g-strategy-type FAST-CASTLE)
+		(up-compare-goal g-current-strategy <= FC-STRATS-END)
 		=>
-		(chat-to-player THIS-ANY-TAUNT-PLAYER "I will go FAST CASTLE.")
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "Strategy Type: Fast Castle")
+		)
+		(defrule
+		(taunt-detected TAUNT-PLAYER 250)
+		(up-compare-goal g-current-strategy >= EARLYC-STRATS-START)
+		(up-compare-goal g-current-strategy <= MIDC-STRATS-END)
+		=>
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "Strategy: Castle Age Warfare")
 		)
 		(defrule
 		(taunt-detected TAUNT-PLAYER 250)
 		(goal g-strategy-type FAST-IMPERIAL)
+		(up-compare-goal g-current-strategy <= FI-STRATS-END)
 		=>
-		(chat-to-player THIS-ANY-TAUNT-PLAYER "I will go FAST IMPERIAL.")
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "Strategy Type: Fast Imperial")
+		)
+		(defrule
+		(taunt-detected TAUNT-PLAYER 250)
+		(up-compare-goal g-current-strategy >= BOOMC-STRATS-START)
+		(up-compare-goal g-current-strategy <= BOOMI-STRATS-END)
+		=>
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "Strategy: Booming")
+		)
+		(defrule
+		(taunt-detected TAUNT-PLAYER 250)
+		(up-compare-goal g-current-strategy >= EARLYI-STRATS-START)
+		(up-compare-goal g-current-strategy <= MIDI-STRATS-END)
+		=>
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "Strategy: Imperial Age Warfare")
+		)
+		(defrule
+		(taunt-detected TAUNT-PLAYER 250)
+		(up-compare-goal g-current-strategy >= LATEI-STRATS-START)
+		=>
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "Strategy: Trash War")
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 250)
+		(taunt-detected my-player-number 250)
+		=>
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Strategy: %d" g: g-current-strategy)
 		)
 
 		(defrule
@@ -1335,3 +1082,32 @@
 		=>
 		(acknowledge-taunt THIS-ANY-TAUNT-PLAYER 250)
 		)
+
+
+
+; (load "The General 1.2/Functions/Reset Mini")
+
+; (defrule
+; (players-military-population any-enemy >= 2)
+; =>
+; (set-goal g-loop-counter g-enemy-swordsmen-count)
+; (set-goal g-temp 0)
+; (set-goal g-temp2 0)
+; )
+
+; (defrule
+; (players-military-population any-enemy >= 2)
+; (up-compare-goal g-loop-counter <= g-enemy-mamelukes-count)
+; =>
+; (up-get-indirect-goal g: g-loop-counter g-temp2)
+; (up-modify-goal g-temp g:+ g-temp2)
+; (up-modify-goal g-loop-counter c:+ 1)
+; (up-jump-rule -1)
+; )
+
+; (defrule
+; (players-military-population any-enemy >= 2)
+; (up-compare-goal g-temp > 0)
+; =>
+; (up-chat-data-to-all "Enemy counts: %d" g: g-temp)
+; )

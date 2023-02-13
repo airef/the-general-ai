@@ -1232,10 +1232,10 @@
 
         (defrule
         (up-compare-goal g-boar-hunt-status < READY-TO-LURE)
-        (goal g-boar-hunting-conditions-met YES)
+        (up-compare-flag g-flag == BOAR-HUNTING-CONDITIONS-MET)
         (up-compare-goal g-total-decaying-hunt-food < FAR-BOAR-FOOD-AMOUNT-LEFT)        ;total decaying hunt food includes all decaying boar and deer
         (or
-            (goal g-far-boar YES)
+            (up-compare-flag g-flag == FAR-BOAR)
             (up-compare-goal g-total-decaying-hunt-food < NEAR-BOAR-FOOD-AMOUNT-LEFT))
         ; (dropsite-min-distance live-boar <= MAX-BOAR-HUNT-DISTANCE)
         (up-compare-goal g-current-boar-count > 0)
@@ -2123,7 +2123,7 @@
         (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
-        (goal g-first-attack-launched YES)
+        (up-compare-flag g-flag == FIRST-ATTACK-LAUNCHED)
         (building-type-count lumber-camp > 1)
         (wood-amount >= 100)
         =>
@@ -2134,7 +2134,7 @@
         )
 
             (defrule
-            (goal g-first-attack-launched YES)
+            (up-compare-flag g-flag == FIRST-ATTACK-LAUNCHED)
 			(wood-amount >= 100)
             (up-compare-goal g-loop-counter g:< g-local-total)
             (building-type-count lumber-camp > 1)
@@ -2155,7 +2155,7 @@
 			;If no trees or dropsite within 7 tiles, only delete lumber camp if we can afford new lumber camp immediately
 			;Otherwise, keep lumber camp around if we have several trees within 10 tiles
             (defrule
-            (goal g-first-attack-launched YES)
+            (up-compare-flag g-flag == FIRST-ATTACK-LAUNCHED)
             (up-compare-goal g-loop-counter g:< g-local-total)
             (building-type-count lumber-camp > 1)
             (up-set-target-object search-local g: g-loop-counter)
@@ -2169,7 +2169,7 @@
             )
 
             (defrule
-            (goal g-first-attack-launched YES)
+            (up-compare-flag g-flag == FIRST-ATTACK-LAUNCHED)
             (up-compare-goal g-loop-counter g:< g-local-total)
             (building-type-count lumber-camp > 1)
             (up-set-target-object search-local g: g-loop-counter)
@@ -2186,7 +2186,7 @@
         (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
-        (goal g-first-attack-launched YES)
+        (up-compare-flag g-flag == FIRST-ATTACK-LAUNCHED)
         (building-type-count mining-camp > 1)
         =>
         (up-full-reset-search)
@@ -2196,7 +2196,7 @@
         )
 
             (defrule
-            (goal g-first-attack-launched YES)
+            (up-compare-flag g-flag == FIRST-ATTACK-LAUNCHED)
             (up-compare-goal g-loop-counter g:< g-local-total)
             (building-type-count mining-camp > 1)
             (up-set-target-object search-local g: g-loop-counter)
@@ -2214,7 +2214,7 @@
             )
 
             (defrule
-            (goal g-first-attack-launched YES)
+            (up-compare-flag g-flag == FIRST-ATTACK-LAUNCHED)
             (up-compare-goal g-loop-counter g:< g-local-total)
             (building-type-count mining-camp > 1)
             (up-set-target-object search-local g: g-loop-counter)
@@ -2225,7 +2225,7 @@
             )
             
             (defrule
-            (goal g-first-attack-launched YES)
+            (up-compare-flag g-flag == FIRST-ATTACK-LAUNCHED)
             (up-compare-goal g-loop-counter g:< g-local-total)
             (building-type-count mining-camp > 1)
             (up-set-target-object search-local g: g-loop-counter)
@@ -2423,7 +2423,7 @@
             (goal g-attacking NO))
         (players-building-type-count target-player town-center > 0)
         =>
-        (set-goal g-projectile-retreat NO)
+        (up-modify-flag g-flag c:- PROJECTILE-RETREAT)
         (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
         (up-full-reset-search)
         (up-find-remote c: town-center c: 20)
@@ -2463,8 +2463,8 @@
             (up-reset-filters)
             (up-filter-distance c: -1 c: 14)
             (up-filter-include cmdid-military -1 -1 -1)
-            (up-find-remote c: all-units-class c: 40)
-            (up-find-local c: all-units-class c: 40)
+            (up-find-remote c: any-objects c: 40)
+            (up-find-local c: any-objects c: 40)
             (up-find-local c: battering-ram-line c: 5)
             (up-clean-search search-local -1 search-order-asc)
             (up-get-search-state g-local-total)
@@ -2521,7 +2521,7 @@
             (up-compare-goal g-remote-total > 0)
             (up-compare-goal g-temp2 g:< g-temp)      ;enemy strength near TC is stronger than ours
             =>
-            (set-goal g-projectile-retreat YES)
+            (up-modify-flag g-flag c:+ PROJECTILE-RETREAT)
             )
 
             (defrule
@@ -2538,7 +2538,7 @@
 
             ;Get extra projectile avoidance radius, based on width of building
             (defrule
-            (goal g-projectile-retreat YES)
+            (up-compare-flag g-flag == PROJECTILE-RETREAT)
             (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
@@ -2550,7 +2550,7 @@
             )                           ;this must be added to the range of the building to get the danger radius of the enemy building
 
             (defrule
-            (goal g-projectile-retreat YES)
+            (up-compare-flag g-flag == PROJECTILE-RETREAT)
             (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
@@ -2560,7 +2560,7 @@
             )                           ;this must be added to the range of the building to get the danger radius of the enemy building
 
             (defrule
-            (goal g-projectile-retreat YES)
+            (up-compare-flag g-flag == PROJECTILE-RETREAT)
             (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
@@ -2571,7 +2571,7 @@
 
             ;g-temp3 equals full projectile avoidance radius
             (defrule
-            (goal g-projectile-retreat YES)
+            (up-compare-flag g-flag == PROJECTILE-RETREAT)
             (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             (up-object-data object-data-type == town-center)
             (up-compare-goal g-remote-total > 0)
@@ -2582,7 +2582,7 @@
             )
                 
             (defrule
-            (goal g-projectile-retreat YES)
+            (up-compare-flag g-flag == PROJECTILE-RETREAT)
             (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             (up-compare-goal g-remote-total > 0)
             (up-object-data object-data-type == town-center)
@@ -2591,7 +2591,7 @@
             (up-reset-filters)
             (up-get-point position-object g-point-x)
             (up-set-target-point g-point-x)
-            (up-find-local c: all-units-class c: 240)
+            (up-find-local c: any-objects c: 240)
             (up-remove-objects search-local object-data-speed == 0)		;remove buildings
             (up-remove-objects search-local object-data-pierce-armor >= 20)	;remove rams
             (up-remove-objects search-local object-data-attack-stance == stance-no-attack)  ;units on no attack stance are already retreating from building
@@ -2600,7 +2600,7 @@
             )
             
             (defrule
-            (goal g-projectile-retreat YES)
+            (up-compare-flag g-flag == PROJECTILE-RETREAT)
             (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             (up-compare-goal g-remote-total > 0)
             (up-object-data object-data-type == town-center)
@@ -2622,7 +2622,7 @@
             (up-set-target-object search-remote g: g-loop-counter)	;found enemy defensive building
             (up-compare-goal g-loop-counter < 40)
             =>
-            (set-goal g-projectile-retreat NO)
+            (up-modify-flag g-flag c:- PROJECTILE-RETREAT)
             (up-get-search-state g-local-total)
             (up-jump-rule -15)
             )
@@ -2637,7 +2637,7 @@
         =>
         (up-full-reset-search)
         (up-filter-exclude cmdid-villager actionid-explore orderid-explore livestock-class)
-        (up-find-local c: all-units-class c: 240)
+        (up-find-local c: any-objects c: 240)
         (up-remove-objects search-local object-data-speed == 0)		;remove buildings
         (up-remove-objects search-local object-data-attack-stance != stance-no-attack)	;only change attack stances for units on No Attack Stance
         (set-strategic-number sn-focus-player-number target-player)
@@ -2687,7 +2687,7 @@
         (up-set-target-point g-position-self-x)
         (up-filter-exclude cmdid-villager actionid-explore orderid-explore livestock-class)
         (up-filter-distance c: -1 c: 40)
-        (up-find-local c: all-units-class c: 240)
+        (up-find-local c: any-objects c: 240)
         (up-remove-objects search-local object-data-speed == 0)		;remove buildings
         (up-remove-objects search-local object-data-attack-stance != stance-no-attack)	;only change attack stances for units on No Attack Stance
         (up-remove-objects search-local object-data-id g:== g-scout1-id)
@@ -2716,7 +2716,7 @@
         =>
         (up-full-reset-search)
         (up-filter-exclude cmdid-villager actionid-explore orderid-explore livestock-class)
-        (up-find-local c: all-units-class c: 240)
+        (up-find-local c: any-objects c: 240)
         (up-remove-objects search-local object-data-idling != 1)
         (up-remove-objects search-local object-data-speed == 0)		;remove buildings
         (up-remove-objects search-local object-data-attack-stance != stance-no-attack)	;only change attack stances for units on No Attack Stance
@@ -2749,7 +2749,7 @@
         (unit-type-count villager > 0)
         =>
         (up-copy-point g-gather-point-x g-position-self-x)
-        (up-lerp-tiles g-gather-point-x g-target-enemy-x s: custom-sn-peaceful-town-size)
+        (up-lerp-tiles g-gather-point-x g-target-enemy-x s: csn-peaceful-town-size)
         (up-bound-point g-gather-point-x g-gather-point-x)
         )
 
