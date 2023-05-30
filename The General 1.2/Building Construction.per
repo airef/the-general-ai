@@ -1031,9 +1031,7 @@
 		(current-age == feudal-age)
 		(or
 			(up-pending-objects c: my-tower-type == 0)
-			(and
-				(unit-type-count dead-male-builder == 0)
-				(unit-type-count dead-female-builder == 0)))
+			(up-timer-status t-dead-builders != timer-running))
 		=>
 		(up-assign-builders c: my-tower-type c: 2)
 		)
@@ -1044,18 +1042,14 @@
 			(current-age > feudal-age))
 		(or
 			(up-pending-objects c: my-tower-type == 0)
-			(and
-				(unit-type-count dead-male-builder == 0)
-				(unit-type-count dead-female-builder == 0)))
+			(up-timer-status t-dead-builders != timer-running))
 		=>
 		(up-assign-builders c: my-tower-type c: 1)
 		)
 
 		(defrule
 		(up-pending-objects c: my-tower-type > 0)
-		(or
-			(unit-type-count dead-male-builder > 0)
-			(unit-type-count dead-female-builder > 0))
+		(up-timer-status t-dead-builders == timer-running)
 		=>
 		(up-assign-builders c: my-tower-type c: -1)
 		; (chat-to-player my-player-number CHAT-STOP-SENDING-TOWER-BUILDERS)
@@ -1527,8 +1521,7 @@
 	(or
 		(goal g-town-under-attack YES)
 		(up-pending-objects c: town-center == 1))
-	(unit-type-count dead-male-builder == 0)
-	(unit-type-count dead-female-builder == 0)
+	(up-timer-status t-dead-builders != timer-running)
 	=>
 	(up-assign-builders c: town-center-foundation c: 4)
 	)
@@ -1536,17 +1529,14 @@
 	(defrule
 	(goal g-town-under-attack NO)
 	(up-pending-objects c: town-center >= 2)
-	(unit-type-count dead-male-builder == 0)
-	(unit-type-count dead-female-builder == 0)
+	(up-timer-status t-dead-builders != timer-running)
 	=>
 	(up-assign-builders c: town-center-foundation c: 8)
 	)
 
 	(defrule
 	(up-pending-objects c: town-center > 0)
-	(or
-		(unit-type-count dead-male-builder > 0)
-		(unit-type-count dead-female-builder > 0))
+	(up-timer-status t-dead-builders == timer-running)
 	=>
 	(up-assign-builders c: town-center-foundation c: -1)
 	; (chat-to-player my-player-number CHAT-STOP-SENDING-TC-BUILDERS)
@@ -1620,17 +1610,14 @@
 
 		(defrule
 		(up-pending-objects c: castle > 0)
-		(unit-type-count dead-male-builder == 0)
-		(unit-type-count dead-female-builder == 0)
+		(up-timer-status t-dead-builders != timer-running)
 		=>
 		(up-assign-builders c: castle c: 4)
 		)
 
 		(defrule
 		(up-pending-objects c: castle > 0)
-		(or
-			(unit-type-count dead-male-builder > 0)
-			(unit-type-count dead-female-builder > 0))
+		(up-timer-status t-dead-builders == timer-running)
 		=>
 		(up-assign-builders c: castle c: -1)
 		; (chat-to-player my-player-number CHAT-STOP-SENDING-CASTLE-BUILDERS)
@@ -1678,17 +1665,14 @@
 
 			(defrule
 			(up-pending-objects c: my-unique-building > 0)
-			(unit-type-count dead-male-builder == 0)
-			(unit-type-count dead-female-builder == 0)
+			(up-timer-status t-dead-builders != timer-running)
 			=>
 			(up-assign-builders c: my-unique-building c: 4)
 			)
 
 			(defrule
 			(up-pending-objects c: my-unique-building > 0)
-			(or
-				(unit-type-count dead-male-builder > 0)
-				(unit-type-count dead-female-builder > 0))
+			(up-timer-status t-dead-builders == timer-running)
 			=>
 			(up-assign-builders c: my-unique-building c: -1)
 			; (chat-to-player my-player-number CHAT-STOP-SENDING-KREPOST-BUILDERS)
@@ -1746,17 +1730,14 @@
 
 		; (defrule
 		; (up-pending-objects c: siege-workshop > 0)
-		; (unit-type-count dead-male-builder == 0)
-		; (unit-type-count dead-female-builder == 0)
+		; (up-timer-status t-dead-builders != timer-running)
 		; =>
 		; (up-assign-builders c: siege-workshop c: 1)
 		; )
 
 		; (defrule
 		; (up-pending-objects c: siege-workshop > 0)
-		; (or
-		; 	(unit-type-count dead-male-builder > 0)
-		; 	(unit-type-count dead-female-builder > 0))
+		; (up-timer-status t-dead-builders == timer-running)
 		; =>
 		; (up-assign-builders c: siege-workshop c: -1)
 		; (chat-to-player my-player-number CHAT-STOP-SENDING-SIEGE-WORKSHOP-BUILDERS)
@@ -1786,17 +1767,14 @@
 
 		; (defrule
 		; (up-pending-objects c: university > 0)
-		; (unit-type-count dead-male-builder == 0)
-		; (unit-type-count dead-female-builder == 0)
+		; (up-timer-status t-dead-builders != timer-running)
 		; =>
 		; (up-assign-builders c: university c: 1)
 		; )
 
 		; (defrule
 		; (up-pending-objects c: university > 0)
-		; (or
-		; 	(unit-type-count dead-male-builder > 0)
-		; 	(unit-type-count dead-female-builder > 0))
+		; (up-timer-status t-dead-builders == timer-running)
 		; =>
 		; (up-assign-builders c: university c: -1)
 		; (chat-to-player my-player-number CHAT-STOP-SENDING-UNIVERSITY-BUILDERS)
@@ -1844,17 +1822,14 @@
 
 		; (defrule
 		; (up-pending-objects c: monastery > 0)
-		; (unit-type-count dead-male-builder == 0)
-		; (unit-type-count dead-female-builder == 0)
+		; (up-timer-status t-dead-builders != timer-running)
 		; =>
 		; (up-assign-builders c: monastery c: 1)
 		; )
 
 		; (defrule
 		; (up-pending-objects c: monastery > 0)
-		; (or
-		; 	(unit-type-count dead-male-builder > 0)
-		; 	(unit-type-count dead-female-builder > 0))
+		; (up-timer-status t-dead-builders == timer-running)
 		; =>
 		; (up-assign-builders c: monastery c: -1)
 		; (chat-to-player my-player-number CHAT-STOP-SENDING-MONASTERY-BUILDERS)
@@ -2018,17 +1993,14 @@
 
 		; (defrule
 		; (up-pending-objects c: barracks > 0)
-		; (unit-type-count dead-male-builder == 0)
-		; (unit-type-count dead-female-builder == 0)
+		; (up-timer-status t-dead-builders != timer-running)
 		; =>
 		; (up-assign-builders c: barracks c: 1)
 		; )
 
 		; (defrule
 		; (up-pending-objects c: barracks > 0)
-		; (or
-		; 	(unit-type-count dead-male-builder > 0)
-		; 	(unit-type-count dead-female-builder > 0))
+		; (up-timer-status t-dead-builders == timer-running)
 		; =>
 		; (up-assign-builders c: barracks c: -1)
 		; (chat-to-player my-player-number CHAT-STOP-SENDING-BARRACKS-BUILDERS)
@@ -2046,8 +2018,7 @@
 			(or
 				(building-type-count archery-range > 0)
 				(current-age >= castle-age)))
-		(unit-type-count dead-male-builder == 0)
-		(unit-type-count dead-female-builder == 0)
+		(up-timer-status t-dead-builders != timer-running)
 		=>
 		(up-assign-builders c: archery-range c: 1)
 		)
@@ -2056,8 +2027,7 @@
 		(goal g-strategy-type FAST-CASTLE)
 		(building-type-count archery-range == 0)
 		(current-age == feudal-age)
-		(unit-type-count dead-male-builder == 0)
-		(unit-type-count dead-female-builder == 0)
+		(up-timer-status t-dead-builders != timer-running)
 		=>
 		(up-assign-builders c: archery-range c: 2)
 		)
@@ -2074,9 +2044,7 @@
 
 		; (defrule
 		; (up-pending-objects c: archery-range > 0)
-		; (or
-		; 	(unit-type-count dead-male-builder > 0)
-		; 	(unit-type-count dead-female-builder > 0))
+		; (up-timer-status t-dead-builders == timer-running)
 		; =>
 		; (up-assign-builders c: archery-range c: -1)
 		; (chat-to-player my-player-number CHAT-STOP-SENDING-ARCHERY-RANGE-BUILDERS)
@@ -2276,8 +2244,7 @@
 			(or
 				(building-type-count stable > 0)
 				(current-age == castle-age)))
-		(unit-type-count dead-male-builder == 0)
-		(unit-type-count dead-female-builder == 0)
+		(up-timer-status t-dead-builders != timer-running)
 		=>
 		(up-assign-builders c: stable c: 1)
 		)
@@ -2286,8 +2253,7 @@
 		(goal g-strategy-type FAST-CASTLE)
 		(building-type-count stable == 0)
 		(current-age == feudal-age)
-		(unit-type-count dead-male-builder == 0)
-		(unit-type-count dead-female-builder == 0)
+		(up-timer-status t-dead-builders != timer-running)
 		=>
 		(up-assign-builders c: stable c: 2)
 		)
@@ -2304,9 +2270,7 @@
 
 		; (defrule
 		; (up-pending-objects c: stable > 0)
-		; (or
-		; 	(unit-type-count dead-male-builder > 0)
-		; 	(unit-type-count dead-female-builder > 0))
+		; (up-timer-status t-dead-builders == timer-running)
 		; =>
 		; (up-assign-builders c: stable c: -1)
 		; (chat-to-player my-player-number CHAT-STOP-SENDING-STABLE-BUILDERS)
@@ -2477,8 +2441,7 @@
 			(or
 				(building-type-count market > 0)
 				(current-age >= castle-age)))
-		(unit-type-count dead-male-builder == 0)
-		(unit-type-count dead-female-builder == 0)
+		(up-timer-status t-dead-builders != timer-running)
 		=>
 		(up-assign-builders c: market c: 1)
 		)
@@ -2487,17 +2450,14 @@
 		(goal g-strategy-type FAST-CASTLE)
 		(building-type-count market == 0)
 		(current-age == feudal-age)
-		(unit-type-count dead-male-builder == 0)
-		(unit-type-count dead-female-builder == 0)
+		(up-timer-status t-dead-builders != timer-running)
 		=>
 		(up-assign-builders c: market c: 2)
 		)
 
 		(defrule
 		(up-pending-objects c: market > 0)
-		(or
-			(unit-type-count dead-male-builder > 0)
-			(unit-type-count dead-female-builder > 0))
+		(up-timer-status t-dead-builders == timer-running)
 		=>
 		(up-assign-builders c: market c: -1)
 		; (chat-to-player my-player-number CHAT-STOP-SENDING-MARKET-BUILDERS)
@@ -2579,8 +2539,7 @@
 		(or
 			(up-compare-goal g-strategy-type != FAST-CASTLE)
 			(current-age >= castle-age))
-		(unit-type-count dead-male-builder == 0)
-		(unit-type-count dead-female-builder == 0)
+		(up-timer-status t-dead-builders != timer-running)
 		=>
 		(up-assign-builders c: blacksmith c: 1)
 		)
@@ -2588,17 +2547,14 @@
 		(defrule
 		(goal g-strategy-type FAST-CASTLE)
 		(current-age == feudal-age)
-		(unit-type-count dead-male-builder == 0)
-		(unit-type-count dead-female-builder == 0)
+		(up-timer-status t-dead-builders != timer-running)
 		=>
 		(up-assign-builders c: blacksmith c: 2)
 		)
 
 		(defrule
 		(up-pending-objects c: blacksmith > 0)
-		(or
-			(unit-type-count dead-male-builder > 0)
-			(unit-type-count dead-female-builder > 0))
+		(up-timer-status t-dead-builders == timer-running)
 		=>
 		(up-assign-builders c: blacksmith c: -1)
 		; (chat-to-player my-player-number CHAT-STOP-SENDING-BLACKSMITH-BUILDERS)

@@ -436,7 +436,7 @@
 		(players-building-type-count any-ally market > 0)
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		=>
-		(set-goal g-desired-num-trade-cart 10)
+		(set-goal g-desired-num-trade-cart 5)
 		)
 
 		(defrule
@@ -448,7 +448,7 @@
 		(players-building-type-count any-ally market > 0)
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		=>
-		(set-goal g-desired-num-trade-cart 15)
+		(set-goal g-desired-num-trade-cart 10)
 		)
 
 		(defrule
@@ -460,7 +460,7 @@
 		(players-building-type-count any-ally market > 0)
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		=>
-		(set-goal g-desired-num-trade-cart 20)
+		(set-goal g-desired-num-trade-cart 15)
 		)
 
 		(defrule
@@ -472,7 +472,7 @@
 		(players-building-type-count any-ally market > 0)
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		=>
-		(set-goal g-desired-num-trade-cart 30)
+		(set-goal g-desired-num-trade-cart 25)
 		)
 
 		(defrule
@@ -507,35 +507,35 @@
 		(defrule
 		(goal g-difficulty HARDEST)
 		=>
-		(set-goal g-desired-num-villager 125)
+		(set-goal g-desired-num-villager 110)
 		(up-modify-goal g-desired-num-villager g:- g-desired-num-trade-cart)
 		)
 
 		(defrule
 		(goal g-difficulty HARD)
 		=>
-		(set-goal g-desired-num-villager 100)
+		(set-goal g-desired-num-villager 80)
 		(up-modify-goal g-desired-num-villager g:- g-desired-num-trade-cart)
 		)
 
 		(defrule
 		(goal g-difficulty MODERATE)
 		=>
-		(set-goal g-desired-num-villager 85)
+		(set-goal g-desired-num-villager 65)
 		(up-modify-goal g-desired-num-villager g:- g-desired-num-trade-cart)
 		)
 
 		(defrule
 		(goal g-difficulty STANDARD)
 		=>
-		(set-goal g-desired-num-villager 70)
+		(set-goal g-desired-num-villager 50)
 		(up-modify-goal g-desired-num-villager g:- g-desired-num-trade-cart)
 		)
 
 		(defrule
 		(goal g-difficulty EASIEST)
 		=>
-		(set-goal g-desired-num-villager 50)
+		(set-goal g-desired-num-villager 40)
 		(up-modify-goal g-desired-num-villager g:- g-desired-num-trade-cart)
 		)
 
@@ -625,6 +625,18 @@
 		; (up-modify-goal g-required-num-villager c:+ 0)
 		; (up-modify-goal g-required-num-villager g:min g-desired-num-villager)
 		; )
+
+		#load-if-defined KHMER-CIV
+
+			(defrule
+			(current-age == dark-age)
+			(goal g-strategy-type FAST-CASTLE)
+			=>
+			(up-modify-goal g-required-num-villager c:+ 2)
+			(up-modify-goal g-required-num-villager g:min g-desired-num-villager)
+			)
+
+		#end-if
 
 		(defrule
 		(current-age <= feudal-age)
@@ -3658,6 +3670,19 @@
 		; (set-strategic-number sn-preferred-mill-placement 1)	;for deer
 		; )
 
+		#load-if-not-defined KHMER-CIV
+
+			(defrule
+			(current-age >= feudal-age)
+			(up-compare-goal g-desired-num-market > 0)
+			(not
+				(building-available market))
+			=>
+			(up-modify-goal g-desired-num-mill c:max 1)
+			)
+
+		#end-if
+
 		;Backup in case we never built a mill after 5 minutes
 		(defrule
 		(or
@@ -4765,28 +4790,32 @@
 	;	Barracks
 	;--------------
 
-		(defrule
-		(up-compare-goal g-age-status >= TO-FEUDAL)
-		(or
-			(building-type-count-total mining-camp > 0)
-			(and
-				(up-compare-goal g-desired-num-gold-vils == 0)
-				(up-compare-goal g-desired-num-stone-vils == 0)))
-		(up-compare-goal g-current-strategy < 1201)		;not doing a boom imp or late imp strategy
-		(up-compare-goal g-desired-num-barracks < 1)
-		=>
-		(up-modify-goal g-desired-num-barracks c:max 1)
-		)
+		#load-if-not-defined KHMER-CIV
+
+			(defrule
+			(up-compare-goal g-age-status >= TO-FEUDAL)
+			(or
+				(building-type-count-total mining-camp > 0)
+				(and
+					(up-compare-goal g-desired-num-gold-vils == 0)
+					(up-compare-goal g-desired-num-stone-vils == 0)))
+			(up-compare-goal g-current-strategy < BOOMI-STRATS-START)		;not doing a boom imp or late imp strategy
+			(up-compare-goal g-desired-num-barracks < 1)
+			=>
+			(up-modify-goal g-desired-num-barracks c:max 1)
+			)
 	
-		(defrule
-		(up-compare-goal g-age-status >= TO-FEUDAL)
-		(or
-			(up-compare-goal g-desired-num-stable > 0)
-			(up-compare-goal g-desired-num-archery-range > 0))
-		(up-compare-goal g-desired-num-barracks < 1)
-		=>
-		(up-modify-goal g-desired-num-barracks c:max 1)
-		)
+			(defrule
+			(up-compare-goal g-age-status >= TO-FEUDAL)
+			(or
+				(up-compare-goal g-desired-num-stable > 0)
+				(up-compare-goal g-desired-num-archery-range > 0))
+			(up-compare-goal g-desired-num-barracks < 1)
+			=>
+			(up-modify-goal g-desired-num-barracks c:max 1)
+			)
+
+		#end-if
 
 		(defrule
 		(up-compare-goal g-age-status >= TO-FEUDAL)
@@ -5064,6 +5093,19 @@
 		=>
 		(up-modify-goal g-desired-num-blacksmith c:max 1)
 		)
+
+		#load-if-not-defined KHMER-CIV
+
+			(defrule
+			(current-age >= castle-age)
+			(up-compare-goal g-desired-num-siege-workshop > 0)
+			(not
+				(building-available siege-workshop))
+			=>
+			(up-modify-goal g-desired-num-blacksmith c:max 1)
+			)
+
+		#end-if
 
 	;------------
 	;	Market
@@ -5661,14 +5703,12 @@
 		(defrule
 		(up-get-fact-max any-enemy military-population 0 g-temp)
 		(or
-			(unit-type-count dead-male-builder > 0)	;dead male builder
+			(up-timer-status t-dead-builders == timer-running)
 			(or
-				(unit-type-count dead-female-builder > 0)	;dead female builder
-				(or
-					(population >= 70)
-					(and
-						(goal g-town-under-attack YES)
-						(military-population g:< g-temp)))))
+				(population >= 70)
+				(and
+					(goal g-town-under-attack YES)
+					(military-population g:< g-temp))))
 		(civilian-population < 75)
 		(up-compare-goal g-desired-num-tower > 0)
 		=>
@@ -5820,9 +5860,7 @@
 		)
 
 		(defrule
-		(or
-			(unit-type-count dead-male-builder > 0)	;dead male builder
-			(unit-type-count dead-female-builder > 0))	;dead female builder
+		(up-timer-status t-dead-builders == timer-running)
 		(civilian-population < 75)
 		(goal g-town-under-attack YES)
 		=>

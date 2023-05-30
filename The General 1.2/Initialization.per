@@ -10424,7 +10424,7 @@
 		(defconst t-tribute 22)
 		(defconst t-strategy-switch 23)
 		(defconst t-villager-training-delay 24)
-		;(defconst t- 25)
+		(defconst t-dead-builders 25)
 		;(defconst t- 26)
 		;(defconst t- 27)
 		;(defconst t- 28)
@@ -10666,6 +10666,26 @@
 			(up-set-target-object search-remote c: 0))
 		=>
 		(up-get-point position-target g-target-enemy-x)
+		)
+
+		;Check for dead builders
+
+		(load "The General 1.2/Functions/Reset Mini")
+
+		(defrule
+		(true)
+		=>
+		(up-full-reset-search)
+		(up-filter-status c: status-down c: list-active)	;find only dying builders
+		(up-find-status-local c: female-builder c: 1)
+		(up-find-status-local c: male-builder c: 1)
+		(up-get-search-state g-local-total)
+		)
+
+		(defrule
+		(up-compare-goal g-local-total > 0)
+		=>
+		(enable-timer t-dead-builders 30)
 		)
 
 	;----------------------
