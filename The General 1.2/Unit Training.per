@@ -5,6 +5,7 @@
 	;AI will try to train this unit constantly
 
 	(defrule
+	(up-compare-goal g-difficulty >= HARDEST)
 	(up-compare-goal g-desired-num-constant-train-unit-goal > 0)
 	=>
 	(up-get-indirect-goal g: g-desired-num-constant-train-unit-goal g-desired-num-constant-train-unit)
@@ -12,12 +13,14 @@
 	)
 
 	(defrule
+	(up-compare-goal g-difficulty >= HARDEST)
 	(up-compare-goal g-desired-num-constant-train-unit-goal <= 0)
 	=>
 	(set-goal g-desired-num-constant-train-unit 0)
 	)
 
 	(defrule
+	(up-compare-goal g-difficulty >= HARDEST)
 	(up-compare-goal g-constant-train-unit != 0)
 	(up-object-type-count-total g: g-constant-train-unit g:< g-desired-num-constant-train-unit)
 	(up-can-train g-escrow g: g-constant-train-unit)
@@ -40,6 +43,7 @@
 	;	Villagers
 	;---------------
 
+		;Training queue
 		(defrule
 		(up-compare-flag g-flag == ALLOW-QUEUED-VILLAGERS)
 		(strategic-number sn-enable-training-queue != 1)
@@ -54,34 +58,91 @@
 		(set-strategic-number sn-enable-training-queue 0)
 		)
 
+		(load "The General 1.2/Functions/Reset Mini")
+
+		;Training delay for lower difficulties
+		(defrule
+		(game-time > 5)
+		(goal g-difficulty HARD)
+		(building-type-count town-center == 1)
+		=>
+		(up-get-precise-time 0 g-temp)
+		(up-modify-goal g-temp c:mod 35)	;up to 5 (30 minus 25) seconds of time between training villagers
+		)
+		(defrule
+		(game-time > 5)
+		(goal g-difficulty MODERATE)
+		(building-type-count town-center == 1)
+		=>
+		(up-get-precise-time 0 g-temp)
+		(up-modify-goal g-temp c:mod 42)
+		)
+		(defrule
+		(game-time > 5)
+		(goal g-difficulty STANDARD)
+		(building-type-count town-center == 1)
+		=>
+		(up-get-precise-time 0 g-temp)
+		(up-modify-goal g-temp c:mod 50)
+		)
+		(defrule
+		(game-time > 5)
+		(goal g-difficulty EASIEST)
+		(building-type-count town-center == 1)
+		=>
+		(up-get-precise-time 0 g-temp)
+		(up-modify-goal g-temp c:mod 65)
+		)
+
+		;Train villagers
 		(defrule
 		(goal g-villager-training TRAIN-WITH-ESCROW)
 		(can-train-with-escrow villager)
+		(up-timer-status t-villager-training-delay != timer-running)
 		=>
 		(up-train g-escrow c: villager)
+		(set-goal g-temp2 98032)
 		)
 
 		(defrule
 		(goal g-villager-training LIMITED-TRAIN-WITH-ESCROW)
 		(food-amount >= 100)
 		(can-train-with-escrow villager)
+		(up-timer-status t-villager-training-delay != timer-running)
 		=>
 		(up-train g-escrow c: villager)
+		(set-goal g-temp2 98032)
 		)
 
 		(defrule
 		(goal g-villager-training TRAIN-WITHOUT-ESCROW)
 		(can-train villager)
+		(up-timer-status t-villager-training-delay != timer-running)
 		=>
 		(train villager)
+		(set-goal g-temp2 98032)
 		)
 
 		(defrule
 		(goal g-villager-training LIMITED-TRAINING)
 		(food-amount > 100)
 		(can-train villager)
+		(up-timer-status t-villager-training-delay != timer-running)
 		=>
 		(train villager)
+		(set-goal g-temp2 98032)
+		)
+
+		;Start new villager training delay timer
+		(defrule
+		(game-time > 5)
+		(up-compare-goal g-difficulty <= HARD)
+		(building-type-count town-center == 1)
+		(goal g-temp2 98032)	;just trained a villager
+		(up-compare-goal g-temp > 0)
+		=>
+		(up-set-timer c: t-villager-training-delay g: g-temp)
+		; (up-chat-data-to-all "Set vil timer for %d sec" g: g-temp)
 		)
 
 	;-------------------
@@ -212,6 +273,61 @@
 ;=========================<>=========================
 ;				       MILITARY
 ;=========================<>=========================
+
+	;-----------------------
+	;	Difficulty Delays
+	;-----------------------
+
+		(load "The General 1.2/Functions/Reset Mini")
+
+		(defrule
+		(goal g-difficulty HARD)
+		(up-get-fact game-time 0 g-temp)
+		(up-modify-goal g-temp c:mod 5)
+		(up-compare-goal g-temp != 0)
+		=>
+		(set-goal g-barracks-next-unit 0)
+		(set-goal g-archery-range-next-unit 0)
+		(set-goal g-stable-next-unit 0)
+		(set-goal g-siege-workshop-next-unit 0)
+		(set-goal g-dock-next-unit 0)
+		)
+		(defrule
+		(goal g-difficulty MODERATE)
+		(up-get-fact game-time 0 g-temp)
+		(up-modify-goal g-temp c:mod 8)
+		(up-compare-goal g-temp != 0)
+		=>
+		(set-goal g-barracks-next-unit 0)
+		(set-goal g-archery-range-next-unit 0)
+		(set-goal g-stable-next-unit 0)
+		(set-goal g-siege-workshop-next-unit 0)
+		(set-goal g-dock-next-unit 0)
+		)
+		(defrule
+		(goal g-difficulty STANDARD)
+		(up-get-fact game-time 0 g-temp)
+		(up-modify-goal g-temp c:mod 12)
+		(up-compare-goal g-temp != 0)
+		=>
+		(set-goal g-barracks-next-unit 0)
+		(set-goal g-archery-range-next-unit 0)
+		(set-goal g-stable-next-unit 0)
+		(set-goal g-siege-workshop-next-unit 0)
+		(set-goal g-dock-next-unit 0)
+		)
+		(defrule
+		(goal g-difficulty EASIEST)
+		(up-get-fact game-time 0 g-temp)
+		(up-modify-goal g-temp c:mod 18)
+		(up-compare-goal g-temp != 0)
+		=>
+		(set-goal g-barracks-next-unit 0)
+		(set-goal g-archery-range-next-unit 0)
+		(set-goal g-stable-next-unit 0)
+		(set-goal g-siege-workshop-next-unit 0)
+		(set-goal g-dock-next-unit 0)
+		)
 
 	;-------------------
 	;	Siege Weapons
@@ -378,6 +494,8 @@
 	;	Unique Units
 	;------------------
 
+		(load "The General 1.2/Functions/Reset Mini")
+
 		#load-if-not-defined GOTHIC-CIV
 			#load-if-not-defined HUN-CIV
 
@@ -392,6 +510,9 @@
 				(defrule
 				(up-compare-goal g-unique-unit-line g:< g-desired-num-unique-unit)
 				(can-train my-unique-unit)
+				(or
+					(goal g-temp 0)
+					(up-compare-goal g-difficulty >= HARDEST))
 				=>
 				(train my-unique-unit)
 				)
@@ -420,6 +541,9 @@
 			(defrule
 			(up-object-type-count-total c: huskarl-set g:< g-desired-num-unique-unit)
 			(can-train barracks-huskarl)
+			(or
+				(goal g-temp 0)
+				(up-compare-goal g-difficulty >= HARDEST))
 			=>
 			(train barracks-huskarl)
 			)
@@ -428,6 +552,9 @@
 			(up-object-type-count-total c: huskarl-set g:< g-desired-num-unique-unit)
 			(up-train-site-ready c: huskarl)
 			(can-train huskarl-line)
+			(or
+				(goal g-temp 0)
+				(up-compare-goal g-difficulty >= HARDEST))
 			=>
 			(train huskarl-line)
 			)
@@ -461,6 +588,9 @@
 				(up-compare-goal g-tarkan-line g:< g-desired-num-unique-unit)
 				(up-train-site-ready c: tarkan)
 				(can-train tarkan-line)
+				(or
+					(goal g-temp 0)
+					(up-compare-goal g-difficulty >= HARDEST))
 				=>
 				(train tarkan-line)
 				)
@@ -470,6 +600,9 @@
 				(not
 					(up-train-site-ready c: tarkan))
 				(can-train stable-tarkan)
+				(or
+					(goal g-temp 0)
+					(up-compare-goal g-difficulty >= HARDEST))
 				=>
 				(train stable-tarkan)
 				)
@@ -488,6 +621,9 @@
 				(up-compare-goal g-tarkan-line g:< g-desired-num-unique-unit)
 				(up-train-site-ready c: tarkan)
 				(can-train tarkan-line)
+				(or
+					(goal g-temp 0)
+					(up-compare-goal g-difficulty >= HARDEST))
 				=>
 				(train tarkan-line)
 				)

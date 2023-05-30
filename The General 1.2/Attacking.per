@@ -131,6 +131,7 @@
 				(or
 					(goal g-primary-unit-class siege-weapon-class)
 					(goal g-primary-unit-class scorpion-class)))
+			(up-compare-goal g-current-strategy != FC-MORLEY)
 			=>
 			(set-goal g-required-attack-num 6)
 			)
@@ -246,6 +247,15 @@
 			(up-modify-goal g-required-attack-num g:min g-desired-num-military)
 			)
 
+			(defrule
+			(current-age == castle-age)
+			(up-compare-goal g-attack-status <= FIRST-CASTLE-ATTACK)
+			(up-compare-goal g-current-strategy == FC-MORLEY)
+			(goal g-difficulty EXTREME)
+			=>
+			(set-goal g-required-attack-num 5)
+			)
+
 			;Adjust required military numbers for defenses
 			(defrule
 			(current-age == castle-age)
@@ -264,6 +274,7 @@
 			=>
 			(up-modify-goal g-stop-attack-num g:= g-required-attack-num)
 			(up-modify-goal g-stop-attack-num c:%* 60)
+			(up-modify-goal g-stop-attack-num c:max 5)
 			)
 
 			(defrule
@@ -273,6 +284,7 @@
 			=>
 			(up-modify-goal g-stop-attack-num g:= g-required-attack-num)
 			(up-modify-goal g-stop-attack-num c:%* 70)
+			(up-modify-goal g-stop-attack-num c:max 5)
 			)
 		
 		;------------------------
@@ -560,7 +572,7 @@
 			(goal g-attack-status FIRST-IMPERIAL-ATTACK)))
 	(up-timer-status t-first-attack == timer-disabled)
 	=>
-	(enable-timer t-first-attack 30)
+	(enable-timer t-first-attack 60)
 	)
 
 ;=========================<>=========================
@@ -583,9 +595,7 @@
 	)
 	(defrule
 	(goal g-attacking YES)
-	(or
-		(military-population g:< g-stop-attack-num)
-		(military-population < 5))
+	(military-population g:< g-stop-attack-num)
 	(population < EIGHTY-FIVE-PERCENT-POP)
 	(up-timer-status t-first-attack != timer-running)
 	=>
@@ -594,7 +604,16 @@
 	(disable-timer t-first-attack)
 	; (chat-to-player my-player-number CHAT-STOP-FIRST-CASTLE-ATTACK-SOLDIERS)
 	)
-
+	(defrule
+	(goal g-attacking YES)
+	(goal g-town-under-attack YES)
+	(up-compare-goal g-enemy-units-in-town >= 12)
+	=>
+	(set-goal g-attacking NO)
+	(set-goal g-attack-coordination STOP-ATTACKING)
+	(disable-timer t-first-attack)
+	)
+	
 	;Stop attack
 	(defrule
 	(or
@@ -623,16 +642,15 @@
 		)
 
 ;=========================<>=========================
-;		   SET SN-MAXIMUM-TOWN-SIZE FOR TSA
+;		         SWITCH ATTACK TYPES
 ;=========================<>=========================
 
 	#load-if-defined DE-AVAILABLE
 
 		(defrule
+		(up-compare-goal g-difficulty >= EXTREME)
 		(up-compare-goal g-attack-status < BEFORE-IMPERIAL-ATTACKS)
-		(or
-			(up-compare-flag g-attack-method-flag != USE-DUC)
-			(up-compare-flag g-attack-method-flag == USE-TSA))
+		(up-compare-flag g-attack-method-flag != USE-DUC)
 		=>
 		(up-modify-flag g-attack-method-flag c:+ USE-DUC)
 		(up-modify-flag g-attack-method-flag c:- USE-TSA)
@@ -642,15 +660,17 @@
 		)
 
 		(defrule
-		(up-compare-goal g-attack-status >= BEFORE-IMPERIAL-ATTACKS)
+		(or
+			(up-compare-goal g-attack-status >= BEFORE-IMPERIAL-ATTACKS)
+			(up-compare-goal g-difficulty < EXTREME))
 		(or
 			(up-compare-flag g-attack-method-flag == USE-DUC)
 			(up-compare-flag g-attack-method-flag != USE-TSA))
 		=>
+		(up-modify-flag g-attack-method-flag c:- USE-DUC)
 		(up-modify-flag g-attack-method-flag c:+ USE-TSA)
 		(up-modify-flag g-attack-method-flag c:- USE-ATTACK-GROUPS)
 		(up-modify-flag g-attack-method-flag c:- USE-ATTACK-NOW)
-		(up-modify-flag g-attack-method-flag c:- USE-DUC)
 		)
 
 	#else
@@ -658,10 +678,10 @@
 		(defrule
 		(up-compare-flag g-attack-method-flag != USE-TSA)
 		=>
+		(up-modify-flag g-attack-method-flag c:- USE-DUC)
 		(up-modify-flag g-attack-method-flag c:+ USE-TSA)
 		(up-modify-flag g-attack-method-flag c:- USE-ATTACK-GROUPS)
 		(up-modify-flag g-attack-method-flag c:- USE-ATTACK-NOW)
-		(up-modify-flag g-attack-method-flag c:- USE-DUC)
 		)
 
 	#end-if
@@ -691,6 +711,10 @@
 	(up-modify-sn sn-total-number-explorers c:= 4)
 	; (chat-local-to-self CHAT-SWITCH-TO-ATTACK-GROUPS)
 	)
+
+;=========================<>=========================
+;		   SET SN-MAXIMUM-TOWN-SIZE FOR TSA
+;=========================<>=========================
 
 	(defrule
 	(goal g-attacking YES)
@@ -751,6 +775,7 @@
 	(up-modify-sn sn-task-ungrouped-soldiers c:= 0)
 	(up-modify-sn sn-number-explore-groups c:= 1)
 	(up-modify-sn sn-total-number-explorers c:= 1)
+	(up-reset-scouts)
 	; (chat-local-to-self CHAT-SWITCH-TO-TSA)
 	)
 

@@ -11,6 +11,7 @@
 		#load-if-not-defined BURGUNDIANS-CIV
 
 			(defrule
+			(up-compare-goal g-difficulty != EASIEST)
 			(or
 				(goal g-strategy-type DRUSH)
 				(or
@@ -31,6 +32,7 @@
 		#else
 
 			(defrule
+			(up-compare-goal g-difficulty != EASIEST)
 			(or
 				(goal g-strategy-type DRUSH)
 				(or
@@ -52,6 +54,7 @@
 		#end-if
 
 		(defrule
+		(up-compare-goal g-difficulty != EASIEST)
 		(or
 			(goal g-strategy-type FAST-CASTLE)
 			(goal g-strategy-type FAST-IMPERIAL))
@@ -73,6 +76,7 @@
     ;-------------
 
 		(defrule
+		(up-compare-goal g-difficulty > STANDARD)
 		(can-research-with-escrow ri-bow-saw)
 		(or
 			(up-compare-goal g-current-strategy != FC-STRONGBOW)
@@ -104,6 +108,7 @@
 	;--------------------
 
 		(defrule
+		(up-compare-goal g-difficulty > EASIEST)
 		(or
 			(goal g-strategy-type FAST-CASTLE)
 			(goal g-strategy-type FAST-IMPERIAL))
@@ -126,6 +131,7 @@
     ;----------------
 
 		(defrule
+		(up-compare-goal g-difficulty > STANDARD)
 		(or
 			(up-compare-goal g-usable-farm-count < 20)
 			(or
@@ -142,6 +148,7 @@
 		)
 
 			(defrule
+			(up-compare-goal g-difficulty > STANDARD)
 			(can-research-with-escrow ri-heavy-plow)
 			(up-research-status c: ri-bow-saw >= research-pending)
 			(or
@@ -175,6 +182,7 @@
 	;-----------------
 
         (defrule
+		(up-compare-goal g-difficulty > EASIEST)
         (can-research-with-escrow ri-wheel-barrow)
 		(or
 			(building-type-count town-center > 1)
@@ -196,6 +204,7 @@
 	;---------------
 
 		(defrule
+		(up-compare-goal g-difficulty > STANDARD)
 		(goal g-game-focus BOOM)
 		(can-research-with-escrow ri-hand-cart)
 		(or
@@ -214,6 +223,7 @@
 		)
 
 		(defrule
+		(up-compare-goal g-difficulty > STANDARD)
 		(or
 			(population >= 100)
 			(up-compare-goal g-usable-farm-count >= 25))
@@ -232,6 +242,7 @@
     ;-----------------
 
         (defrule
+		(up-compare-goal g-difficulty > STANDARD)
         (up-compare-goal g-eco-tech-progress >= SECONDARY-CASTLE-COMPLETE)
 		(or
 			(up-compare-goal g-game-focus != DEFENSIVE)
@@ -358,6 +369,7 @@
 			(cc-players-unit-type-count 0 rhino > 0))
 		(unit-type-count villager >= 10)
 		(up-compare-goal g-current-boar-count > 0)
+		(up-timer-status t-villager-training-delay != timer-running)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
 		(up-add-research-cost c: ri-loom c: 1)
@@ -388,6 +400,7 @@
 		(not
 			(can-train villager))
 		(unit-type-count villager >= 7)
+		(up-timer-status t-villager-training-delay != timer-running)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
 		(up-add-research-cost c: ri-loom c: 1)
@@ -671,6 +684,90 @@
 
 	#end-if
 
+	#load-if-defined BENGALIS-CIV
+
+		;-----------
+		;	Paiks
+		;-----------
+
+			(defrule
+			(or
+				(goal g-game-focus BOOM)
+				(goal g-game-focus REBUILD))
+			(up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+			=>
+			(up-jump-rule 3)
+			)
+
+				(defrule
+				(or
+					(goal g-primary-unit battle-elephant)
+					(or
+						(goal g-primary-unit elephant-archer)
+						(and
+							(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+							(or
+								(goal g-support-unit battle-elephant)
+								(goal g-support-unit elephant-archer)))))
+				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+				(can-research-with-escrow my-second-unique-research)
+				=>
+				(up-setup-cost-data 1 g-food-cost)
+				(up-add-research-cost c: my-second-unique-research c: 1)
+				(up-modify-escrow wood g:- g-wood-cost)
+				(up-modify-escrow gold g:- g-gold-cost)
+				(research my-second-unique-research)
+				)
+				(defrule
+				(or
+					(goal g-primary-unit my-unique-unit)
+					(and
+						(goal g-support-unit my-unique-unit)
+						(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
+				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+				(can-research-with-escrow my-second-unique-research)
+				=>
+				(up-setup-cost-data 1 g-food-cost)
+				(up-add-research-cost c: my-second-unique-research c: 1)
+				(up-modify-escrow wood g:- g-wood-cost)
+				(up-modify-escrow gold g:- g-gold-cost)
+				(research my-second-unique-research)
+				)
+
+				(defrule
+				(or
+					(up-compare-goal g-desired-num-battle-elephant > 6)
+					(or
+						(up-compare-goal g-desired-num-elephant-archer > 6)
+						(or
+							(up-compare-goal g-desired-num-unique-unit > 6)
+							(or
+								(up-compare-goal g-battle-elephant-line > 8)
+								(or
+									(unit-type-count elephant-archer-line > 8)
+									(or
+										(up-compare-goal g-unique-unit-line > 10)
+										(unit-type-count armored-elephant-line >= 2)))))))
+				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+				(can-research my-second-unique-research)
+				=>
+				(research my-second-unique-research)
+				)
+
+		;--------------
+		;	Mahayana
+		;--------------
+
+			(defrule
+			(unit-type-count villager >= 120)
+			(can-research my-unique-research)
+			(population-headroom <= 10)
+			=>
+			(research my-unique-research)
+			)
+
+	#end-if
+
 	#load-if-defined BERBERS-CIV
 
 		;---------------------
@@ -726,7 +823,7 @@
 			)
 			(defrule
 			(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
-			(up-research-status c: my-second-unique-research >= research-pending)
+			(up-research-status c: my-unique-research >= research-pending)
 			(or
 				(up-compare-goal g-unique-unit-line >= 15)
 				(and
@@ -785,6 +882,59 @@
 			=>
 			(research my-second-unique-research)
 			)
+
+	#end-if
+
+	#load-if-defined BOHEMIANS-CIV
+
+		;-----------------------
+		;	Wagenburg Tactics
+		;-----------------------
+
+			(defrule
+			(or
+				(goal g-primary-unit hand-cannoneer)
+				(or
+					(goal g-primary-unit my-unique-unit)
+					(and
+						(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+						(or
+							(goal g-support-unit hand-cannoneer)
+							(goal g-support-unit my-unique-unit)))))
+			(can-research-with-escrow my-second-unique-research)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-modify-escrow food g:- g-food-cost)
+			(up-modify-escrow gold g:- g-gold-cost)
+			(research my-second-unique-research)
+			)
+
+			(defrule
+			(or
+				(up-compare-goal g-desired-num-hand-cannoneer > 10)
+				(or
+					(unit-type-count hand-cannoneer > 15)
+					(or
+						(up-compare-goal g-desired-num-unique-unit > 10)
+						(or
+							(unit-type-count my-unique-unit > 15)
+							(unit-type-count bombard-cannon-line >= 3)))))
+			(can-research my-second-unique-research)
+			=>
+			(research my-second-unique-research)
+			)
+
+		;---------------------
+		;	Hussite Reforms
+		;---------------------
+
+			(defrule
+			(up-compare-goal g-desired-num-monk >= 6)
+			(can-research my-unique-research)
+			=>
+			(research my-unique-research)
+			)			
 
 	#end-if
 
@@ -1250,6 +1400,78 @@
 
 	#end-if
 
+	#load-if-defined DRAVIDIANS-CIV
+
+		;-----------------
+		;	Wootz Steel
+		;-----------------
+
+			(defrule
+			(or
+				(goal g-primary-unit militiaman)
+				(or
+					(goal g-primary-unit condottiero)
+					(goal g-primary-unit my-unique-unit)))
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(can-research-with-escrow my-unique-research)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: my-unique-research c: 1)
+			(up-modify-escrow food g:- g-food-cost)
+			(up-modify-escrow gold g:- g-gold-cost)
+			(research my-unique-research)
+			)
+			(defrule
+			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			(or
+				(goal g-support-unit militiaman)
+				(or
+					(goal g-support-unit condottiero)
+					(goal g-support-unit my-unique-unit)))
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(can-research-with-escrow my-unique-research)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: my-unique-research c: 1)
+			(up-modify-escrow food g:- g-food-cost)
+			(up-modify-escrow gold g:- g-gold-cost)
+			(research my-unique-research)
+			)
+
+			(defrule
+			(or
+				(up-compare-goal g-desired-num-militia > 10)
+				(or
+					(unit-type-count militiaman-line > 15)
+					(or
+						(up-compare-goal g-desired-num-condottiero > 10)
+						(or
+							(unit-type-count condottiero > 15)
+							(or
+								(up-compare-goal g-desired-num-unique-unit > 10)
+								(up-compare-goal g-unique-unit-line > 15))))))
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(can-research my-unique-research)
+			=>
+			(research my-unique-research)
+			)
+
+		;-------------------
+		;	Medical Corps
+		;-------------------
+
+			(defrule
+			(or
+				(up-compare-goal g-desired-num-elephant-archer > 10)
+				(unit-type-count elephant-archer-line > 15))
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(can-research my-second-unique-research)
+			=>
+			(research my-second-unique-research)
+			)
+
+	#end-if
+
 	#load-if-defined ETHIOPIAN-CIV
 
 		;-----------------
@@ -1447,6 +1669,101 @@
 
 	#end-if
 
+	#load-if-defined GURJARAS-CIV
+
+		;----------------
+		;	Kshatriyas
+		;----------------
+
+			(defrule
+			(or
+				(goal g-primary-unit camel)
+				(or
+					(goal g-primary-unit scout-cavalry)
+					(or
+						(goal g-primary-unit elephant-archer)
+						(or
+							(goal g-primary-unit my-unique-unit)
+							(goal g-primary-unit my-second-unique-unit)))))
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(can-research-with-escrow my-second-unique-research)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-modify-escrow food g:- g-food-cost)
+			(up-modify-escrow gold g:- g-gold-cost)
+			(research my-second-unique-research)
+			)
+			(defrule
+			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			(or
+				(goal g-support-unit camel)
+				(or
+					(goal g-support-unit scout-cavalry)
+					(or
+						(goal g-support-unit elephant-archer)
+						(or
+							(goal g-support-unit my-unique-unit)
+							(goal g-support-unit my-second-unique-unit)))))
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(can-research-with-escrow my-second-unique-research)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-modify-escrow food g:- g-food-cost)
+			(up-modify-escrow gold g:- g-gold-cost)
+			(research my-second-unique-research)
+			)
+
+			(defrule
+			(or
+				(up-compare-goal g-desired-num-camel > 10)
+				(or
+					(up-compare-goal g-desired-num-scout-cavalry > 10)
+					(or
+						(up-compare-goal g-desired-num-second-unique-unit > 10)
+						(or
+							(up-compare-goal g-desired-num-elephant-archer > 8)
+							(or
+								(up-compare-goal g-desired-num-unique-unit > 10)
+								(up-compare-goal g-desired-num-militia > 15))))))
+			(can-research my-second-unique-research)
+			=>
+			(research my-second-unique-research)
+			)
+
+		;---------------------
+		;	Frontier Guards
+		;---------------------
+
+			(defrule
+			(or
+				(goal g-primary-unit camel)
+				(goal g-primary-unit elephant-archer))
+			(can-research-with-escrow my-unique-research)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: my-unique-research c: 1)
+			(up-modify-escrow food g:- g-food-cost)
+			(up-modify-escrow gold g:- g-gold-cost)
+			(research my-unique-research)
+			)
+			(defrule
+			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			(or
+				(goal g-support-unit camel)
+				(goal g-support-unit elephant-archer))
+			(can-research-with-escrow my-unique-research)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: my-unique-research c: 1)
+			(up-modify-escrow food g:- g-food-cost)
+			(up-modify-escrow gold g:- g-gold-cost)
+			(research my-unique-research)
+			)
+
+	#end-if
+
 	#load-if-defined HUN-CIV
 
 		;---------------
@@ -1482,10 +1799,10 @@
 				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 				(can-research-with-escrow my-second-unique-research)
 				=>
-			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
-			(up-modify-escrow wood g:- g-wood-cost)
-			(up-modify-escrow gold g:- g-gold-cost)
+				(up-setup-cost-data 1 g-food-cost)
+				(up-add-research-cost c: my-second-unique-research c: 1)
+				(up-modify-escrow wood g:- g-wood-cost)
+				(up-modify-escrow gold g:- g-gold-cost)
 				(research my-second-unique-research)
 				)
 
@@ -2622,6 +2939,66 @@
 			(or
 				(up-compare-goal g-desired-num-unique-unit > 10)
 				(up-compare-goal g-unique-unit-line > 15))
+			(can-research my-unique-research)
+			=>
+			(research my-unique-research)
+			)
+
+	#end-if
+
+	#load-if-defined POLES-CIV
+
+		;-------------------------
+		;	Szlachta Privileges
+		;-------------------------
+			
+			(defrule
+			(or
+				(goal g-primary-unit knight)
+				(and
+					(goal g-support-unit knight)
+					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(can-research-with-escrow my-second-unique-research)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-modify-escrow food g:- g-food-cost)
+			(up-modify-escrow gold g:- g-gold-cost)
+			(research my-second-unique-research)
+			)
+
+			(defrule
+			(up-compare-goal g-desired-num-knight > 10)
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(can-research my-second-unique-research)
+			=>
+			(research my-second-unique-research)
+			)
+
+		;---------------------
+		;	Lechitic Legacy
+		;---------------------
+			
+			(defrule
+			(or
+				(goal g-primary-unit scout-cavalry)
+				(and
+					(goal g-support-unit scout-cavalry)
+					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
+			(can-research-with-escrow my-unique-research)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: my-unique-research c: 1)
+			(up-modify-escrow food g:- g-food-cost)
+			(up-modify-escrow gold g:- g-gold-cost)
+			(research my-unique-research)
+			)
+
+			(defrule
+			(or
+				(up-compare-goal g-desired-num-scout-cavalry > 10)
+				(unit-type-count scout-cavalry-line > 15))
 			(can-research my-unique-research)
 			=>
 			(research my-unique-research)
@@ -3898,14 +4275,59 @@
 		(research ri-bloodlines)
 		)
 
-    ;----------------
-    ;   Husbandry
-    ;----------------
+    ;---------------------------------------
+    ;   Husbandry - Secondary Castle Tech (>= 6 cavalry)
+    ;---------------------------------------
+		
+		(defrule
+		(unit-type-count cavalry-class < 6)
+		(unit-type-count cavalry-class g:< g-desired-num-cavalry)
+		=>
+		(up-jump-rule 2)
+		)
+
+			(defrule
+			(current-age >= castle-age)
+			(or
+				(up-compare-goal g-game-focus != BOOM)
+				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+			(or
+				(up-research-status c: ri-bloodlines >= research-pending)
+				(up-compare-const BLOODLINES-AVAILABLE == NO))
+			(goal g-primary-unit-class cavalry-class)
+			(can-research-with-escrow ri-husbandry)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-husbandry c: 1)
+			(up-modify-escrow food g:- g-food-cost)
+			(research ri-husbandry)
+			)
+			(defrule
+			(current-age >= castle-age)
+			(or
+				(up-compare-goal g-game-focus != BOOM)
+				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+			(or
+				(up-research-status c: ri-bloodlines >= research-pending)
+				(up-compare-const BLOODLINES-AVAILABLE == NO))
+			(goal g-support-unit-class cavalry-class)
+			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(can-research-with-escrow ri-husbandry)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-husbandry c: 1)
+			(up-modify-escrow food g:- g-food-cost)
+			(research ri-husbandry)
+			)
 
 		(defrule
 		(or
 			(up-compare-goal g-game-focus != BOOM)
 			(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
 		(up-compare-goal g-desired-num-cavalry >= 10)
 		(unit-type-count cavalry-class >= 15)
 		(or
@@ -4353,7 +4775,7 @@
 		)
 
 	;------------------------------------------
-	;	Bodkin Arrow - Secondary Castle Tech (>= 8/12 ranged units)
+	;	Bodkin Arrow - Priority Castle Tech (>= 8/12 ranged units)
 	;------------------------------------------
 
 		(defrule
@@ -4361,9 +4783,6 @@
 		(or
 			(unit-type-count archery-class >= 8)
 			(unit-type-count archery-class g:>= g-desired-num-foot-archers))
-		(or
-			(up-compare-goal g-target-military-parity > 3)
-			(up-compare-flag g-flag == FIRST-ATTACK-LAUNCHED))
 		(can-research-with-escrow ri-bodkin-arrow)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
@@ -4377,9 +4796,6 @@
 		(or
 			(unit-type-count archery-class >= 12)
 			(unit-type-count archery-class g:>= g-desired-num-foot-archers))
-		(or
-			(up-compare-goal g-target-military-parity > 3)
-			(up-compare-flag g-flag == FIRST-ATTACK-LAUNCHED))
 		(can-research-with-escrow ri-bodkin-arrow)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
@@ -4393,9 +4809,6 @@
 		(or
 			(unit-type-count cavalry-archer-class >= 8)
 			(unit-type-count cavalry-archer-class g:>= g-desired-num-cavalry-archers))
-		(or
-			(up-compare-goal g-target-military-parity > 3)
-			(up-compare-flag g-flag == FIRST-ATTACK-LAUNCHED))
 		(can-research-with-escrow ri-bodkin-arrow)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
@@ -4409,9 +4822,6 @@
 		(or
 			(unit-type-count cavalry-archer-class >= 12)
 			(unit-type-count cavalry-archer-class g:>= g-desired-num-cavalry-archers))
-		(or
-			(up-compare-goal g-target-military-parity > 3)
-			(up-compare-flag g-flag == FIRST-ATTACK-LAUNCHED))
 		(can-research-with-escrow ri-bodkin-arrow)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
@@ -6150,9 +6560,84 @@
 
 		#end-if
 
-	;-------------
-	;	Squires
-	;-------------
+	;---------------------------------------
+	;	Gambesons - Secondary Castle Tech
+	;---------------------------------------
+
+		#load-if-defined DE-AVAILABLE
+
+			(defrule
+			(or
+				(goal g-primary-unit militiaman)
+				(and
+					(goal g-support-unit militiaman)
+					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
+			(can-research-with-escrow ri-gambesons)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-gambesons c: 1)
+			(up-modify-escrow food g:- g-food-cost)
+			(up-modify-escrow gold g:- g-gold-cost)
+			(research ri-gambesons)
+			)
+
+			(defrule
+			(up-compare-goal g-desired-num-militia > 6)
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(can-research ri-gambesons)
+			=>
+			(research ri-gambesons)
+			)
+
+		#end-if
+
+	;-------------------------------------
+	;	Squires - Secondary Castle Tech (>= 8 infantry)
+	;-------------------------------------
+		
+		(defrule
+		(unit-type-count infantry-class < 8)
+		(unit-type-count infantry-class g:< g-desired-num-infantry)
+		=>
+		(up-jump-rule 2)
+		)
+
+			(defrule
+			(current-age >= castle-age)
+			(or
+				(up-compare-goal g-game-focus != BOOM)
+				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+			(or
+				(up-research-status c: ri-chain-mail >= research-pending)
+				(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(goal g-primary-unit-class infantry-class)
+			(can-research-with-escrow ri-squires)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-squires c: 1)
+			(up-modify-escrow food g:- g-food-cost)
+			(research ri-squires)
+			)
+			(defrule
+			(current-age >= castle-age)
+			(or
+				(up-compare-goal g-game-focus != BOOM)
+				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+			(or
+				(up-research-status c: ri-chain-mail >= research-pending)
+				(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(goal g-support-unit-class infantry-class)
+			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(can-research-with-escrow ri-squires)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-squires c: 1)
+			(up-modify-escrow food g:- g-food-cost)
+			(research ri-squires)
+			)
 
 		(defrule
 		(or
@@ -6412,18 +6897,6 @@
 	;-----------
 
 		(defrule
-		(up-compare-goal g-enemy-monks-count >= 12)
-		(up-compare-const HERESY-AVAILABLE == NO)
-		(can-research-with-escrow ri-faith)
-		=>
-		(up-setup-cost-data 1 g-food-cost)
-		(up-add-research-cost c: ri-faith c: 1)
-		(up-modify-escrow food g:- g-food-cost)
-		(up-modify-escrow gold g:- g-gold-cost)
-		(research ri-faith)
-		)
-
-		(defrule
 		(up-compare-goal g-enemy-monks-count >= 5)
 		(up-compare-const HERESY-AVAILABLE == NO)
 		(up-compare-goal g-primary-unit-tech-progress >= SECONDARY-IMPERIAL-COMPLETE)
@@ -6433,17 +6906,6 @@
 		)
 
 		;Battle Elephants
-		(defrule
-		(goal g-primary-unit battle-elephant)
-		(can-research-with-escrow ri-faith)
-		=>
-		(up-setup-cost-data 1 g-food-cost)
-		(up-add-research-cost c: ri-faith c: 1)
-		(up-modify-escrow food g:- g-food-cost)
-		(up-modify-escrow gold g:- g-gold-cost)
-		(research ri-faith)
-		)
-
 		(defrule
 		(or
 			(up-compare-goal g-desired-num-battle-elephant > 6)
@@ -6456,18 +6918,7 @@
 
 		;War Elephants
 		#load-if-defined PERSIAN-CIV
-
-			(defrule
-			(goal g-primary-unit my-unique-unit)
-			(can-research-with-escrow ri-faith)
-			=>
-			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: ri-faith c: 1)
-			(up-modify-escrow food g:- g-food-cost)
-			(up-modify-escrow gold g:- g-gold-cost)
-			(research ri-faith)
-			)
-
+		
 			(defrule
 			(or
 				(up-compare-goal g-desired-num-unique-unit > 6)

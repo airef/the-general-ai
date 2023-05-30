@@ -225,43 +225,63 @@
 
     ;Explore with all scouts if game is early and we haven't found enemy
     (defrule
+    (timer-triggered t-5-sec)
     (goal g-scouting-status AUTO-SCOUT)
     (strategic-number sn-number-explore-groups == 0)
-    (game-time < 600)
-    (players-building-count every-enemy == 0)
+    ; (game-time < 600)
+    ; (players-building-count every-enemy == 0)
     (military-population > 0)
     =>
-    (up-reset-scouts)
     (up-get-fact military-population 0 g-temp)
     (up-get-fact unit-type-count monastery-class g-temp2)
     (up-modify-goal g-temp g:- g-temp2)    ;remove monks and missionaries from military-population count
+    (up-modify-sn sn-total-number-explorers g:min g-temp)
+    (up-modify-sn sn-total-number-explorers c:max 1)
     (up-modify-sn sn-number-explore-groups g:= g-temp)
     (up-modify-sn sn-number-explore-groups c:max 1)
+    (up-reset-scouts)
     )
     
     ;Explore with one scout if we have found the enemy
     (defrule
     (goal g-scouting-status AUTO-SCOUT)
-    (strategic-number sn-number-explore-groups != 1)
-    (or
-        (game-time >= 600)
-        (players-building-count any-enemy > 0))
+    (strategic-number sn-number-explore-groups > 1)
+    ; (or
+    ;     (game-time >= 600)
+    ;     (players-building-count any-enemy > 0))
+    (military-population > 0)
     =>
-    (up-reset-scouts)
+    (up-modify-sn sn-total-number-explorers c:min 1)
     (set-strategic-number sn-number-explore-groups 1)
+    (up-reset-scouts)
     )
 
     (defrule
     (up-compare-goal g-scouting-status != AUTO-SCOUT)
     (strategic-number sn-number-explore-groups != 0)
     =>
-    (up-reset-scouts)
     (set-strategic-number sn-number-explore-groups 0)
+    (up-reset-scouts)
+    )
+
+    (load "The General 1.2/Functions/Reset Mini")
+
+    (defrule
+    (timer-triggered t-10-sec)
+    (goal g-scouting-status AUTO-SCOUT)
+    (up-set-target-by-id g: g-scout1-id)
+    (up-object-data object-data-action == -1)
+    (up-add-object-by-id search-local g: g-scout1-id)
+    =>
+    (up-get-point position-center g-point-x)
+    (up-target-point g-point-x action-move -1 -1)
+    ; (chat-to-all "Idle scouts")
     )
 
     ;====EXPLORING SNS
 
     (defrule
+    (up-compare-goal g-map-style != NOMAD)
     (building-type-count-total town-center > 0)
     (or
         (cc-players-unit-type-count 0 livestock-class > 0)
@@ -278,6 +298,7 @@
     )
 
     (defrule
+    (up-compare-goal g-map-style != NOMAD)
     (goal g-scouting-status AUTO-SCOUT)
     (or
         (up-compare-goal g-current-sheep-count > 0)
@@ -293,6 +314,7 @@
     )
 
     (defrule
+    (up-compare-goal g-map-style != NOMAD)
     (up-compare-goal g-duc-scouting != STOP-DUC-SCOUTING)
     (or
         (up-compare-goal g-current-sheep-count > 0)
@@ -305,11 +327,13 @@
     (set-strategic-number sn-cap-civilian-explorers 0)
     (set-strategic-number sn-total-number-explorers 0)
     (set-strategic-number sn-number-explore-groups 0)
+    (up-reset-scouts)
     )
 
     ;Explore with villagers if we have no scout
     
     (defrule
+    (up-compare-goal g-map-style != NOMAD)
     (goal g-duc-scouting STOP-DUC-SCOUTING)
     (goal g-scout1-id 0)
     (military-population == 0)
@@ -331,6 +355,7 @@
     ;Stop exploring villagers after 120 seconds
 
     (defrule
+    (up-compare-goal g-map-style != NOMAD)
     (goal g-duc-scouting STOP-DUC-SCOUTING)
     (strategic-number sn-percent-civilian-explorers == 99)
     (or
@@ -347,6 +372,7 @@
     )
 
     (defrule
+    (up-compare-goal g-map-style != NOMAD)
     (up-compare-goal g-duc-scouting != STOP-DUC-SCOUTING)
     (strategic-number sn-percent-civilian-explorers == 99)
     (or
@@ -360,6 +386,7 @@
     (set-strategic-number sn-cap-civilian-explorers 0)
     (set-strategic-number sn-total-number-explorers 0)
     (set-strategic-number sn-number-explore-groups 0)
+    (up-reset-scouts)
     )
 
 ;------------------------------

@@ -4,6 +4,48 @@
 ;				        TAUNTS
 ;=========================<>=========================
 
+	;-------------------------------
+	;	Taunt 233 - Scouting Data
+	;-------------------------------
+
+		(load "The General 1.2/Functions/Reset Mini")
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 233)
+		(up-set-target-by-id g: g-scout1-id)
+		=>
+		(up-get-point position-object g-point-x)
+		(up-get-object-data object-data-action g-temp)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Scout action: %d" g: g-temp)
+		(up-send-flare g-point-x)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 233)
+		(up-set-target-by-id g: g-scout2-id)
+		=>
+		(up-get-point position-object g-point-x)
+		(up-send-flare g-point-x)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 233)
+		(up-set-target-by-id g: g-scout3-id)
+		=>
+		(up-get-point position-object g-point-x)
+		(up-send-flare g-point-x)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 233)
+		=>
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Scout Status: %d" g: g-scouting-status)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Scout DUC Status: %d" g: g-duc-scouting)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Scout Groups: %d" s: sn-number-explore-groups)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Num Explorers: %d" s: sn-total-number-explorers)
+		(acknowledge-taunt THIS-ANY-TAUNT-PLAYER 233)
+		)
+
 	;------------------------------
 	;	Taunt 234 - Defense Data
 	;------------------------------

@@ -22,7 +22,7 @@
         )
 
         (defrule
-        (true)
+        (up-compare-goal g-map-style != NOMAD)
         =>
         (up-get-fact unit-type-count villager g-desired-num-food-vils)
         (disable-self)
@@ -36,12 +36,37 @@
         ;For most civs, this is 7 villagers, but Britons and Chinese are different.
 
         (defrule
+        (goal g-map-style NOMAD)
+        (or
+            (building-type-count-total town-center == 0)
+            (nor
+                (building-type-count-total house >= 1)
+                (civ-selected hun)))
+        =>
+        (set-goal g-desired-future-wood-vils 6)
+        )
+
+        (defrule
+        (or
+            (up-compare-goal g-map-style != NOMAD)
+            (and
+                (building-type-count-total town-center >= 1)
+                (or
+                    (building-type-count-total house >= 1)
+                    (civ-selected hun))))
         (unit-type-count villager <= VILS-FOR-LUMBER-CAMP)          ;usually 7
         (building-type-count-total mill == 0)
         =>
         (set-goal g-desired-future-food-vils VILS-FOR-LUMBER-CAMP)  ;usually 7
         )
         (defrule
+        (or
+            (up-compare-goal g-map-style != NOMAD)
+            (and
+                (building-type-count-total town-center >= 1)
+                (or
+                    (building-type-count-total house >= 1)
+                    (civ-selected hun))))
         (up-modify-goal g-temp c:= VILS-FOR-LUMBER-CAMP)            ;usually 7
         (up-modify-goal g-temp c:+ 1)                               ;usually 8
         (unit-type-count villager g:<= g-temp)                      ;usually 8
@@ -51,6 +76,13 @@
         )
 
         (defrule
+        (or
+            (up-compare-goal g-map-style != NOMAD)
+            (and
+                (building-type-count-total town-center >= 1)
+                (or
+                    (building-type-count-total house >= 1)
+                    (civ-selected hun))))
         (up-modify-goal g-temp c:= VILS-FOR-LUMBER-CAMP)            ;usually 7
         (up-modify-goal g-temp c:+ 1)                               ;usually 8
         (unit-type-count villager g:>= g-temp)                      ;usually 8
@@ -63,6 +95,13 @@
         (set-goal g-desired-future-wood-vils 4)
         )
         (defrule
+        (or
+            (up-compare-goal g-map-style != NOMAD)
+            (and
+                (building-type-count-total town-center >= 1)
+                (or
+                    (building-type-count-total house >= 1)
+                    (civ-selected hun))))
         (up-modify-goal g-temp c:= VILS-FOR-LUMBER-CAMP)            ;usually 7
         (up-modify-goal g-temp c:+ 2)                               ;usually 9
         (unit-type-count villager g:>= g-temp)                      ;usually 9
@@ -76,6 +115,13 @@
         )
 
         (defrule
+        (or
+            (up-compare-goal g-map-style != NOMAD)
+            (and
+                (building-type-count-total town-center >= 1)
+                (or
+                    (building-type-count-total house >= 1)
+                    (civ-selected hun))))
         (up-modify-goal g-temp c:= VILS-FOR-LUMBER-CAMP)            ;usually 7
         (up-modify-goal g-temp c:+ 4)                               ;usually 11
         (unit-type-count villager g:>= g-temp)                      ;usually 11
@@ -84,6 +130,88 @@
         =>
         (set-goal g-desired-future-food-vils 13)
         (set-goal g-desired-future-wood-vils 4)
+        )
+
+    ;-------------------
+    ;   25-vil Morley
+    ;-------------------
+        
+        (defrule
+        (goal g-current-strategy FC-MORLEY)
+        (unit-type-count villager >= 18)
+        (unit-type-count villager <= 22)
+        (up-compare-goal g-age-status < TO-CASTLE)
+        =>
+        (set-goal g-desired-future-food-vils 12)
+        (set-goal g-desired-future-wood-vils 10)
+        )
+
+        (defrule
+        (goal g-current-strategy FC-MORLEY)
+        (unit-type-count villager >= 23)
+        (unit-type-count villager <= 25)
+        (up-compare-goal g-age-status < TO-CASTLE)
+        =>
+        (set-goal g-desired-future-food-vils 12)
+        (set-goal g-desired-future-wood-vils 10)
+        (set-goal g-desired-future-gold-vils 3)
+        )
+
+        (defrule
+        (goal g-current-strategy FC-MORLEY)
+        (unit-type-count villager >= 25)
+        (goal g-age-status TO-CASTLE)
+        (goal g-percent-dynamic-gathering 0)
+        =>
+        (set-goal g-desired-future-food-vils 12)
+        (set-goal g-desired-future-wood-vils 9)
+        (set-goal g-desired-future-gold-vils 4)
+        )
+
+        ;Switch to using gathering percentages (out of 1000 villagers)
+        (defrule
+        (goal g-current-strategy FC-MORLEY)
+        (unit-type-count villager >= 26)
+        (up-compare-goal g-age-status < TO-CASTLE)
+        (goal g-percent-dynamic-gathering 0)
+        =>
+        (set-goal g-desired-future-food-vils 580)
+        (set-goal g-desired-future-wood-vils 320)
+        (set-goal g-desired-future-gold-vils 100)
+        )
+
+        (defrule
+        (goal g-current-strategy FC-MORLEY)
+        (unit-type-count villager >= 25)
+        (unit-type-count villager <= 34)
+        (current-age >= castle-age)
+        =>
+        (set-goal g-desired-future-food-vils 600)   
+        (set-goal g-desired-future-wood-vils 240)   
+        (set-goal g-desired-future-gold-vils 160)
+        )
+
+        (defrule
+        (goal g-current-strategy FC-MORLEY)
+        (unit-type-count villager >= 35)
+        (current-age >= castle-age)
+        (up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
+        =>
+        (set-goal g-desired-future-food-vils 530)   
+        (set-goal g-desired-future-wood-vils 250)   
+        (set-goal g-desired-future-gold-vils 220)   
+        )
+
+        (defrule
+        (goal g-current-strategy FC-MORLEY)
+        (unit-type-count villager >= 35)
+        (current-age >= castle-age)
+        (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+        =>
+        (set-goal g-desired-future-food-vils 490)   
+        (set-goal g-desired-future-wood-vils 230)   
+        (set-goal g-desired-future-gold-vils 200)   
+        (set-goal g-desired-future-stone-vils 80)
         )
 
     ;------------------
@@ -591,6 +719,73 @@
         (or
             (goal g-current-strategy FC-STRONGBOW)
             (goal g-current-strategy EARLYC-XBOWS))
+        (current-age >= castle-age)
+        (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+        =>
+        (set-goal g-desired-future-food-vils 370)
+        (set-goal g-desired-future-wood-vils 290)
+        (set-goal g-desired-future-gold-vils 260)
+        (set-goal g-desired-future-stone-vils 80)
+        )
+
+    ;-------------
+    ;   Genghis
+    ;-------------
+        
+        (defrule
+        (goal g-current-strategy FC-GENGHIS)
+        (unit-type-count villager >= 18)
+        (unit-type-count villager <= 24)
+        (up-compare-goal g-age-status < TO-CASTLE)
+        =>
+        (set-goal g-desired-future-food-vils 13)
+        (set-goal g-desired-future-wood-vils 11)
+        )
+
+        (defrule
+        (goal g-current-strategy FC-GENGHIS)
+        (unit-type-count villager >= 25)
+        (unit-type-count villager <= 30)
+        (up-compare-goal g-age-status < TO-CASTLE)
+        =>
+        (set-goal g-desired-future-food-vils 13)
+        (set-goal g-desired-future-wood-vils 11)
+        (set-goal g-desired-future-gold-vils 6)
+        )
+
+        ;Switch to using gather percentages (out of 1000 villagers)
+        (defrule
+        (goal g-current-strategy FC-GENGHIS)
+        (unit-type-count villager >= 31)
+        (up-compare-goal g-age-status < TO-CASTLE)
+        (goal g-percent-dynamic-gathering 0)
+        =>
+        (set-goal g-desired-future-food-vils 430)
+        (set-goal g-desired-future-wood-vils 370)
+        (set-goal g-desired-future-gold-vils 200)
+        )
+
+        (defrule
+        (goal g-current-strategy FC-GENGHIS)
+        (goal g-age-status TO-CASTLE)
+        (goal g-percent-dynamic-gathering 0)
+        =>
+        (set-goal g-desired-future-food-vils 400)   ;430
+        (set-goal g-desired-future-wood-vils 370)   
+        (set-goal g-desired-future-gold-vils 230)   ;200
+        )
+        (defrule
+        (goal g-current-strategy FC-GENGHIS)
+        (current-age >= castle-age)
+        (up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
+        =>
+        (set-goal g-desired-future-food-vils 400)   ;46%    ;460
+        (set-goal g-desired-future-wood-vils 320)   ;28%    ;280
+        (set-goal g-desired-future-gold-vils 280)   ;26%    ;260
+        )
+
+        (defrule
+        (goal g-current-strategy FC-GENGHIS)
         (current-age >= castle-age)
         (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
         =>

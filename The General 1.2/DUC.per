@@ -12,6 +12,7 @@
 
         ;If sheep visible but unclaimed, claim sheep
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (up-gaia-type-count c: livestock-class > 0)
         (goal g-claim-sheep NO)
         (building-type-count town-center > 0)
@@ -29,6 +30,7 @@
 
         ;If we found sheep, tell scout to claim sheep
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (up-gaia-type-count c: livestock-class > 0)
         (goal g-claim-sheep NO)
         (building-type-count town-center > 0)
@@ -42,6 +44,7 @@
         
         ;Find scout to claim sheep
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (up-gaia-type-count c: livestock-class > 0)
         (goal g-claim-sheep FOUND-SHEEP)
         (building-type-count town-center > 0)
@@ -63,6 +66,7 @@
 
         ;Find villager to claim sheep
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (up-gaia-type-count c: livestock-class > 0)
         (goal g-claim-sheep FOUND-SHEEP)
         (goal g-local-total 0)  ;we didn't find any scouts
@@ -83,6 +87,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (up-gaia-type-count c: livestock-class > 0)
         (goal g-claim-sheep FOUND-SHEEP)
         (building-type-count town-center > 0)
@@ -95,6 +100,7 @@
         ;Task scout or villager to claim sheep
         ;Scout 1
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (up-gaia-type-count c: livestock-class > 0)
         (goal g-claim-sheep FOUND-SHEEP)
         (goal g-local-total 1)  ;found scout or villager
@@ -108,6 +114,7 @@
         )
         ;Scout 2
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (up-gaia-type-count c: livestock-class > 0)
         (goal g-claim-sheep FOUND-SHEEP)
         (goal g-local-total 2)  ;found scout or villager
@@ -121,6 +128,7 @@
         )
         ;Scout 3
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (up-gaia-type-count c: livestock-class > 0)
         (goal g-claim-sheep FOUND-SHEEP)
         (goal g-local-total 1)  ;found scout or villager
@@ -134,6 +142,7 @@
         )
         ;Villager
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (up-gaia-type-count c: livestock-class > 0)
         (goal g-claim-sheep FOUND-SHEEP)
         (goal g-local-total 1)  ;found scout or villager
@@ -148,6 +157,7 @@
 
         ;Check to see if we have claimed sheep
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (building-type-count town-center > 0)
         (up-compare-goal g-gaia-sheep-id > -1)
         (up-set-target-by-id g: g-gaia-sheep-id)
@@ -158,6 +168,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (up-compare-goal g-claim-sheep != NO)
         (building-type-count town-center > 0)
         (up-compare-goal g-gaia-sheep-id <= -1)
@@ -183,7 +194,9 @@
                     (game-time s:>= sn-home-exploration-time)
                     (or
                         (up-compare-goal g-scouting-distance >= 30)
-                        (goal g-scouting-status AUTO-SCOUT)))))
+                        (or
+                            (goal g-scouting-status AUTO-SCOUT)
+                            (up-compare-goal g-difficulty < HARDEST))))))
         (game-time >= 5)
         =>
         (set-goal g-duc-scouting STOP-DUC-SCOUTING)
@@ -688,6 +701,7 @@
         ;This section controls the movement of sheep and how villagers gather the sheep
 
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (building-type-count town-center == 1)
         (or
             (up-set-target-by-id g: g-current-sheep-id)
@@ -703,6 +717,7 @@
         
         ;Move current sheep to TC
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (building-type-count town-center == 1)
         (up-set-target-by-id g: g-current-sheep-id)
         (up-object-data object-data-idling == 1)	;current sheep is idle
@@ -720,6 +735,7 @@
 
         ;Detect how many sheep we have, only send sheep if we have < 2 dead sheep
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (building-type-count town-center == 1)
         (up-set-target-by-id g: g-current-sheep-id)
         =>
@@ -735,6 +751,7 @@
 
         ;Pick a point to send sheep to
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (building-type-count town-center == 1)
         (up-set-target-by-id g: g-current-sheep-id)
         (up-object-data object-data-hitpoints == 0)	;current sheep is dead
@@ -751,6 +768,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (goal g-temp2 865)
         (building-type-count town-center == 1)
         (up-set-target-by-id g: g-current-sheep-id)
@@ -767,6 +785,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (goal g-temp2 865)
         (building-type-count town-center == 1)
         (up-set-target-by-id g: g-next-sheep-id)
@@ -780,6 +799,7 @@
 
             ;Pick point away from current sheep location, if necessary
             (defrule
+            (up-compare-goal g-difficulty >= HARDEST)
             (goal g-temp2 865)
             (building-type-count town-center == 1)
             (up-set-target-by-id g: g-next-sheep-id)
@@ -798,6 +818,7 @@
             )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (goal g-temp2 865)
         (building-type-count town-center == 1)
         (up-set-target-by-id g: g-current-sheep-id)
@@ -812,6 +833,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (goal g-temp2 865)
         (building-type-count town-center == 1)
         (up-set-target-by-id g: g-current-sheep-id)
@@ -830,6 +852,7 @@
 
         ;Get sheep to send to sheep gather point (exclude the current sheep to gather)
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (building-type-count town-center == 1)
         (up-compare-goal g-current-sheep-count > 0)
         (timer-triggered t-5-sec)
@@ -849,6 +872,7 @@
 
         ;Exclude the next sheep to gather if the current sheep is almost completely gathered
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (building-type-count town-center == 1)
         (up-compare-goal g-current-sheep-count > 0)
         (timer-triggered t-5-sec)
@@ -861,6 +885,7 @@
 
         ;Send sheep to sheep gather point
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (building-type-count town-center == 1)
         (up-compare-goal g-current-sheep-count > 0)
         (timer-triggered t-5-sec)
@@ -875,6 +900,7 @@
 
         ;First, determine if any sheep are incorrectly being targeted
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (building-type-count town-center == 1)
         (unit-type-count livestock-class > 0)
         (up-set-target-by-id g: g-current-sheep-id)
@@ -894,6 +920,7 @@
 
         ;If so, get villagers that are targeting the sheep
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (goal g-temp 9431)
         (building-type-count town-center == 1)
         (unit-type-count livestock-class > 0)
@@ -913,6 +940,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (goal g-temp 9432)
         (up-set-target-by-id g: g-current-sheep-id)
         (up-object-data object-data-distance <= 3)
@@ -930,6 +958,7 @@
 
         ;If sheep isn't close, garrison shepherds in TC to send them toward the TC and/or retask them
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (goal g-temp 9432)
         (building-type-count town-center == 1)
         (unit-type-count livestock-class > 0)
@@ -963,6 +992,77 @@
         (up-ungarrison c: town-center)
         )
 
+    ;-----------
+    ;   Nomad
+    ;-----------
+
+        (load "The General 1.2/Functions/Reset")
+
+        (defrule
+        (goal g-map-style NOMAD)
+        (up-compare-goal g-position-self-x < 0)
+        =>
+        (up-full-reset-search)
+        (up-find-local c: villager-class c: 20)
+        (up-get-search-state g-local-total)
+        (set-goal g-loop-counter 0)
+        (up-get-point position-zero g-point-x)
+        (up-get-point position-zero g-point2-x)
+        (chat-to-all "calculate new position self")
+        )
+
+            (defrule
+            (goal g-map-style NOMAD)
+            (up-compare-goal g-position-self-x < 0)
+            (up-compare-goal g-local-total > 0)
+            (up-compare-goal g-loop-counter < 20)
+            (up-set-target-object search-local g: g-loop-counter)
+            =>
+            (up-get-point position-object g-point2-x)
+            (up-chat-data-to-all "Loop %d" g: g-loop-counter)
+            (up-chat-data-to-all "X %d" g: g-point2-x)
+            (up-chat-data-to-all "Y %d" g: g-point2-y)
+            (up-add-point g-point-x g-point2-x c: 1)
+            (up-modify-goal g-loop-counter c:+ 1)
+            (up-jump-rule -1)
+            )
+
+        (defrule
+        (goal g-map-style NOMAD)
+        (up-compare-goal g-position-self-x < 0)
+        (up-compare-goal g-local-total > 0)
+        (up-compare-goal g-point-x > 0)
+        =>
+        (up-modify-goal g-point-x g:/ g-local-total)
+        (up-modify-goal g-point-y g:/ g-local-total)
+        (up-copy-point g-position-self-x g-point-x)
+        (up-chat-data-to-all "X %d" g: g-position-self-x)
+        (up-chat-data-to-all "Y %d" g: g-position-self-y)
+        (up-send-flare g-position-self-x)
+        )
+
+        (load "The General 1.2/Functions/Reset")
+        (defrule
+        (goal g-map-style NOMAD)
+        (up-compare-goal g-position-self-x >= 0)
+        =>
+        (up-find-local c: villager-class c: 20)
+        (up-set-target-point g-position-self-x)
+        (up-remove-objects search-local object-data-distance < 8)
+        (up-get-search-state g-local-total)
+        )
+
+        (defrule
+        (goal g-map-style NOMAD)
+        (up-compare-goal g-position-self-x >= 0)
+        (up-compare-goal g-local-total > 0)
+        =>
+        (up-target-point g-position-self-x action-default -1 -1)
+        (chat-to-all "send villagers")
+        (disable-self)
+        )
+
+
 ;=========================<>=========================
 ;				HUNTING AND GATHERING
 ;=========================<>=========================
@@ -974,6 +1074,7 @@
         (load "The General 1.2/Functions/Reset Mini")
         
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (goal g-scouting-status PUSH-DEER)
         (building-type-count-total town-center > 0)
         (up-set-target-by-id g: g-scout1-id)
@@ -987,6 +1088,7 @@
         )
 
             (defrule
+            (up-compare-goal g-difficulty >= HARDEST)
             (goal g-scouting-status PUSH-DEER)
             (building-type-count-total town-center > 0)
             (up-set-target-by-id g: g-scout1-id)
@@ -1006,6 +1108,7 @@
             )
 
             (defrule
+            (up-compare-goal g-difficulty >= HARDEST)
             (goal g-scouting-status PUSH-DEER)
             (building-type-count-total town-center > 0)
             (up-set-target-by-id g: g-scout1-id)
@@ -1019,6 +1122,7 @@
             )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (goal g-scouting-status PUSH-DEER)
         (building-type-count-total town-center > 0)
         (up-set-target-by-id g: g-scout1-id)
@@ -1033,6 +1137,7 @@
 
         ;Get ID of deer to push
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (goal g-deer-pushing-status SEARCHED-FOR-DEER)
         (goal g-scouting-status PUSH-DEER)
         (building-type-count-total town-center > 0)
@@ -1048,6 +1153,7 @@
 
         ;Send Scout to point behind deer to push deer to TC
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (goal g-deer-pushing-status FOUND-DEER)
         (goal g-scouting-status PUSH-DEER)
         (building-type-count-total town-center > 0)
@@ -1067,6 +1173,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (goal g-deer-pushing-status FOUND-DEER)
         (goal g-scouting-status PUSH-DEER)
         (building-type-count-total town-center > 0)
@@ -1088,6 +1195,7 @@
 
         ;Check if deer is close to TC, if so, find villager to hunt deer
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (goal g-deer-pushing-status CHECK-DEER-DISTANCE)
         (goal g-scouting-status PUSH-DEER)
         (up-set-target-by-id g: g-current-deer-id)
@@ -1109,6 +1217,7 @@
 
         ;If deer is close, hunt deer with villager
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (goal g-deer-pushing-status FOUND-DEER-HUNTER)
         (goal g-scouting-status PUSH-DEER)
         (building-type-count-total town-center > 0)
@@ -1127,6 +1236,7 @@
 
         ;If deer too far from TC, stop hunters
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (goal g-deer-pushing-status SHOOT-DEER)
         (goal g-scouting-status PUSH-DEER)
         (building-type-count-total town-center > 0)
@@ -1138,6 +1248,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (goal g-deer-pushing-status SHOOT-DEER)
         (goal g-scouting-status PUSH-DEER)
         (building-type-count-total town-center > 0)
@@ -1153,6 +1264,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (goal g-deer-pushing-status SHOOT-DEER)
         (goal g-scouting-status PUSH-DEER)
         (building-type-count-total town-center > 0)
@@ -1168,6 +1280,7 @@
 
         ;If deer is not close, tell scout to nudge the deer again
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (up-compare-goal g-deer-pushing-status >= CHECK-DEER-DISTANCE)
         (goal g-scouting-status PUSH-DEER)
         (building-type-count-total town-center > 0)
@@ -1182,6 +1295,7 @@
 
         ;Once deer is hunted, reset the deer ID again so we can push another deer
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (up-set-target-by-id g: g-current-deer-id)
         (up-object-data object-data-hitpoints == 0)
         =>
@@ -1189,6 +1303,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (up-compare-goal g-current-deer-id > 0)
         (not
             (up-set-target-by-id g: g-current-deer-id))
@@ -1203,6 +1318,7 @@
         (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (not
             (up-set-target-by-id g: g-current-boar-id))
         (or
@@ -1216,6 +1332,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (goal g-boar-hunt-status TARGET-BOAR)
         (or
             (not
@@ -1231,6 +1348,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (up-compare-goal g-boar-hunt-status < READY-TO-LURE)
         (up-compare-flag g-flag == BOAR-HUNTING-CONDITIONS-MET)
         (up-compare-goal g-total-decaying-hunt-food < FAR-BOAR-FOOD-AMOUNT-LEFT)        ;total decaying hunt food includes all decaying boar and deer
@@ -1242,9 +1360,11 @@
         =>
         (set-goal g-boar-hunt-status READY-TO-LURE)
         ; (chat-local-to-self CHAT-BOAR-READY-TO-LURE)
+        ; (up-chat-data-to-all "Total hunt: %d" g: g-total-decaying-hunt-food)
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (goal g-boar-hunt-status READY-TO-LURE)
         ; (dropsite-min-distance live-boar <= MAX-BOAR-HUNT-DISTANCE)
         (up-compare-goal g-current-boar-count > 0)
@@ -1256,6 +1376,7 @@
         )
 
             (defrule
+            (up-compare-goal g-difficulty >= HARD)
             (goal g-boar-hunt-status READY-TO-LURE)
             ; (dropsite-min-distance live-boar <= MAX-BOAR-HUNT-DISTANCE)
             (up-compare-goal g-current-boar-count > 0)
@@ -1273,6 +1394,7 @@
             )
 
             (defrule
+            (up-compare-goal g-difficulty >= HARD)
             (goal g-boar-hunt-status READY-TO-LURE)
             ; (dropsite-min-distance live-boar <= MAX-BOAR-HUNT-DISTANCE)
             (up-compare-goal g-current-boar-count > 0)
@@ -1284,6 +1406,7 @@
             )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (goal g-boar-hunt-status READY-TO-LURE)
         ; (dropsite-min-distance live-boar <= MAX-BOAR-HUNT-DISTANCE)
         (up-compare-goal g-current-boar-count > 0)
@@ -1298,6 +1421,7 @@
 
         ;Get ID of boar to lure
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (goal g-boar-hunt-status READY-TO-LURE)
         ; (dropsite-min-distance live-boar <= MAX-BOAR-HUNT-DISTANCE)
         (up-compare-goal g-current-boar-count > 0)
@@ -1312,6 +1436,7 @@
         (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (goal g-boar-hunt-status SET-BOAR-ID)
         (up-set-target-by-id g: g-current-boar-id)
         (up-object-data object-data-action != actionid-attack)
@@ -1327,6 +1452,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (goal g-boar-hunt-status SET-BOAR-ID)
         (up-set-target-by-id g: g-current-boar-id)
         (up-object-data object-data-action != actionid-attack)
@@ -1342,6 +1468,7 @@
         )
             
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (goal g-boar-hunt-status SET-BOAR-ID)
         (up-set-target-by-id g: g-current-boar-id)
         (up-object-data object-data-action != actionid-attack)
@@ -1355,6 +1482,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (goal g-boar-hunt-status DROP-LURER-RESOURCES)
         (up-set-target-by-id g: g-current-boar-id)
         (up-object-data object-data-action != actionid-attack)
@@ -1373,6 +1501,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (goal g-boar-hunt-status DROP-LURER-RESOURCES)
         (up-set-target-by-id g: g-current-boar-id)
         (up-object-data object-data-action != actionid-attack)
@@ -1391,6 +1520,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (goal g-boar-hunt-status TARGET-BOAR)
         (up-set-target-by-id g: g-current-boar-id)
         (up-object-data object-data-action == actionid-attack)
@@ -1400,6 +1530,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (goal g-boar-hunt-status LURE-BOAR)
         (dropsite-min-distance live-boar <= 6)
         (up-set-target-by-id g: g-current-boar-id)
@@ -1417,6 +1548,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (goal g-boar-hunt-status ASSIST-HUNTING-BOAR)
         (dropsite-min-distance live-boar <= 6)
         (up-set-target-by-id g: g-current-boar-id)
@@ -1429,6 +1561,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (goal g-boar-hunt-status ASSIST-HUNTING-BOAR)
         (dropsite-min-distance live-boar > 6)
         (up-set-target-by-id g: g-current-boar-id)
@@ -1438,20 +1571,26 @@
         (up-full-reset-search)
         (up-find-local c: female-hunter c: 10)
         (up-find-local c: male-hunter c: 10)
+        (up-remove-objects search-local object-data-target-id g:!= g-current-boar-id)
+        (set-strategic-number sn-focus-player-number my-player-number)
+        (up-find-remote c: town-center c: 1)
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (goal g-boar-hunt-status ASSIST-HUNTING-BOAR)
         (dropsite-min-distance live-boar > 6)
         (up-set-target-by-id g: g-current-boar-id)
         (up-object-data object-data-hitpoints > 0)
         (up-set-target-object search-local c: 0)
+        (up-set-target-object search-remote c: 0)
         =>
-        (up-target-point 0 action-stop -1 -1)
-        ; (chat-local-to-self CHAT-BOAR-RUNNING-AWAY)
+        (up-target-objects 1 action-garrison -1 -1)
+        (chat-local-to-self CHAT-BOAR-RUNNING-AWAY)
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARD)
         (goal g-boar-hunt-status ASSIST-HUNTING-BOAR)
         (up-set-target-by-id g: g-current-boar-id)
         (up-object-data object-data-hitpoints == 0)
@@ -1613,6 +1752,7 @@
         (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
+        (up-compare-goal g-difficulty >= EXTREME)
         (unit-type-count villager-forager > 0)
         (building-type-count town-center > 0)
         (building-type-count mill == 0)
@@ -1633,12 +1773,13 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= EXTREME)
         (goal g-temp 53640)
         (up-compare-goal g-local-total > 0)
         (up-set-target-object search-remote c: 0)
         =>
         (up-target-objects 1 action-garrison -1 -1)
-        ; (chat-local-to-self "retask early foragers")
+        (chat-local-to-self "retask early foragers")
         )
 
     ;-------------------------
@@ -1649,6 +1790,7 @@
         (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
+        (up-compare-goal g-difficulty >= EXTREME)
         (unit-type-count villager-forager > 0)
         (building-type-count town-center > 0)
         (building-type-count mill > 0)
@@ -1708,7 +1850,7 @@
             =>
             (up-remove-objects search-local object-data-index g:!= g-loop-counter)
             (up-target-objects 1 action-garrison -1 -1)
-            ; (chat-local-to-self "retask far foragers")
+            (chat-local-to-self "retask far foragers")
             (up-jump-rule 1)
             )
 
@@ -1765,6 +1907,7 @@
         (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
+        (up-compare-goal g-difficulty >= EXTREME)
         (building-type-count town-center > 0)
         (unit-type-count villager-wood > 0)
         (current-age == dark-age)
@@ -1782,6 +1925,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= EXTREME)
         (building-type-count town-center > 0)
         (unit-type-count villager-wood > 0)
         (current-age == dark-age)
@@ -1801,6 +1945,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= EXTREME)
         (building-type-count town-center > 0)
         (unit-type-count villager-wood > 0)
         (current-age == dark-age)
@@ -1815,17 +1960,18 @@
         (up-set-target-object search-remote c: 0)
         =>
         (up-target-objects 1 action-garrison -1 -1)
-        ; (chat-local-to-self "retask early lumberjacks")
+        (chat-local-to-self "retask early lumberjacks")
         )
 
-    ;-----------------
+    ;----------------------------
     ;   Retask Far Lumberjacks
-    ;-----------------
+    ;----------------------------
 
         (load "The General 1.2/Functions/Reset Mini")
 
         ;Retask lumberjacks when gathering wood away from a dropsite
         (defrule
+        (up-compare-goal g-difficulty >= EXTREME)
         (unit-type-count villager-wood > 0)
         (building-type-count town-center > 0)
         (building-type-count lumber-camp > 0)
@@ -1883,7 +2029,7 @@
             =>
             (up-remove-objects search-local object-data-index g:!= g-loop-counter)
             (up-target-objects 1 action-garrison -1 -1)
-            ; (chat-local-to-self "retask far lumberjacks")
+            (chat-local-to-self "retask far lumberjacks")
             (up-jump-rule 1)
             )
 
@@ -1905,6 +2051,7 @@
 
         ;Retask gold miners when gathering gold away from a dropsite
         (defrule
+        (up-compare-goal g-difficulty >= EXTREME)
         (unit-type-count villager-gold > 0)
         (building-type-count town-center > 0)
         (building-type-count mining-camp > 0)
@@ -1962,7 +2109,7 @@
             =>
             (up-remove-objects search-local object-data-index g:!= g-loop-counter)
             (up-target-objects 1 action-garrison -1 -1)
-            ; (chat-local-to-self "retask far gold miners")
+            (chat-local-to-self "retask far gold miners")
             (up-jump-rule 1)
             )
 
@@ -1984,6 +2131,7 @@
 
         ;Retask stone miners when gathering stone away from a dropsite
         (defrule
+        (up-compare-goal g-difficulty >= EXTREME)
         (unit-type-count villager-stone > 0)
         (building-type-count town-center > 0)
         (building-type-count mining-camp > 0)
@@ -2041,7 +2189,7 @@
             =>
             (up-remove-objects search-local object-data-index g:!= g-loop-counter)
             (up-target-objects 1 action-garrison -1 -1)
-            ; (chat-local-to-self "retask far stone miners")
+            (chat-local-to-self "retask far stone miners")
             (up-jump-rule 1)
             )
 
@@ -2062,6 +2210,7 @@
         (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
+        (up-compare-goal g-difficulty >= EXTREME)
         (timer-triggered t-5-sec)
         (up-compare-goal g-usable-farm-count > 0)
         (goal g-town-under-attack NO)
@@ -2075,6 +2224,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= EXTREME)
         (timer-triggered t-5-sec)
         (up-compare-goal g-usable-farm-count > 0)
         (goal g-town-under-attack NO)
@@ -2100,6 +2250,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= EXTREME)
         (timer-triggered t-5-sec)
         (up-compare-goal g-usable-farm-count > 0)
         (goal g-town-under-attack NO)
@@ -2247,6 +2398,7 @@
 
         ;Mining Camps
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (up-pending-objects c: mining-camp > 0)
         (or
             (unit-type-count villager-gold > 0)
@@ -2259,6 +2411,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (up-pending-objects c: mining-camp > 0)
         (or
             (unit-type-count villager-gold > 0)
@@ -2279,6 +2432,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (up-pending-objects c: mining-camp > 0)
         (or
             (unit-type-count villager-gold > 0)
@@ -2294,6 +2448,7 @@
 
         ;Lumber Camps
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (up-pending-objects c: lumber-camp > 0)
         (unit-type-count villager-wood > 0)
         =>
@@ -2304,6 +2459,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (up-pending-objects c: lumber-camp > 0)
         (unit-type-count villager-wood > 0)
         (up-set-target-object search-remote c: 0)
@@ -2320,6 +2476,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (up-pending-objects c: lumber-camp > 0)
         (unit-type-count villager-wood > 0)
         (up-set-target-object search-remote c: 0)
@@ -2333,6 +2490,7 @@
 
         ;First lumber camp
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (building-type-count lumber-camp == 0)
         (up-pending-objects c: lumber-camp > 0)
         (unit-type-count villager-wood > 0)
@@ -2344,6 +2502,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (building-type-count lumber-camp == 0)
         (up-pending-objects c: lumber-camp > 0)
         (unit-type-count villager-wood > 0)
@@ -2358,6 +2517,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (building-type-count lumber-camp == 0)
         (up-pending-objects c: lumber-camp > 0)
         (unit-type-count villager-wood > 0)
@@ -2372,6 +2532,7 @@
 
         ;Mills
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (up-pending-objects c: mill > 0)
         (unit-type-count villager-forager > 0)
         =>
@@ -2382,6 +2543,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (up-pending-objects c: mill > 0)
         (unit-type-count villager-forager > 0)
         (up-set-target-object search-remote c: 0)
@@ -2398,6 +2560,7 @@
         )
 
         (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
         (up-pending-objects c: mill > 0)
         (unit-type-count villager-forager > 0)
         (up-set-target-object search-remote c: 0)
@@ -2431,19 +2594,34 @@
         (set-goal g-loop-counter 0)				;look at first building and track progress through loop
         (up-get-search-state g-local-total)
         )
+
+            ;Retreat from TCs less on lower difficulties
+            (defrule
+            (or
+                (and
+                    (goal g-difficulty HARD)
+                    (up-timer-status t-10-sec == timer-running))
+                (or
+                    (and
+                        (goal g-difficulty MODERATE)
+                        (up-timer-status t-15-sec == timer-running))
+                    (up-compare-goal g-difficulty <= STANDARD)))
+            =>
+            (up-jump-rule 15)
+            )
         
             ;Loop through all target player TCs to find nearby units that should retreat
             (defrule
-            (or
-                (not
-                    (up-set-target-object search-remote g: g-loop-counter))	;cannot find any more enemy defensive buildings
                 (or
-                    (goal g-remote-total 0)
+                    (not
+                        (up-set-target-object search-remote g: g-loop-counter))	;cannot find any more enemy defensive buildings
                     (or
-                        (players-building-type-count target-player town-center == 0)
-                        (and
-                            (up-compare-flag g-attack-method-flag == USE-DUC)
-                            (goal g-attacking YES)))))
+                        (goal g-remote-total 0)
+                        (or
+                            (players-building-type-count target-player town-center == 0)
+                            (and
+                                (up-compare-flag g-attack-method-flag == USE-DUC)
+                                (goal g-attacking YES)))))
             =>
             (up-jump-rule 14)
             )
@@ -2818,6 +2996,7 @@
         (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
+        (up-compare-goal g-difficulty >= EXTREME)
         (or
             (players-unit-type-count any-enemy battering-ram-line > 0)
             (players-unit-type-count any-enemy armored-elephant-line > 0))
@@ -2826,6 +3005,7 @@
         )
 
             (defrule
+            (up-compare-goal g-difficulty >= EXTREME)
             (or
                 (players-unit-type-count any-enemy battering-ram-line > 0)
                 (players-unit-type-count any-enemy armored-elephant-line > 0))
@@ -2839,6 +3019,7 @@
             )
 
             (defrule
+            (up-compare-goal g-difficulty >= EXTREME)
             (or
                 (players-unit-type-count any-enemy battering-ram-line > 0)
                 (players-unit-type-count any-enemy armored-elephant-line > 0))
@@ -2855,6 +3036,7 @@
             )
 
             (defrule
+            (up-compare-goal g-difficulty >= EXTREME)
             (or
                 (players-unit-type-count any-enemy battering-ram-line > 0)
                 (players-unit-type-count any-enemy armored-elephant-line > 0))
@@ -2868,6 +3050,7 @@
             )
 
             (defrule
+            (up-compare-goal g-difficulty >= EXTREME)
             (or
                 (players-unit-type-count any-enemy battering-ram-line > 0)
                 (players-unit-type-count any-enemy armored-elephant-line > 0))
@@ -2888,6 +3071,7 @@
             )
 
             (defrule
+            (up-compare-goal g-difficulty >= EXTREME)
             (or
                 (players-unit-type-count any-enemy battering-ram-line > 0)
                 (players-unit-type-count any-enemy armored-elephant-line > 0))

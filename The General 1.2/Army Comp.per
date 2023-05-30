@@ -737,13 +737,13 @@
         (defrule
         (goal g-current-unit-type SUPPORT-MILITIA)
         =>
-        (set-goal g-current-unit-score 650)
+        (set-goal g-current-unit-score 600)
         )
         #else
         (defrule
         (goal g-current-unit-type SUPPORT-MILITIA)
         =>
-        (set-goal g-current-unit-score 550)
+        (set-goal g-current-unit-score 500)
         )
         #end-if
         (defrule
@@ -837,7 +837,7 @@
         (goal g-current-unit-type SUPPORT-MILITIA)
         (current-age == imperial-age)
         =>
-        (up-modify-goal g-current-unit-score c:+ 100)
+        (up-modify-goal g-current-unit-score c:+ 150)
         (up-log-data 0 CHAT-COUNTER-TYPE c: 1)
         (up-log-data 0 CHAT-COUNTER-AMOUNT c: 100)
         )
@@ -846,7 +846,7 @@
         (goal g-current-unit-type SUPPORT-MILITIA)
         (current-age == imperial-age)
         =>
-        (up-modify-goal g-current-unit-score c:+ 200)
+        (up-modify-goal g-current-unit-score c:+ 250)
         (up-log-data 0 CHAT-COUNTER-TYPE c: 1)
         (up-log-data 0 CHAT-COUNTER-AMOUNT c: 200)
         )
@@ -914,14 +914,14 @@
     ;   Adjustments Based on Primary Unit (2)
     ;-------------------------------------------
 
-        (defrule
-        (goal g-current-unit-type SUPPORT-MILITIA)
-        (goal g-primary-unit eagle-warrior)
-        =>
-        (up-modify-goal g-current-unit-score c:+ 100)
-        (up-log-data 0 CHAT-COUNTER-TYPE c: 2)
-        (up-log-data 0 CHAT-COUNTER-AMOUNT c: 100)
-        )
+        ; (defrule
+        ; (goal g-current-unit-type SUPPORT-MILITIA)
+        ; (goal g-primary-unit eagle-warrior)
+        ; =>
+        ; (up-modify-goal g-current-unit-score c:+ 100)
+        ; (up-log-data 0 CHAT-COUNTER-TYPE c: 2)
+        ; (up-log-data 0 CHAT-COUNTER-AMOUNT c: 100)
+        ; )
         (defrule
         (goal g-current-unit-type SUPPORT-SPEARMAN)
         (goal g-primary-unit-class archery-class)
@@ -2521,11 +2521,13 @@
 		)
 
 		(defrule
-		(or
-			(goal g-next-strategy MIDC-CAV-ARCHERS)
-			(or
-				(goal g-next-strategy EARLYI-HORDE)
-				(goal g-next-strategy MIDI-CAV-ARCHERS)))
+        (or
+            (goal g-next-strategy FC-GENGHIS)
+            (or
+                (goal g-next-strategy MIDC-CAV-ARCHERS)
+                (or
+                    (goal g-next-strategy EARLYI-HORDE)
+                    (goal g-next-strategy MIDI-CAV-ARCHERS))))
         (goal g-current-unit-type SUPPORT-CAVALRY-ARCHER)
 		=>
 		(up-modify-goal g-current-unit-score c:+ 200)
@@ -2669,8 +2671,10 @@
 
 		(defrule
 		(or
-			(goal g-next-strategy MIDC-LANCERS)
-			(goal g-next-strategy MIDI-LANCERS))
+			(goal g-next-strategy FC-MORLEY)
+			(or
+				(goal g-next-strategy MIDC-LANCERS)
+				(goal g-next-strategy MIDI-LANCERS)))
         (goal g-current-unit-type SUPPORT-STEPPE-LANCER)
 		=>
 		(up-modify-goal g-current-unit-score c:+ 200)
