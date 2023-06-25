@@ -591,7 +591,6 @@
 	(set-goal g-attacking NO)
 	(set-goal g-attack-coordination STOP-ATTACKING)
 	(disable-timer t-first-attack)
-	; (chat-to-player my-player-number CHAT-STOP-FIRST-CASTLE-ATTACK-SOLDIERS)
 	)
 	(defrule
 	(goal g-attacking YES)
@@ -602,7 +601,6 @@
 	(set-goal g-attacking NO)
 	(set-goal g-attack-coordination STOP-ATTACKING)
 	(disable-timer t-first-attack)
-	; (chat-to-player my-player-number CHAT-STOP-FIRST-CASTLE-ATTACK-SOLDIERS)
 	)
 	(defrule
 	(goal g-attacking YES)
@@ -685,15 +683,6 @@
 		)
 
 	#end-if
-
-	; (defrule
-	; (goal g-attacking YES)
-	; (up-compare-flag g-attack-method-flag == USE-TSA)
-	; (up-enemy-buildings-in-town == 0)
-	; (strategic-number sn-maximum-town-size >= HUNDRED-PERCENT-MAP-SIZE)
-	; =>
-	; (up-chat-data-to-all CHAT-NO-TARGET-PLAYER-BUILDINGS s: sn-target-player-number)
-	; )
 	
 	;If enemies have no buildings left, switch to attack groups
 	(defrule
@@ -709,7 +698,6 @@
 	(up-modify-sn sn-task-ungrouped-soldiers c:= 1)
 	(up-modify-sn sn-number-explore-groups c:= 4)
 	(up-modify-sn sn-total-number-explorers c:= 4)
-	; (chat-local-to-self CHAT-SWITCH-TO-ATTACK-GROUPS)
 	)
 
 ;=========================<>=========================
@@ -770,13 +758,13 @@
 	(up-compare-sn sn-number-attack-groups != 0)
 	(players-building-count every-enemy != 0)
 	(game-time > 600)
+	(current-age >= feudal-age)
 	=>
 	(up-modify-flag g-attack-method-flag c:- USE-ATTACK-GROUPS)
 	(up-modify-sn sn-task-ungrouped-soldiers c:= 0)
 	(up-modify-sn sn-number-explore-groups c:= 1)
 	(up-modify-sn sn-total-number-explorers c:= 1)
 	(up-reset-scouts)
-	; (chat-local-to-self CHAT-SWITCH-TO-TSA)
 	)
 
 ;=========================<>=========================

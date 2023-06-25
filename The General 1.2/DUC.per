@@ -5,692 +5,1279 @@
 ;=========================<>=========================
 
     ;------------------
-    ;   Claim Sheep
+    ;   DUC Scouting
     ;------------------
 
         (load "The General 1.2/Functions/Reset")
 
-        ;If sheep visible but unclaimed, claim sheep
+        ;Reset
         (defrule
-        (up-compare-goal g-difficulty >= HARD)
-        (up-gaia-type-count c: livestock-class > 0)
-        (goal g-claim-sheep NO)
-        (building-type-count town-center > 0)
-        (goal g-gaia-sheep-id -1)
+        (true)
         =>
-        (up-set-target-point g-position-self-x)
-        (up-full-reset-search)
-        (set-strategic-number sn-focus-player-number 0)
-        (up-filter-distance c: -1 c: 45)
-        (up-find-remote c: livestock-class c: 40)
-        (up-remove-objects search-remote object-data-player != 0)   ;seems like up-find-remote considers all livestock owned by gaia
-        (up-remove-objects search-remote object-data-hitpoints < 5)
-        (up-get-search-state g-local-total)
+        (set-goal g-num-military-scouts 0)
+        (set-goal g-num-sheep-scouts 0)
+        (set-goal g-num-villager-scouts 0)
+        (set-goal g-num-auto-scouts 0)
+        (set-goal g-num-villager-auto-scouts 0)
+        (set-goal g-temp 0)
+        (set-goal g-temp2 NO)
         )
 
-        ;If we found sheep, tell scout to claim sheep
-        (defrule
-        (up-compare-goal g-difficulty >= HARD)
-        (up-gaia-type-count c: livestock-class > 0)
-        (goal g-claim-sheep NO)
-        (building-type-count town-center > 0)
-        (goal g-gaia-sheep-id -1)
-        (up-set-target-object search-remote c: 0)
-        (up-object-data object-data-class == livestock-class)
-        =>
-        (set-goal g-claim-sheep FOUND-SHEEP)
-        (up-get-object-data object-data-id g-gaia-sheep-id)
-        )
-        
-        ;Find scout to claim sheep
-        (defrule
-        (up-compare-goal g-difficulty >= HARD)
-        (up-gaia-type-count c: livestock-class > 0)
-        (goal g-claim-sheep FOUND-SHEEP)
-        (building-type-count town-center > 0)
-        (up-set-target-by-id g: g-gaia-sheep-id)	;we found livestock within a 45 point distance from TC
-        =>
-        (up-reset-search 1 1 0 0)   ;reset search-local but not search-remote
-        (up-reset-filters)
-        (up-add-object-by-id search-local g: g-scout1-id)
-        (up-add-object-by-id search-local g: g-scout2-id)
-        (up-add-object-by-id search-local g: g-scout3-id)
-        (up-remove-objects search-local object-data-class == livestock-class)   ;don't use our own sheep to claim other sheep
-        (up-get-point position-object g-point-x)                                ;get location of unclaimed sheep
-        (up-set-target-point g-point-x)
-        (up-remove-objects search-local object-data-distance > 20)              ;remove scouts too far away from sheep
-        (up-clean-search search-local object-data-distance search-order-asc)    ;find closest scout
-        (up-remove-objects search-local object-data-index > 0)                  ;keep only one unit in search-local
-        (up-get-search-state g-local-total)
-        )
+        ;--------------------------------
+        ;   Calculate Number of Scouts
+        ;--------------------------------
 
-        ;Find villager to claim sheep
-        (defrule
-        (up-compare-goal g-difficulty >= HARD)
-        (up-gaia-type-count c: livestock-class > 0)
-        (goal g-claim-sheep FOUND-SHEEP)
-        (goal g-local-total 0)  ;we didn't find any scouts
-        (building-type-count town-center > 0)
-        (up-set-target-by-id g: g-gaia-sheep-id)	;we found livestock within 45 tiles from TC
-        (not
-            (up-set-target-by-id g: g-scout1-id))
-        =>
-        (up-reset-search 1 1 0 0)   ;reset search-local but not search-remote
-        (up-reset-filters)
-        (up-get-point position-object g-point-x)                                ;get location of unclaimed sheep
-        (up-set-target-point g-point-x)
-        (up-find-local c: villager-class c: 10)                                 ;find villagers in case we don't have a scout at the moment or scout is too far
-        (up-clean-search search-local object-data-distance search-order-asc)    ;find closest villager
-        (up-remove-objects search-local object-data-distance > 15)              ;remove villager too far away from sheep
-        (up-remove-objects search-local object-data-index > 0)                  ;keep only one unit in search-local
-        (up-get-search-state g-local-total)
-        )
+            ;Calculate number of military scouts
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (current-age == dark-age)
+            (up-compare-goal g-position-self-x >= 0)
+            (up-compare-goal g-position-self-y >= 0)
+            (up-compare-goal g-scouting-status != PUSH-DEER)
+            =>
+            (up-full-reset-search)
+            (up-filter-include cmdid-military -1 -1 -1)
+            (up-find-local c: all-units-class c: 10)
+            (up-remove-objects search-local object-data-speed <= 80)
+            (up-get-search-state g-local-total)
+            (up-modify-goal g-num-military-scouts g:= g-local-total)
+            (up-modify-goal g-num-military-scouts c:min 5)
+            )
 
-        (defrule
-        (up-compare-goal g-difficulty >= HARD)
-        (up-gaia-type-count c: livestock-class > 0)
-        (goal g-claim-sheep FOUND-SHEEP)
-        (building-type-count town-center > 0)
-        (up-set-target-by-id g: g-gaia-sheep-id)	;we found livestock within a 45 point distance from TC
-        (goal g-local-total 0)                      ;no nearby scout or villager found
-        =>
-        (set-goal g-claim-sheep NO)
-        )
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (current-age == dark-age)
+            (up-compare-goal g-position-self-x >= 0)
+            (up-compare-goal g-position-self-y >= 0)
+            (unit-type-count villager > 16)
+            (up-compare-goal g-scouting-status != PUSH-DEER)
+            =>
+            (up-modify-goal g-num-military-scouts c:min 1)
+            )
 
-        ;Task scout or villager to claim sheep
-        ;Scout 1
-        (defrule
-        (up-compare-goal g-difficulty >= HARD)
-        (up-gaia-type-count c: livestock-class > 0)
-        (goal g-claim-sheep FOUND-SHEEP)
-        (goal g-local-total 1)  ;found scout or villager
-        (up-set-target-object search-local c: 0)
-        (up-object-data object-data-id g:== g-scout1-id)    ;found scout 1
-        (building-type-count town-center > 0)
-        (up-set-target-by-id g: g-gaia-sheep-id)	;we found livestock within 20 tiles from TC
-        =>
-        (up-target-objects 1 action-move -1 -1)
-        (set-goal g-claim-sheep SEND-SCOUT-1)
-        )
-        ;Scout 2
-        (defrule
-        (up-compare-goal g-difficulty >= HARD)
-        (up-gaia-type-count c: livestock-class > 0)
-        (goal g-claim-sheep FOUND-SHEEP)
-        (goal g-local-total 2)  ;found scout or villager
-        (up-set-target-object search-local c: 0)
-        (up-object-data object-data-id g:== g-scout2-id)    ;found scout 2
-        (building-type-count town-center > 0)
-        (up-set-target-by-id g: g-gaia-sheep-id)	;we found livestock within 20 tiles from TC
-        =>
-        (up-target-objects 1 action-move -1 -1)
-        (set-goal g-claim-sheep SEND-SCOUT-2)
-        )
-        ;Scout 3
-        (defrule
-        (up-compare-goal g-difficulty >= HARD)
-        (up-gaia-type-count c: livestock-class > 0)
-        (goal g-claim-sheep FOUND-SHEEP)
-        (goal g-local-total 1)  ;found scout or villager
-        (up-set-target-object search-local c: 0)
-        (up-object-data object-data-id g:== g-scout3-id)    ;found scout 3
-        (building-type-count town-center > 0)
-        (up-set-target-by-id g: g-gaia-sheep-id)	;we found livestock within 20 tiles from TC
-        =>
-        (up-target-objects 1 action-move -1 -1)
-        (set-goal g-claim-sheep SEND-SCOUT-3)
-        )
-        ;Villager
-        (defrule
-        (up-compare-goal g-difficulty >= HARD)
-        (up-gaia-type-count c: livestock-class > 0)
-        (goal g-claim-sheep FOUND-SHEEP)
-        (goal g-local-total 1)  ;found scout or villager
-        (up-set-target-object search-local c: 0)
-        (up-object-data object-data-class == villager-class)
-        (building-type-count town-center > 0)
-        (up-set-target-by-id g: g-gaia-sheep-id)	;we found livestock within 15 tiles from TC
-        =>
-        (up-target-objects 1 action-move -1 -1)
-        (set-goal g-claim-sheep SEND-VILLAGER)
-        )
+            ;Calculate number of villager scouts
+            (defrule
+            ; (up-compare-goal g-difficulty >= HARDEST)
+            (current-age == dark-age)
+            (up-compare-goal g-position-self-x >= 0)
+            (up-compare-goal g-position-self-y >= 0)
+            (military-population == 0)
+            (building-type-count-total town-center == 0)
+            =>
+            (up-get-fact unit-type-count villager g-num-villager-scouts)
+            )
 
-        ;Check to see if we have claimed sheep
-        (defrule
-        (up-compare-goal g-difficulty >= HARD)
-        (building-type-count town-center > 0)
-        (up-compare-goal g-gaia-sheep-id > -1)
-        (up-set-target-by-id g: g-gaia-sheep-id)
-        (up-object-data object-data-player != 0)
-        =>
-        (set-goal g-claim-sheep NO)
-        (set-goal g-gaia-sheep-id -1)
-        )
+            ; (defrule
+            ; (military-population == 0)
+            ; (current-age == dark-age)
+            ; (building-type-count town-center > 0)
+            ; (up-compare-goal g-current-sheep-count == 0)
+            ; (up-compare-goal g-total-decaying-hunt-food < 200)
+            ; (unit-type-count villager <= 16)
+            ; =>
+            ; (set-goal g-num-villager-scouts 1)
+            ; )
 
-        (defrule
-        (up-compare-goal g-difficulty >= HARD)
-        (up-compare-goal g-claim-sheep != NO)
-        (building-type-count town-center > 0)
-        (up-compare-goal g-gaia-sheep-id <= -1)
-        =>
-        (set-goal g-claim-sheep NO)
-        (set-goal g-gaia-sheep-id -1)
-        )
+            ;Calculate number of sheep scouts
+            (defrule
+            (up-compare-goal g-difficulty >= HARDEST)
+            (game-time < 200)
+            (up-set-target-by-id g: g-current-sheep-id)
+            (up-object-data object-data-hitpoints > 0)
+            (building-type-count-total town-center > 0)
+            =>
+            (up-modify-goal g-temp c:+ 1)
+            )
+            (defrule
+            (up-compare-goal g-difficulty >= HARDEST)
+            (game-time < 200)
+            (up-set-target-by-id g: g-next-sheep-id)
+            (up-object-data object-data-hitpoints > 0)
+            (building-type-count-total town-center > 0)
+            =>
+            (up-modify-goal g-temp c:+ 1)
+            )
+            (defrule
+            (up-compare-goal g-difficulty >= HARDEST)
+            (game-time < 200)
+            (up-set-target-by-id g: g-backup-sheep-id)
+            (up-object-data object-data-hitpoints > 0)
+            (building-type-count-total town-center > 0)
+            =>
+            (up-modify-goal g-temp c:+ 1)
+            )
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (game-time < 200)
+            (up-compare-goal g-position-self-x >= 0)
+            (up-compare-goal g-position-self-y >= 0)
+            (up-compare-goal g-current-sheep-count > 0)
+            =>
+            (up-modify-goal g-num-sheep-scouts g:= g-current-sheep-count)
+            (up-modify-goal g-num-sheep-scouts g:- g-temp)
+            )
 
-    ;------------------------------------
-    ;   Initial Scouting For Resources
-    ;------------------------------------
+            ; ;Reduce number of explorers if we have many players
+            ; (defrule
+            ; (up-compare-goal g-num-sheep-scouts > 0)
+            ; (up-modify-goal g-temp g:= g-num-military-scouts)
+            ; (up-modify-goal g-temp g:+ g-num-villager-scouts)
+            ; (up-modify-goal g-temp g:+ g-num-sheep-scouts)
+            ; (up-compare-goal g-temp > 1)
+            ; =>
+            ; (up-modify-goal g-temp c:- 1)
+            ; (up-modify-goal g-num-sheep-scouts g:- g-temp)
+            ; (up-modify-goal g-num-sheep-scouts c:max 0)
+            ; )
+            ; (defrule
+            ; (up-compare-goal g-num-villager-scouts > 0)
+            ; (up-modify-goal g-temp g:= g-num-military-scouts)
+            ; (up-modify-goal g-temp g:+ g-num-villager-scouts)
+            ; (goal g-num-sheep-scouts 0)
+            ; (up-compare-goal g-temp > 1)
+            ; =>
+            ; (up-modify-goal g-temp c:- 1)
+            ; (up-modify-goal g-num-villager-scouts g:- g-temp)
+            ; (up-modify-goal g-num-villager-scouts c:max 0)
+            ; )
+            ; (defrule
+            ; (up-compare-goal g-num-military-scouts >= 1)
+            ; (goal g-num-villager-scouts 0)
+            ; (goal g-num-sheep-scouts 0)
+            ; =>
+            ; (set-goal g-num-military-scouts 0)
+            ; )
+
+            ;Reset scout group if any units in scout group have died
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (up-group-size c: 8 > 0)
+            =>
+            (up-set-group search-local c: 8)
+            (up-get-search-state g-local-total)
+            (up-modify-goal g-temp g:= g-local-total)
+            (up-remove-objects search-local object-data-hitpoints <= 0)
+            (up-remove-objects search-local object-data-player != my-player-number)
+            (up-clean-search search-local -1 search-order-asc)
+            (up-get-search-state g-local-total)
+            )
+
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (up-group-size c: 8 > 0)
+            (up-compare-goal g-temp g:!= g-local-total)
+            =>
+            (set-goal g-temp2 YES)
+            )
+
+            (defrule
+            (up-group-size c: 8 > 0)
+            (or
+                (and
+                    (up-compare-goal g-difficulty >= HARDEST)
+                    (goal g-temp2 YES))
+                (and
+                    (up-compare-goal g-difficulty < HARDEST)
+                    (building-type-count-total town-center >= 1)))
+            =>
+            (set-goal g-temp2 NO)
+            (up-modify-group-flag 0 c: 8)
+            (up-reset-group c: 8)
+            ; (chat-to-all "reset group 8")
+            )
+
+            ;Check if we have enough military in scout group
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (up-compare-goal g-position-self-x >= 0)
+            (up-compare-goal g-position-self-y >= 0)
+            =>
+            (up-full-reset-search)
+            (up-set-group search-local c: 8)
+            (up-remove-objects search-local object-data-cmdid != cmdid-military)
+            (up-remove-objects search-local object-data-speed <= 80)
+            (up-get-search-state g-local-total)
+            )
+
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (up-compare-goal g-position-self-x >= 0)
+            (up-compare-goal g-position-self-y >= 0)
+            (goal g-scouting-status PUSH-DEER)
+            =>
+            (up-modify-goal g-local-total c:- 1)
+            )
+
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (up-compare-goal g-position-self-x >= 0)
+            (up-compare-goal g-position-self-y >= 0)
+            (up-compare-goal g-local-total g:!= g-num-military-scouts)
+            =>
+            (set-goal g-temp2 YES)
+            (up-full-reset-search)
+            (up-set-group search-local c: 8)
+            (up-remove-objects search-local object-data-cmdid == cmdid-military)
+            (set-strategic-number sn-focus-player-number my-player-number)
+            (up-filter-include cmdid-military -1 -1 -1)
+            (up-find-remote c: all-units-class c: 10)
+            (up-remove-objects search-remote object-data-speed <= 80)
+            (up-set-target-point g-position-self-x)
+            (up-clean-search search-remote object-data-speed search-order-desc)
+            (up-remove-objects search-remote object-data-index g:>= g-num-military-scouts)
+            (up-get-search-state g-local-total)
+            (set-goal g-loop-counter 0)
+            )
+
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (goal g-temp2 YES)
+            (up-set-target-object search-remote g: g-loop-counter)
+            (up-compare-goal g-loop-counter < 40)
+            =>
+            (up-get-object-data object-data-id g-temp)
+            (up-add-object-by-id search-local g: g-temp)
+            (up-modify-goal g-loop-counter c:+ 1)
+            (up-get-search-state g-local-total)
+            (up-jump-rule -1)
+            )
+
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (goal g-temp2 YES)
+            =>
+            (set-goal g-temp2 NO)
+            ; (up-chat-data-to-all "scout with %d military" g: g-num-military-scouts)
+            (up-modify-group-flag 0 c: 8)
+            (up-reset-group c: 8)
+            (up-create-group 0 0 c: 8)
+            (up-modify-group-flag 1 c: 8)
+            )
+
+            ;Check if we have enough villagers in scout group
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (up-compare-goal g-position-self-x >= 0)
+            (up-compare-goal g-position-self-y >= 0)
+            =>
+            (up-full-reset-search)
+            (up-set-group search-local c: 8)
+            (up-remove-objects search-local object-data-class != villager-class)
+            (up-get-search-state g-local-total)
+            )
+
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (up-compare-goal g-position-self-x >= 0)
+            (up-compare-goal g-position-self-y >= 0)
+            (up-compare-goal g-local-total g:!= g-num-villager-scouts)
+            =>
+            (set-goal g-temp2 YES)
+            (up-full-reset-search)
+            (up-set-group search-local c: 8)
+            (up-remove-objects search-local object-data-class == villager-class)
+            (set-strategic-number sn-focus-player-number my-player-number)
+            (up-find-remote c: villager-class c: 10)
+            (up-set-target-point g-position-self-x)
+            (up-clean-search search-remote object-data-distance search-order-desc)
+            (up-remove-objects search-remote object-data-index g:>= g-num-villager-scouts)
+            (set-goal g-loop-counter 0)
+            )
+
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (goal g-temp2 YES)
+            (up-set-target-object search-remote g: g-loop-counter)
+            (up-compare-goal g-loop-counter < 40)
+            =>
+            (up-get-object-data object-data-id g-temp)
+            (up-add-object-by-id search-local g: g-temp)
+            (up-modify-goal g-loop-counter c:+ 1)
+            (up-get-search-state g-local-total)
+            (up-jump-rule -1)
+            )
+
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (goal g-temp2 YES)
+            =>
+            (set-goal g-temp2 NO)
+            ; (up-chat-data-to-all "scout with %d vils" g: g-num-villager-scouts)
+            (up-modify-group-flag 0 c: 8)
+            (up-reset-group c: 8)
+            (up-create-group 0 0 c: 8)
+            (up-modify-group-flag 1 c: 8)
+            )
+
+            ;Check if we have enough sheep in scout group
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (up-compare-goal g-position-self-x >= 0)
+            (up-compare-goal g-position-self-y >= 0)
+            =>
+            (up-full-reset-search)
+            (up-set-group search-local c: 8)
+            (up-remove-objects search-local object-data-class != livestock-class)
+            (up-get-search-state g-local-total)
+            )
+
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (up-compare-goal g-position-self-x >= 0)
+            (up-compare-goal g-position-self-y >= 0)
+            (up-compare-goal g-local-total g:!= g-num-sheep-scouts)
+            =>
+            (set-goal g-temp2 YES)
+            (up-full-reset-search)
+            (up-set-group search-local c: 8)
+            (up-remove-objects search-local object-data-class == livestock-class)
+            (set-strategic-number sn-focus-player-number my-player-number)
+            (up-find-remote c: livestock-class c: 10)
+            (up-remove-objects search-remote object-data-player != my-player-number)
+            (up-remove-objects search-remote object-data-hitpoints <= 0)
+            )
+
+            (defrule
+            (up-compare-goal g-difficulty >= HARDEST)
+            (goal g-temp2 YES)
+            (building-type-count-total town-center > 0)
+            =>
+            (up-remove-objects search-local object-data-id g:== g-current-sheep-id)
+            (up-remove-objects search-local object-data-id g:== g-next-sheep-id)
+            (up-remove-objects search-local object-data-id g:== g-backup-sheep-id)
+            (up-get-search-state g-local-total)
+            )
+
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (goal g-temp2 YES)
+            =>
+            (up-set-target-point g-position-self-x)
+            (up-clean-search search-remote object-data-distance search-order-desc)
+            (up-remove-objects search-remote object-data-index g:>= g-num-sheep-scouts)
+            (set-goal g-loop-counter 0)
+            )
+
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (goal g-temp2 YES)
+            (up-set-target-object search-remote g: g-loop-counter)
+            (up-compare-goal g-loop-counter < 40)
+            =>
+            (up-get-object-data object-data-id g-temp)
+            (up-add-object-by-id search-local g: g-temp)
+            (up-modify-goal g-loop-counter c:+ 1)
+            (up-get-search-state g-local-total)
+            (up-jump-rule -1)
+            )
+
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (goal g-temp2 YES)
+            =>
+            (set-goal g-temp2 NO)
+            ; (up-chat-data-to-all "scout with %d sheep" g: g-num-sheep-scouts)
+            (up-modify-group-flag 0 c: 8)
+            (up-reset-group c: 8)
+            (up-create-group 0 0 c: 8)
+            (up-modify-group-flag 1 c: 8)
+            )
+
+        ;------------------------------
+        ;   Find next point to scout
+        ;------------------------------
+
+            (load "The General 1.2/Functions/Reset Mini")
+
+            (defrule
+            (or
+                (up-compare-goal g-difficulty >= HARDEST)
+                (building-type-count-total town-center == 0))
+            (up-group-size c: 8 > 0)
+            (up-compare-goal g-position-self-x >= 0)
+            (up-compare-goal g-position-self-y >= 0)
+            =>
+            (up-full-reset-search)
+            (up-set-group search-local c: 8)
+            (up-get-search-state g-local-total)
+            (set-goal g-loop-counter 0)
+            (set-goal g-loop-counter2 0)
+            (set-goal g-scout-current-score 0)
+            (set-goal g-scout-best-score -99999)
+            (set-goal g-scout-los 0)
+            (set-goal g-scout-radius 0)
+            (set-goal g-num-auto-scouts PENDING)
+            (set-goal g-num-villager-auto-scouts PENDING)
+            )
+
+                ;Get scout LOS
+                (defrule
+                (or
+                    (up-compare-goal g-difficulty >= HARDEST)
+                    (building-type-count-total town-center == 0))
+                (up-group-size c: 8 > 0)
+                (up-compare-goal g-position-self-x >= 0)
+                (up-compare-goal g-position-self-y >= 0)
+                (up-set-target-object search-local g: g-loop-counter)
+                (up-get-object-data object-data-point-x g-point-x)
+                (up-get-object-data object-data-point-y g-point-y)
+                (up-get-object-data object-data-move-x g-point2-x)
+                (up-get-object-data object-data-move-y g-point2-y)
+                (up-point-distance g-point-x g-point2-x > 1)
+                (up-object-data object-data-idling != 1)
+                (up-timer-status t-10-sec != timer-triggered)
+                =>
+                (up-full-reset-search)
+                (up-set-group search-local c: 8)
+                (up-get-search-state g-local-total)
+                (set-goal g-scout-current-score 0)
+                (set-goal g-scout-best-score -99999)
+                (set-goal g-scout-los 0)
+                (set-goal g-scout-radius 0)
+                (up-modify-goal g-loop-counter c:+ 1)
+                (up-jump-rule -1)
+                )
+
+                (defrule
+                (or
+                    (up-compare-goal g-difficulty >= HARDEST)
+                    (building-type-count-total town-center == 0))
+                (current-age == dark-age)
+                (up-group-size c: 8 > 0)
+                (up-set-target-object search-local g: g-loop-counter)
+                (up-get-object-data object-data-point-x g-point-x)
+                (up-get-object-data object-data-point-y g-point-y)
+                (up-get-object-data object-data-move-x g-point2-x)
+                (up-get-object-data object-data-move-y g-point2-y)
+                (or
+                    (up-point-distance g-point-x g-point2-x <= 1)
+                    (or
+                        (up-object-data object-data-idling == 1)
+                        ; (or
+                            ; (up-path-distance g-point2-x 0 == 65535)
+                            (timer-triggered t-10-sec)));)
+                (up-compare-goal g-position-self-x >= 0)
+                (up-compare-goal g-position-self-y >= 0)
+                =>
+                (up-get-object-data object-data-range g-scout-los)
+                (up-modify-goal g-scout-los c:+ 2)
+                (up-modify-goal g-scout-los c:max 3)
+                (up-modify-goal g-scout-los c:min 8)
+                ; (up-chat-data-to-all "Scout LOS %d" g: g-scout-los)
+                (set-goal g-num-auto-scouts 0)
+                (set-goal g-num-villager-auto-scouts 0)
+                ; (up-modify-goal g-temp3 c:* 10)
+                )
+
+                (defrule
+                (or
+                    (up-compare-goal g-difficulty >= HARDEST)
+                    (building-type-count-total town-center == 0))
+                (up-group-size c: 8 > 0)
+                (up-set-target-object search-local g: g-loop-counter)
+                (up-object-data object-data-speed >= 80)    ;not sheep
+                =>
+                (up-modify-goal g-scout-los c:max 4)
+                )
+
+                (defrule
+                (or
+                    (up-compare-goal g-difficulty >= HARDEST)
+                    (building-type-count-total town-center == 0))
+                (up-group-size c: 8 > 0)
+                (up-set-target-object search-local g: g-loop-counter)
+                (up-object-data object-data-base-type == eagle-warrior)
+                =>
+                (up-modify-goal g-scout-los c:max 5)
+                )
+
+                (defrule
+                (or
+                    (up-compare-goal g-difficulty >= HARDEST)
+                    (building-type-count-total town-center == 0))
+                (up-group-size c: 8 > 0)
+                (up-set-target-object search-local g: g-loop-counter)
+                (up-object-data object-data-base-type == scout-cavalry)
+                (or
+                    (civ-selected mongol)
+                    (players-civ any-ally mongol))
+                =>
+                (up-modify-goal g-scout-los c:max 6)
+                )
+
+                ;Find best point to scout
+                (defrule
+                (or
+                    (up-compare-goal g-difficulty >= HARDEST)
+                    (building-type-count-total town-center == 0))
+                (up-group-size c: 8 > 0)
+                (up-set-target-object search-local g: g-loop-counter)
+                =>
+                (up-modify-goal g-scout-radius g:= g-scout-los)
+                ; (up-modify-goal g-scout-radius c:+ SCOUT-SEARCH-RADIUS)
+                (up-modify-goal g-scout-radius c:* 2)
+                ; (up-chat-data-to-all "Radius %d" g: g-scout-radius)
+                (up-modify-goal g-offset-x g:= g-scout-radius)
+                (up-modify-goal g-offset-x c:* -1)
+                (up-modify-goal g-offset-y g:= g-offset-x)
+                )
+
+                    ;Get point to check
+                    (defrule
+                    (or
+                        (up-compare-goal g-difficulty >= HARDEST)
+                        (building-type-count-total town-center == 0))
+                    (up-group-size c: 8 > 0)
+                    (up-set-target-object search-local g: g-loop-counter)
+                    =>
+                    (up-get-point position-object g-point-x)
+                    (up-modify-goal g-point-x g:+ g-offset-x)
+                    (up-modify-goal g-point-y g:+ g-offset-y)
+                    (up-bound-point g-point-x g-point-x)
+                    (up-set-target-point g-point-x)
+                    )
+
+                    ;If already within the unit's LOS, don't consider point
+                    (defrule
+                    (or
+                        (up-compare-goal g-difficulty >= HARDEST)
+                        (building-type-count-total town-center == 0))
+                    (up-group-size c: 8 > 0)
+                    (up-set-target-object search-local g: g-loop-counter)
+                    (up-modify-goal g-temp2 g:= g-scout-los)
+                    (up-modify-goal g-temp3 g:= g-temp2)
+                    (up-modify-goal g-temp3 c:* -1)
+                    (up-compare-goal g-offset-x g:>= g-temp3)
+                    (up-compare-goal g-offset-x g:<= g-temp2)
+                    (up-compare-goal g-offset-y g:>= g-temp3)
+                    (up-compare-goal g-offset-y g:<= g-temp2)
+                    ; (up-compare-goal g-offset-x g:!= g-min-x)
+                    ; (up-compare-goal g-offset-x g:!= g-max-x)
+                    ; (up-compare-goal g-offset-y g:!= g-min-y)
+                    ; (up-compare-goal g-offset-y g:!= g-max-y)
+                    (up-compare-goal g-offset-x g:< g-scout-radius)
+                    (up-compare-goal g-offset-y g:< g-scout-radius)
+                    =>
+                    (up-modify-goal g-offset-x c:+ 3)
+                    (up-jump-rule -2)
+                    )
+
+                    ;Check if point is explored
+                    (defrule
+                    (or
+                        (up-compare-goal g-difficulty >= HARDEST)
+                        (building-type-count-total town-center == 0))
+                    (up-group-size c: 8 > 0)
+                    (up-set-target-object search-local g: g-loop-counter)
+                    (up-point-explored g-point-x == explored-no)
+                    =>
+                    (up-modify-goal g-scout-current-score c:+ 150)
+                    )
+
+                    ;Check for unexplored tiles near this point
+                    (defrule
+                    (or
+                        (up-compare-goal g-difficulty >= HARDEST)
+                        (building-type-count-total town-center == 0))
+                    (up-group-size c: 8 > 0)
+                    (up-set-target-object search-local g: g-loop-counter)
+                    (up-modify-goal g-point2-x g:= g-point-x)
+                    (up-modify-goal g-point2-y g:= g-point-y)
+                    (up-modify-goal g-point2-x g:- g-scout-los)
+                    (up-point-explored g-point2-x == explored-no)
+                    =>
+                    (up-modify-goal g-scout-current-score c:+ 50)
+                    )
+                    (defrule
+                    (or
+                        (up-compare-goal g-difficulty >= HARDEST)
+                        (building-type-count-total town-center == 0))
+                    (up-group-size c: 8 > 0)
+                    (up-set-target-object search-local g: g-loop-counter)
+                    (up-modify-goal g-point2-x g:= g-point-x)
+                    (up-modify-goal g-point2-y g:= g-point-y)
+                    (up-modify-goal g-point2-x g:+ g-scout-los)
+                    (up-point-explored g-point2-x == explored-no)
+                    =>
+                    (up-modify-goal g-scout-current-score c:+ 50)
+                    )
+                    (defrule
+                    (or
+                        (up-compare-goal g-difficulty >= HARDEST)
+                        (building-type-count-total town-center == 0))
+                    (up-group-size c: 8 > 0)
+                    (up-set-target-object search-local g: g-loop-counter)
+                    (up-modify-goal g-point2-x g:= g-point-x)
+                    (up-modify-goal g-point2-y g:= g-point-y)
+                    (up-modify-goal g-point2-y g:- g-scout-los)
+                    (up-point-explored g-point2-x == explored-no)
+                    =>
+                    (up-modify-goal g-scout-current-score c:+ 50)
+                    )
+                    (defrule
+                    (or
+                        (up-compare-goal g-difficulty >= HARDEST)
+                        (building-type-count-total town-center == 0))
+                    (up-group-size c: 8 > 0)
+                    (up-set-target-object search-local g: g-loop-counter)
+                    (up-modify-goal g-point2-x g:= g-point-x)
+                    (up-modify-goal g-point2-y g:= g-point-y)
+                    (up-modify-goal g-point2-y g:+ g-scout-los)
+                    (up-point-explored g-point2-x == explored-no)
+                    =>
+                    (up-modify-goal g-scout-current-score c:+ 50)
+                    )
+
+                    ;Check distance to g-position-self
+                    (defrule
+                    (or
+                        (up-compare-goal g-difficulty >= HARDEST)
+                        (building-type-count-total town-center == 0))
+                    (up-group-size c: 8 > 0)
+                    (up-set-target-object search-local g: g-loop-counter)
+                    ; (up-point-explored g-point-x == explored-no)
+                    =>
+                    (up-get-point-distance g-point-x g-position-self-x g-temp2)
+                    (up-modify-goal g-temp2 c:* -7)
+                    (up-modify-goal g-scout-current-score g:+ g-temp2)
+                    )
+
+                    ;If Nomad and TC isn't built, explore around food resources
+                    (defrule
+                    (or
+                        (up-compare-goal g-map-style != NOMAD)
+                        (building-type-count-total town-center > 0))
+                    =>
+                    (up-jump-rule 2)
+                    )
+
+                        (defrule
+                        (or
+                            (up-compare-goal g-difficulty >= HARDEST)
+                            (building-type-count-total town-center == 0))
+                        (up-group-size c: 8 > 0)
+                        =>
+                        (up-reset-search 0 0 1 1)
+                        (up-reset-filters)
+                        (up-filter-distance c: -1 c: 6)
+                        (up-find-resource c: deer-class c: 1)
+                        (up-find-resource c: boar-class c: 1)
+                        (up-get-search-state g-local-total)
+                        )
+
+                        (defrule
+                        (or
+                            (up-compare-goal g-difficulty >= HARDEST)
+                            (building-type-count-total town-center == 0))
+                        (up-group-size c: 8 > 0)
+                        (up-compare-goal g-remote-total > 0)
+                        =>
+                        (up-modify-goal g-scout-current-score c:+ 300)
+                        )
+
+                    ; ;Check how many unexplored tiles are near this point
+                    ; (defrule
+                    ; (up-compare-goal g-difficulty >= HARDEST)
+                    ; (up-group-size c: 8 > 0)
+                    ; (up-set-target-object search-local g: g-loop-counter)
+                    ; =>
+                    ; ; (up-modify-goal g-offset2-x g:= g-scout-los)
+                    ; ; (up-modify-goal g-offset2-x c:* -1)
+                    ; ; (up-modify-goal g-offset2-y g:= g-offset2-x)
+                    ; (set-goal g-offset2-x -3)
+                    ; (set-goal g-offset2-y -3)
+                    ; )
+
+                    ;     (defrule
+                    ;     (up-compare-goal g-difficulty >= HARDEST)
+                    ;     (up-group-size c: 8 > 0)
+                    ;     (up-set-target-object search-local g: g-loop-counter)
+                    ;     =>
+                    ;     (up-copy-point g-point2-x g-point-x)
+                    ;     (up-modify-goal g-point2-x g:+ g-offset2-x)
+                    ;     (up-modify-goal g-point2-y g:+ g-offset2-y)
+                    ;     ; (up-bound-point g-point2-x g-point2-x)
+                    ;     )
+
+                    ;     (defrule
+                    ;     (up-compare-goal g-difficulty >= HARDEST)
+                    ;     (up-group-size c: 8 > 0)
+                    ;     (up-set-target-object search-local g: g-loop-counter)
+                    ;     (up-compare-goal g-point2-x >= 0)
+                    ;     (up-compare-goal g-point2-y >= 0)
+                    ;     (up-compare-goal g-point2-x <= HUNDRED-PERCENT-MAP-SIZE)
+                    ;     (up-compare-goal g-point2-y <= HUNDRED-PERCENT-MAP-SIZE)
+                    ;     (up-point-explored g-point2-x == explored-no)
+                    ;     =>
+                    ;     ; (up-modify-goal g-scout-current-score c:+ 2)
+                    ;     (up-modify-goal g-scout-current-score c:+ 12)
+                    ;     )
+
+                    ;     (defrule
+                    ;     (up-group-size c: 8 > 0)
+                    ;     (up-set-target-object search-local g: g-loop-counter)
+                    ;     ; (up-compare-goal g-offset2-x g:< g-scout-los)
+                    ;     (up-compare-goal g-offset2-x < 3)
+                    ;     =>
+                    ;     (up-modify-goal g-offset2-x c:+ 2)
+                    ;     (up-jump-rule -3)
+                    ;     )
+                    ;     (defrule
+                    ;     (up-group-size c: 8 > 0)
+                    ;     (up-set-target-object search-local g: g-loop-counter)
+                    ;     ; (up-compare-goal g-offset2-x g:>= g-scout-los)
+                    ;     ; (up-compare-goal g-offset2-y g:< g-scout-los)
+                    ;     (up-compare-goal g-offset2-x >= 3)
+                    ;     (up-compare-goal g-offset2-y < 3)
+                    ;     =>
+                    ;     (up-modify-goal g-offset2-y c:+ 2)
+                    ;     ; (up-modify-goal g-offset2-x g:= g-scout-los)
+                    ;     ; (up-modify-goal g-offset2-x c:* -1)
+                    ;     (set-goal g-offset2-x -3)
+                    ;     (up-jump-rule -4)
+                    ;     )
+
+                    ;Check if other scouts nearby
+                    (defrule
+                    (or
+                        (up-compare-goal g-difficulty >= HARDEST)
+                        (building-type-count-total town-center == 0))
+                    (up-group-size c: 8 > 0)
+                    (up-set-target-object search-local g: g-loop-counter)
+                    =>
+                    (up-reset-search 0 0 1 1)
+                    (up-set-group search-remote c: 8)
+                    (up-get-search-state g-local-total)
+                    (set-goal g-loop-counter2 0)
+                    )
+
+                        (defrule
+                        (or
+                            (up-compare-goal g-difficulty >= HARDEST)
+                            (building-type-count-total town-center == 0))
+                        (up-group-size c: 8 > 0)
+                        (up-set-target-object search-local g: g-loop-counter)
+                        (up-set-target-object search-remote g: g-loop-counter2)
+                        (up-get-object-data object-data-point-x g-point3-x)
+                        (up-get-object-data object-data-point-y g-point3-y)
+                        (up-point-distance g-point-x g-point3-x <= 10)
+                        (up-compare-goal g-loop-counter2 g:< g-remote-total)
+                        (up-compare-goal g-loop-counter2 < 40)
+                        =>
+                        (up-get-point-distance g-point-x g-point3-x g-temp2)
+                        (up-modify-goal g-temp2 c:* 2)
+                        (up-modify-goal g-temp2 c:- 20)
+                        (up-modify-goal g-scout-current-score g:+ g-temp2)
+                        (up-modify-goal g-loop-counter2 c:+ 1)
+                        (up-jump-rule -1)
+                        )
+
+                    ;Check distance to enemy
+                    (defrule
+                    (or
+                        (up-compare-goal g-difficulty >= HARDEST)
+                        (building-type-count-total town-center == 0))
+                    (up-group-size c: 8 > 0)
+                    (up-set-target-object search-local g: g-loop-counter)
+                    (up-object-data object-data-class != livestock-class)
+                    =>
+                    (up-get-point position-flank g-point3-x)
+                    (up-get-point-distance g-position-self-x g-point3-x g-temp2)
+                    (up-modify-goal g-scout-current-score g:+ g-temp2)
+                    (up-get-point-distance g-point-x g-point3-x g-temp2)
+                    (up-modify-goal g-scout-current-score g:- g-temp2)
+                    )
+                    (defrule
+                    (or
+                        (up-compare-goal g-difficulty >= HARDEST)
+                        (building-type-count-total town-center == 0))
+                    (up-group-size c: 8 > 0)
+                    (up-set-target-object search-local g: g-loop-counter)
+                    (up-object-data object-data-class == livestock-class)
+                    =>
+                    (up-get-point position-flank g-point3-x)
+                    (up-get-point-distance g-position-self-x g-point3-x g-temp2)
+                    (up-modify-goal g-scout-current-score g:- g-temp2)
+                    (up-get-point-distance g-point-x g-point3-x g-temp2)
+                    (up-modify-goal g-scout-current-score g:+ g-temp2)
+                    )
+
+                    ;Check if best score
+                    (defrule
+                    (or
+                        (up-compare-goal g-difficulty >= HARDEST)
+                        (building-type-count-total town-center == 0))
+                    (up-group-size c: 8 > 0)
+                    (up-set-target-object search-local g: g-loop-counter)
+                    (up-compare-goal g-scout-current-score g:> g-scout-best-score)
+                    =>
+                    (up-copy-point g-point4-x g-point-x)
+                    (up-modify-goal g-scout-best-score g:= g-scout-current-score)
+                    )
+
+                    (defrule
+                    (or
+                        (up-compare-goal g-difficulty >= HARDEST)
+                        (building-type-count-total town-center == 0))
+                    (up-group-size c: 8 > 0)
+                    (up-set-target-object search-local g: g-loop-counter)
+                    (up-compare-goal g-offset-x g:< g-scout-radius)
+                    =>
+                    (up-modify-goal g-offset-x c:+ 3)
+                    (set-goal g-scout-current-score 0)
+                    (up-jump-rule -17)
+                    )
+                    (defrule
+                    (or
+                        (up-compare-goal g-difficulty >= HARDEST)
+                        (building-type-count-total town-center == 0))
+                    (up-group-size c: 8 > 0)
+                    (up-set-target-object search-local g: g-loop-counter)
+                    (up-compare-goal g-offset-x g:>= g-scout-radius)
+                    (up-compare-goal g-offset-y g:< g-scout-radius)
+                    =>
+                    (up-modify-goal g-offset-y c:+ 3)
+                    (up-modify-goal g-offset-x g:= g-scout-radius)
+                    (up-modify-goal g-offset-x c:* -1)
+                    (set-goal g-scout-current-score 0)
+                    (up-jump-rule -18)
+                    )
+
+                (defrule
+                (or
+                    (up-compare-goal g-difficulty >= HARDEST)
+                    (building-type-count-total town-center == 0))
+                (up-group-size c: 8 > 0)
+                (up-set-target-object search-local g: g-loop-counter)
+                ; (or
+                    (up-compare-goal g-scout-best-score <= 0)
+                    ; (up-path-distance g-point4-x 0 == 65535))
+                (up-object-data object-data-class != villager-class)
+                (up-object-data object-data-class != livestock-class)
+                =>
+                (up-modify-goal g-num-auto-scouts c:+ 1)
+                )
+
+                (defrule
+                (or
+                    (up-compare-goal g-difficulty >= HARDEST)
+                    (building-type-count-total town-center == 0))
+                (up-group-size c: 8 > 0)
+                (up-set-target-object search-local g: g-loop-counter)
+                ; (or
+                    (up-compare-goal g-scout-best-score <= 0)
+                    ; (up-path-distance g-point4-x 0 == 65535))
+                (or
+                    (up-object-data object-data-class == villager-class)
+                    (up-object-data object-data-class == livestock-class))
+                =>
+                (up-copy-point g-point4-x g-position-self-x)
+                (set-goal g-scout-best-score 1)
+                )
+
+                ;Claim Sheep
+                (defrule
+                (or
+                    (up-compare-goal g-difficulty >= HARDEST)
+                    (building-type-count-total town-center == 0))
+                (up-group-size c: 8 > 0)
+                (up-set-target-object search-local g: g-loop-counter)
+                (up-object-data object-data-class != livestock-class)
+                =>
+                (up-set-target-point g-point-x)
+                (up-reset-search 0 0 1 1)
+                (up-reset-filters)
+                (up-filter-distance c: -1 c: 30)
+                (up-find-resource c: livestock-class c: 4)
+                (up-remove-objects search-remote object-data-player != 0)
+                (up-remove-objects search-remote object-data-hitpoints <= 0)
+                (up-clean-search search-remote object-data-distance search-order-asc)
+                )
+
+                (defrule
+                (or
+                    (up-compare-goal g-difficulty >= HARDEST)
+                    (building-type-count-total town-center == 0))
+                (up-group-size c: 8 > 0)
+                (up-set-target-object search-local g: g-loop-counter)
+                (up-object-data object-data-class != livestock-class)
+                (up-set-target-object search-remote c: 0)
+                =>
+                (up-get-object-data object-data-distance g-temp2)
+                (up-modify-goal g-temp2 c:* -20)
+                (up-modify-goal g-temp2 c:+ 600)
+                )
+
+                (defrule
+                (or
+                    (up-compare-goal g-difficulty >= HARDEST)
+                    (building-type-count-total town-center == 0))
+                (up-group-size c: 8 > 0)
+                (up-set-target-object search-local g: g-loop-counter)
+                (up-object-data object-data-class != livestock-class)
+                (up-set-target-object search-remote c: 0)
+                (up-compare-goal g-temp2 g:> g-scout-best-score)
+                =>
+                (up-get-point position-object g-point4-x)
+                ; (chat-to-all "claim sheep")
+                )
+
+                ; (defrule
+                ; (up-group-size c: 8 > 0)
+                ; (up-set-target-object search-local g: g-loop-counter)
+                ; (or
+                ;     (up-compare-goal g-scout-best-score <= 0)
+                ;     (or
+                ;         (building-type-count-total town-center > 0)
+                ;         ; (or
+                ;             (military-population > 0)))
+                ;             ;(up-path-distance g-point4-x 0 == 65535))))
+                ; (up-object-data object-data-class == villager-class)
+                ; =>
+                ; ; (chat-to-all "can't find villager spot")
+                ; (up-get-point position-center g-point4-x)
+                ; ; (up-send-flare g-point4-x)
+                ; ; (up-modify-goal g-num-villager-auto-scouts c:+ 1)
+                ; )
+
+                (defrule
+                (or
+                    (up-compare-goal g-difficulty >= HARDEST)
+                    (building-type-count-total town-center == 0))
+                (up-group-size c: 8 > 0)
+                (up-set-target-object search-local g: g-loop-counter)
+                ; (up-path-distance g-point4-x 0 != 65535)
+                (up-compare-goal g-scout-best-score > 0)
+                =>
+                (up-remove-objects search-local object-data-index g:!= g-loop-counter)
+                (up-target-point g-point4-x action-move -1 -1)
+                ; (up-chat-data-to-all "Score: %d" g: g-scout-best-score)
+                ; (up-send-flare g-point4-x)
+                )
+
+                (defrule
+                (or
+                    (up-compare-goal g-difficulty >= HARDEST)
+                    (building-type-count-total town-center == 0))
+                (up-group-size c: 8 > 0)
+                (up-modify-goal g-loop-counter c:+ 1)
+                (up-compare-goal g-loop-counter g:< g-local-total)
+                =>
+                (up-full-reset-search)
+                (up-set-group search-local c: 8)
+                (up-get-search-state g-local-total)
+                (set-goal g-scout-current-score 0)
+                (set-goal g-scout-best-score -99999)
+                (set-goal g-scout-los 0)
+                (set-goal g-scout-radius 0)
+                (set-goal g-temp NO)
+                (up-jump-rule -31)
+                )
+
+        ;-----------------------
+        ;   Set Exploring SNs
+        ;-----------------------
+
+            (defrule
+            (up-compare-goal g-difficulty >= HARDEST)
+            (up-group-size c: 8 > 0)
+            (up-compare-goal g-num-auto-scouts >= 0)
+            (up-compare-sn sn-number-explore-groups g:!= g-num-auto-scouts)
+            (current-age == dark-age)
+            =>
+            (up-modify-sn sn-number-explore-groups g:= g-num-auto-scouts)
+            (up-modify-sn sn-total-number-explorers s:= sn-cap-civilian-explorers)
+            (up-modify-sn sn-total-number-explorers g:+ g-num-auto-scouts)
+            (up-modify-sn sn-number-explore-groups g:= g-num-auto-scouts)
+            (up-modify-sn sn-number-explore-groups c:max 0)
+            (up-modify-sn sn-total-number-explorers c:max 0)
+            ; (up-chat-data-to-all "Auto explore %d" s: sn-number-explore-groups)
+            (up-reset-scouts)
+            )
+
+            (defrule
+            (up-compare-goal g-difficulty >= HARDEST)
+            (up-group-size c: 8 > 0)
+            (up-compare-goal g-num-villager-auto-scouts >= 0)
+            (up-compare-sn sn-cap-civilian-explorers g:!= g-num-villager-auto-scouts)
+            (current-age == dark-age)
+            =>
+            (up-modify-sn sn-total-number-explorers s:= sn-number-explore-groups)
+            (up-modify-sn sn-total-number-explorers g:+ g-num-villager-auto-scouts)
+            (up-modify-sn sn-cap-civilian-explorers g:= g-num-villager-auto-scouts)
+            (up-modify-sn sn-minimum-civilian-explorers g:= g-num-villager-auto-scouts)
+            (up-get-fact unit-type-count villager g-temp4)
+            (up-modify-goal g-temp4 g:%/ g-num-villager-auto-scouts)
+            (up-modify-sn sn-percent-civilian-explorers g:= g-num-villager-auto-scouts)
+            (up-modify-sn sn-total-number-explorers c:max 0)
+            (up-modify-sn sn-cap-civilian-explorers c:max 0)
+            (up-modify-sn sn-minimum-civilian-explorers c:max 0)
+            ; (up-chat-data-to-all "Vil Auto explore %d" g: g-num-villager-auto-scouts)
+            ; (up-chat-data-to-all "Vil Auto explore SN %d" s: sn-cap-civilian-explorers)
+            (up-reset-scouts)
+            )
+
+            (defrule
+            (military-population == 0)
+            (or
+                (and
+                    (goal g-num-auto-scouts 0)
+                    (goal g-num-villager-auto-scouts 0))
+                (up-compare-goal g-difficulty < HARDEST))
+            (current-age == dark-age)
+            (building-type-count town-center > 0)
+            (up-compare-goal g-current-sheep-count < 2)
+            (up-compare-goal g-total-sheep-found < 8)
+            (unit-type-count villager <= 20)
+            (up-compare-sn sn-cap-civilian-explorers <= 0)
+            =>
+            (set-strategic-number sn-total-number-explorers 1)
+            (set-strategic-number sn-cap-civilian-explorers 1)
+            (set-strategic-number sn-minimum-civilian-explorers 1)
+            (set-strategic-number sn-percent-civilian-explorers 33)
+            ; (chat-to-all "explore with villager")
+            )
+
+            (defrule
+            (timer-triggered t-10-sec)
+            (military-population == 0)
+            (or
+                (and
+                    (goal g-num-auto-scouts 0)
+                    (goal g-num-villager-auto-scouts 0))
+                (up-compare-goal g-difficulty < HARDEST))
+            (current-age == dark-age)
+            (building-type-count town-center > 0)
+            (up-compare-goal g-current-sheep-count < 2)
+            (up-compare-goal g-total-sheep-found < 8)
+            (unit-type-count villager <= 20)
+            =>
+            (up-jump-rule 1)
+            )
+                (defrule
+                (timer-triggered t-10-sec)
+                (up-compare-sn sn-cap-civilian-explorers > 0)
+                (or
+                    (and
+                        (goal g-num-auto-scouts 0)
+                        (goal g-num-villager-auto-scouts 0))
+                    (up-compare-goal g-difficulty < HARDEST))
+                =>
+                (up-modify-sn sn-total-number-explorers s:= sn-number-explore-groups)
+                (set-strategic-number sn-cap-civilian-explorers 0)
+                (set-strategic-number sn-minimum-civilian-explorers 0)
+                (set-strategic-number sn-percent-civilian-explorers 0)
+                ; (chat-to-all "reset villager scouts")
+                )
+
+            (defrule
+            (or
+                (current-age >= feudal-age)
+                (up-compare-goal g-difficulty < HARDEST))
+            (up-compare-sn sn-number-explore-groups != 1)
+            =>
+            (set-strategic-number sn-number-explore-groups 1)
+            (up-modify-sn sn-total-number-explorers s:max sn-number-explore-groups)
+            ; (chat-to-all "explore with military")
+            )
+
+    ;------------------------------
+    ;	GOAL: g-current-sheep-id
+    ;	GOAL: g-next-sheep-id
+    ;	GOAL: g-backup-sheep-id
+    ;------------------------------
 
         (load "The General 1.2/Functions/Reset Mini")
 
         (defrule
-        (up-compare-goal g-duc-scouting != STOP-DUC-SCOUTING)
         (or
-            (not
-                (up-set-target-by-id g: g-scout1-id))
-            (or
-                (building-type-count-total town-center == 0)
-                (or
-                    (game-time s:>= sn-home-exploration-time)
-                    (or
-                        (up-compare-goal g-scouting-distance >= 30)
-                        (or
-                            (goal g-scouting-status AUTO-SCOUT)
-                            (up-compare-goal g-difficulty < HARDEST))))))
-        (game-time >= 5)
+            (up-compare-goal g-difficulty >= HARDEST)
+            (building-type-count-total town-center == 0))
+        (not
+            (up-set-target-by-id g: g-current-sheep-id))
+        (up-set-target-by-id g: g-next-sheep-id)
         =>
-        (set-goal g-duc-scouting STOP-DUC-SCOUTING)
-        ; (chat-to-player my-player-number CHAT-SCOUTING-AUTO)
+        (up-modify-goal g-current-sheep-id g:= g-next-sheep-id)
+        ; (chat-to-all "set current sheep")
+        (set-goal g-next-sheep-id PENDING)
+        )
+        (defrule
+        (or
+            (up-compare-goal g-difficulty >= HARDEST)
+            (building-type-count-total town-center == 0))
+        (not
+            (up-set-target-by-id g: g-next-sheep-id))
+        (up-set-target-by-id g: g-backup-sheep-id)
+        =>
+        (up-modify-goal g-next-sheep-id g:= g-backup-sheep-id)
+        ; (chat-to-all "set next sheep")
+        (set-goal g-backup-sheep-id PENDING)
         )
 
-        ;Send scout(s) to explore in circles around the town center
-        ;This section allows for up to three units to explore with DUC simultaneously by looping through each scout
+        (defrule
+        (or
+            (up-compare-goal g-difficulty >= HARDEST)
+            (building-type-count-total town-center == 0))
+        (up-compare-goal g-current-sheep-count > 0)
+        =>
+        (up-set-target-point g-position-self-x)	;search from sheep near sheep gather point
+        (up-full-reset-search)
+        (up-find-local c: livestock-class c: 20)
+        (up-clean-search search-local object-data-distance search-order-asc)
+        (up-remove-objects search-local object-data-player != my-player-number)
+        (up-remove-objects search-local object-data-id g:== g-current-sheep-id)
+        (up-remove-objects search-local object-data-id g:== g-next-sheep-id)
+        (up-remove-objects search-local object-data-id g:== g-backup-sheep-id)
+        (set-strategic-number sn-focus-player-number my-player-number)
+        (up-filter-status c: status-pending c: list-active)
+        (up-find-status-remote c: town-center-foundation c: 1)
+        (up-get-search-state g-local-total)
+        )
 
-            ;Prepare for loop
-            (defrule
-            (or
-                (up-set-target-by-id g: g-scout1-id)
-                (or
-                    (up-set-target-by-id g: g-scout2-id)
-                    (up-set-target-by-id g: g-scout3-id)))
-            (up-compare-goal g-duc-scouting != STOP-DUC-SCOUTING)
-            =>
-            (set-goal g-loop-counter 1)                                          ;increments through each scout (1 = first scout, 2 = second scout, 3 = third scout)
-            (set-goal g-current-scout-goal g-scout1-id)
-            (up-modify-goal g-current-scout-id g:= g-scout1-id)
-            )
+        (defrule
+        (or
+            (up-compare-goal g-difficulty >= HARDEST)
+            (building-type-count-total town-center == 0))
+        (or
+            (building-type-count town-center == 1)
+            (and
+                (up-set-target-object search-remote c: 0)
+                (up-object-data object-data-hitpoints >= 1200)))
+        (not
+            (up-set-target-by-id g: g-current-sheep-id))
+        (up-set-target-object search-local c: 0)
+        =>
+        (up-get-object-data object-data-id g-current-sheep-id)
+        (up-remove-objects search-local object-data-index == 0)
+        ; (chat-to-all "found current sheep")
+        )
+        (defrule
+        (or
+            (up-compare-goal g-difficulty >= HARDEST)
+            (building-type-count-total town-center == 0))
+        (building-type-count town-center >= 1)
+        (not
+            (up-set-target-by-id g: g-next-sheep-id))
+        (up-set-target-object search-local c: 0)
+        =>
+        (up-get-object-data object-data-id g-next-sheep-id)
+        (up-remove-objects search-local object-data-index == 0)
+        ; (chat-to-all "found next sheep")
+        )
+        (defrule
+        (or
+            (up-compare-goal g-difficulty >= HARDEST)
+            (building-type-count-total town-center == 0))
+        (unit-type-count villager-shepherd >= 6)
+        (not
+            (up-set-target-by-id g: g-backup-sheep-id))
+        (up-set-target-object search-local c: 0)
+        =>
+        (up-get-object-data object-data-id g-backup-sheep-id)
+        (up-remove-objects search-local object-data-index == 0)
+        ; (chat-to-all "found backup sheep")
+        )
 
-        ;-------------------
-        ;   LOOP SECTION!
-        ;-------------------
-
-            ;Skip rules if the current scout (1, 2, or 3) isn't set
-
-            (defrule
-            (or
-                (not
-                    (up-set-target-by-id g: g-current-scout-id))   ;either scout 1, 2, or 3 depending on the loop
-                (or
-                    (goal g-duc-scouting STOP-DUC-SCOUTING)
-                    (and
-                        (up-compare-goal g-scouting-status != FIND-RESOURCES)
-                        (up-compare-goal g-scouting-status != SCOUT-TOWN))))
-            =>
-            (up-jump-rule 32)
-            )
-
-            ;Skip rules if current scout is claiming sheep
-
-            (defrule
-            (or
+        ;Reset current or next sheep if they are dead or converted
+        (defrule
+        (or
+            (up-compare-goal g-difficulty >= HARDEST)
+            (building-type-count-total town-center == 0))
+        (up-compare-goal g-current-sheep-id != PENDING)
+        (or
+            (not
+                (up-set-target-by-id g: g-current-sheep-id))
+            (and
+                (up-set-target-by-id g: g-current-sheep-id)
                 (and
-                    (goal g-loop-counter 1)  ;loop is looking at first scout
-                    (goal g-claim-sheep SEND-SCOUT-1))
-                (or
-                    (and
-                        (goal g-loop-counter 2)  ;loop is looking at second scout
-                        (goal g-claim-sheep SEND-SCOUT-2))
-                    (and
-                        (goal g-loop-counter 3)  ;loop is looking at third scout
-                        (goal g-claim-sheep SEND-SCOUT-3))))
-            =>
-            (up-jump-rule 31)
-            )
-
-            ;Reset g-duc-scouting
-            (defrule
-            (up-compare-goal g-duc-scouting != STOP-DUC-SCOUTING)
-            =>
-            (set-goal g-duc-scouting RESET)
-            (set-goal g-temp 0)
-            (set-goal g-temp2 0)
-            (set-goal g-temp3 0)
-            (set-goal g-point-x -1)
-            (set-goal g-point-y -1)
-            (set-goal g-point2-x -1)
-            (set-goal g-point2-y -1)
-            )
-
-            ;---------------------------------------------------------
-            ;   Check if current scout is tasked to explore a point
-            ;---------------------------------------------------------
-
-                ;Check if scout 1 is targeting a point
-                (defrule
-                (goal g-duc-scouting RESET)
-                (up-set-target-by-id g: g-current-scout-id)
-                (goal g-loop-counter 1)
-                (up-compare-flag g-flag == SCOUT-1-TARGET-SET)
-                =>
-                (set-goal g-duc-scouting TARGETING-POINT)
-                (up-copy-point g-point-x g-scout1-target-x)     ;copy scout 1's target location into g-point-x
-                )
-                ;Check if scout 2 is targeting a point
-                (defrule
-                (goal g-duc-scouting RESET)
-                (up-set-target-by-id g: g-current-scout-id)
-                (goal g-loop-counter 2)
-                (up-compare-flag g-flag == SCOUT-2-TARGET-SET)
-                =>
-                (set-goal g-duc-scouting TARGETING-POINT)
-                (up-copy-point g-point-x g-scout2-target-x)     ;copy scout 2's target location into g-point-x
-                )
-                ;Check if scout 3 is targeting a point
-                (defrule
-                (goal g-duc-scouting RESET)
-                (up-set-target-by-id g: g-current-scout-id)
-                (goal g-loop-counter 3)
-                (up-compare-flag g-flag == SCOUT-3-TARGET-SET)
-                =>
-                (set-goal g-duc-scouting TARGETING-POINT)
-                (up-copy-point g-point-x g-scout3-target-x)     ;copy scout 3's target location into g-point-x
-                )
-
-            ;----------------------------
-            ;   Get Next Explore Point
-            ;----------------------------
-
-                ;Set the scout's position and the up-cross-tiles distance and direction
-                (defrule
-                (goal g-duc-scouting RESET)
-                (up-set-target-by-id g: g-current-scout-id)   ;current scout found and is alive
-                (building-type-count-total town-center > 0)
-                =>
-                (set-goal g-duc-scouting START)
-                (up-get-point position-object g-point-x)            ;Store the scout's position, will be changed to the next point to be explored
-                (set-goal g-temp 9)                                 ;distance for up-cross-tiles in next rule
-                (up-modify-goal g-temp2 g:= g-loop-counter)                     ;make sure scout 2 goes in opposite direction from scout 1 and 3, g-loop-counter = current scout in loop
-                (up-modify-goal g-temp2 c:mod 2)                   ;if g-loop-counter = 1 or 3, then result = 1; if g-loop-counter = 2, then result = 0
-                (up-modify-goal g-temp2 c:* 2)                     ;if g-loop-counter = 1 or 3, then result = 2; if g-loop-counter = 2, then result = 0
-                (up-modify-goal g-temp2 c:- 1)                     ;if g-loop-counter = 1 or 3, then result = 1, if g-loop-counter = 2, then result = -1
-                (up-modify-goal g-temp g:* g-temp2)                ;if g-loop-counter = 2, then g-temp will be negated, which will switch the direction in next rule
-                (up-modify-goal g-temp g:* g-scouting-direction)    ;clockwise = -1, counterclockwise = 1)
-                (up-modify-goal g-temp3 g:= g-scouting-distance)
-                )
-
-                ;Set distance to explore from TC depending on scout
-                ;Sheep scout around TC at set distances
-                ;Scouts 1, 2, and 3 (if not sheep) are set at different radiuses and increase as g-scouting-distance increases
-                (defrule
-                (goal g-loop-counter 2) ;second scout
-                (goal g-duc-scouting START)
-                (up-set-target-by-id g: g-current-scout-id)   ;current scout found and is alive
-                (building-type-count-total town-center > 0)
-                (up-object-data object-data-class == livestock-class)
-                =>
-                (set-goal g-temp3 13)     ;always keep first sheep scout at 13 tiles from TC
-                )
-                (defrule
-                (goal g-loop-counter 3)  ;third scout
-                (goal g-duc-scouting START)
-                (up-set-target-by-id g: g-current-scout-id)   ;current scout found and is alive
-                (building-type-count-total town-center > 0)
-                (up-object-data object-data-class == livestock-class)
-                =>
-                (set-goal g-temp3 17)     ;always keep second sheep scout at 17 tiles from TC
-                )
-                (defrule
-                (or
-                    (goal g-loop-counter 2)  ;second scout
-                    (goal g-loop-counter 3)) ;third scout
-                (goal g-duc-scouting START)
-                (up-set-target-by-id g: g-current-scout-id)   ;current scout found and is alive
-                (building-type-count-total town-center > 0)
-                =>
-                (up-modify-goal g-temp3 c:+ 8)     ;increase scouting distance for scout 1 or 2 by 4 if we have a third scout
-                )
-                (defrule
-                (goal g-loop-counter 3)  ;third scout
-                (goal g-duc-scouting START)
-                (up-set-target-by-id g: g-current-scout-id)   ;current scout found and is alive
-                (building-type-count-total town-center > 0)
-                =>
-                (up-modify-goal g-temp3 c:+ 8)     ;increase scouting distance for scout 1 by 4 if we have a second scout
-                )
-
-                ;Set next explore point
-                (defrule
-                (goal g-duc-scouting START)
-                (up-set-target-by-id g: g-current-scout-id)   ;current scout found and is alive
-                (building-type-count-total town-center > 0)
-                =>
-                (up-get-point position-object g-point-x)
-                (up-cross-tiles g-point-x g-position-self-x g: g-temp)              ;this gets a point 9 tiles away (value of g-temp) that is perpendicular to the line drawn between the scout and the TC
-                (up-bound-point g-point-x g-point-x)                                ;make sure point is on the map
-                (up-copy-point g-point2-x g-position-self-x)                        ;store the TC location in g-point2-x
-                (up-lerp-tiles g-point2-x g-point-x g: g-temp3)                    ;get a point g-temp3 tiles (g-scouting-distance + extra distance for extra scouts) from g-point2-x (TC location) toward g-point-x (scouting target), store in g-point2-x
-                (up-bound-point g-point2-x g-point2-x)                              ;bound the new point on the map and store it in g-point2-x
-                (set-goal g-duc-scouting SET-POINT)
-                (up-get-path-distance g-point2-x 0 g-temp2)                        ;store path distance from scout to the point in g-temp2
-                )
-                    
-                (defrule
-                (goal g-duc-scouting START)
-                (up-set-target-by-id g: g-current-scout-id)   ;current scout found and is alive
-                (building-type-count-total town-center > 0)
-                =>
-                (set-goal g-temp3 1)   ;used to track iterations in the following loop, if it takes more than 10 tries to find an accessible point, switch to auto scouting
-                )
-
-                    ;Check if explore point is accessible
-                    (defrule
-                    (up-compare-goal g-temp3 < 10)
-                    (goal g-duc-scouting SET-POINT)
-                    (up-set-target-by-id g: g-current-scout-id)   ;current scout found and is alive
-                    (building-type-count-total town-center > 0)
-                    (goal g-temp2 65535)   ;explore point is inaccessible
-                    =>
-                    ; (chat-local-to-self CHAT-SCOUTING-POINT-INACCESSIBLE)
-                    (do-nothing)
-                    )
-
-                    (defrule
-                    (up-compare-goal g-temp3 < 10)
-                    (goal g-duc-scouting SET-POINT)
-                    (up-set-target-by-id g: g-current-scout-id)   ;current scout found and is alive
-                    (building-type-count-total town-center > 0)
-                    (goal g-temp2 65535)   ;explore point is inaccessible
-                    =>
-                    (up-cross-tiles g-point2-x g-position-self-x g: g-temp)             ;this gets a point 9 tiles away (value of g-temp) that is perpendicular to the line drawn between the scout and the TC
-                    (up-bound-point g-point2-x g-point2-x)                              ;make sure point is on the map
-                    (up-copy-point g-point-x g-position-self-x)                         ;store the TC location in g-point2-x
-                    (up-lerp-tiles g-point2-x g-point-x g: g-temp3)                    ;get a point g-temp3 tiles (adjusted g-scouting-distance) from g-point2-x (TC location) toward g-point-x (scouting target) and store in g-point2-x
-                    (up-bound-point g-point2-x g-point-x)                               ;bound the new point on the map and store it in g-point2-x
-                    (up-get-path-distance g-point2-x 0 g-temp2)                        ;store path distance from scout to the point in g-temp2
-                    (up-modify-goal g-temp3 c:+ 1)
-                    (up-jump-rule -2)
-                    )
-
-                ;If accessible point can't be found, switch to auto scouting
-                (defrule
-                (goal g-temp3 10)  ;couldn't find accessible point
-                (goal g-duc-scouting SET-POINT)
-                (up-set-target-by-id g: g-current-scout-id)   ;current scout found and is alive
-                (building-type-count-total town-center > 0)
-                (goal g-temp2 65535)   ;explore point is inaccessible
-                =>
-                (up-reset-scouts)
-                (set-goal g-duc-scouting STOP-DUC-SCOUTING)
-                ; (chat-local-to-self CHAT-SCOUTING-AUTO)
-                )
-
-                (defrule
-                (goal g-duc-scouting SET-POINT)
-                (up-set-target-by-id g: g-current-scout-id)     ;current scout found and is alive
-                (building-type-count-total town-center > 0)
-                (up-compare-goal g-point2-x >= 0)   ;point is valid
-                =>
-                (up-full-reset-search)
-                )
-
-                ;Send Scout 1 to the explore point
-                (defrule
-                (goal g-loop-counter 1)                                      ;first scout
-                (goal g-duc-scouting SET-POINT)
-                (up-set-target-by-id g: g-current-scout-id)     ;current scout found and is alive
-                (building-type-count-total town-center > 0)
-                (up-compare-goal g-point2-x >= 0)   ;point is valid
-                (up-compare-goal g-point2-y >= 0)
-                (up-add-object-by-id search-local g: g-current-scout-id)    ;add current scout to search-local
-                (up-set-target-object search-local c: 0)
-                =>
-                (up-copy-point g-scout1-target-x g-point2-x)                ;copy explore point into g-scout1-target-x
-                (up-target-point g-scout1-target-x action-move -1 -1)       ;send scout to the next explore point
-                (up-modify-flag g-flag c:+ SCOUT-1-TARGET-SET)
-                (set-goal g-duc-scouting TARGETING-POINT)
-                )
-                ;Send Scout 2 to the explore point
-                ;Set point 8 tiles further than g-scouting-distance so that exploration doesn't overlap with scout 1
-                (defrule
-                (goal g-loop-counter 2)                                      ;second scout
-                (goal g-duc-scouting SET-POINT)
-                (up-set-target-by-id g: g-current-scout-id)     ;current scout found and is alive
-                (building-type-count-total town-center > 0)
-                (up-compare-goal g-point2-x >= 0)   ;point is valid
-                (up-add-object-by-id search-local g: g-current-scout-id)    ;add current scout to search-local
-                (up-set-target-object search-local c: 0)
-                (up-object-data object-data-player == my-player-number)
-                =>
-                (up-copy-point g-scout2-target-x g-point2-x)                ;copy explore point into g-scout2-target-x
-                (up-target-point g-scout2-target-x action-move -1 -1)       ;send scout to the next explore point
-                (up-modify-flag g-flag c:+ SCOUT-2-TARGET-SET)
-                (set-goal g-duc-scouting TARGETING-POINT)
-                )
-                ;Send Scout 3 to the explore point
-                ;Set point 16 tiles further than g-scouting-distance so that exploration doesn't overlap with scout 1 or scout 2
-                (defrule
-                (goal g-loop-counter 3)                                      ;third scout
-                (goal g-duc-scouting SET-POINT)
-                (up-set-target-by-id g: g-current-scout-id)     ;current scout found and is alive
-                (building-type-count-total town-center > 0)
-                (up-compare-goal g-point2-x >= 0)   ;point is valid
-                (up-add-object-by-id search-local g: g-current-scout-id)    ;add current scout to search-local
-                (up-set-target-object search-local c: 0)
-                (up-object-data object-data-player == my-player-number)
-                =>
-                (up-copy-point g-scout3-target-x g-point2-x)                ;copy explore point into g-scout3-target-x
-                (up-target-point g-scout3-target-x action-move -1 -1)       ;send scout to the next explore point
-                (up-modify-flag g-flag c:+ SCOUT-3-TARGET-SET)
-                (set-goal g-duc-scouting TARGETING-POINT)
-                )
-
-            ;----------------------
-            ;   Switch Direction
-            ;----------------------
-
-                ;If explore point is on the border, switch the scouting direction for the next explore point
-                ;For convenience, only switch direction when scout 1 reaches the border
-
-                ;If the explore point is near NW or SW border
-                (defrule
-                (goal g-loop-counter 1)                                      ;First scout in loop
-                (game-time > 90)                                ;allow exploring along border if scouting reaches the border early, we likely started near the border of the map, so we want to guarantee that we explore it
-                (goal g-duc-scouting TARGETING-POINT)
-                (up-set-target-by-id g: g-current-scout-id)     ;current scout found and is alive
-                (building-type-count-total town-center > 0)
-                (or
-                    (up-compare-goal g-scout1-target-x <= 2)
-                    (up-compare-goal g-scout1-target-y <= 2))     ;the point is <= 2 tiles away from the NW or SW border
-                (timer-triggered t-change-scouting-direction)
-                =>
-                (up-modify-goal g-scouting-direction c:* -1)    ;switch direction (clockwise = -1, counterclockwise = 1)
-                (enable-timer t-change-scouting-direction 30)
-                (up-modify-goal g-scouting-distance c:+ 4)
-                )
-                
-                ;If the explore point is near NE or SE border
-                (defrule
-                (goal g-loop-counter 1)                                      ;First scout in loop
-                (game-time > 90)                                ;allow exploring along border if scouting reaches the border early, we likely started near the border of the map, so we want to guarantee that we explore it
-                (goal g-duc-scouting TARGETING-POINT)
-                (up-set-target-by-id g: g-current-scout-id)     ;current scout found and is alive
-                (building-type-count-total town-center > 0)
-                (or
-                    (up-compare-goal g-scout1-target-x >= HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE)
-                    (up-compare-goal g-scout1-target-y >= HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE))    ;the point is <= 2 tiles away from the NE or SE border
-                (timer-triggered t-change-scouting-direction)
-                =>
-                (up-modify-goal g-scouting-direction c:* -1)    ;switch direction (clockwise = -1, counterclockwise = 1)
-                (enable-timer t-change-scouting-direction 30)
-                )
-
-            ;-------------------------------------
-            ;   Check Distance To Explore Point
-            ;-------------------------------------
-
-                (defrule
-                (goal g-duc-scouting TARGETING-POINT)
-                =>
-                (set-goal g-point-x -1)
-                (set-goal g-point-y -1)
-                (set-goal g-temp 0)
-                (set-goal g-temp2 0)
-                )
-
-                ;Store explore point in g-point-x
-                (defrule
-                (goal g-loop-counter 1)
-                (goal g-duc-scouting TARGETING-POINT)
-                (up-compare-goal g-scout1-target-x >= 0)
-                (up-compare-goal g-scout1-target-y >= 0)
-                =>
-                (up-copy-point g-point-x g-scout1-target-x)
-                )
-                (defrule
-                (goal g-loop-counter 2)
-                (goal g-duc-scouting TARGETING-POINT)
-                (up-compare-goal g-scout2-target-x >= 0)
-                (up-compare-goal g-scout2-target-y >= 0)
-                =>
-                (up-copy-point g-point-x g-scout2-target-x)
-                )
-                (defrule
-                (goal g-loop-counter 3)
-                (goal g-duc-scouting TARGETING-POINT)
-                (up-compare-goal g-scout3-target-x >= 0)
-                (up-compare-goal g-scout3-target-y >= 0)
-                =>
-                (up-copy-point g-point-x g-scout3-target-x)
-                )
-                
-                ;Check to see if scout is idle and get distance to target point
-                (defrule
-                (goal g-duc-scouting TARGETING-POINT)
-                (up-set-target-by-id g: g-current-scout-id)     ;current scout found and is alive
-                (building-type-count-total town-center > 0)
-                (up-compare-goal g-point-x >= 0)
-                (up-compare-goal g-point-y >= 0)
-                =>
-                (up-get-object-data object-data-idling g-temp2)
-                (up-get-path-distance g-point-x 0 g-temp)                        ;store path distance from scout to the point in g-temp2
-                )
-
-                ;Reset scouting if current scout is idle
-                ;Scout 1
-                (defrule
-                (goal g-loop-counter 1)
-                (goal g-duc-scouting TARGETING-POINT)
-                (up-set-target-by-id g: g-current-scout-id)     ;scout is alive
-                (building-type-count-total town-center > 0)
-                (goal g-temp2 1)                               ;scout is idle
-                =>
-                (set-goal g-duc-scouting RESET)
-                (up-modify-flag g-flag c:- SCOUT-1-TARGET-SET)
-                )
-                ;Scout 2
-                (defrule
-                (goal g-loop-counter 2)
-                (goal g-duc-scouting TARGETING-POINT)
-                (up-set-target-by-id g: g-current-scout-id)     ;scout is alive
-                (building-type-count-total town-center > 0)
-                (goal g-temp2 1)                               ;scout is idle
-                =>
-                (set-goal g-duc-scouting RESET)
-                (up-modify-flag g-flag c:- SCOUT-2-TARGET-SET)
-                )
-                ;Scout 3
-                (defrule
-                (goal g-loop-counter 3)
-                (goal g-duc-scouting TARGETING-POINT)
-                (up-set-target-by-id g: g-current-scout-id)     ;scout is alive
-                (building-type-count-total town-center > 0)
-                (goal g-temp2 1)                               ;scout is idle
-                =>
-                (set-goal g-duc-scouting RESET)
-                (up-modify-flag g-flag c:- SCOUT-3-TARGET-SET)
-                )
-
-                ;If scout has a distance of <= 2 from g-scout-position-x, get new point
-
-                ;Scout 1
-                (defrule
-                (goal g-loop-counter 1)
-                (goal g-duc-scouting TARGETING-POINT)
-                (up-set-target-by-id g: g-current-scout-id)     ;current scout found and is alive
-                (building-type-count-total town-center > 0)
-                (goal g-temp2 0)                               ;scout isn't idle
-                (up-compare-goal g-temp <= 2)                   ;scout is close to the explore point
-                =>
-                (set-goal g-duc-scouting RESET)
-                (up-modify-flag g-flag c:- SCOUT-1-TARGET-SET)
-                )
-                ;Scout 2
-                (defrule
-                (goal g-loop-counter 2)
-                (goal g-duc-scouting TARGETING-POINT)
-                (up-set-target-by-id g: g-current-scout-id)     ;current scout found and is alive
-                (building-type-count-total town-center > 0)
-                (goal g-temp2 0)                               ;scout isn't idle
-                (up-compare-goal g-temp <= 2)                   ;scout is close to the explore point
-                =>
-                (set-goal g-duc-scouting RESET)
-                (up-modify-flag g-flag c:- SCOUT-2-TARGET-SET)
-                )
-                ;Scout 3
-                (defrule
-                (goal g-loop-counter 3)
-                (goal g-duc-scouting TARGETING-POINT)
-                (up-set-target-by-id g: g-current-scout-id)     ;current scout found and is alive
-                (building-type-count-total town-center > 0)
-                (goal g-temp2 0)                               ;scout isn't idle
-                (up-compare-goal g-temp <= 2)                   ;scout is close to the explore point
-                =>
-                (set-goal g-duc-scouting RESET)
-                (up-modify-flag g-flag c:- SCOUT-3-TARGET-SET)
-                )
-
-                ;If point is reachable but far away, assume DUC scouting is no longer efficient
-                (defrule
-                (goal g-duc-scouting TARGETING-POINT)
-                (up-set-target-by-id g: g-current-scout-id)     ;current scout found and is alive
-                (building-type-count-total town-center > 0)
-                (up-compare-goal g-temp != 65535)   ;path-distance is != 65535, point is reachable
-                (up-compare-goal g-temp >= 80)      ;path-distance is far away, stop DUC scouting
-                (up-compare-goal g-scouting-distance >= 18)
-                =>
-                ; (up-chat-data-to-player my-player-number CHAT-SCOUTING-POINT-FAR-AWAY g: g-temp)
-                (up-reset-scouts)
-                (set-goal g-duc-scouting STOP-DUC-SCOUTING)
-                )
-
-            ;------------------------
-            ;   Next Scout in Loop
-            ;------------------------
-
-                (defrule
-                (up-compare-goal g-loop-counter < 3)
-                (up-compare-goal g-duc-scouting != STOP-DUC-SCOUTING)
-                =>
-                (up-modify-goal g-loop-counter c:+ 1)
-                (up-modify-goal g-current-scout-goal c:+ 1)
-                (up-get-indirect-goal g: g-current-scout-goal g-current-scout-id)
-                (set-goal g-temp -1)
-                (set-goal g-temp2 -1)
-                (set-goal g-temp3 -1)
-                (set-goal g-point-x -1)
-                (set-goal g-point-y -1)
-                (up-jump-rule -34)
-                )
+                    (up-object-data object-data-player != my-player-number)
+                    (up-object-data object-data-hitpoints > 0))))
+        =>
+        (set-goal g-current-sheep-id PENDING)
+        ; (chat-to-all "reset current sheep")
+        )
+        (defrule
+        (or
+            (up-compare-goal g-difficulty >= HARDEST)
+            (building-type-count-total town-center == 0))
+        (up-compare-goal g-next-sheep-id != PENDING)
+        (or
+            (not
+                (up-set-target-by-id g: g-next-sheep-id))
+            (and
+                (up-set-target-by-id g: g-next-sheep-id)
+                (and
+                    (up-object-data object-data-player != my-player-number)
+                    (up-object-data object-data-hitpoints > 0))))
+        =>
+        (set-goal g-next-sheep-id PENDING)
+        ; (chat-to-all "reset next sheep")
+        )
+        (defrule
+        (or
+            (up-compare-goal g-difficulty >= HARDEST)
+            (building-type-count-total town-center == 0))
+        (up-compare-goal g-backup-sheep-id != PENDING)
+        (or
+            (not
+                (up-set-target-by-id g: g-backup-sheep-id))
+            (and
+                (up-set-target-by-id g: g-backup-sheep-id)
+                (and
+                    (up-object-data object-data-player != my-player-number)
+                    (up-object-data object-data-hitpoints > 0))))
+        =>
+        (set-goal g-backup-sheep-id PENDING)
+        ; (chat-to-all "reset backup sheep")
+        )
+        (defrule
+        (or
+            (up-compare-goal g-difficulty >= HARDEST)
+            (building-type-count-total town-center == 0))
+        (up-compare-goal g-backup-sheep-id != PENDING)
+        (unit-type-count villager-shepherd < 6)
+        =>
+        (set-goal g-backup-sheep-id PENDING)
+        ; (chat-to-all "backup sheep not needed")
+        )
 
     ;---------------
     ;   Sheep DUC
@@ -699,44 +1286,47 @@
         (load "The General 1.2/Functions/Reset Mini")
 
         ;This section controls the movement of sheep and how villagers gather the sheep
-
         (defrule
         (up-compare-goal g-difficulty >= HARDEST)
-        (building-type-count town-center == 1)
+        (building-type-count-total town-center == 1)
         (or
             (up-set-target-by-id g: g-current-sheep-id)
-            (up-set-target-by-id g: g-next-sheep-id))
+            (or
+                (up-set-target-by-id g: g-next-sheep-id)
+                (up-set-target-by-id g: g-backup-sheep-id)))
         =>
-        (up-get-point position-self g-point-x)
+        (up-copy-point g-point-x g-position-self-x)
         (up-modify-goal g-point-x c:- 1)			;Get point a little bit away from the TC center
         (up-modify-goal g-point-y c:- 1)			;Get point a little bit away from the TC center
         (up-bound-point g-point-x g-point-x)
         (up-set-target-point g-point-x)
         (up-full-reset-search)
+        (set-goal g-temp sheep)
         )
         
         ;Move current sheep to TC
         (defrule
         (up-compare-goal g-difficulty >= HARDEST)
-        (building-type-count town-center == 1)
+        (goal g-temp sheep)
+        (building-type-count-total town-center == 1)
         (up-set-target-by-id g: g-current-sheep-id)
         (up-object-data object-data-idling == 1)	;current sheep is idle
         (up-object-data object-data-distance >= 3)	;current sheep too far away from TC
         (up-object-data object-data-hitpoints > 0)
         (up-object-data object-data-player == my-player-number)
         (up-add-object-by-id search-local g: g-current-sheep-id)
-        (up-set-target-object search-local c: 0)
         (up-compare-goal g-point-x >= 0)
         (up-compare-goal g-point-y >= 0)
         =>
         (up-clean-search search-local -1 search-order-asc)
         (up-target-point g-point-x action-move -1 -1)
+        ; (up-send-flare g-point-x)
         )
 
         ;Detect how many sheep we have, only send sheep if we have < 2 dead sheep
         (defrule
         (up-compare-goal g-difficulty >= HARDEST)
-        (building-type-count town-center == 1)
+        (building-type-count-total town-center == 1)
         (up-set-target-by-id g: g-current-sheep-id)
         =>
         (up-full-reset-search)
@@ -752,7 +1342,7 @@
         ;Pick a point to send sheep to
         (defrule
         (up-compare-goal g-difficulty >= HARDEST)
-        (building-type-count town-center == 1)
+        (building-type-count-total town-center == 1)
         (up-set-target-by-id g: g-current-sheep-id)
         (up-object-data object-data-hitpoints == 0)	;current sheep is dead
         (up-object-data object-data-carry < 30)
@@ -770,13 +1360,13 @@
         (defrule
         (up-compare-goal g-difficulty >= HARDEST)
         (goal g-temp2 865)
-        (building-type-count town-center == 1)
+        (building-type-count-total town-center == 1)
         (up-set-target-by-id g: g-current-sheep-id)
         (up-set-target-by-id g: g-next-sheep-id)
         (up-object-data object-data-idling == 1)	;next sheep is idle
         (up-object-data object-data-distance >= 2)	;next sheep too far away from TC
         =>
-        (up-get-point position-self g-point-x)
+        (up-copy-point g-point-x g-position-self-x)
         (up-modify-goal g-point-x c:- 1)			;Get point a little bit away from the TC center
         (up-modify-goal g-point-y c:- 1)			;Get point a little bit away from the TC center
         (up-bound-point g-point-x g-point-x)
@@ -787,7 +1377,7 @@
         (defrule
         (up-compare-goal g-difficulty >= HARDEST)
         (goal g-temp2 865)
-        (building-type-count town-center == 1)
+        (building-type-count-total town-center == 1)
         (up-set-target-by-id g: g-next-sheep-id)
         (up-object-data object-data-idling == 1)	;next sheep is idle
         (up-object-data object-data-distance >= 2)	;next sheep too far away from TC
@@ -801,7 +1391,7 @@
             (defrule
             (up-compare-goal g-difficulty >= HARDEST)
             (goal g-temp2 865)
-            (building-type-count town-center == 1)
+            (building-type-count-total town-center == 1)
             (up-set-target-by-id g: g-next-sheep-id)
             (up-object-data object-data-idling == 1)	;next sheep is idle
             (up-object-data object-data-distance >= 2)	;next sheep too far away from TC
@@ -820,14 +1410,14 @@
         (defrule
         (up-compare-goal g-difficulty >= HARDEST)
         (goal g-temp2 865)
-        (building-type-count town-center == 1)
+        (building-type-count-total town-center == 1)
         (up-set-target-by-id g: g-current-sheep-id)
         (up-set-target-by-id g: g-next-sheep-id)
         (up-object-data object-data-idling == 1)	;next sheep is idle
         (up-object-data object-data-distance >= 2)	;next sheep too far away from TC
         (goal g-loop-counter 5)
         =>
-        (up-get-point position-self g-point-x)
+        (up-copy-point g-point-x g-position-self-x)
         (up-modify-goal g-point-x c:- 1)			;Get point a little bit away from the TC center
         (up-modify-goal g-point-y c:- 1)			;Get point a little bit away from the TC center
         )
@@ -835,7 +1425,7 @@
         (defrule
         (up-compare-goal g-difficulty >= HARDEST)
         (goal g-temp2 865)
-        (building-type-count town-center == 1)
+        (building-type-count-total town-center == 1)
         (up-set-target-by-id g: g-current-sheep-id)
         (up-set-target-by-id g: g-next-sheep-id)
         (up-object-data object-data-idling == 1)	;next sheep is idle
@@ -853,7 +1443,7 @@
         ;Get sheep to send to sheep gather point (exclude the current sheep to gather)
         (defrule
         (up-compare-goal g-difficulty >= HARDEST)
-        (building-type-count town-center == 1)
+        (building-type-count-total town-center == 1)
         (up-compare-goal g-current-sheep-count > 0)
         (timer-triggered t-5-sec)
         =>
@@ -862,9 +1452,7 @@
         (up-filter-distance c: 3 c: -1)
         (up-find-local c: livestock-class c: 10)
         (up-remove-objects search-local object-data-id g:== g-current-sheep-id)
-        (up-remove-objects search-local object-data-id g:== g-scout1-id)
-        (up-remove-objects search-local object-data-id g:== g-scout2-id)
-        (up-remove-objects search-local object-data-id g:== g-scout3-id)
+        (up-remove-objects search-local object-data-group-flag == 8)
         (up-remove-objects search-local object-data-player != my-player-number)
         (up-clean-search search-local -1 search-order-asc)
         (up-get-search-state g-local-total)
@@ -873,7 +1461,7 @@
         ;Exclude the next sheep to gather if the current sheep is almost completely gathered
         (defrule
         (up-compare-goal g-difficulty >= HARDEST)
-        (building-type-count town-center == 1)
+        (building-type-count-total town-center == 1)
         (up-compare-goal g-current-sheep-count > 0)
         (timer-triggered t-5-sec)
         (up-set-target-by-id g: g-current-sheep-id)
@@ -886,12 +1474,38 @@
         ;Send sheep to sheep gather point
         (defrule
         (up-compare-goal g-difficulty >= HARDEST)
-        (building-type-count town-center == 1)
+        (building-type-count-total town-center == 1)
         (up-compare-goal g-current-sheep-count > 0)
         (timer-triggered t-5-sec)
         (up-compare-goal g-local-total > 0)
         =>
         (up-target-point g-sheep-gather-x action-move -1 -1)
+        )
+
+        (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
+        (building-type-count-total town-center == 1)
+        (up-compare-goal g-current-sheep-count > 0)
+        (up-group-size c: 8 > 0)
+        =>
+        (up-full-reset-search)
+        (up-set-group search-local c: 8)
+        (up-remove-objects search-local object-data-class != livestock-class)
+        (up-remove-objects search-local object-data-hitpoints <= 0)
+        (up-remove-objects search-local object-data-idling == 1)
+        )
+        (defrule
+        (up-compare-goal g-difficulty >= HARDEST)
+        (building-type-count-total town-center == 1)
+        (up-compare-goal g-current-sheep-count > 0)
+        (up-group-size c: 8 > 0)
+        (up-set-target-object search-local c: 0)
+        (up-object-data object-data-move-x == -1)
+        (up-object-data object-data-move-y == -1)
+        =>
+        (up-get-object-data object-data-move-x g-temp)
+        (up-target-point 0 action-stop -1 -1)
+        ; (chat-to-all "stop scout sheep")
         )
 
         ;Retask shepherds if they target a sheep too far from town center
@@ -901,7 +1515,7 @@
         ;First, determine if any sheep are incorrectly being targeted
         (defrule
         (up-compare-goal g-difficulty >= HARDEST)
-        (building-type-count town-center == 1)
+        (building-type-count-total town-center == 1)
         (unit-type-count livestock-class > 0)
         (up-set-target-by-id g: g-current-sheep-id)
         ; (or
@@ -922,7 +1536,7 @@
         (defrule
         (up-compare-goal g-difficulty >= HARDEST)
         (goal g-temp 9431)
-        (building-type-count town-center == 1)
+        (building-type-count-total town-center == 1)
         (unit-type-count livestock-class > 0)
         (up-set-target-by-id g: g-current-sheep-id)
         ; (or
@@ -944,7 +1558,7 @@
         (goal g-temp 9432)
         (up-set-target-by-id g: g-current-sheep-id)
         (up-object-data object-data-distance <= 3)
-        (building-type-count town-center == 1)
+        (building-type-count-total town-center == 1)
         (unit-type-count livestock-class > 0)
         ; (or
         ;     (up-object-data object-data-tasks-count <= 6)
@@ -960,7 +1574,7 @@
         (defrule
         (up-compare-goal g-difficulty >= HARDEST)
         (goal g-temp 9432)
-        (building-type-count town-center == 1)
+        (building-type-count-total town-center == 1)
         (unit-type-count livestock-class > 0)
         (up-set-target-object search-remote c: 0)               ;we found sheep being incorrectly targeted
         (up-set-target-object search-local c: 0)                ;we found villagers targeting incorrect sheep
@@ -976,6 +1590,34 @@
         (up-reset-filters)
         (up-find-remote c: town-center c: 1)
         (up-target-objects 0 action-garrison -1 -1)
+        )
+
+        (load "The General 1.2/Functions/Reset Mini")
+
+        ;Task idle sheep to TC
+        (defrule
+        (up-compare-goal g-difficulty < HARDEST)
+        (up-compare-goal g-current-sheep-count > 0)
+        (up-compare-goal g-position-self-x >= 0)
+        =>
+        (up-full-reset-search)
+        (up-set-target-point g-position-self-x)
+        (up-filter-distance c: 2 c: -1)
+        (up-find-local c: livestock-class c: 10)
+        (up-remove-objects search-local object-data-idling != 1)
+        (up-get-search-state g-local-total)
+        )
+        (defrule
+        (up-compare-goal g-difficulty < HARDEST)
+        (up-compare-goal g-current-sheep-count > 0)
+        (up-compare-goal g-position-self-x >= 0)
+        (up-compare-goal g-local-total > 0)
+        =>
+        (up-copy-point g-point-x g-position-self-x)
+        (up-modify-goal g-point-x c:- 1)
+        (up-modify-goal g-point-y c:+ 1)
+        (up-target-point g-point-x action-move -1 -1)
+        ; (chat-to-all "send idle sheep to TC")
         )
 
     ;-------------------
@@ -996,71 +1638,27 @@
     ;   Nomad
     ;-----------
 
-        (load "The General 1.2/Functions/Reset")
+        ; (load "The General 1.2/Functions/Reset")
 
-        (defrule
-        (goal g-map-style NOMAD)
-        (up-compare-goal g-position-self-x < 0)
-        =>
-        (up-full-reset-search)
-        (up-find-local c: villager-class c: 20)
-        (up-get-search-state g-local-total)
-        (set-goal g-loop-counter 0)
-        (up-get-point position-zero g-point-x)
-        (up-get-point position-zero g-point2-x)
-        (chat-to-all "calculate new position self")
-        )
+        ; (defrule
+        ; (goal g-map-style NOMAD)
+        ; (up-compare-goal g-position-self-x >= 0)
+        ; =>
+        ; (up-find-local c: villager-class c: 20)
+        ; (up-set-target-point g-position-self-x)
+        ; (up-remove-objects search-local object-data-distance < 8)
+        ; (up-get-search-state g-local-total)
+        ; )
 
-            (defrule
-            (goal g-map-style NOMAD)
-            (up-compare-goal g-position-self-x < 0)
-            (up-compare-goal g-local-total > 0)
-            (up-compare-goal g-loop-counter < 20)
-            (up-set-target-object search-local g: g-loop-counter)
-            =>
-            (up-get-point position-object g-point2-x)
-            (up-chat-data-to-all "Loop %d" g: g-loop-counter)
-            (up-chat-data-to-all "X %d" g: g-point2-x)
-            (up-chat-data-to-all "Y %d" g: g-point2-y)
-            (up-add-point g-point-x g-point2-x c: 1)
-            (up-modify-goal g-loop-counter c:+ 1)
-            (up-jump-rule -1)
-            )
-
-        (defrule
-        (goal g-map-style NOMAD)
-        (up-compare-goal g-position-self-x < 0)
-        (up-compare-goal g-local-total > 0)
-        (up-compare-goal g-point-x > 0)
-        =>
-        (up-modify-goal g-point-x g:/ g-local-total)
-        (up-modify-goal g-point-y g:/ g-local-total)
-        (up-copy-point g-position-self-x g-point-x)
-        (up-chat-data-to-all "X %d" g: g-position-self-x)
-        (up-chat-data-to-all "Y %d" g: g-position-self-y)
-        (up-send-flare g-position-self-x)
-        )
-
-        (load "The General 1.2/Functions/Reset")
-        (defrule
-        (goal g-map-style NOMAD)
-        (up-compare-goal g-position-self-x >= 0)
-        =>
-        (up-find-local c: villager-class c: 20)
-        (up-set-target-point g-position-self-x)
-        (up-remove-objects search-local object-data-distance < 8)
-        (up-get-search-state g-local-total)
-        )
-
-        (defrule
-        (goal g-map-style NOMAD)
-        (up-compare-goal g-position-self-x >= 0)
-        (up-compare-goal g-local-total > 0)
-        =>
-        (up-target-point g-position-self-x action-default -1 -1)
-        (chat-to-all "send villagers")
-        (disable-self)
-        )
+        ; (defrule
+        ; (goal g-map-style NOMAD)
+        ; (up-compare-goal g-position-self-x >= 0)
+        ; (up-compare-goal g-local-total > 0)
+        ; =>
+        ; (up-target-point g-position-self-x action-default -1 -1)
+        ; ; (chat-to-all "send villagers")
+        ; (disable-self)
+        ; )
 
 
 ;=========================<>=========================
@@ -1077,10 +1675,9 @@
         (up-compare-goal g-difficulty >= HARDEST)
         (goal g-scouting-status PUSH-DEER)
         (building-type-count-total town-center > 0)
-        (up-set-target-by-id g: g-scout1-id)
+        (up-set-target-by-id g: g-scout-id)
         (up-compare-goal g-current-deer-count > 0)
         (goal g-current-deer-id PENDING)
-        (goal g-claim-sheep NO)
         =>
         (set-goal g-loop-counter 0)
         (up-set-target-point g-position-self-x)
@@ -1091,10 +1688,9 @@
             (up-compare-goal g-difficulty >= HARDEST)
             (goal g-scouting-status PUSH-DEER)
             (building-type-count-total town-center > 0)
-            (up-set-target-by-id g: g-scout1-id)
+            (up-set-target-by-id g: g-scout-id)
             (up-compare-goal g-current-deer-count > 0)
             (goal g-current-deer-id PENDING)
-            (goal g-claim-sheep NO)
             (up-set-target-by-id g: g-loop-counter)
             (up-object-data object-data-class == deer-class)
             (up-object-data object-data-carry > 0)
@@ -1111,10 +1707,9 @@
             (up-compare-goal g-difficulty >= HARDEST)
             (goal g-scouting-status PUSH-DEER)
             (building-type-count-total town-center > 0)
-            (up-set-target-by-id g: g-scout1-id)
+            (up-set-target-by-id g: g-scout-id)
             (up-compare-goal g-current-deer-count > 0)
             (goal g-current-deer-id PENDING)
-            (goal g-claim-sheep NO)
             (up-compare-goal g-loop-counter g:< g-id-loop-max-objects)
             =>
             (up-modify-goal g-loop-counter c:+ 1)
@@ -1125,10 +1720,9 @@
         (up-compare-goal g-difficulty >= HARDEST)
         (goal g-scouting-status PUSH-DEER)
         (building-type-count-total town-center > 0)
-        (up-set-target-by-id g: g-scout1-id)
+        (up-set-target-by-id g: g-scout-id)
         (up-compare-goal g-current-deer-count > 0)
         (goal g-current-deer-id PENDING)
-        (goal g-claim-sheep NO)
         (up-set-target-object search-remote c: 0)
         =>
         (up-clean-search search-remote object-data-distance search-order-asc)
@@ -1141,11 +1735,10 @@
         (goal g-deer-pushing-status SEARCHED-FOR-DEER)
         (goal g-scouting-status PUSH-DEER)
         (building-type-count-total town-center > 0)
-        (up-set-target-by-id g: g-scout1-id)
+        (up-set-target-by-id g: g-scout-id)
         (up-compare-goal g-current-deer-count > 0)
         (goal g-current-deer-id PENDING)
         (up-set-target-object search-remote c: 0)
-        (goal g-claim-sheep NO)
         =>
         (up-get-object-data object-data-id g-current-deer-id)
         (set-goal g-deer-pushing-status FOUND-DEER)
@@ -1157,11 +1750,10 @@
         (goal g-deer-pushing-status FOUND-DEER)
         (goal g-scouting-status PUSH-DEER)
         (building-type-count-total town-center > 0)
-        (up-set-target-by-id g: g-scout1-id)
+        (up-set-target-by-id g: g-scout-id)
         (up-set-target-by-id g: g-current-deer-id)
         (up-object-data object-data-hitpoints > 0)
         (up-compare-goal g-current-deer-count > 0)
-        (goal g-claim-sheep NO)
         =>
         (up-get-object-data object-data-precise-x g-point-x)
         (up-get-object-data object-data-precise-y g-point-y)
@@ -1177,12 +1769,11 @@
         (goal g-deer-pushing-status FOUND-DEER)
         (goal g-scouting-status PUSH-DEER)
         (building-type-count-total town-center > 0)
-        (up-set-target-by-id g: g-scout1-id)
+        (up-set-target-by-id g: g-scout-id)
         (up-set-target-by-id g: g-current-deer-id)
         (up-object-data object-data-hitpoints > 0)
         (up-compare-goal g-current-deer-count > 0)
-        (goal g-claim-sheep NO)
-        (up-add-object-by-id search-local g: g-scout1-id)
+        (up-add-object-by-id search-local g: g-scout-id)
         (up-set-target-object search-local c: 0)
         =>
         (up-set-precise-target-point g-point-x)
@@ -1203,7 +1794,6 @@
         (up-compare-goal g-temp2 <= 4)
         (up-object-data object-data-hitpoints > 0)
         (up-compare-goal g-current-deer-count > 0)
-        (goal g-claim-sheep NO)
         =>
         (up-full-reset-search)
         (up-set-target-point g-position-self-x)
@@ -1224,7 +1814,6 @@
         (up-set-target-by-id g: g-current-deer-id)
         (up-compare-goal g-current-deer-count > 0)
         (up-compare-goal g-local-total > 0)
-        (goal g-claim-sheep NO)
         =>
         (up-get-point position-object g-point-x)
         (up-set-target-point g-point-x)
@@ -1242,7 +1831,6 @@
         (building-type-count-total town-center > 0)
         (up-set-target-by-id g: g-current-deer-id)
         (up-compare-goal g-current-deer-count > 0)
-        (goal g-claim-sheep NO)
         =>
         (up-set-target-point g-position-self-x)
         )
@@ -1254,7 +1842,6 @@
         (building-type-count-total town-center > 0)
         (up-set-target-by-id g: g-current-deer-id)
         (up-compare-goal g-current-deer-count > 0)
-        (goal g-claim-sheep NO)
         (up-object-data object-data-distance > 5)
         =>
         (up-full-reset-search)
@@ -1270,7 +1857,6 @@
         (building-type-count-total town-center > 0)
         (up-set-target-by-id g: g-current-deer-id)
         (up-compare-goal g-current-deer-count > 0)
-        (goal g-claim-sheep NO)
         (up-object-data object-data-distance > 5)
         (up-set-target-object search-local c: 0)
         =>
@@ -1284,11 +1870,10 @@
         (up-compare-goal g-deer-pushing-status >= CHECK-DEER-DISTANCE)
         (goal g-scouting-status PUSH-DEER)
         (building-type-count-total town-center > 0)
-        (up-set-target-by-id g: g-scout1-id)
+        (up-set-target-by-id g: g-scout-id)
         (up-set-target-by-id g: g-current-deer-id)
         (up-object-data object-data-hitpoints > 0)
         (up-compare-goal g-current-deer-count > 0)
-        (goal g-claim-sheep NO)
         =>
         (set-goal g-deer-pushing-status FOUND-DEER)
         )
@@ -1447,6 +2032,8 @@
         (up-set-target-point g-position-self-x)
         (up-filter-exclude -1 actionid-explore orderid-build -1)
         (up-find-local c: villager-class c: 20)
+        (up-remove-objects search-local object-data-dropsite == lumber-camp)
+        (up-remove-objects search-local object-data-dropsite == mining-camp)
         (up-remove-objects search-local object-data-hitpoints < 25)
         (up-clean-search search-local object-data-distance search-order-asc)
         )
@@ -1463,6 +2050,8 @@
         (up-set-target-point g-position-self-x)
         (up-filter-exclude -1 actionid-explore orderid-build -1)
         (up-find-local c: villager-class c: 20)
+        (up-remove-objects search-local object-data-dropsite == lumber-camp)
+        (up-remove-objects search-local object-data-dropsite == mining-camp)
         (up-remove-objects search-local object-data-hitpoints < 40)
         (up-clean-search search-local object-data-distance search-order-asc)
         )
@@ -1539,6 +2128,8 @@
         (up-set-target-point g-position-self-x)
         (up-filter-exclude -1 actionid-build orderid-build -1)
         (up-find-local c: villager-class c: 40)
+        (up-remove-objects search-local object-data-dropsite == lumber-camp)
+        (up-remove-objects search-local object-data-dropsite == mining-camp)
         (up-remove-objects search-local object-data-hitpoints < 25)
         (up-clean-search search-local object-data-distance search-order-asc)
         (up-remove-objects search-local object-data-index > 5)
@@ -1756,7 +2347,7 @@
         (unit-type-count villager-forager > 0)
         (building-type-count town-center > 0)
         (building-type-count mill == 0)
-        (up-compare-goal g-sheep-found-count > 0)
+        (up-compare-goal g-total-sheep-found > 0)
         (unit-type-count villager-shepherd <= 5)
         (current-age == dark-age)
         (unit-type-count villager < 13)
@@ -1794,7 +2385,7 @@
         (unit-type-count villager-forager > 0)
         (building-type-count town-center > 0)
         (building-type-count mill > 0)
-        (up-compare-goal g-sheep-found-count > 0)
+        (up-compare-goal g-total-sheep-found > 0)
         (unit-type-count villager-shepherd <= 5)
         (current-age == dark-age)
         (unit-type-count villager < 13)
@@ -1945,6 +2536,7 @@
         )
 
         (defrule
+        (up-compare-goal g-map-style != NOMAD)
         (up-compare-goal g-difficulty >= EXTREME)
         (building-type-count town-center > 0)
         (unit-type-count villager-wood > 0)
@@ -2838,9 +3430,8 @@
         (up-get-object-data object-data-range g-temp3)
         (up-modify-goal g-temp3 c:+ 7)
         (up-remove-objects search-local object-data-distance g:> g-temp3)
-        (up-remove-objects search-local object-data-id g:== g-scout1-id)
-        (up-remove-objects search-local object-data-id g:== g-scout2-id)
-        (up-remove-objects search-local object-data-id g:== g-scout3-id)
+        (up-remove-objects search-local object-data-id g:== g-scout-id)
+        (up-remove-objects search-local object-data-group-flag == 8)
         (up-modify-goal g-loop-counter c:+ 1)
         (set-goal g-temp 439)
         (up-jump-rule -1)
@@ -2868,9 +3459,8 @@
         (up-find-local c: any-objects c: 240)
         (up-remove-objects search-local object-data-speed == 0)		;remove buildings
         (up-remove-objects search-local object-data-attack-stance != stance-no-attack)	;only change attack stances for units on No Attack Stance
-        (up-remove-objects search-local object-data-id g:== g-scout1-id)
-        (up-remove-objects search-local object-data-id g:== g-scout2-id)
-        (up-remove-objects search-local object-data-id g:== g-scout3-id)
+        (up-remove-objects search-local object-data-id g:== g-scout-id)
+        (up-remove-objects search-local object-data-group-flag == 8)
         (set-goal g-temp 440)
         )
 
@@ -2898,9 +3488,8 @@
         (up-remove-objects search-local object-data-idling != 1)
         (up-remove-objects search-local object-data-speed == 0)		;remove buildings
         (up-remove-objects search-local object-data-attack-stance != stance-no-attack)	;only change attack stances for units on No Attack Stance
-        (up-remove-objects search-local object-data-id g:== g-scout1-id)
-        (up-remove-objects search-local object-data-id g:== g-scout2-id)
-        (up-remove-objects search-local object-data-id g:== g-scout3-id)
+        (up-remove-objects search-local object-data-id g:== g-scout-id)
+        (up-remove-objects search-local object-data-group-flag == 8)
         (set-goal g-temp 441)
         )
 
@@ -3002,6 +3591,10 @@
             (players-unit-type-count any-enemy armored-elephant-line > 0))
         =>
         (up-modify-sn sn-focus-player-number c:= 1)
+        (up-full-reset-search)
+        (up-find-local c: town-center c: 5)
+        (set-goal g-loop-counter 0)
+        (set-goal g-temp NO)
         )
 
             (defrule
@@ -3021,14 +3614,17 @@
             (defrule
             (up-compare-goal g-difficulty >= EXTREME)
             (or
-                (players-unit-type-count any-enemy battering-ram-line > 0)
-                (players-unit-type-count any-enemy armored-elephant-line > 0))
+                (players-unit-type-count focus-player battering-ram-line > 0)
+                (players-unit-type-count focus-player armored-elephant-line > 0))
             (up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
             (player-in-game focus-player)
             (stance-toward focus-player enemy)
+            (up-set-target-object search-local g: g-loop-counter)
             =>
-            (up-set-target-point g-position-self-x)
-            (up-full-reset-search)
+            (up-get-point position-object g-point-x)
+            (up-set-target-point g-point-x)
+            (up-reset-search 0 0 1 1)
+            (up-reset-filters)
             (up-filter-distance c: -1 c: 5)
             (up-find-remote c: battering-ram-line c: 1)
             (up-find-remote c: armored-elephant-line c: 1)
@@ -3043,6 +3639,7 @@
             (up-compare-sn sn-focus-player-number < MAX-PLAYERS)
             (player-in-game focus-player)
             (stance-toward focus-player enemy)
+            (up-set-target-object search-local g: g-loop-counter)
             (up-compare-goal g-remote-total == 0)
             =>
             (up-modify-sn sn-focus-player-number c:+ 1)
@@ -3057,9 +3654,11 @@
             (up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
             (player-in-game focus-player)
             (stance-toward focus-player enemy)
+            (up-set-target-object search-local g: g-loop-counter)
             (up-compare-goal g-remote-total > 0)
             (up-set-target-object search-remote c: 0)
             =>
+            (set-goal g-temp YES)
             (up-get-point position-object g-point-x)
             (up-set-target-point g-point-x)
             (up-reset-search 1 1 0 0)
@@ -3072,12 +3671,7 @@
 
             (defrule
             (up-compare-goal g-difficulty >= EXTREME)
-            (or
-                (players-unit-type-count any-enemy battering-ram-line > 0)
-                (players-unit-type-count any-enemy armored-elephant-line > 0))
-            (up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
-            (player-in-game focus-player)
-            (stance-toward focus-player enemy)
+            (goal g-temp YES)
             (up-compare-goal g-remote-total > 0)
             (up-set-target-object search-remote c: 0)
             (up-compare-goal g-local-total > 0)
@@ -3085,3 +3679,17 @@
             (up-target-objects 0 action-default -1 -1)
             ; (chat-to-player my-player-number CHAT-TARGET-RAM-WITH-VILLAGERS)
             )
+
+            (defrule
+            (up-compare-goal g-difficulty >= EXTREME)
+            (goal g-temp NO)
+            (or
+                (players-unit-type-count any-enemy battering-ram-line > 0)
+                (players-unit-type-count any-enemy armored-elephant-line > 0))
+            (up-compare-goal g-loop-counter < 4)
+            =>
+            (up-modify-sn sn-focus-player-number c:= 1)
+            (up-modify-goal g-loop-counter c:+ 1)
+            (up-jump-rule -6)
+            )
+

@@ -461,6 +461,786 @@
 		#end-if
 		#end-if
 
+	;--------------
+	;	Nomad TC
+	;--------------
+
+		(load "The General 1.2/Functions/Reset")
+
+		(defrule
+		(up-group-size c: 7 > 0)
+		=>
+		(up-set-group search-remote c: 7)
+		(up-get-search-state g-local-total)
+		(up-modify-goal g-temp g:= g-remote-total)
+		(up-remove-objects search-remote object-data-carry <= 0)
+		(up-clean-search search-remote -1 search-order-asc)
+		(up-get-search-state g-local-total)
+		)
+
+		(defrule
+		(up-group-size c: 7 > 0)
+		(or
+			(up-compare-goal g-temp g:!= g-remote-total)
+			(building-type-count-total town-center > 0))
+		=>
+		(up-reset-group c: 7)
+		; (chat-to-all "reset group 7")
+		)
+
+		;Add animals
+		(defrule
+		(goal g-map-style NOMAD)
+		(building-type-count-total town-center == 0)
+		(can-build-with-escrow town-center)
+		=>
+		(up-full-reset-search)
+		(up-set-group search-remote c: 7)
+		(up-modify-goal g-loop-counter g:= g-id-loop-min-animals)
+		)
+
+			(defrule
+			(goal g-map-style NOMAD)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-set-target-by-id g: g-loop-counter)
+			(up-object-data object-data-carry > 0)
+			(up-object-data object-data-hitpoints > 0)
+			(or
+				(up-object-data object-data-class == deer-class)
+				(up-object-data object-data-class == boar-class))
+			(up-get-object-data object-data-point-x g-point-x)
+			(up-get-object-data object-data-point-y g-point-y)
+			(up-point-explored g-point-x != explored-no)
+			=>
+			(up-add-object-by-id search-remote g: g-loop-counter)
+			(up-clean-search search-remote -1 search-order-asc)	;remove duplicates
+			(up-get-search-state g-local-total)
+			)
+
+			(defrule
+			(goal g-map-style NOMAD)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-compare-goal g-loop-counter g:< g-id-loop-max-objects)
+			(up-can-search search-remote)
+			=>
+			(up-modify-goal g-loop-counter c:+ 1)
+			(up-jump-rule -2)
+			)
+
+		; ;Add forage
+		; (defrule
+		; (goal g-map-style NOMAD)
+		; (building-type-count-total town-center == 0)
+		; (can-build-with-escrow town-center)
+		; =>
+		; (up-reset-filters)
+		; (up-filter-status c: status-resource c: list-active)
+		; (up-find-resource c: forage-class c: 40)
+		; (up-clean-search search-remote -1 search-order-asc)	;remove duplicates
+		; (up-get-search-state g-local-total)
+		; ; (up-chat-data-to-all "Forage: %d" g: g-remote-last)
+		; )
+
+		;Add gold
+		(defrule
+		(goal g-map-style NOMAD)
+		(building-type-count-total town-center == 0)
+		(can-build-with-escrow town-center)
+		=>
+		(up-reset-filters)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: gold c: 40)
+		(up-clean-search search-remote -1 search-order-asc)	;remove duplicates
+		(up-get-search-state g-local-total)
+		)
+
+		;Add stone
+		(defrule
+		(goal g-map-style NOMAD)
+		(building-type-count-total town-center == 0)
+		(can-build-with-escrow town-center)
+		=>
+		(up-reset-filters)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: stone c: 40)
+		(up-clean-search search-remote -1 search-order-asc)	;remove duplicates
+		(up-get-search-state g-local-total)
+		)
+
+		;Add Objects to local list
+		(defrule
+		(goal g-map-style NOMAD)
+		(building-type-count-total town-center == 0)
+		(can-build-with-escrow town-center)
+		(up-compare-goal g-remote-total > 0)
+		=>
+		(up-reset-search 1 1 0 0)
+		(set-goal g-loop-counter2 0)
+		(set-goal g-temp PENDING)
+		)
+
+		(defrule
+		(goal g-map-style NOMAD)
+		(building-type-count-total town-center == 0)
+		(can-build-with-escrow town-center)
+		(up-compare-goal g-remote-total > 0)
+		(up-compare-goal g-loop-counter2 < 40)
+		(up-set-target-object search-remote g: g-loop-counter2)
+		=>
+		(up-get-object-data object-data-id g-temp)
+		(up-add-object-by-id search-local g: g-temp)
+		(up-get-search-state g-local-total)
+		(up-modify-goal g-loop-counter2 c:+ 1)
+		(up-jump-rule -1)
+		)
+
+		(defrule
+		(goal g-map-style NOMAD)
+		(building-type-count-total town-center == 0)
+		(can-build-with-escrow town-center)
+		(up-compare-goal g-local-total > 0)
+		=>
+		(up-reset-group c: 7)
+		(up-create-group 0 0 c: 7)
+		(up-get-group-size c: 7 g-temp)
+		)
+
+		;Only search for TC placement near one gold/stone tile per pile
+		(load "The General 1.2/Functions/Reset Mini")
+
+		(defrule
+		(goal g-map-style NOMAD)
+		(building-type-count-total town-center == 0)
+		(can-build-with-escrow town-center)
+		(up-group-size c: 7 > 0)
+		=>
+		(up-set-group search-local c: 7)
+		(up-get-search-state g-local-total)
+		(set-goal g-loop-counter 0)
+		(set-goal g-loop-counter2 1)
+		)
+
+				(defrule
+				(goal g-map-style NOMAD)
+				(building-type-count-total town-center == 0)
+				(can-build-with-escrow town-center)
+				(up-group-size c: 7 > 0)
+				(up-compare-goal g-local-total g:> g-loop-counter2)
+				(up-set-target-object search-local g: g-loop-counter)
+				(up-object-data object-data-class == gold-mine-class)
+				(up-set-target-object search-local g: g-loop-counter2)
+				(up-object-data object-data-class == gold-mine-class)
+				=>
+				(up-remove-objects search-local object-data-index g:== g-loop-counter2)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+				(defrule
+				(goal g-map-style NOMAD)
+				(building-type-count-total town-center == 0)
+				(can-build-with-escrow town-center)
+				(up-group-size c: 7 > 0)
+				(up-compare-goal g-local-total g:> g-loop-counter2)
+				(up-set-target-object search-local g: g-loop-counter)
+				(up-object-data object-data-class == stone-mine-class)
+				(up-set-target-object search-local g: g-loop-counter2)
+				(up-object-data object-data-class == stone-mine-class)
+				=>
+				(up-remove-objects search-local object-data-index g:== g-loop-counter2)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -1)
+				)
+
+				(defrule
+				(goal g-map-style NOMAD)
+				(building-type-count-total town-center == 0)
+				(can-build-with-escrow town-center)
+				(up-group-size c: 7 > 0)
+				(up-compare-goal g-local-total g:> g-loop-counter2)
+				=>
+				(up-modify-goal g-loop-counter2 c:+ 1)
+				(up-get-search-state g-local-total)
+				(up-jump-rule -3)
+				)
+
+			(defrule
+			(goal g-map-style NOMAD)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-group-size c: 7 > 0)
+			(up-compare-goal g-local-total g:> g-loop-counter)
+			=>
+			(up-modify-goal g-loop-counter c:+ 1)
+			(up-modify-goal g-loop-counter2 g:= g-loop-counter)
+			(up-modify-goal g-loop-counter2 c:+ 1)
+			(up-get-search-state g-local-total)
+			(up-jump-rule -4)
+			)
+
+		;Check for tiles where a TC can be built nearby and calculate scores
+		(defrule
+		(goal g-map-style NOMAD)
+		(timer-triggered t-5-sec)
+		(building-type-count-total town-center == 0)
+		(can-build-with-escrow town-center)
+		(up-group-size c: 7 > 0)
+		=>
+		(up-reset-search 0 0 1 1)
+		(up-reset-filters)
+		(set-goal g-loop-counter 0)
+		(set-goal g-loop-counter PENDING)
+		(set-goal g-offset-x NOMAD-TC-RADIUS)
+		(up-modify-goal g-offset-x c:* -1)
+		(up-modify-goal g-offset-y g:= g-offset-x)
+		(set-goal g-tc-current-score 0)
+		(set-goal g-tc-best-score -99999)
+		(set-goal g-temp5 0)
+		(set-goal g-temp6 NO)
+		(set-goal g-point2-x PENDING)
+		(set-goal g-point2-y PENDING)
+		)
+
+			(defrule
+			(goal g-map-style NOMAD)
+			(timer-triggered t-5-sec)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-group-size c: 7 > 0)
+			(up-set-target-object search-local g: g-loop-counter)
+			=>
+			(up-get-point position-object g-point-x)
+			(up-modify-goal g-point-x g:+ g-offset-x)
+			(up-modify-goal g-point-y g:+ g-offset-y)
+			(up-set-target-point g-point-x)
+			)
+
+			;Check if TC can be built on this location
+			(defrule
+			(goal g-map-style NOMAD)
+			(timer-triggered t-5-sec)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-group-size c: 7 > 0)
+			(up-set-target-object search-local g: g-loop-counter)
+			(up-compare-goal g-offset-x >= -2)
+			(up-compare-goal g-offset-x <= 2)
+			(up-compare-goal g-offset-y >= -2)
+			(up-compare-goal g-offset-y <= 2)
+			=>
+			(up-modify-goal g-offset-x c:+ 2)
+			(up-jump-rule -2)
+			)
+
+			(defrule
+			(goal g-map-style NOMAD)
+			(timer-triggered t-5-sec)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-group-size c: 7 > 0)
+			(up-set-target-object search-local g: g-loop-counter)
+			(not
+				(up-can-build-line 0 g-point-x c: town-center))
+			(up-compare-goal g-offset-x < NOMAD-TC-RADIUS)
+			=>
+			(up-modify-goal g-offset-x c:+ 2)
+			(up-jump-rule -3)
+			)
+			(defrule
+			(goal g-map-style NOMAD)
+			(timer-triggered t-5-sec)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-group-size c: 7 > 0)
+			(up-set-target-object search-local g: g-loop-counter)
+			(or
+				(not
+					(up-can-build-line 0 g-point-x c: town-center))
+				(up-compare-goal g-offset-x >= NOMAD-TC-RADIUS))
+			(up-compare-goal g-offset-y < NOMAD-TC-RADIUS)
+			=>
+			(up-modify-goal g-offset-y c:+ 2)
+			(set-goal g-offset-x NOMAD-TC-RADIUS)
+			(up-modify-goal g-offset-x c:* -1)
+			(up-jump-rule -4)
+			)
+
+			;Check if trees are adjacent
+			(defrule
+			(goal g-map-style NOMAD)
+			(timer-triggered t-5-sec)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-group-size c: 7 > 0)
+			(up-set-target-object search-local g: g-loop-counter)
+			(up-can-build-line 0 g-point-x c: town-center)
+			=>
+			(up-reset-search 0 0 1 1)
+			(up-reset-filters)
+			(up-filter-distance c: 2 c: 5)
+			(up-find-resource c: wood c: 40)
+			(up-modify-goal g-temp5 g:= g-point-x)
+			(up-modify-goal g-temp5 c:- 4)
+			(up-remove-objects search-remote object-data-point-x g:<= g-temp5)
+			(up-modify-goal g-temp5 g:= g-point-x)
+			(up-modify-goal g-temp5 c:+ 3)
+			(up-remove-objects search-remote object-data-point-x g:>= g-temp5)
+			(up-get-search-state g-local-total)
+			)
+			(defrule
+			(goal g-map-style NOMAD)
+			(timer-triggered t-5-sec)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-group-size c: 7 > 0)
+			(up-set-target-object search-local g: g-loop-counter)
+			(up-can-build-line 0 g-point-x c: town-center)
+			=>
+			(up-modify-goal g-temp5 g:= g-point-y)
+			(up-modify-goal g-temp5 c:- 4)
+			(up-remove-objects search-remote object-data-point-y g:<= g-temp5)
+			(up-modify-goal g-temp5 g:= g-point-y)
+			(up-modify-goal g-temp5 c:+ 3)
+			(up-remove-objects search-remote object-data-point-y g:>= g-temp5)
+			(up-get-search-state g-local-total)
+			)
+			
+			(defrule
+			(goal g-map-style NOMAD)
+			(timer-triggered t-5-sec)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-group-size c: 7 > 0)
+			(up-set-target-object search-local g: g-loop-counter)
+			(up-compare-goal g-offset-x <= NOMAD-TC-RADIUS)
+			(up-compare-goal g-offset-y <= NOMAD-TC-RADIUS)
+			(up-can-build-line 0 g-point-x c: town-center)
+			(up-compare-goal g-remote-total >= 2)
+			=>
+			(up-modify-goal g-tc-current-score g:+ g-remote-total)
+			(up-modify-goal g-tc-current-score c:min 6)
+			(up-modify-goal g-tc-current-score c:* 500)
+			(set-goal g-temp6 YES)
+			)
+			
+			;Check if resources are nearby
+			(defrule
+			(goal g-map-style NOMAD)
+			(timer-triggered t-5-sec)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-group-size c: 7 > 0)
+			(up-set-target-object search-local g: g-loop-counter)
+			(goal g-temp6 YES)
+			=>
+			(up-reset-search 0 0 1 1)
+			(up-reset-filters)
+			(up-filter-distance c: 2 c: 6)
+			(up-find-resource c: wood c: 15)
+			(up-get-search-state g-local-total)
+			(up-modify-goal g-temp5 g:= g-remote-total)
+			(up-modify-goal g-temp5 c:* 50)
+			(up-modify-goal g-tc-current-score g:+ g-temp5)
+			)
+			(defrule
+			(goal g-map-style NOMAD)
+			(timer-triggered t-5-sec)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-group-size c: 7 > 0)
+			(up-set-target-object search-local g: g-loop-counter)
+			(goal g-temp6 YES)
+			=>
+			(up-reset-search 0 0 1 1)
+			(up-reset-filters)
+			(up-filter-distance c: 2 c: 10)
+			(up-find-resource c: boar-class c: 40)
+			(up-get-search-state g-local-total)
+			(up-modify-goal g-temp5 g:= g-remote-total)
+			(up-modify-goal g-temp5 c:* 500)
+			(up-modify-goal g-tc-current-score g:+ g-temp5)
+			)
+			(defrule
+			(goal g-map-style NOMAD)
+			(timer-triggered t-5-sec)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-group-size c: 7 > 0)
+			(up-set-target-object search-local g: g-loop-counter)
+			(goal g-temp6 YES)
+			=>
+			(up-reset-search 0 0 1 1)
+			(up-reset-filters)
+			(up-filter-distance c: 2 c: 10)
+			(up-find-resource c: deer-class c: 40)
+			(up-get-search-state g-local-total)
+			(up-modify-goal g-temp5 g:= g-remote-total)
+			(up-modify-goal g-temp5 c:* 50)
+			(up-modify-goal g-tc-current-score g:+ g-temp5)
+			)
+			(defrule
+			(goal g-map-style NOMAD)
+			(timer-triggered t-5-sec)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-group-size c: 7 > 0)
+			(up-set-target-object search-local g: g-loop-counter)
+			(goal g-temp6 YES)
+			=>
+			(up-reset-search 0 0 1 1)
+			(up-reset-filters)
+			(up-filter-distance c: 2 c: 9)
+			(up-find-resource c: gold c: 40)
+			(up-get-search-state g-local-total)
+			(up-modify-goal g-temp5 g:= g-remote-total)
+			(up-modify-goal g-temp5 c:* 30)
+			(up-modify-goal g-tc-current-score g:+ g-temp5)
+			)
+			(defrule
+			(goal g-map-style NOMAD)
+			(timer-triggered t-5-sec)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-group-size c: 7 > 0)
+			(up-set-target-object search-local g: g-loop-counter)
+			(goal g-temp6 YES)
+			=>
+			(up-reset-search 0 0 1 1)
+			(up-reset-filters)
+			(up-filter-distance c: 2 c: 9)
+			(up-find-resource c: stone c: 40)
+			(up-get-search-state g-local-total)
+			(up-modify-goal g-temp5 g:= g-remote-total)
+			(up-modify-goal g-temp5 c:* 10)
+			(up-modify-goal g-tc-current-score g:+ g-temp5)
+			)
+
+			;Avoid locations near ally TCs
+			(defrule
+			(goal g-map-style NOMAD)
+			(timer-triggered t-5-sec)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-group-size c: 7 > 0)
+			(up-set-target-object search-local g: g-loop-counter)
+			=>
+			(set-strategic-number sn-focus-player-number 1)
+			)
+
+				(defrule
+				(goal g-map-style NOMAD)
+				(timer-triggered t-5-sec)
+				(building-type-count-total town-center == 0)
+				(can-build-with-escrow town-center)
+				(up-group-size c: 7 > 0)
+				(up-set-target-object search-local g: g-loop-counter)
+				(nand
+					(player-in-game focus-player)
+					(and
+						(stance-toward focus-player ally)
+						(up-compare-sn sn-focus-player-number != my-player-number)))
+				(up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
+				=>
+				(up-modify-sn sn-focus-player-number c:+ 1)
+				(up-jump-rule -1)
+				)
+
+				(defrule
+				(goal g-map-style NOMAD)
+				(timer-triggered t-5-sec)
+				(building-type-count-total town-center == 0)
+				(can-build-with-escrow town-center)
+				(up-group-size c: 7 > 0)
+				(up-set-target-object search-local g: g-loop-counter)
+				=>
+				(up-set-target-point g-point-x)
+				(up-reset-search 0 0 1 1)
+				(up-reset-filters)
+				(up-filter-distance c: -1 c: 30)
+				(up-find-remote c: town-center c: 1)
+				(up-filter-status c: status-pending c: list-active)
+				(up-find-status-remote c: town-center-foundation c: 1)
+				)
+
+				(defrule
+				(goal g-map-style NOMAD)
+				(timer-triggered t-5-sec)
+				(building-type-count-total town-center == 0)
+				(can-build-with-escrow town-center)
+				(up-group-size c: 7 > 0)
+				(up-set-target-object search-local g: g-loop-counter)
+				(up-set-target-object search-remote c: 0)
+				=>
+				(up-get-point position-object g-point3-x)
+				(up-get-point-distance g-point-x g-point3-x g-temp5)
+				(up-modify-goal g-temp5 c:* -50)
+				(up-modify-goal g-tc-current-score g:+ g-temp5)
+				)
+
+				(defrule
+				(goal g-map-style NOMAD)
+				(timer-triggered t-5-sec)
+				(building-type-count-total town-center == 0)
+				(can-build-with-escrow town-center)
+				(up-group-size c: 7 > 0)
+				(up-set-target-object search-local g: g-loop-counter)
+				(up-compare-sn sn-focus-player-number < MAX-PLAYERS)
+				=>
+				(up-modify-sn sn-focus-player-number c:+ 1)
+				(up-jump-rule -4)
+				)
+
+			; ;Check distance to each villager
+			; (defrule
+			; (goal g-map-style NOMAD)
+			; (timer-triggered t-5-sec)
+			; (building-type-count-total town-center == 0)
+			; (can-build-with-escrow town-center)
+			; (up-group-size c: 7 > 0)
+			; (up-set-target-object search-local g: g-loop-counter)
+			; (goal g-temp6 YES)
+			; =>
+			; (up-reset-search 0 0 1 1)
+			; (up-reset-filters)
+			; (set-strategic-number sn-focus-player-number my-player-number)
+			; (up-find-remote c: villager-class c: 10)
+			; (up-get-search-state g-local-total)
+			; (set-goal g-loop-counter2 0)
+			; )
+			; 	(defrule
+				; (goal g-map-style NOMAD)
+				; (timer-triggered t-5-sec)
+			; 	(building-type-count-total town-center == 0)
+			; 	(can-build-with-escrow town-center)
+			; 	(up-group-size c: 7 > 0)
+			; 	(up-set-target-object search-local g: g-loop-counter)
+			; 	(goal g-temp6 YES)
+			; 	(up-set-target-object search-remote g: g-loop-counter2)
+			; 	=>
+			; 	(up-get-point position-object g-point3-x)
+			; 	(up-get-point-distance g-point-x g-point3-x g-temp5)
+			; 	(up-modify-goal g-temp5 c:* 10)
+			; 	(up-modify-goal g-tc-current-score g:- g-temp5)
+			; 	)
+			; 	(defrule
+			; 	(goal g-map-style NOMAD)
+			; 	(building-type-count-total town-center == 0)
+			; 	(can-build-with-escrow town-center)
+			; 	(up-group-size c: 7 > 0)
+			; 	(up-set-target-object search-local g: g-loop-counter)
+			; 	(goal g-temp6 YES)
+			; 	(up-modify-goal g-loop-counter2 c:+ 1)
+			; 	(up-set-target-object search-remote g: g-loop-counter2)
+			; 	=>
+			; 	(up-jump-rule -2)
+			; 	)
+
+			; Check location on the map (avoid edges and map center)
+			; (defrule
+			; (goal g-map-style NOMAD)
+			; (timer-triggered t-5-sec)
+			; (building-type-count-total town-center == 0)
+			; (can-build-with-escrow town-center)
+			; (up-group-size c: 7 > 0)
+			; (up-set-target-object search-local g: g-loop-counter)
+			; (goal g-temp6 YES)
+			; (up-compare-goal g-point-x < FIFTY-PERCENT-MAP-SIZE)
+			; =>
+			; (up-modify-goal g-temp5 g:= g-point-x)
+			; (up-modify-goal g-temp5 c:* 2)
+			; (up-modify-goal g-temp5 c:- FIFTY-PERCENT-MAP-SIZE)
+			; (up-modify-goal g-temp5 c:* 10)
+			; )
+			; (defrule
+			; (goal g-map-style NOMAD)
+			; (timer-triggered t-5-sec)
+			; (building-type-count-total town-center == 0)
+			; (can-build-with-escrow town-center)
+			; (up-group-size c: 7 > 0)
+			; (up-set-target-object search-local g: g-loop-counter)
+			; (goal g-temp6 YES)
+			; (up-compare-goal g-point-x >= FIFTY-PERCENT-MAP-SIZE)
+			; =>
+			; (up-modify-goal g-temp5 g:= g-point-x)
+			; (up-modify-goal g-temp5 c:* 2)
+			; (up-modify-goal g-temp5 c:- HUNDRED-FIFTY-PERCENT-MAP-SIZE)
+			; (up-modify-goal g-temp5 c:* 10)
+			; )
+			; (defrule
+			; (goal g-map-style NOMAD)
+			; (timer-triggered t-5-sec)
+			; (building-type-count-total town-center == 0)
+			; (can-build-with-escrow town-center)
+			; (up-group-size c: 7 > 0)
+			; (up-set-target-object search-local g: g-loop-counter)
+			; (goal g-temp6 YES)
+			; (up-compare-goal g-point-y < FIFTY-PERCENT-MAP-SIZE)
+			; (up-compare-goal g-temp5 < 0)
+			; =>
+			; (up-modify-goal g-temp5 c:* -1)
+			; )
+			; (defrule
+			; (goal g-map-style NOMAD)
+			; (timer-triggered t-5-sec)
+			; (building-type-count-total town-center == 0)
+			; (can-build-with-escrow town-center)
+			; (up-group-size c: 7 > 0)
+			; (up-set-target-object search-local g: g-loop-counter)
+			; (goal g-temp6 YES)
+			; (up-compare-goal g-point-y < FIFTY-PERCENT-MAP-SIZE)
+			; =>
+			; (up-modify-goal g-tc-current-score g:- g-temp5)
+			; )
+			; (defrule
+			; (goal g-map-style NOMAD)
+			; (timer-triggered t-5-sec)
+			; (building-type-count-total town-center == 0)
+			; (can-build-with-escrow town-center)
+			; (up-group-size c: 7 > 0)
+			; (up-set-target-object search-local g: g-loop-counter)
+			; (goal g-temp6 YES)
+			; (up-compare-goal g-point-y < FIFTY-PERCENT-MAP-SIZE)
+			; =>
+			; (up-modify-goal g-temp5 g:= g-point-y)
+			; (up-modify-goal g-temp5 c:* 2)
+			; (up-modify-goal g-temp5 c:- FIFTY-PERCENT-MAP-SIZE)
+			; (up-modify-goal g-temp5 c:* 10)
+			; )
+			; (defrule
+			; (goal g-map-style NOMAD)
+			; (timer-triggered t-5-sec)
+			; (building-type-count-total town-center == 0)
+			; (can-build-with-escrow town-center)
+			; (up-group-size c: 7 > 0)
+			; (up-set-target-object search-local g: g-loop-counter)
+			; (goal g-temp6 YES)
+			; (up-compare-goal g-point-y >= FIFTY-PERCENT-MAP-SIZE)
+			; =>
+			; (up-modify-goal g-temp5 g:= g-point-y)
+			; (up-modify-goal g-temp5 c:* 2)
+			; (up-modify-goal g-temp5 c:- HUNDRED-FIFTY-PERCENT-MAP-SIZE)
+			; (up-modify-goal g-temp5 c:* 10)
+			; )
+			; (defrule
+			; (goal g-map-style NOMAD)
+			; (timer-triggered t-5-sec)
+			; (building-type-count-total town-center == 0)
+			; (can-build-with-escrow town-center)
+			; (up-group-size c: 7 > 0)
+			; (up-set-target-object search-local g: g-loop-counter)
+			; (goal g-temp6 YES)
+			; (up-compare-goal g-point-y >= FIFTY-PERCENT-MAP-SIZE)
+			; (up-compare-goal g-temp5 < 0)
+			; =>
+			; (up-modify-goal g-temp5 c:* -1)
+			; )
+			; (defrule
+			; (goal g-map-style NOMAD)
+			; (timer-triggered t-5-sec)
+			; (building-type-count-total town-center == 0)
+			; (can-build-with-escrow town-center)
+			; (up-group-size c: 7 > 0)
+			; (up-set-target-object search-local g: g-loop-counter)
+			; (goal g-temp6 YES)
+			; (up-compare-goal g-point-y >= FIFTY-PERCENT-MAP-SIZE)
+			; =>
+			; (up-modify-goal g-tc-current-score g:- g-temp5)
+			; )
+
+			(defrule
+			(goal g-map-style NOMAD)
+			(timer-triggered t-5-sec)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-group-size c: 7 > 0)
+			(up-set-target-object search-local g: g-loop-counter)
+			(goal g-temp6 YES)
+			(up-compare-goal g-tc-current-score g:> g-tc-best-score)
+			=>
+			(up-copy-point g-point2-x g-point-x)
+			(up-modify-goal g-tc-best-score g:= g-tc-current-score)
+			; (up-chat-data-to-all "Score: %d" g: g-tc-best-score)
+			; (up-send-flare g-point2-x)
+			)
+
+			(defrule
+			(goal g-map-style NOMAD)
+			(timer-triggered t-5-sec)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-group-size c: 7 > 0)
+			(up-set-target-object search-local g: g-loop-counter)
+			(up-compare-goal g-offset-x < NOMAD-TC-RADIUS)
+			=>
+			(up-modify-goal g-offset-x c:+ 1)
+			(set-goal g-tc-current-score 0)
+			(set-goal g-temp5 0)
+			(set-goal g-temp6 NO)
+			(up-jump-rule -19)
+			)
+			(defrule
+			(goal g-map-style NOMAD)
+			(timer-triggered t-5-sec)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-group-size c: 7 > 0)
+			(up-set-target-object search-local g: g-loop-counter)
+			(up-compare-goal g-offset-x >= NOMAD-TC-RADIUS)
+			(up-compare-goal g-offset-y < NOMAD-TC-RADIUS)
+			=>
+			(up-modify-goal g-offset-y c:+ 1)
+			(set-goal g-offset-x NOMAD-TC-RADIUS)
+			(up-modify-goal g-offset-x c:* -1)
+			(set-goal g-tc-current-score 0)
+			(set-goal g-temp5 0)
+			(set-goal g-temp6 NO)
+			(up-jump-rule -20)
+			)
+
+			(defrule
+			(goal g-map-style NOMAD)
+			(timer-triggered t-5-sec)
+			(building-type-count-total town-center == 0)
+			(can-build-with-escrow town-center)
+			(up-group-size c: 7 > 0)
+			(up-modify-goal g-loop-counter c:+ 1)
+			(up-set-target-object search-local g: g-loop-counter)
+			=>
+			(set-goal g-offset-x NOMAD-TC-RADIUS)
+			(up-modify-goal g-offset-x c:* -1)
+			(up-modify-goal g-offset-y g:= g-offset-x)
+			(set-goal g-tc-current-score 0)
+			(set-goal g-temp5 0)
+			(set-goal g-temp6 NO)
+			(up-jump-rule -21)
+			)
+
+		(defrule
+		(goal g-map-style NOMAD)
+		(timer-triggered t-5-sec)
+		(building-type-count-total town-center == 0)
+		(can-build-with-escrow town-center)
+		(up-group-size c: 7 > 0)
+		(up-compare-goal g-point2-x >= 0)
+		(up-compare-goal g-point2-y >= 0)
+		(or
+			(game-time >= 30)
+			(or
+				(up-compare-goal g-tc-best-score >= 3000)
+				(up-gaia-type-count-total c: wood >= 40)))
+		(up-can-build-line 0 g-point2-x c: town-center)
+		=>
+		(up-build-line g-point2-x g-point2-x c: town-center)
+		; (chat-to-all "place nomad TC")
+		)
+
+			
+
+
+
+		
+
 ;=========================<>=========================
 ;				      DROPSITES
 ;=========================<>=========================
@@ -497,6 +1277,7 @@
 		(defrule
 		(up-object-type-count-total c: mill g:< g-desired-num-mill)
 		(up-pending-objects c: mill == 0)
+		(up-gaia-type-count c: forage-class > 0)
 		; (or
 		; 	(unit-type-count villager-forager >= 2)
 		; 	(unit-type-count villager >= 14))
@@ -754,7 +1535,9 @@
 		(up-compare-goal g-current-gold-camp-total g:< g-desired-num-gold-camp)
 		(goal g-build-line-bldg mining-camp)
 		(building-type-count-total town-center < 2)
-		(goal g-current-gold-camp-total 1)
+		(or
+			(goal g-current-gold-camp-total 1)
+			(goal g-map-style NOMAD))
 		=>
 		(set-goal g-build-line-max-distance 45)
 		)
@@ -844,7 +1627,9 @@
 		(up-compare-goal g-current-stone-camp-total g:< g-desired-num-stone-camp)
 		(goal g-build-line-bldg mining-camp)
 		(building-type-count-total town-center < 2)
-		(goal g-current-stone-camp-total 1)
+		(or
+			(goal g-current-stone-camp-total 1)
+			(goal g-map-style NOMAD))
 		=>
 		(set-goal g-build-line-max-distance 45)
 		)
@@ -966,6 +1751,13 @@
 		(set-goal g-build-line-enemy-bldg-distance 25)
 		; (chat-to-player my-player-number CHAT-CAMP-WOOD-LATER)
 		)
+
+		(defrule
+		(goal g-map-style NOMAD)
+		(up-compare-goal g-build-line-enemy-bldg-distance >= 10)
+		=>
+		(set-goal g-build-line-enemy-bldg-distance 10)
+		)
 	
 		(defrule
 		(goal g-build-line-type PENDING)
@@ -1072,6 +1864,19 @@
 		(set-goal g-temp3 9986)
 		(set-goal g-loop-counter 0)		;loop counter
 		(set-goal g-temp 0)	;score of best dropsite
+		)
+
+		(defrule
+		(goal g-current-strategy FC-CASTLE-DROP)
+		(up-compare-goal g-tower-line g:< g-desired-num-tower)
+		(up-compare-goal g-tower-line == 0)
+		(can-build-with-escrow my-tower-type)
+		(up-pending-objects c: my-tower-type < 1)
+		(up-compare-flag g-flag != PLACE-POINT-USED)
+		(up-compare-goal g-gather-point-x > 0)
+		(up-point-distance g-gather-point-x g-position-self-x > 5)
+		=>
+		(up-remove-objects search-local object-data-type != mining-camp)
 		)
 
 			;Loop through each dropsite and see which one has the best location
@@ -1516,6 +2321,23 @@
 	; (chat-to-player my-player-number CHAT-BUILD-BACKUP-TC-WOOD)
 	)
 
+	;Nomad TC
+	(defrule
+	(goal g-map-style NOMAD)
+	(game-time >= 35)
+	(building-type-count-total town-center == 0)
+	=>
+	(set-strategic-number sn-lumber-camp-max-distance 255)
+	(set-strategic-number sn-town-center-placement lumber-camp)
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-object-cost c: town-center-foundation c: 1)
+	; (up-modify-escrow wood g:- g-wood-cost)
+	(up-modify-escrow wood c:- 275)
+	(up-modify-escrow stone g:- g-stone-cost)
+	(build town-center)
+	; (chat-to-player my-player-number CHAT-BUILD-BACKUP-TC-WOOD)
+	)
+
 	(defrule
 	(up-pending-objects c: town-center >= 1)
 	(or
@@ -1579,6 +2401,25 @@
 		(can-build-with-escrow castle)
 		(up-pending-objects c: castle < 1)
 		(building-type-count-total castle == 0)
+		(goal g-current-strategy FC-CASTLE-DROP)
+		(up-compare-flag g-flag != PLACE-CONTROL-USED)
+		=>
+		(up-set-placement-data my-player-number -1 c: 8)
+		(set-strategic-number sn-placement-zone-size 5)
+		(set-strategic-number sn-placement-fail-delta 1)
+		(up-assign-builders c: castle c: 4)
+		(up-build place-control g-escrow c: castle)
+		(up-modify-flag g-flag c:+ PLACE-CONTROL-USED)
+		(up-store-type-name c: castle)
+		; (up-chat-data-to-player my-player-number CHAT-BUILD-BACKUP-BUILDING c: 7031232)
+		)
+
+		(defrule
+		(up-object-type-count-total c: castle g:< g-desired-num-castle)
+		(can-build-with-escrow castle)
+		(up-pending-objects c: castle < 1)
+		(building-type-count-total castle == 0)
+		(up-compare-goal g-current-strategy != FC-CASTLE-DROP)
 		(up-compare-flag g-flag != PLACE-CONTROL-USED)
 		=>
 		(up-set-placement-data my-player-number -1 c: 13)
@@ -2756,6 +3597,24 @@
 		; (chat-to-player my-player-number CHAT-MILL-BACKUP)
 		)
 
+		;Nomad mill
+		(defrule
+		(goal g-map-style NOMAD)
+		(up-object-type-count-total c: mill g:< g-desired-num-mill)
+		(or
+			(dropsite-min-distance deer-hunting > 20)
+			(goal g-current-sheep-count 0))
+		(building-type-count-total mill == 0)
+		(up-pending-objects c: mill == 0)
+		(can-build mill)
+		=>
+		(set-strategic-number sn-preferred-mill-placement 1)
+		(up-assign-builders c: mill c: 1)
+		(set-strategic-number sn-allow-adjacent-dropsites 1)
+		(build mill)
+		; (chat-to-player my-player-number CHAT-MILL-BACKUP)
+		)
+
 	;-----------
 	;	Farms
 	;-----------
@@ -2765,7 +3624,9 @@
 		;Dark Age
 		(defrule
 		(current-age == dark-age)
-		(building-type-count-total lumber-camp > 0)
+		(or
+			(building-type-count-total lumber-camp > 0)
+			(dropsite-min-distance wood <= 2))
 		(can-build farm)
 		(up-compare-goal g-usable-farm-count-total g:< g-desired-num-farm)
 		(up-pending-objects c: farm < 2)
@@ -2777,7 +3638,25 @@
 
 		(defrule
 		(current-age == dark-age)
-		(building-type-count-total lumber-camp > 0)
+		(goal g-map-style NOMAD)
+		(or
+			(building-type-count-total lumber-camp > 0)
+			(and
+				(dropsite-min-distance wood <= 2)
+				(wood-amount > 100)))
+		(can-build farm)
+		(up-compare-goal g-usable-farm-count-total g:< g-desired-num-farm)
+		(up-pending-objects c: farm < 2)
+		(idle-farm-count == 0)
+		=>
+		(build farm)
+		)
+
+		(defrule
+		(current-age == dark-age)
+		(or
+			(building-type-count-total lumber-camp > 0)
+			(dropsite-min-distance wood <= 2))
 		(can-build farm)
 		(up-compare-goal g-usable-farm-count-total g:< g-desired-num-farm)
 		(up-pending-objects c: farm < 2)
@@ -2793,7 +3672,9 @@
 		;Feudal Age
 		(defrule
 		(current-age == feudal-age)
-		(building-type-count-total lumber-camp > 0)
+		(or
+			(building-type-count-total lumber-camp > 0)
+			(dropsite-min-distance wood <= 2))
 		(can-build farm)
 		(up-compare-goal g-usable-farm-count-total g:< g-desired-num-farm)
 		(up-pending-objects c: farm < 2)
@@ -2823,7 +3704,9 @@
 		(defrule
 		(goal g-temp2 1234)
 		(current-age == feudal-age)
-		(building-type-count-total lumber-camp > 0)
+		(or
+			(building-type-count-total lumber-camp > 0)
+			(dropsite-min-distance wood <= 2))
 		(can-build farm)
 		(up-pending-objects c: farm < 2)
 		(up-compare-goal g-usable-farm-count-total g:< g-desired-num-farm)
@@ -2838,7 +3721,9 @@
 		;Castle/Imperial Age
 		(defrule
 		(current-age >= castle-age)
-		(building-type-count-total lumber-camp > 0)
+		(or
+			(building-type-count-total lumber-camp > 0)
+			(dropsite-min-distance wood <= 2))
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(can-build-with-escrow farm)
@@ -2851,7 +3736,9 @@
 
 		(defrule
 		(current-age >= castle-age)
-		(building-type-count-total lumber-camp > 0)
+		(or
+			(building-type-count-total lumber-camp > 0)
+			(dropsite-min-distance wood <= 2))
 		(can-build farm)
 		(up-pending-objects c: farm < 5)
 		(up-compare-goal g-usable-farm-count-total g:< g-desired-num-farm)

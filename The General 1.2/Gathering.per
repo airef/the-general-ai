@@ -214,6 +214,92 @@
         (set-goal g-desired-future-stone-vils 80)
         )
 
+    ;-----------------
+    ;   Castle Drop
+    ;-----------------
+        
+        (defrule
+        (goal g-current-strategy FC-CASTLE-DROP)
+        (unit-type-count villager >= 18)
+        (unit-type-count villager <= 25)
+        (up-compare-goal g-age-status < TO-CASTLE)
+        =>
+        (set-goal g-desired-future-food-vils 15)
+        (set-goal g-desired-future-wood-vils 10)
+        )
+
+        (defrule
+        (goal g-current-strategy FC-CASTLE-DROP)
+        (unit-type-count villager >= 26)
+        (unit-type-count villager <= 27)
+        (up-compare-goal g-age-status < TO-CASTLE)
+        =>
+        (set-goal g-desired-future-food-vils 15)
+        (set-goal g-desired-future-wood-vils 10)
+        (set-goal g-desired-future-gold-vils 2)
+        )
+
+        (defrule
+        (goal g-current-strategy FC-CASTLE-DROP)
+        (unit-type-count villager >= 28)
+        (unit-type-count villager <= 32)
+        (up-compare-goal g-age-status < TO-CASTLE)
+        =>
+        (set-goal g-desired-future-food-vils 15)
+        (set-goal g-desired-future-wood-vils 10)
+        (set-goal g-desired-future-gold-vils 2)
+        (set-goal g-desired-future-stone-vils 5)
+        )
+
+        ;Switch to using gathering percentages (out of 1000 villagers)
+        (defrule
+        (goal g-current-strategy FC-CASTLE-DROP)
+        (unit-type-count villager >= 33)
+        (up-compare-goal g-age-status < TO-CASTLE)
+        (goal g-percent-dynamic-gathering 0)
+        =>
+        (set-goal g-desired-future-food-vils 450)
+        (set-goal g-desired-future-wood-vils 300)
+        (set-goal g-desired-future-gold-vils 65)
+        (set-goal g-desired-future-stone-vils 185)
+        )
+
+        (defrule
+        (goal g-current-strategy FC-CASTLE-DROP)
+        (up-compare-goal g-age-status >= TO-CASTLE)
+        (or
+            (goal g-percent-dynamic-gathering 0)
+            (up-object-type-count-total c: castle g:< g-desired-num-castle))
+        =>
+        (set-goal g-desired-future-food-vils 400)
+        (set-goal g-desired-future-wood-vils 350)
+        (set-goal g-desired-future-gold-vils 65)
+        (set-goal g-desired-future-stone-vils 185)
+        )
+
+        (defrule
+        (goal g-current-strategy FC-CASTLE-DROP)
+        (current-age >= castle-age)
+        (up-object-type-count-total c: castle g:>= g-desired-num-castle)
+        (up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
+        =>
+        (set-goal g-desired-future-food-vils 490)   ;54%
+        (set-goal g-desired-future-wood-vils 210)   ;23%
+        (set-goal g-desired-future-gold-vils 300)   ;23%
+        )
+
+        (defrule
+        (goal g-current-strategy FC-CASTLE-DROP)
+        (current-age >= castle-age)
+        (up-object-type-count-total c: castle g:>= g-desired-num-castle)
+        (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+        =>
+        (set-goal g-desired-future-food-vils 450)   ;54%
+        (set-goal g-desired-future-wood-vils 190)   ;23%
+        (set-goal g-desired-future-gold-vils 280)   ;23%
+        (set-goal g-desired-future-stone-vils 80)
+        )
+
     ;------------------
     ;   29-vil Krush
     ;------------------

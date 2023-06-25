@@ -400,8 +400,9 @@
 	(up-gaia-type-count g: g-build-line-resource-type > 0)
 	(up-pending-objects g: g-build-line-bldg == 0)
 	=>
-	(up-modify-goal g-loop-counter g:neg g-build-line-zone-radius)
-	(up-modify-goal g-loop-counter2 g:neg g-build-line-zone-radius)
+	(up-modify-goal g-loop-counter g:= g-build-line-zone-radius)
+	(up-modify-goal g-loop-counter c:* -1)
+	(up-modify-goal g-loop-counter2 g:= g-loop-counter)
 	(set-goal g-build-line-zone-radius 0)
 	)
 	
@@ -485,7 +486,8 @@
 		(up-compare-goal g-loop-counter2 g:< g-build-line-zone-radius)
 		=>
 		(up-modify-goal g-loop-counter2 c:+ 1)
-		(up-modify-goal g-loop-counter g:neg g-build-line-zone-radius)
+		(up-modify-goal g-loop-counter g:= g-build-line-zone-radius)
+		(up-modify-goal g-loop-counter c:* -1)
 		(up-copy-point g-point-x g-build-line-point-x)
 		(up-modify-goal g-point-x g:- g-loop-counter)
 		(up-modify-goal g-point-y g:- g-loop-counter2)
@@ -537,8 +539,9 @@
 		(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
 		=>
 		(up-modify-goal g-build-line-zone-radius c:+ 1)
-		(up-modify-goal g-loop-counter g:neg g-build-line-zone-radius)
-		(up-modify-goal g-loop-counter2 g:neg g-build-line-zone-radius)
+		(up-modify-goal g-loop-counter g:= g-build-line-zone-radius)
+		(up-modify-goal g-loop-counter c:* -1)
+		(up-modify-goal g-loop-counter2 g:= g-loop-counter)
 		(up-jump-rule -8)
 		)
 

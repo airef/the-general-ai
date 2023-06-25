@@ -1,8 +1,8 @@
 ;Resign rules
 
-#load-if-not-defined UP-ALLY-IN-GAME
+#load-if-defined UP-1-PLAYER-TEAM
 
-	(load "The General 1.2/Functions/Reset")
+	(load "The General 1.2/Functions/Reset Mini")
 
 	;Resign if we have < 40% of the enemy pop
 	(defrule
@@ -10,7 +10,7 @@
 	(game-time > 600)
 	(population < TWENTY-FIVE-PERCENT-POP)
 	(players-population any-enemy >= TWENTY-FIVE-PERCENT-POP)
-	(up-get-fact population 0 g-temp)	;Example, say we have 30 pop. We have < 40% of enemy pop if enemy has > 75 pop.
+	(up-get-fact population 0 g-temp)
 	(up-get-fact-max any-enemy population 0 g-temp2)
 	(up-modify-goal g-temp2 c:%* 40)
 	(up-compare-goal g-temp g:< g-temp2)
@@ -23,7 +23,7 @@
 	
 #end-if
 
-#load-if-defined UP-ALLY-IN-GAME
+#load-if-not-defined UP-1-PLAYER-TEAM
 
 	;Ask for resources if out of villagers and don't have food to train them.
 	(defrule
@@ -38,7 +38,7 @@
 	(chat-to-allies CHAT-REQUEST-FOOD-FOR-VILLAGERS1)
 	(chat-to-allies CHAT-REQUEST-FOOD-FOR-VILLAGERS2)
 	(set-goal g-resign ASK-FOR-RES)
-	(enable-timer t-resign 30)
+	; (enable-timer t-resign 30)
 	)
 	
 	;Impossible to develop if wood can't be gathered. Ask for wood.
@@ -54,26 +54,26 @@
 	(chat-to-allies CHAT-REQUEST-WOOD-FOR-CAMP2)
 	(chat-to-allies CHAT-REQUEST-WOOD-FOR-CAMP2)
 	(set-goal g-resign ASK-FOR-RES)
-	(enable-timer t-resign 30)
+	; (enable-timer t-resign 30)
 	)
 	
-	;Tribute resources away before being defeated
-	(defrule
-	(game-time > 600)
-	(unit-type-count villager == 0)
-	(not
-		(can-train villager))
-	(players-population any-ally > 60)
-	(goal g-resign ASK-FOR-RES)
-	(timer-triggered t-resign)
-	=>
-	(tribute-to-player this-any-ally wood 100000)
-	(tribute-to-player this-any-ally food 100000)
-	(tribute-to-player this-any-ally gold 100000)
-	(tribute-to-player this-any-ally stone 100000)
-	(chat-to-allies CHAT-DEFEATED)
-	(disable-self)
-	)
+	; ;Tribute resources away before being defeated
+	; (defrule
+	; (game-time > 600)
+	; (unit-type-count villager == 0)
+	; (not
+	; 	(can-train villager))
+	; (players-population any-ally > 60)
+	; (goal g-resign ASK-FOR-RES)
+	; (timer-triggered t-resign)
+	; =>
+	; (tribute-to-player this-any-ally wood 100000)
+	; (tribute-to-player this-any-ally food 100000)
+	; (tribute-to-player this-any-ally gold 100000)
+	; (tribute-to-player this-any-ally stone 100000)
+	; (chat-to-allies CHAT-DEFEATED)
+	; (disable-self)
+	; )
 
 	(load "The General 1.2/Functions/Reset Mini")
 
@@ -88,10 +88,11 @@
 	(up-modify-goal g-temp g:+ g-temp2)
 	(up-get-fact-sum any-enemy population 0 g-temp3)
 	(up-modify-goal g-temp3 c:%* 20)
-	(up-modify-goal g-temp g:< g-temp3)
+	(up-compare-goal g-temp g:< g-temp3)
 	=>
 	(set-goal g-resign DECIDE-TO-RESIGN)
 	)
+
 
 	(defrule
 	(up-compare-goal g-resign < DECIDE-TO-RESIGN)
@@ -104,11 +105,11 @@
 	(up-modify-goal g-temp g:+ g-temp2)
 	(up-get-fact-sum any-enemy population 0 g-temp3)
 	(up-modify-goal g-temp3 c:%* 20)
-	(up-modify-goal g-temp g:< g-temp3)
+	(up-compare-goal g-temp g:< g-temp3)
 	=>
 	(set-goal g-resign DECIDE-TO-RESIGN)
 	)
-	
+
 #end-if
 
 (defrule
@@ -119,6 +120,23 @@
 (chat-to-all CHAT-GG)
 (set-goal g-resign RESIGN)
 (enable-timer t-resign 5)
+)
+
+(defrule
+(goal g-resign RESIGN)
+=>
+(up-modify-sn sn-focus-player-number g:= g-team-partner)
+)
+
+(defrule
+(goal g-resign RESIGN)
+(player-in-game focus-player)
+(stance-toward focus-player ally)
+=>
+(tribute-to-player focus-player wood 100000)
+(tribute-to-player focus-player food 100000)
+(tribute-to-player focus-player gold 100000)
+(tribute-to-player focus-player stone 100000)
 )
 
 (defrule

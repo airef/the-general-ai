@@ -660,6 +660,14 @@
 		(up-modify-goal g-required-num-villager g:min g-desired-num-villager)
 		)
 
+		(defrule
+		(current-age <= feudal-age)
+		(goal g-current-strategy FC-CASTLE-DROP)
+		=>
+		(up-modify-goal g-required-num-villager c:+ 5)
+		(up-modify-goal g-required-num-villager g:min g-desired-num-villager)
+		)
+
 		;Lower Difficulties
 		(defrule
 		(goal g-difficulty HARDEST)
@@ -3029,6 +3037,9 @@
 		(up-compare-goal g-difficulty >= MODERATE)
 		(civilian-population >= 20)
 		(current-age >= castle-age)
+		(or
+			(building-type-count-total castle > 0)
+			(up-compare-goal g-current-strategy != FC-CASTLE-DROP))
 		(up-compare-goal g-desired-num-town-center < 3)
 		=>
 		(up-modify-goal g-desired-num-town-center c:max 3)
@@ -3039,6 +3050,9 @@
 		(up-compare-goal g-difficulty >= HARD)
 		(civilian-population >= 40)
 		(current-age >= castle-age)
+		(or
+			(building-type-count-total castle > 0)
+			(up-compare-goal g-current-strategy != FC-CASTLE-DROP))
 		(up-compare-goal g-desired-num-town-center < 4)
 		=>
 		(up-modify-goal g-desired-num-town-center c:max 4)
@@ -3049,6 +3063,9 @@
 		(up-compare-goal g-difficulty >= HARD)
 		(civilian-population >= 60)
 		(current-age >= castle-age)
+		(or
+			(building-type-count-total castle > 0)
+			(up-compare-goal g-current-strategy != FC-CASTLE-DROP))
 		(up-compare-goal g-desired-num-town-center < 5)
 		=>
 		(up-modify-goal g-desired-num-town-center c:max 5)
@@ -3062,6 +3079,9 @@
 			(up-compare-goal g-difficulty >= HARD)
 			(civilian-population >= 10)
 			(up-compare-goal g-age-status >= TO-FEUDAL)
+			(or
+				(building-type-count-total castle > 0)
+				(up-compare-goal g-current-strategy != FC-CASTLE-DROP))
 			(up-compare-goal g-desired-num-town-center < 2)
 			=>
 			(up-modify-goal g-desired-num-town-center c:max 2)
@@ -3074,6 +3094,9 @@
 			(up-compare-goal g-difficulty >= HARD)
 			(civilian-population >= 10)
 			(up-compare-goal g-age-status >= TO-CASTLE)
+			(or
+				(building-type-count-total castle > 0)
+				(up-compare-goal g-current-strategy != FC-CASTLE-DROP))
 			(up-compare-goal g-desired-num-town-center < 2)
 			=>
 			(up-modify-goal g-desired-num-town-center c:max 2)
@@ -3087,6 +3110,9 @@
 		(civilian-population >= 40)
 		(building-type-count town-center == 2)
 		(current-age >= castle-age)
+		(or
+			(building-type-count-total castle > 0)
+			(up-compare-goal g-current-strategy != FC-CASTLE-DROP))
 		(up-compare-goal g-desired-num-town-center < 3)
 		=>
 		(up-modify-goal g-desired-num-town-center c:max 3)
@@ -3177,6 +3203,9 @@
 		(goal g-game-focus BALANCED)
 		(up-compare-goal g-difficulty >= STANDARD)
 		(current-age >= castle-age)
+		(or
+			(building-type-count-total castle > 0)
+			(up-compare-goal g-current-strategy != FC-CASTLE-DROP))
 		(up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
 		(or
 			(wood-amount > 400)
@@ -3192,6 +3221,9 @@
 		(goal g-game-focus BALANCED)
 		(up-compare-goal g-difficulty >= MODERATE)
 		(current-age >= castle-age)
+		(or
+			(building-type-count-total castle > 0)
+			(up-compare-goal g-current-strategy != FC-CASTLE-DROP))
 		(building-type-count-total town-center >= 2)
 		(unit-type-count-total villager >= 42)
 		(military-population g:>= g-min-military-pop)
@@ -3260,6 +3292,9 @@
 		(civilian-population >= 80)
 		(current-age >= castle-age)
 		(or
+			(building-type-count-total castle > 0)
+			(up-compare-goal g-current-strategy != FC-CASTLE-DROP))
+		(or
 			(up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
 			(military-population >= 12))
 		(up-compare-goal g-desired-num-town-center < 2)
@@ -3273,6 +3308,9 @@
 		(civilian-population >= 50)
 		(current-age >= castle-age)
 		(or
+			(building-type-count-total castle > 0)
+			(up-compare-goal g-current-strategy != FC-CASTLE-DROP))
+		(or
 			(up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
 			(military-population >= 12))
 		(up-compare-goal g-desired-num-town-center < 2)
@@ -3284,6 +3322,9 @@
 		(goal g-game-focus AGGRESSIVE)
 		(up-compare-goal g-difficulty >= HARDEST)
 		(current-age >= castle-age)
+		(or
+			(building-type-count-total castle > 0)
+			(up-compare-goal g-current-strategy != FC-CASTLE-DROP))
 		(or
 			(up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
 			(military-population >= 12))
@@ -3297,6 +3338,9 @@
 		(goal g-game-focus AGGRESSIVE)
 		(goal g-difficulty HARD)
 		(current-age >= castle-age)
+		(or
+			(building-type-count-total castle > 0)
+			(up-compare-goal g-current-strategy != FC-CASTLE-DROP))
 		(up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
 		(unit-type-count-total villager >= 60)
 		(or
@@ -3315,6 +3359,9 @@
 		(goal g-game-focus AGGRESSIVE)
 		(up-compare-goal g-difficulty >= HARDEST)
 		(current-age >= castle-age)
+		(or
+			(building-type-count-total castle > 0)
+			(up-compare-goal g-current-strategy != FC-CASTLE-DROP))
 		(up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
 		(or
 			(unit-type-count-total villager >= 55)
@@ -3558,6 +3605,17 @@
 
 		(load "The General 1.2/Functions/Reset Mini")
 
+		(defrule
+		(goal g-map-style NOMAD)
+		(building-type-count town-center > 0)
+		(or
+			(unit-type-count villager > 10)
+			(up-compare-goal g-current-sheep-count < 4))
+		=>
+		(up-modify-goal g-desired-num-mill c:max 1)
+		(set-strategic-number sn-preferred-mill-placement 1)	;hunting
+		)
+
 		;We want mill if we have a lumber camp or we have excess wood and it's time to gather berries
 		#load-if-defined JAPANESE-CIV
 
@@ -3744,6 +3802,7 @@
 		(dropsite-min-distance stone < 30)
 		=>
 		(set-goal g-desired-num-stone-camp 1)
+		; (chat-to-all "des stone camp")
 		)
 
 		(defrule
@@ -3991,17 +4050,13 @@
 		(up-compare-goal g-map-style != NOMAD)
 		(building-type-count lumber-camp == 0)
 		(game-time > 30)
-		(up-gaia-type-count-total c: wood > 10)
-		(or
-			(resource-found wood)
-			(up-gaia-type-count-total c: wood >= 40))
+		(up-gaia-type-count-total c: wood >= 40)
 		(or
 			(and
 				(unit-type-count villager-wood > 4)
 				(dropsite-min-distance wood > 3))
 			(up-compare-goal g-desired-num-wood-vils > 0))
 		(up-pending-objects c: lumber-camp == 0)
-		(resource-found wood)
 		=>
 		(up-modify-goal g-desired-num-lumber-camp c:max 1)
 		)
@@ -4010,27 +4065,40 @@
 		(goal g-map-style NOMAD)
 		(building-type-count lumber-camp == 0)
 		(up-gaia-type-count-total c: wood > 10)
-		(or
-			(not
-				(can-build town-center))
-			(building-type-count town-center > 0))
 		(not
-			(up-pending-objects c: town-center > 0))
+			(can-build town-center))
+		(building-type-count-total town-center == 0)
 		(up-pending-objects c: lumber-camp == 0)
 		=>
 		(up-modify-goal g-desired-num-lumber-camp c:max 1)
 		)
 
 		(defrule
+		(goal g-map-style NOMAD)
+		(building-type-count lumber-camp == 0)
+		(game-time > 30)
+		(up-gaia-type-count-total c: wood > 10)
+		(or
+			(unit-type-count villager >= 20)
+			(dropsite-min-distance wood >= 2))
+		(building-type-count-total mill > 0)
+		(up-compare-goal g-desired-num-wood-vils > 0)
+		(up-pending-objects c: lumber-camp == 0)
+		=>
+		(up-modify-goal g-desired-num-lumber-camp c:max 1)
+		; (up-chat-data-to-all "Des LC %d" g: g-desired-num-lumber-camp)
+		)
+
+		(defrule
 		(building-type-count lumber-camp == 1)
 		(game-time > 300)
+		(up-gaia-type-count-total c: wood > 40)
 		(or
 			(and
 				(unit-type-count villager-wood > 6)
 				(dropsite-min-distance wood > 3))
 			(up-compare-goal g-desired-num-wood-vils > 5))
 		(up-pending-objects c: lumber-camp == 0)
-		(resource-found wood)
 		=>
 		(up-modify-goal g-desired-num-lumber-camp c:max 2)
 		)
@@ -4042,6 +4110,7 @@
 		(defrule
 		(unit-type-count villager-wood > 16)
 		(building-type-count town-center > 0)
+		(building-type-count-total mill > 0)
 		(dropsite-min-distance wood < 255)	;still wood on the map
 		=>
 		(up-full-reset-search)
@@ -4057,6 +4126,7 @@
 			(up-compare-goal g-loop-counter g:< g-local-total)
 			(unit-type-count villager-wood > 16)
 			(building-type-count town-center > 0)
+			(building-type-count-total mill > 0)
 			(dropsite-min-distance wood < 255)	;still wood on the map
 			(up-set-target-object search-local g: g-loop-counter)
 			=>
@@ -4075,6 +4145,7 @@
 			(up-compare-goal g-loop-counter g:< g-local-total)
 			(unit-type-count villager-wood > 16)
 			(building-type-count town-center > 0)
+			(building-type-count-total mill > 0)
 			(dropsite-min-distance wood < 255)	;still wood on the map
 			(up-set-target-object search-local g: g-loop-counter)
 			(up-compare-goal g-remote-total >= 6)            ;6+ trees found
@@ -4088,6 +4159,7 @@
 			(up-compare-goal g-loop-counter g:< g-local-total)
 			(unit-type-count villager-wood > 16)
 			(building-type-count town-center > 0)
+			(building-type-count-total mill > 0)
 			(dropsite-min-distance wood < 255)	;still wood on the map
 			(up-set-target-object search-local g: g-loop-counter)
 			(up-compare-goal g-remote-total < 6)            ;6+ trees found
@@ -4101,6 +4173,7 @@
 		(defrule
 		(unit-type-count villager-wood > 16)
 		(building-type-count town-center > 0)
+		(building-type-count-total mill > 0)
 		(dropsite-min-distance wood < 255)	;still wood on the map
 		=>
 		(up-get-fact unit-type-count villager-wood g-temp2)
@@ -4254,17 +4327,26 @@
 		(up-modify-goal g-desired-num-farm c:- 3)
 		(up-modify-goal g-desired-num-farm c:max 0)
 		)
+		; (defrule
+		; (up-compare-goal g-desired-num-farm > 0)
+		; (building-available farm)
+		; (unit-type-count villager-hunter > 0)
+		; (or
+		; 	(up-set-target-by-id g: g-current-deer-id)
+		; 	(dropsite-min-distance deer-hunting < 4))
+		; (up-compare-goal g-total-decaying-hunt-food < 30)
+		; =>
+		; (up-modify-goal g-desired-num-farm c:- 1)
+		; (up-modify-goal g-desired-num-farm c:max 0)
+		; )
+
 		(defrule
-		(up-compare-goal g-desired-num-farm > 0)
+		(goal g-map-style NOMAD)
 		(building-available farm)
-		(unit-type-count villager-hunter > 0)
-		(or
-			(up-set-target-by-id g: g-current-deer-id)
-			(dropsite-min-distance deer-hunting < 4))
-		(up-compare-goal g-total-decaying-hunt-food < 30)
+		(up-compare-goal g-current-sheep-count <= 1)
+		(dropsite-min-distance wood <= 3)
 		=>
-		(up-modify-goal g-desired-num-farm c:- 2)
-		(up-modify-goal g-desired-num-farm c:max 0)
+		(up-modify-goal g-desired-num-farm c:max 2)
 		)
 
 		;cap dark age farms
@@ -4800,6 +4882,7 @@
 					(up-compare-goal g-desired-num-gold-vils == 0)
 					(up-compare-goal g-desired-num-stone-vils == 0)))
 			(up-compare-goal g-current-strategy < BOOMI-STRATS-START)		;not doing a boom imp or late imp strategy
+			(up-compare-goal g-current-strategy != FC-CASTLE-DROP)
 			(up-compare-goal g-desired-num-barracks < 1)
 			=>
 			(up-modify-goal g-desired-num-barracks c:max 1)
@@ -5112,7 +5195,9 @@
 	;------------
 
 		(defrule
-		(goal g-current-strategy FC-EAGLES-REVENGE)
+		(or
+			(goal g-current-strategy FC-EAGLES-REVENGE)
+			(goal g-current-strategy FC-CASTLE-DROP))
 		(up-compare-goal g-age-status >= TO-FEUDAL)
 		=>
 		(up-modify-goal g-desired-num-market c:max 1)
@@ -5612,6 +5697,19 @@
 		(goal g-position FLANK)
 		(up-compare-goal g-desired-num-tower < 1)
 		(up-compare-flag g-flag != ENEMY-FC)
+		(up-compare-goal g-age-status >= TO-FEUDAL)
+		(current-age <= feudal-age)
+		(or
+			(current-age == dark-age)
+			(current-age-time < 30))
+		(players-current-age target-player <= feudal-age)
+		=>
+		(up-modify-goal g-desired-num-tower c:max 1)
+		)
+
+		(defrule
+		(goal g-map-style NOMAD)
+		(up-compare-goal g-desired-num-tower < 1)
 		(up-compare-goal g-age-status >= TO-FEUDAL)
 		(current-age <= feudal-age)
 		(or

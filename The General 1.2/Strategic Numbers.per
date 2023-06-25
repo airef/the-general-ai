@@ -166,12 +166,14 @@
             =>
             (up-get-object-data object-data-point-x g-temp)
             (up-modify-goal g-temp g:- g-position-self-x)   ;get difference between position-self-b and TC location-b
-            (up-modify-goal g-temp2 g:neg g-temp)   ;get opposite result of g-temp
+            (up-modify-goal g-temp2 g:= g-temp)   ;get opposite result of g-temp
+            (up-modify-goal g-temp2 c:* -1)
             (up-modify-goal g-temp g:max g-temp2)   ;get absolute value of difference between position-self-x and TC location-x
             (up-modify-goal g-temp3 g:max g-temp)
             (up-get-object-data object-data-point-y g-temp)
             (up-modify-goal g-temp g:- g-position-self-y)   ;get difference between position-self-y and TC location-y
-            (up-modify-goal g-temp2 g:neg g-temp)   ;get opposite result of g-temp
+            (up-modify-goal g-temp2 g:= g-temp)   ;get opposite result of g-temp
+            (up-modify-goal g-temp2 c:* -1)
             (up-modify-goal g-temp g:max g-temp2)   ;get absolute value of difference between position-self-y and TC location-y
             (up-modify-goal g-temp3 g:max g-temp)
             )
@@ -221,172 +223,61 @@
 ;   SN-CAP-CIVILIAN-EXPLORERS
 ;-------------------------------
 
-    (load "The General 1.2/Functions/Reset Mini")
+    ; (load "The General 1.2/Functions/Reset Mini")
 
-    ;Explore with all scouts if game is early and we haven't found enemy
-    (defrule
-    (timer-triggered t-5-sec)
-    (goal g-scouting-status AUTO-SCOUT)
-    (strategic-number sn-number-explore-groups == 0)
-    ; (game-time < 600)
-    ; (players-building-count every-enemy == 0)
-    (military-population > 0)
-    =>
-    (up-get-fact military-population 0 g-temp)
-    (up-get-fact unit-type-count monastery-class g-temp2)
-    (up-modify-goal g-temp g:- g-temp2)    ;remove monks and missionaries from military-population count
-    (up-modify-sn sn-total-number-explorers g:min g-temp)
-    (up-modify-sn sn-total-number-explorers c:max 1)
-    (up-modify-sn sn-number-explore-groups g:= g-temp)
-    (up-modify-sn sn-number-explore-groups c:max 1)
-    (up-reset-scouts)
-    )
+    ; ;Explore with all scouts if game is early and we haven't found enemy
+    ; (defrule
+    ; (timer-triggered t-5-sec)
+    ; (goal g-scouting-status AUTO-SCOUT)
+    ; (strategic-number sn-number-explore-groups == 0)
+    ; ; (game-time < 600)
+    ; ; (players-building-count every-enemy == 0)
+    ; (military-population > 0)
+    ; =>
+    ; (up-get-fact military-population 0 g-temp)
+    ; (up-get-fact unit-type-count monastery-class g-temp2)
+    ; (up-modify-goal g-temp g:- g-temp2)    ;remove monks and missionaries from military-population count
+    ; (up-modify-sn sn-total-number-explorers g:min g-temp)
+    ; (up-modify-sn sn-total-number-explorers c:max 1)
+    ; (up-modify-sn sn-number-explore-groups g:= g-temp)
+    ; (up-modify-sn sn-number-explore-groups c:max 1)
+    ; (up-reset-scouts)
+    ; )
     
-    ;Explore with one scout if we have found the enemy
-    (defrule
-    (goal g-scouting-status AUTO-SCOUT)
-    (strategic-number sn-number-explore-groups > 1)
-    ; (or
-    ;     (game-time >= 600)
-    ;     (players-building-count any-enemy > 0))
-    (military-population > 0)
-    =>
-    (up-modify-sn sn-total-number-explorers c:min 1)
-    (set-strategic-number sn-number-explore-groups 1)
-    (up-reset-scouts)
-    )
+    ; ;Explore with one scout if we have found the enemy
+    ; (defrule
+    ; (goal g-scouting-status AUTO-SCOUT)
+    ; (strategic-number sn-number-explore-groups > 1)
+    ; ; (or
+    ; ;     (game-time >= 600)
+    ; ;     (players-building-count any-enemy > 0))
+    ; (military-population > 0)
+    ; =>
+    ; (up-modify-sn sn-total-number-explorers c:min 1)
+    ; (set-strategic-number sn-number-explore-groups 1)
+    ; (up-reset-scouts)
+    ; )
 
-    (defrule
-    (up-compare-goal g-scouting-status != AUTO-SCOUT)
-    (strategic-number sn-number-explore-groups != 0)
-    =>
-    (set-strategic-number sn-number-explore-groups 0)
-    (up-reset-scouts)
-    )
+    ; (defrule
+    ; (up-compare-goal g-scouting-status != AUTO-SCOUT)
+    ; (strategic-number sn-number-explore-groups != 0)
+    ; =>
+    ; (set-strategic-number sn-number-explore-groups 0)
+    ; (up-reset-scouts)
+    ; )
 
     (load "The General 1.2/Functions/Reset Mini")
 
     (defrule
     (timer-triggered t-10-sec)
     (goal g-scouting-status AUTO-SCOUT)
-    (up-set-target-by-id g: g-scout1-id)
+    (up-set-target-by-id g: g-scout-id)
     (up-object-data object-data-action == -1)
-    (up-add-object-by-id search-local g: g-scout1-id)
+    (up-add-object-by-id search-local g: g-scout-id)
     =>
     (up-get-point position-center g-point-x)
     (up-target-point g-point-x action-move -1 -1)
     ; (chat-to-all "Idle scouts")
-    )
-
-    ;====EXPLORING SNS
-
-    (defrule
-    (up-compare-goal g-map-style != NOMAD)
-    (building-type-count-total town-center > 0)
-    (or
-        (cc-players-unit-type-count 0 livestock-class > 0)
-        (cc-players-unit-type-count 0 forage-class > 0))
-    (goal g-current-sheep-count 0)
-    (up-gaia-type-count c: food == 0)
-    (strategic-number sn-percent-civilian-explorers < 100)
-    (unit-type-count villager-builder == 0)
-    (game-time < 45)
-    =>
-    (set-strategic-number sn-percent-civilian-explorers 100)
-    (set-strategic-number sn-cap-civilian-explorers 5)
-    (set-strategic-number sn-total-number-explorers 6)
-    )
-
-    (defrule
-    (up-compare-goal g-map-style != NOMAD)
-    (goal g-scouting-status AUTO-SCOUT)
-    (or
-        (up-compare-goal g-current-sheep-count > 0)
-        (up-gaia-type-count c: food > 0))
-    (building-type-count-total town-center > 0)
-    (strategic-number sn-percent-civilian-explorers == 100)
-    =>
-    (set-strategic-number sn-percent-civilian-explorers 0)
-    (set-strategic-number sn-percent-civilian-gatherers 100)
-    (set-strategic-number sn-cap-civilian-explorers 0)
-    (set-strategic-number sn-total-number-explorers 1)
-    (set-strategic-number sn-number-explore-groups 1)
-    )
-
-    (defrule
-    (up-compare-goal g-map-style != NOMAD)
-    (up-compare-goal g-duc-scouting != STOP-DUC-SCOUTING)
-    (or
-        (up-compare-goal g-current-sheep-count > 0)
-        (up-gaia-type-count c: food > 0))
-    (building-type-count-total town-center > 0)
-    (strategic-number sn-percent-civilian-explorers == 100)
-    =>
-    (set-strategic-number sn-percent-civilian-explorers 0)
-    (set-strategic-number sn-percent-civilian-gatherers 100)
-    (set-strategic-number sn-cap-civilian-explorers 0)
-    (set-strategic-number sn-total-number-explorers 0)
-    (set-strategic-number sn-number-explore-groups 0)
-    (up-reset-scouts)
-    )
-
-    ;Explore with villagers if we have no scout
-    
-    (defrule
-    (up-compare-goal g-map-style != NOMAD)
-    (goal g-duc-scouting STOP-DUC-SCOUTING)
-    (goal g-scout1-id 0)
-    (military-population == 0)
-    (building-type-count town-center > 0)
-    (or
-        (cc-players-unit-type-count 0 livestock-class > 0)
-        (or
-            (cc-players-unit-type-count 0 forage-class > 0)
-            (cc-players-unit-type-count 0 boar-class > 0)))
-    (strategic-number sn-percent-civilian-explorers < 99)
-    (up-timer-status t-villager-explore-timer == timer-disabled)
-    =>
-    (set-strategic-number sn-percent-civilian-explorers 99)
-    (set-strategic-number sn-cap-civilian-explorers 2)
-    (up-modify-sn sn-total-number-explorers c:max 2)
-    (enable-timer t-villager-explore-timer 120)
-    )
-
-    ;Stop exploring villagers after 120 seconds
-
-    (defrule
-    (up-compare-goal g-map-style != NOMAD)
-    (goal g-duc-scouting STOP-DUC-SCOUTING)
-    (strategic-number sn-percent-civilian-explorers == 99)
-    (or
-        (and
-            (timer-triggered t-villager-explore-timer)
-            (up-gaia-type-count c: food > 0))
-        (military-population > 0))
-    =>
-    (set-strategic-number sn-percent-civilian-explorers 0)
-    (set-strategic-number sn-percent-civilian-gatherers 100)
-    (set-strategic-number sn-cap-civilian-explorers 0)
-    (set-strategic-number sn-total-number-explorers 1)
-    (set-strategic-number sn-number-explore-groups 1)
-    )
-
-    (defrule
-    (up-compare-goal g-map-style != NOMAD)
-    (up-compare-goal g-duc-scouting != STOP-DUC-SCOUTING)
-    (strategic-number sn-percent-civilian-explorers == 99)
-    (or
-        (and
-            (timer-triggered t-villager-explore-timer)
-            (up-gaia-type-count c: food > 0))
-        (military-population > 0))
-    =>
-    (set-strategic-number sn-percent-civilian-explorers 0)
-    (set-strategic-number sn-percent-civilian-gatherers 100)
-    (set-strategic-number sn-cap-civilian-explorers 0)
-    (set-strategic-number sn-total-number-explorers 0)
-    (set-strategic-number sn-number-explore-groups 0)
-    (up-reset-scouts)
     )
 
 ;------------------------------
@@ -420,6 +311,7 @@
 ;---------------------------------
 
     (defrule
+    (building-type-count-total town-center > 0)
     (or
         (resource-found wood)
         (up-gaia-type-count-total c: wood >= 40))
@@ -430,6 +322,7 @@
     )
 
     (defrule
+    (building-type-count-total town-center > 0)
     (building-type-count-total lumber-camp > 0)
     =>
     (up-modify-sn sn-lumber-camp-max-distance c:+ 12)
@@ -437,6 +330,7 @@
     )
 
     (defrule
+    (building-type-count-total town-center > 0)
     (up-compare-sn sn-lumber-camp-max-distance s:< csn-peaceful-town-size)
     =>
     (up-modify-sn sn-lumber-camp-max-distance s:= csn-peaceful-town-size)
@@ -647,7 +541,7 @@
     (defrule
     (up-compare-goal g-scouting-status <= PUSH-DEER)
     (or
-        (up-compare-goal g-boar-found-count > 0)
+        (up-compare-goal g-total-boar-found > 0)
         (up-compare-const MIN-BOAR == 0))
     (or
         (goal g-current-boar-count 0)
@@ -663,7 +557,7 @@
     (defrule
     (up-compare-goal g-scouting-status > PUSH-DEER)
     (or
-        (up-compare-goal g-boar-found-count > 0)
+        (up-compare-goal g-total-boar-found > 0)
         (up-compare-const MIN-BOAR == 0))
     (or
         (goal g-current-boar-count 0)

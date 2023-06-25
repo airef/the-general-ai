@@ -133,6 +133,9 @@
 		(or
 			(up-compare-goal g-current-strategy != FC-STRONGBOW)
 			(up-compare-goal g-age-status >= MID-CASTLE))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(building-type-count lumber-camp > 0)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
@@ -151,15 +154,18 @@
 		(or
 			(up-compare-goal g-current-strategy != FC-STRONGBOW)
 			(up-compare-goal g-age-status >= MID-CASTLE))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(building-type-count lumber-camp > 0)
 		=>
 		(up-store-tech-name c: ri-bow-saw)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 		)
 
-	;--------------------
+	;------------------
 	;	Horse Collar
-	;--------------------
+	;------------------
 
 		(defrule
 		(up-compare-goal g-difficulty > EASIEST)
@@ -168,6 +174,9 @@
 			(up-compare-goal g-current-strategy != FC-STRONGBOW)
 			(up-compare-goal g-primary-unit-tech-progress >= SECONDARY-CASTLE-COMPLETE))
 		(up-research-status c: ri-double-bit-axe >= research-pending)
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-horse-collar == research-available)
 		(up-compare-goal g-age-status >= TO-CASTLE)
 		(building-type-count mill > 0)
@@ -190,6 +199,9 @@
 			(up-compare-goal g-current-strategy != FC-STRONGBOW)
 			(up-compare-goal g-primary-unit-tech-progress >= SECONDARY-CASTLE-COMPLETE))
 		(up-research-status c: ri-double-bit-axe >= research-pending)
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-horse-collar == research-available)
 		(up-compare-goal g-age-status >= TO-CASTLE)
 		(building-type-count mill > 0)
@@ -228,6 +240,9 @@
 				(and
 					(goal g-position POCKET)
 					(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(building-type-count mill > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
@@ -246,6 +261,9 @@
 				(and
 					(goal g-position POCKET)
 					(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(building-type-count mill > 0)
 			=>
 			(up-store-tech-name c: ri-heavy-plow)
@@ -303,6 +321,9 @@
 			(up-compare-goal g-usable-farm-count >= 25))
 		(up-compare-goal g-usable-farm-count >= 20)
 		(population >= 80)
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 		(up-research-status c: ri-heavy-plow >= research-pending)
 		(up-research-status c: ri-hand-cart == research-available)
@@ -324,6 +345,9 @@
 			(up-compare-goal g-usable-farm-count >= 25))
 		(up-compare-goal g-usable-farm-count >= 20)
 		(population >= 80)
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 		(up-research-status c: ri-heavy-plow >= research-pending)
 		(up-research-status c: ri-hand-cart == research-available)
@@ -894,11 +918,11 @@
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(unit-type-count archery-class >= 12)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: my-second-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: my-second-unique-research c: 1)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -912,10 +936,10 @@
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(unit-type-count archery-class >= 12)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: my-second-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: my-second-unique-research)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -926,11 +950,11 @@
 			(defrule
 			(up-compare-goal g-desired-num-trebuchet > 3)
 			(unit-type-count trebuchet-set > 1)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: my-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: my-unique-research c: 1)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			)
@@ -939,10 +963,10 @@
 			(taunt-detected TAUNT-PLAYER 246)
 			(up-compare-goal g-desired-num-trebuchet > 3)
 			(unit-type-count trebuchet-set > 1)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: my-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: my-unique-research)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1033,11 +1057,11 @@
 					(goal g-support-unit battle-elephant)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: my-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: my-unique-research c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			)
@@ -1050,10 +1074,10 @@
 					(goal g-support-unit battle-elephant)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: my-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: my-unique-research)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1067,11 +1091,11 @@
 				(and
 					(goal g-support-unit-class cavalry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: my-second-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: my-second-unique-research c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -1083,11 +1107,11 @@
 				(and
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: my-second-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: my-second-unique-research c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -1100,10 +1124,10 @@
 				(and
 					(goal g-support-unit-class cavalry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: my-second-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: my-second-unique-research)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1115,10 +1139,10 @@
 				(and
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: my-second-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: my-second-unique-research)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 			#end-if
@@ -1496,11 +1520,11 @@
 					(goal g-support-unit-class cavalry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: my-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: my-unique-research c: 1)
 			(up-modify-goal g-important-techs-wood-needed g:+ g-wood-cost)
 			(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
@@ -1515,10 +1539,10 @@
 					(goal g-support-unit-class cavalry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: my-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: my-unique-research)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1532,11 +1556,11 @@
 				(and
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: my-second-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: my-second-unique-research c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -1548,10 +1572,10 @@
 				(and
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: my-second-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: my-second-unique-research)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1570,11 +1594,11 @@
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: my-second-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: my-second-unique-research c: 1)
 			(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
 			(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
@@ -1589,10 +1613,10 @@
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: my-second-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: my-second-unique-research)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1606,11 +1630,11 @@
 				(and
 					(goal g-support-unit-class infantry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: my-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: my-unique-research c: 1)
 			(up-modify-goal g-important-techs-wood-needed g:+ g-wood-cost)
 			(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
@@ -1624,10 +1648,10 @@
 				(and
 					(goal g-support-unit-class infantry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: my-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: my-unique-research)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -3170,11 +3194,11 @@
 			(or
 				(goal g-primary-unit camel)
 				(goal g-primary-unit my-unique-unit))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: my-second-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: my-second-unique-research c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -3183,11 +3207,11 @@
 			(or
 				(goal g-support-unit camel)
 				(goal g-support-unit my-unique-unit))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: my-second-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: my-second-unique-research c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -3197,10 +3221,10 @@
 			(or
 				(goal g-primary-unit camel)
 				(goal g-primary-unit my-unique-unit))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: my-second-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: my-second-unique-research)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 			(defrule
@@ -3209,10 +3233,10 @@
 			(or
 				(goal g-support-unit camel)
 				(goal g-support-unit my-unique-unit))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: my-second-unique-research == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: my-second-unique-research)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -4061,7 +4085,9 @@
 		(defrule
 		(or
 			(up-compare-goal g-game-focus != BOOM)
-			(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+			(or
+				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+				(goal g-town-under-attack YES)))
 		(up-compare-goal g-desired-num-scout-cavalry > 0)
 		(up-research-status c: ri-light-cavalry == research-available)
 		(building-type-count stable > 0)
@@ -4076,7 +4102,9 @@
 		(taunt-detected TAUNT-PLAYER 246)
 		(or
 			(up-compare-goal g-game-focus != BOOM)
-			(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+			(or
+				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+				(goal g-town-under-attack YES)))
 		(up-compare-goal g-desired-num-scout-cavalry > 0)
 		(up-research-status c: ri-light-cavalry == research-available)
 		(building-type-count stable > 0)
@@ -4182,7 +4210,7 @@
 		(or
 			(up-compare-goal g-age-status != SAVE-FOR-CASTLE)
 			(food-amount >= 950))
-		(unit-type-count scout-cavalry-line >= 4)
+		; (unit-type-count scout-cavalry-line >= 4)
 		(up-research-status c: ri-scale-barding == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -4194,7 +4222,9 @@
 		(current-age >= castle-age)
 		(or
 			(up-compare-goal g-game-focus != BOOM)
-			(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+			(or
+				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+				(goal g-town-under-attack YES)))
 		(goal g-primary-unit-class cavalry-class)
 		(up-compare-goal g-age-status >= TO-IMPERIAL)
 		(up-research-status c: ri-scale-barding == research-available)
@@ -4210,7 +4240,9 @@
 			(current-age >= castle-age)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
 			(goal g-primary-unit-class cavalry-class)
 			(unit-type-count cavalry-class >= 3)
 			(up-research-status c: ri-scale-barding == research-available)
@@ -4226,7 +4258,9 @@
 			(current-age >= castle-age)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
 			(goal g-primary-unit-class cavalry-class)
 			(or
 				(goal g-primary-unit scout-cavalry)
@@ -4244,7 +4278,9 @@
 			(current-age >= castle-age)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
 			(goal g-support-unit-class cavalry-class)
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(unit-type-count cavalry-class >= 3)
@@ -4262,7 +4298,9 @@
 		(current-age >= castle-age)
 		(or
 			(up-compare-goal g-game-focus != BOOM)
-			(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+			(or
+				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+				(goal g-town-under-attack YES)))
 		(goal g-primary-unit-class cavalry-class)
 		(up-compare-goal g-age-status >= TO-IMPERIAL)
 		(up-research-status c: ri-scale-barding == research-available)
@@ -4277,7 +4315,9 @@
 			(current-age >= castle-age)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
 			(goal g-primary-unit-class cavalry-class)
 			(or
 				(unit-type-count cavalry-class >= 3)
@@ -4296,7 +4336,9 @@
 			(current-age >= castle-age)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
 			(goal g-support-unit-class cavalry-class)
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(unit-type-count cavalry-class >= 3)
@@ -4320,6 +4362,9 @@
 				(or
 					(up-compare-goal g-age-status >= TO-IMPERIAL)
 					(unit-type-count cavalry-class g:>= g-desired-num-cavalry))))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-chain-barding == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -4340,6 +4385,9 @@
 				(or
 					(up-compare-goal g-age-status >= TO-IMPERIAL)
 					(unit-type-count cavalry-class g:>= g-desired-num-cavalry))))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-chain-barding == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -4357,6 +4405,9 @@
 				(or
 					(up-compare-goal g-age-status >= TO-IMPERIAL)
 					(unit-type-count cavalry-class g:>= g-desired-num-cavalry))))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-chain-barding == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -4376,6 +4427,9 @@
 				(or
 					(up-compare-goal g-age-status >= TO-IMPERIAL)
 					(unit-type-count cavalry-class g:>= g-desired-num-cavalry))))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-chain-barding == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -4479,7 +4533,12 @@
 			(current-age >= castle-age)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(goal g-primary-unit-class cavalry-class)
 			(up-research-status c: ri-bloodlines == research-available)
 			(building-type-count stable > 0)
@@ -4495,7 +4554,12 @@
 			(current-age >= castle-age)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(goal g-support-unit-class cavalry-class)
 			(up-compare-goal g-support-unit != battle-elephant)
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
@@ -4514,7 +4578,12 @@
 			(current-age >= castle-age)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(goal g-primary-unit-class cavalry-class)
 			(up-research-status c: ri-bloodlines == research-available)
 			(building-type-count stable > 0)
@@ -4527,7 +4596,12 @@
 			(current-age >= castle-age)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(goal g-support-unit-class cavalry-class)
 			(up-compare-goal g-support-unit != battle-elephant)
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
@@ -4554,7 +4628,12 @@
 			(current-age >= castle-age)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(goal g-primary-unit-class cavalry-class)
 			(up-research-status c: ri-husbandry == research-available)
 			(building-type-count stable > 0)
@@ -4567,7 +4646,12 @@
 			(current-age >= castle-age)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(goal g-support-unit-class cavalry-class)
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
@@ -4584,7 +4668,12 @@
 			(current-age >= castle-age)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(goal g-primary-unit-class cavalry-class)
 			(up-research-status c: ri-husbandry == research-available)
 			(building-type-count stable > 0)
@@ -4597,7 +4686,12 @@
 			(current-age >= castle-age)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(goal g-support-unit-class cavalry-class)
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
@@ -4770,7 +4864,9 @@
 		(defrule
 		(or
 			(up-compare-goal g-game-focus != BOOM)
-			(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+			(or
+				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+				(goal g-town-under-attack YES)))
 		(goal g-primary-unit archer)
 		(up-research-status c: ri-crossbow == research-available)
 		(building-type-count archery-range > 0)
@@ -4786,7 +4882,9 @@
 			(defrule
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
 			(goal g-support-unit archer)
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			; (or
@@ -4807,7 +4905,9 @@
 		(taunt-detected TAUNT-PLAYER 246)
 		(or
 			(up-compare-goal g-game-focus != BOOM)
-			(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+			(or
+				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+				(goal g-town-under-attack YES)))
 		(goal g-primary-unit archer)
 		(up-research-status c: ri-crossbow == research-available)
 		(building-type-count archery-range > 0)
@@ -4820,7 +4920,9 @@
 			(taunt-detected TAUNT-PLAYER 246)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
 			(goal g-support-unit archer)
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			; (or
@@ -4937,7 +5039,9 @@
 		(defrule
 		(or
 			(up-compare-goal g-game-focus != BOOM)
-			(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+			(or
+				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+				(goal g-town-under-attack YES)))
 		(goal g-primary-unit skirmisher)
 		(up-research-status c: ri-elite-skirmisher == research-available)
 		(building-type-count archery-range > 0)
@@ -4953,7 +5057,9 @@
 			(defrule
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
 			(goal g-support-unit skirmisher)
 			; (or
 			; 	(up-compare-goal g-skirmisher-line >= 8)
@@ -4974,7 +5080,9 @@
 		(taunt-detected TAUNT-PLAYER 246)
 		(or
 			(up-compare-goal g-game-focus != BOOM)
-			(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+			(or
+				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+				(goal g-town-under-attack YES)))
 		(goal g-primary-unit skirmisher)
 		(up-research-status c: ri-elite-skirmisher == research-available)
 		(building-type-count archery-range > 0)
@@ -4987,7 +5095,9 @@
 			(taunt-detected TAUNT-PLAYER 246)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
 			(goal g-support-unit skirmisher)
 			; (or
 			; 	(up-compare-goal g-skirmisher-line >= 8)
@@ -5269,6 +5379,9 @@
 		(or
 			(unit-type-count archery-class >= 4)
 			(unit-type-count archery-class g:>= g-desired-num-foot-archers))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-bodkin-arrow == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -5286,6 +5399,9 @@
 				(unit-type-count archery-class >= 6)
 				(unit-type-count archery-class g:>= g-desired-num-foot-archers))
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5300,6 +5416,9 @@
 			(or
 				(unit-type-count cavalry-archer-class >= 4)
 				(unit-type-count cavalry-archer-class g:>= g-desired-num-cavalry-archers))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5317,6 +5436,9 @@
 				(unit-type-count cavalry-archer-class >= 6)
 				(unit-type-count cavalry-archer-class g:>= g-desired-num-cavalry-archers))
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5331,6 +5453,9 @@
 				(goal g-primary-unit-class archery-class)
 				(goal g-primary-unit-class cavalry-archer-class))
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5347,6 +5472,9 @@
 				(goal g-support-unit-class archery-class)
 				(goal g-support-unit-class cavalry-archer-class))
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5364,6 +5492,9 @@
 		(or
 			(unit-type-count archery-class >= 4)
 			(unit-type-count archery-class g:>= g-desired-num-foot-archers))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-bodkin-arrow == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -5378,6 +5509,9 @@
 				(unit-type-count archery-class >= 6)
 				(unit-type-count archery-class g:>= g-desired-num-foot-archers))
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5391,6 +5525,9 @@
 			(or
 				(unit-type-count cavalry-archer-class >= 4)
 				(unit-type-count cavalry-archer-class g:>= g-desired-num-cavalry-archers))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5405,6 +5542,9 @@
 				(unit-type-count cavalry-archer-class >= 6)
 				(unit-type-count cavalry-archer-class g:>= g-desired-num-cavalry-archers))
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5418,6 +5558,9 @@
 				(goal g-primary-unit-class archery-class)
 				(goal g-primary-unit-class cavalry-archer-class))
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5431,6 +5574,9 @@
 				(goal g-support-unit-class archery-class)
 				(goal g-support-unit-class cavalry-archer-class))
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5527,6 +5673,9 @@
 			(unit-type-count cavalry-archer-line >= 7)
 			(unit-type-count cavalry-archer-line g:>= g-desired-num-cavalry-archer))
 		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-thumb-ring == research-available)
 		(building-type-count archery-range > 0)
 		=>
@@ -5543,6 +5692,9 @@
 				(unit-type-count cavalry-archer-line >= 10)
 				(unit-type-count cavalry-archer-line g:>= g-desired-num-cavalry-archer))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-thumb-ring == research-available)
 			(building-type-count archery-range > 0)
 			=>
@@ -5559,6 +5711,9 @@
 			(unit-type-count cavalry-archer-line >= 7)
 			(unit-type-count cavalry-archer-line g:>= g-desired-num-cavalry-archer))
 		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-thumb-ring == research-available)
 		(building-type-count archery-range > 0)
 		=>
@@ -5574,6 +5729,9 @@
 				(unit-type-count cavalry-archer-line >= 10)
 				(unit-type-count cavalry-archer-line g:>= g-desired-num-cavalry-archer))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-thumb-ring == research-available)
 			(building-type-count archery-range > 0)
 			=>
@@ -5590,6 +5748,9 @@
 		(up-compare-goal g-strategy-type < FAST-CASTLE)
 		(goal g-primary-unit-class archery-class)
 		(unit-type-count archery-class >= 7)
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-padded-archer-armor == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -5605,6 +5766,9 @@
 			(goal g-support-unit-class archery-class)
 			(unit-type-count archery-class >= 10)
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-padded-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5620,6 +5784,9 @@
 		(up-compare-goal g-strategy-type < FAST-CASTLE)
 		(goal g-primary-unit-class archery-class)
 		(unit-type-count archery-class >= 7)
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-padded-archer-armor == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -5634,6 +5801,9 @@
 			(goal g-support-unit-class archery-class)
 			(unit-type-count archery-class >= 10)
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-padded-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5651,6 +5821,9 @@
 			(or
 				(unit-type-count archery-class g:>= g-desired-num-foot-archers)
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-padded-archer-armor == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -5670,6 +5843,9 @@
 				(or
 					(unit-type-count cavalry-archer-class g:>= g-desired-num-cavalry-archers)
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-padded-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5690,6 +5866,9 @@
 			(or
 				(unit-type-count archery-class g:>= g-desired-num-foot-archers)
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-padded-archer-armor == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -5708,6 +5887,9 @@
 				(or
 					(unit-type-count cavalry-archer-class g:>= g-desired-num-cavalry-archers)
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-padded-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5725,6 +5907,9 @@
 			(or
 				(unit-type-count archery-cannon-class g:>= g-desired-num-hand-cannoneers)
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-padded-archer-armor == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -5744,6 +5929,9 @@
 				(or
 					(unit-type-count cavalry-cannon-class g:>= g-desired-num-hand-cannoneers)
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-padded-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5764,6 +5952,9 @@
 			(or
 				(unit-type-count archery-cannon-class g:>= g-desired-num-hand-cannoneers)
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-padded-archer-armor == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -5782,6 +5973,9 @@
 				(or
 					(unit-type-count cavalry-cannon-class g:>= g-desired-num-hand-cannoneers)
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-padded-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5804,6 +5998,9 @@
 			(or
 				(unit-type-count archery-class g:>= g-desired-num-foot-archers)
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(can-research-with-escrow ri-leather-archer-armor)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
@@ -5823,6 +6020,9 @@
 				(or
 					(unit-type-count cavalry-archer-class g:>= g-desired-num-cavalry-archers)
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(can-research-with-escrow ri-leather-archer-armor)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
@@ -5842,6 +6042,9 @@
 				(or
 					(unit-type-count archery-cannon-class g:>= g-desired-num-hand-cannoneers)
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(can-research-with-escrow ri-leather-archer-armor)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
@@ -5861,6 +6064,9 @@
 				(or
 					(unit-type-count cavalry-cannon-class g:>= g-desired-num-hand-cannoneers)
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(can-research-with-escrow ri-leather-archer-armor)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
@@ -5881,6 +6087,9 @@
 			(or
 				(unit-type-count archery-class g:>= g-desired-num-foot-archers)
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(can-research-with-escrow ri-leather-archer-armor)
 		=>
 		(up-store-tech-name c: ri-leather-archer-armor)
@@ -5899,6 +6108,9 @@
 				(or
 					(unit-type-count cavalry-archer-class g:>= g-desired-num-cavalry-archers)
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(can-research-with-escrow ri-leather-archer-armor)
 			=>
 			(up-store-tech-name c: ri-leather-archer-armor)
@@ -5917,6 +6129,9 @@
 				(or
 					(unit-type-count archery-cannon-class g:>= g-desired-num-hand-cannoneers)
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(can-research-with-escrow ri-leather-archer-armor)
 			=>
 			(up-store-tech-name c: ri-leather-archer-armor)
@@ -5935,6 +6150,9 @@
 				(or
 					(unit-type-count cavalry-cannon-class g:>= g-desired-num-hand-cannoneers)
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(can-research-with-escrow ri-leather-archer-armor)
 			=>
 			(up-store-tech-name c: ri-leather-archer-armor)
@@ -5950,6 +6168,9 @@
 			(and
 				(goal g-primary-unit-class cavalry-archer-class)
 				(unit-type-count cavalry-archer-class >= 10)))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-leather-archer-armor == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -5967,6 +6188,9 @@
 					(goal g-support-unit-class cavalry-archer-class)
 					(unit-type-count cavalry-archer-class >= 12)))
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-leather-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5980,6 +6204,9 @@
 				(goal g-primary-unit-class archery-class)
 				(goal g-primary-unit-class cavalry-archer-class))
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-leather-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5994,6 +6221,9 @@
 				(goal g-support-unit-class cavalry-archer-class))
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-leather-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6009,6 +6239,9 @@
 			(and
 				(goal g-primary-unit-class cavalry-cannon-class)
 				(unit-type-count cavalry-cannon-class >= 10)))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-leather-archer-armor == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -6029,6 +6262,9 @@
 					(goal g-support-unit-class cavalry-cannon-class)
 					(unit-type-count cavalry-cannon-class >= 12)))
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-leather-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6043,6 +6279,9 @@
 				(goal g-primary-unit-class archery-cannon-class)
 				(goal g-primary-unit-class cavalry-cannon-class))
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-leather-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6060,6 +6299,9 @@
 				(goal g-support-unit-class cavalry-cannon-class))
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-leather-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6078,6 +6320,9 @@
 			(and
 				(goal g-primary-unit-class cavalry-cannon-class)
 				(unit-type-count cavalry-cannon-class >= 10)))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-leather-archer-armor == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -6095,6 +6340,9 @@
 					(goal g-support-unit-class cavalry-cannon-class)
 					(unit-type-count cavalry-cannon-class >= 12)))
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-leather-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6108,6 +6356,9 @@
 				(goal g-primary-unit-class archery-cannon-class)
 				(goal g-primary-unit-class cavalry-cannon-class))
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-leather-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6122,6 +6373,9 @@
 				(goal g-support-unit-class cavalry-cannon-class))
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-leather-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6216,6 +6470,9 @@
 			(or
 				(unit-type-count archery-class g:>= g-desired-num-foot-archers)
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-ballistics == research-available)
 		(building-type-count university > 0)
 		=>
@@ -6234,6 +6491,9 @@
 				(or
 					(unit-type-count cavalry-archer-class g:>= g-desired-num-cavalry-archers)
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-ballistics == research-available)
 			(building-type-count university > 0)
 			=>
@@ -6253,6 +6513,9 @@
 			(or
 				(unit-type-count archery-class g:>= g-desired-num-foot-archers)
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-ballistics == research-available)
 		(building-type-count university > 0)
 		=>
@@ -6270,6 +6533,9 @@
 				(or
 					(unit-type-count cavalry-archer-class g:>= g-desired-num-cavalry-archers)
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-ballistics == research-available)
 			(building-type-count university > 0)
 			=>
@@ -6290,6 +6556,9 @@
 				(or
 					(up-compare-goal g-unique-unit-line g:>= g-desired-num-unique-unit)
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-ballistics == research-available)
 			(building-type-count university > 0)
 			=>
@@ -6311,6 +6580,9 @@
 				(or
 					(up-compare-goal g-unique-unit-line g:>= g-desired-num-unique-unit)
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-ballistics == research-available)
 			(building-type-count university > 0)
 			=>
@@ -6356,7 +6628,9 @@
 			(defrule
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
 			(or
 				(goal g-primary-unit eagle-warrior)
 				(goal g-support-unit eagle-warrior))
@@ -6375,7 +6649,9 @@
 			(taunt-detected TAUNT-PLAYER 246)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
 			(or
 				(goal g-primary-unit eagle-warrior)
 				(goal g-support-unit eagle-warrior))
@@ -6478,7 +6754,9 @@
 		(defrule
 		(or
 			(up-compare-goal g-game-focus != BOOM)
-			(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+			(or
+				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+				(goal g-town-under-attack YES)))
 		(up-compare-goal g-desired-num-spearman > 0)
 		(up-research-status c: ri-pikeman == research-available)
 		(building-type-count barracks > 0)
@@ -6493,7 +6771,9 @@
 		(taunt-detected TAUNT-PLAYER 246)
 		(or
 			(up-compare-goal g-game-focus != BOOM)
-			(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+			(or
+				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+				(goal g-town-under-attack YES)))
 		(up-compare-goal g-desired-num-spearman > 0)
 		(up-research-status c: ri-pikeman == research-available)
 		(building-type-count barracks > 0)
@@ -6648,7 +6928,9 @@
 		(defrule
 		(or
 			(up-compare-goal g-game-focus != BOOM)
-			(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+			(or
+				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+				(goal g-town-under-attack YES)))
 		(or
 			(goal g-primary-unit militiaman)
 			(goal g-support-unit militiaman))
@@ -6667,7 +6949,9 @@
 		(taunt-detected TAUNT-PLAYER 246)
 		(or
 			(up-compare-goal g-game-focus != BOOM)
-			(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+			(or
+				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+				(goal g-town-under-attack YES)))
 		(or
 			(goal g-primary-unit militiaman)
 			(goal g-support-unit militiaman))
@@ -6813,7 +7097,9 @@
 		(defrule
 		(or
 			(up-compare-goal g-game-focus != BOOM)
-			(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+			(or
+				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+				(goal g-town-under-attack YES)))
 		(current-age >= castle-age)
 		(or
 			(goal g-primary-unit-class infantry-class)
@@ -6834,7 +7120,9 @@
 		(taunt-detected TAUNT-PLAYER 246)
 		(or
 			(up-compare-goal g-game-focus != BOOM)
-			(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+			(or
+				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+				(goal g-town-under-attack YES)))
 		(current-age >= castle-age)
 		(or
 			(goal g-primary-unit-class infantry-class)
@@ -6860,6 +7148,9 @@
 			(or
 				(unit-type-count infantry-class g:>= g-desired-num-infantry)
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-chain-mail == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -6880,6 +7171,9 @@
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(up-compare-goal g-age-status >= MID-CASTLE)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-chain-mail == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6897,6 +7191,9 @@
 			(or
 				(unit-type-count infantry-class g:>= g-desired-num-infantry)
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-chain-mail == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -6914,6 +7211,9 @@
 					(unit-type-count infantry-class g:>= g-desired-num-infantry)
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(up-compare-goal g-age-status >= MID-CASTLE)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-chain-mail == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6995,6 +7295,9 @@
 			(or
 				(unit-type-count infantry-class g:>= g-desired-num-infantry)
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-forging == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -7012,6 +7315,9 @@
 			(or
 				(unit-type-count cavalry-class >= 12)
 				(unit-type-count steppe-lancer-line >= 8))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-forging == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -7029,6 +7335,9 @@
 			(or
 				(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
 				(up-compare-goal g-age-status >= TO-IMPERIAL))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-forging == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -7049,6 +7358,9 @@
 			(or
 				(unit-type-count infantry-class g:>= g-desired-num-infantry)
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-forging == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -7065,6 +7377,9 @@
 			(or
 				(unit-type-count cavalry-class >= 12)
 				(unit-type-count steppe-lancer-line >= 8))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-forging == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -7081,6 +7396,9 @@
 			(or
 				(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
 				(up-compare-goal g-age-status >= TO-IMPERIAL))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-forging == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -7099,6 +7417,9 @@
 			(or
 				(unit-type-count infantry-class g:>= g-desired-num-infantry)
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-iron-casting == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -7117,6 +7438,9 @@
 					(unit-type-count infantry-class g:>= g-desired-num-infantry)
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(up-compare-goal g-age-status >= MID-CASTLE)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-iron-casting == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -7134,6 +7458,9 @@
 			(or
 				(unit-type-count infantry-class g:>= g-desired-num-infantry)
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-iron-casting == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -7151,6 +7478,9 @@
 					(unit-type-count infantry-class g:>= g-desired-num-infantry)
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(up-compare-goal g-age-status >= MID-CASTLE)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-iron-casting == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -7167,6 +7497,9 @@
 				(or
 					(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
 					(up-compare-goal g-age-status >= TO-IMPERIAL))))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-iron-casting == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -7186,6 +7519,9 @@
 					(or
 						(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
 						(up-compare-goal g-age-status >= TO-IMPERIAL))))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-iron-casting == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -7205,6 +7541,9 @@
 				(or
 					(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
 					(up-compare-goal g-age-status >= TO-IMPERIAL))))
+		(or
+			(goal g-town-under-attack NO)
+			(military-population g:>= g-min-military-pop))
 		(up-research-status c: ri-iron-casting == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -7223,6 +7562,9 @@
 					(or
 						(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
 						(up-compare-goal g-age-status >= TO-IMPERIAL))))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-iron-casting == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -7342,6 +7684,9 @@
 				(and
 					(goal g-support-unit militiaman)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-supplies == research-available)
 			(building-type-count barracks > 0)
 			=>
@@ -7360,6 +7705,9 @@
 				(and
 					(goal g-support-unit militiaman)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-supplies == research-available)
 			(building-type-count barracks > 0)
 			=>
@@ -7381,6 +7729,9 @@
 				(and
 					(goal g-support-unit militiaman)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-gambesons == research-available)
 			(building-type-count barracks > 0)
 			=>
@@ -7399,6 +7750,9 @@
 				(and
 					(goal g-support-unit militiaman)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-gambesons == research-available)
 			(building-type-count barracks > 0)
 			=>
@@ -7423,8 +7777,13 @@
 			(current-age >= castle-age)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
 			(goal g-primary-unit-class infantry-class)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-squires == research-available)
 			(building-type-count barracks > 0)
 			=>
@@ -7436,10 +7795,15 @@
 			(current-age >= castle-age)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
 			(goal g-support-unit-class infantry-class)
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-squires == research-available)
 			(building-type-count barracks > 0)
 			=>
@@ -7453,8 +7817,13 @@
 			(current-age >= castle-age)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
 			(goal g-primary-unit-class infantry-class)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-squires == research-available)
 			(building-type-count barracks > 0)
 			=>
@@ -7466,10 +7835,15 @@
 			(current-age >= castle-age)
 			(or
 				(up-compare-goal g-game-focus != BOOM)
-				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+				(or
+					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+					(goal g-town-under-attack YES)))
 			(goal g-support-unit-class infantry-class)
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(or
+				(goal g-town-under-attack NO)
+				(military-population g:>= g-min-military-pop))
 			(up-research-status c: ri-squires == research-available)
 			(building-type-count barracks > 0)
 			=>

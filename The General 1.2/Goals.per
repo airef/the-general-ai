@@ -809,7 +809,7 @@
 
 	;Find necessary resources first
 	(defrule
-	(up-set-target-by-id g: g-scout1-id)
+	(up-group-size c: 8 > 0)
 	(building-type-count-total town-center > 0)
 	=>
 	(set-goal g-scouting-status FIND-RESOURCES)
@@ -820,10 +820,10 @@
 	(goal g-scouting-status FIND-RESOURCES)
 	(building-type-count-total town-center > 0)
 	(or
-		(up-compare-goal g-sheep-found-count > 0)
+		(up-compare-goal g-total-sheep-found > 0)
 		(up-compare-const MIN-SHEEP == 0))
 	(or
-		(up-compare-goal g-boar-found-count > 0)
+		(up-compare-goal g-total-boar-found > 0)
 		(up-compare-const MIN-BOAR == 0))
 	(or
 		(up-gaia-type-count-total c: forage-class > 0)
@@ -839,10 +839,10 @@
 	(up-compare-const MIN-SHEEP == 0)
 	(up-compare-const MIN-BOAR == 0)
 	(up-compare-const FORAGE-PILE-1 == 0)
-	(up-compare-goal g-sheep-found-count == 0)
-	(up-compare-goal g-boar-found-count == 0)
+	(up-compare-goal g-total-sheep-found == 0)
+	(up-compare-goal g-total-boar-found == 0)
 	(up-gaia-type-count-total c: forage-class == 0)
-	(up-compare-goal g-deer-found-count == 0)
+	(up-compare-goal g-total-deer-found == 0)
 	(building-type-count farm == 0)
 	=>
 	(set-goal g-temp 0)
@@ -881,7 +881,7 @@
 	(defrule
 	(goal g-scouting-status SCOUT-TOWN)
 	(building-type-count-total town-center > 0)
-	(up-compare-goal g-sheep-found-count g:>= g-temp)
+	(up-compare-goal g-total-sheep-found g:>= g-temp)
 	(up-gaia-type-count-total c: forage-class g:>= g-temp2)
 	=>
 	(set-goal g-temp MIN-BOAR)
@@ -897,8 +897,8 @@
 	(goal g-temp3 20001)
 	(goal g-scouting-status SCOUT-TOWN)
 	(building-type-count-total town-center > 0)
-	(up-compare-goal g-boar-found-count g:>= g-temp)
-	(up-compare-goal g-deer-found-count g:>= g-temp2)
+	(up-compare-goal g-total-boar-found g:>= g-temp)
+	(up-compare-goal g-total-deer-found g:>= g-temp2)
 	=>
 	(set-goal g-temp GOLD-PILE-1)
 	(up-modify-goal g-temp c:+ GOLD-PILE-2)
@@ -922,13 +922,6 @@
 	(set-goal g-scouting-status ALL-RESOURCES-FOUND)
 	)
 
-	(defrule
-	(goal g-duc-scouting STOP-DUC-SCOUTING)
-	(up-compare-goal g-scouting-status < ALL-RESOURCES-FOUND)
-	=>
-	(set-goal g-scouting-status ALL-RESOURCES-FOUND)
-	)
-
 	(load "The General 1.2/Functions/Reset Mini")
 
 	(defrule
@@ -946,7 +939,7 @@
 	(up-compare-goal g-difficulty >= HARDEST)
 	; (game-time s:> sn-home-exploration-time)
 	(current-age == dark-age)
-	(up-set-target-by-id g: g-scout1-id)
+	(up-set-target-by-id g: g-scout-id)
 	(up-compare-goal g-scouting-status >= ALL-RESOURCES-FOUND)
 	(up-compare-goal g-current-boar-count == 0)
 	(up-compare-goal g-scouting-status != PUSH-DEER)
@@ -958,7 +951,7 @@
 	(up-compare-goal g-difficulty < HARDEST)
 	; (game-time s:> sn-home-exploration-time)
 	(current-age == dark-age)
-	(up-set-target-by-id g: g-scout1-id)
+	(up-set-target-by-id g: g-scout-id)
 	(up-compare-goal g-scouting-status >= ALL-RESOURCES-FOUND)
 	(up-compare-goal g-scouting-status != PUSH-DEER)
 	(up-compare-goal g-current-deer-count > 0)
@@ -974,7 +967,7 @@
 	(goal g-scouting-status PUSH-DEER)
 	(or
 		(not 
-			(up-set-target-by-id g: g-scout1-id))
+			(up-set-target-by-id g: g-scout-id))
 		(goal g-current-deer-count 0))
 	=>
 	(set-goal g-scouting-status AUTO-SCOUT)
@@ -1041,112 +1034,8 @@
 	(disable-self)
 	)
 
-;-------------------------------
-;	GOAL: g-scouting-distance
-;-------------------------------
-
-    (load "The General 1.2/Functions/Reset Mini")
-
-	;Initialize g-scouting-distance
-	(defrule
-	(up-compare-goal g-scout1-id > 0)
-    (or
-        (goal g-scouting-status FIND-RESOURCES)
-        (goal g-scouting-status SCOUT-TOWN))
-	(up-compare-goal g-duc-scouting != STOP-DUC-SCOUTING)
-	(building-type-count-total town-center > 0)
-	(up-compare-goal g-map-style != NOMAD)
-	=>
-	(set-goal g-scouting-distance 10)
-	(up-modify-goal g-temp g:= g-scouting-distance)
-	(up-modify-goal g-temp c:- 1)
-	(up-set-timer c: t-scout-distance-increase g: g-temp)	;set timer to 1 less than current g-scouting-distance
-	(disable-self)														
-	)
-
-	;Initialize g-scouting-distance for Nomad, only set once TC is being built
-	(defrule
-	(up-compare-goal g-scout1-id > 0)
-    (or
-        (goal g-scouting-status FIND-RESOURCES)
-        (goal g-scouting-status SCOUT-TOWN))
-	(building-type-count town-center > 0)
-	(goal g-map-style NOMAD)
-	(up-compare-goal g-duc-scouting != STOP-DUC-SCOUTING)
-	=>
-	(set-goal g-scouting-distance 6)
-	(up-modify-goal g-temp g:= g-scouting-distance)
-	(up-modify-goal g-temp c:- 2)
-	(up-set-timer c: t-scout-distance-increase g: g-temp)
-	(disable-self)
-	)
-
-	;Increase g-scouting-distance once timer has triggered
-
-	;Set timer length adjustment
-	;If we have a second scout, the second scout is likely a sheep, so we don't want to increase scouting distance as often
-	(defrule
-	(up-compare-goal g-scout1-id > 0)
-	(up-compare-goal g-scout2-id > 0)	;we have a second scout
-	(up-compare-goal g-scouting-distance < 15)
-	=>
-	(up-modify-goal g-temp g:= g-scouting-distance)
-	(up-modify-goal g-temp c:+ 8)
-	)
-
-	(defrule
-	(up-compare-goal g-scout1-id > 0)
-	(or
-		(up-compare-goal g-scout2-id <= 0)	;we don't have a second scout
-		(up-compare-goal g-scouting-distance >= 15))
-	(or
-		(civ-selected mongol)
-		(players-civ any-ally mongol))
-	=>
-	(up-modify-goal g-temp g:= g-scouting-distance)
-	(up-modify-goal g-temp c:- 9)
-	)
-
-	(defrule
-	(up-compare-goal g-scout1-id > 0)
-	(or
-		(up-compare-goal g-scout2-id <= 0)	;we don't have a second scout
-		(up-compare-goal g-scouting-distance >= 15))
-	(nor
-		(civ-selected mongol)
-		(players-civ any-ally mongol))
-	=>
-	(up-modify-goal g-temp g:= g-scouting-distance)
-	(up-modify-goal g-temp c:- 4)
-	)
-
-	(defrule
-	(up-compare-goal g-scout1-id > 0)
-    (or
-        (goal g-scouting-status FIND-RESOURCES)
-        (goal g-scouting-status SCOUT-TOWN))
-	(timer-triggered t-scout-distance-increase)
-	(building-type-count-total town-center > 0)
-	(up-set-target-by-id g: g-scout1-id)
-	(goal g-claim-sheep NO)
-	(up-compare-goal g-duc-scouting != STOP-DUC-SCOUTING)
-	=>
-	(disable-timer t-scout-distance-increase)
-	(up-modify-goal g-scouting-distance c:+ 1)
-	(up-set-timer c: t-scout-distance-increase g: g-temp)	;timer length will increase as g-scouting-distance increases
-	)
-
-	;Decrease scouting distance once by 1 if we have a second scout
-	(defrule
-	(up-compare-goal g-scout2-id > 0)
-	(timer-triggered t-scout-distance-increase)
-	=>
-	(up-modify-goal g-scouting-distance c:- 1)
-	(disable-self)
-	)
-
 ;--------------------------------
-;	GOAL: g-boar-found-count
+;	GOAL: g-total-boar-found
 ;	GOAL: g-current-boar-count
 ;--------------------------------
 
@@ -1176,7 +1065,7 @@
 	(up-point-explored g-point-x != explored-no)
 	=>
 	(up-modify-goal g-current-boar-count c:+ 1)
-	(up-modify-goal g-boar-found-count g:max g-current-boar-count)
+	(up-modify-goal g-total-boar-found g:max g-current-boar-count)
 	)
 
 	(defrule
@@ -1190,7 +1079,7 @@
 	)
 
 ;--------------------------------
-;	GOAL: g-deer-found-count
+;	GOAL: g-total-deer-found
 ;	GOAL: g-current-deer-count
 ;--------------------------------
 
@@ -1220,7 +1109,7 @@
 		(up-point-explored g-point-x != explored-no)
 		=>
 		(up-modify-goal g-current-deer-count c:+ 1)
-		(up-modify-goal g-deer-found-count g:max g-current-deer-count)
+		(up-modify-goal g-total-deer-found g:max g-current-deer-count)
 		)
 
 		(defrule
@@ -1257,226 +1146,44 @@
 
 	#end-if
 
-;----------------------------------
-;	GOAL: g-scout1-id
-;	GOAL: g-scout2-id	(if sheep, sheep are set as scouts in the sheep scouting section below
-;	GOAL: g-scout3-id	(if sheep, sheep are set as scouts in the sheep scouting section below
-;----------------------------------
+;----------------------
+;	GOAL: g-scout-id
+;----------------------
 
 	(load "The General 1.2/Functions/Reset Mini")
 
 	;find potential scouts
 	(defrule
-	(goal g-scout1-id PENDING)
+	(goal g-scout-id PENDING)
 	(military-population > 0)
 	(game-time < 5)
+	(up-group-size c: 8 > 0)
 	=>
 	(up-full-reset-search)
-	(up-filter-exclude cmdid-villager actionid-explore orderid-build trade-cart-class)
-	(up-find-local c: any-objects c: 240)
-	(up-remove-objects search-local object-data-class == monastery-class)
-	(up-remove-objects search-local object-data-class == monk-with-relic-class)
-	(up-remove-objects search-local object-data-train-site == siege-workshop)
-	(up-remove-objects search-local object-data-train-site == dock)
-	(up-remove-objects search-local object-data-speed == 0)
-	(up-remove-objects search-local object-data-class == king-class)
-	(up-clean-search search-local object-data-speed search-order-desc)	;get fastest unit first in the search list
-	(up-get-search-state g-local-total)
-	(set-goal g-temp 47)
-	(disable-self)
+	(up-set-group search-local c: 8)
+	(up-clean-search search-local object-data-speed search-order-desc)
+	(up-remove-objects search-local object-data-cmdid != cmdid-military)
 	)
 
-	;Set first unit found as Scout 1
+	;Set first unit found as Scout
 	(defrule
-	(goal g-temp 47)
-	(goal g-scout1-id PENDING)
+	(goal g-scout-id PENDING)
 	(military-population > 0)
 	(game-time < 5)
+	(up-group-size c: 8 > 0)
 	(up-set-target-object search-local c: 0)
 	=>
-	(up-get-object-data object-data-id g-scout1-id)
-	)
-
-	;Set second unit found as Scout 2
-	(defrule
-	(goal g-temp 47)
-	(goal g-scout2-id PENDING)
-	(military-population > 0)
-	(game-time < 5)
-	(up-set-target-object search-local c: 1)
-	(up-compare-goal g-difficulty >= HARDEST)
-	=>
-	(up-get-object-data object-data-id g-scout2-id)
-	)
-
-	;Set third unit found as Scout 3
-	(defrule
-	(goal g-temp 47)
-	(goal g-scout3-id PENDING)
-	(military-population > 0)
-	(game-time < 5)
-	(up-set-target-object search-local c: 2)
-	(up-compare-goal g-difficulty >= HARDEST)
-	=>
-	(up-get-object-data object-data-id g-scout3-id)
-	)
-	
-	(load "The General 1.2/Functions/Reset Mini")
-
-	;Set sheep as scout 2
-	(defrule
-	(not
-		(up-set-target-by-id g: g-scout2-id))
-	(up-compare-goal g-scouting-distance <= 22)
-	(up-compare-goal g-current-sheep-count >= 3)
-	(or
-		(goal g-scouting-status FIND-RESOURCES)
-		(goal g-scouting-status SCOUT-TOWN))
-	(up-compare-goal g-duc-scouting != STOP-DUC-SCOUTING)
-	(up-compare-goal g-difficulty >= HARDEST)
-	=>
-	(up-full-reset-search)
-	(up-find-local c: livestock-class c: 10)
-	(up-remove-objects search-local object-data-id g:== g-current-sheep-id)
-	(up-remove-objects search-local object-data-id g:== g-next-sheep-id)
-	(up-remove-objects search-local object-data-id g:== g-scout3-id)
-	(up-remove-objects search-local object-data-player != my-player-number)
-	(up-remove-objects search-local object-data-hitpoints == 0)
-	(up-get-search-state g-local-total)
-	)
-
-	(defrule
-	(not
-		(up-set-target-by-id g: g-scout2-id))
-	(unit-type-count livestock-class > 0)
-	(up-set-target-object search-local c: 0)
-	(up-object-data object-data-class == livestock-class)
-	(up-compare-goal g-scouting-distance <= 25)
-	(up-compare-goal g-current-sheep-count >= 3)
-	(or
-		(goal g-scouting-status FIND-RESOURCES)
-		(goal g-scouting-status SCOUT-TOWN))
-	(up-compare-goal g-difficulty >= HARDEST)
-	=>
-	(up-get-object-data object-data-id g-scout2-id)
-	(up-target-point 0 action-stop -1 -1)
-	)
-
-	;Set sheep as scout 3
-	(defrule
-	(not
-		(up-set-target-by-id g: g-scout3-id))
-	(up-compare-goal g-scouting-distance <= 22)
-	(up-compare-goal g-current-sheep-count >= 4)
-	(or
-		(goal g-scouting-status FIND-RESOURCES)
-		(goal g-scouting-status SCOUT-TOWN))
-	(up-compare-goal g-duc-scouting != STOP-DUC-SCOUTING)
-	(up-compare-goal g-difficulty >= HARDEST)
-	=>
-	(up-full-reset-search)
-	(up-find-local c: livestock-class c: 10)
-	(up-remove-objects search-local object-data-id g:== g-current-sheep-id)
-	(up-remove-objects search-local object-data-id g:== g-next-sheep-id)
-	(up-remove-objects search-local object-data-id g:== g-scout2-id)
-	(up-remove-objects search-local object-data-player != my-player-number)
-	(up-remove-objects search-local object-data-hitpoints == 0)
-	(up-get-search-state g-local-total)
-	)
-
-	(defrule
-	(not
-		(up-set-target-by-id g: g-scout3-id))
-	(unit-type-count livestock-class > 0)
-	(up-compare-goal g-local-total > 0)
-	(up-set-target-object search-local c: 0)
-	(up-object-data object-data-class == livestock-class)
-	(up-compare-goal g-scouting-distance <= 22)
-	(up-compare-goal g-current-sheep-count >= 3)
-	(or
-		(goal g-scouting-status FIND-RESOURCES)
-		(goal g-scouting-status SCOUT-TOWN))
-	(up-compare-goal g-difficulty >= HARDEST)
-	=>
-	(up-get-object-data object-data-id g-scout3-id)
-	(up-target-point 0 action-stop -1 -1)
+	(up-get-object-data object-data-id g-scout-id)
+	; (chat-to-all "Scout found")
 	)
 
 	;Scout 1 died, set to -2 (not -1 because Scout 1 won't be used after initial scout is dead)
 	(defrule
-	(up-compare-goal g-scout1-id >= 0)
+	(up-compare-goal g-scout-id >= 0)
 	(not
-		(up-set-target-by-id g: g-scout1-id))
+		(up-set-target-by-id g: g-scout-id))
 	=>
-	(set-goal g-scout1-id -2)
-	)
-
-	;Scout 2 died, set to -1 (to allow a new unit to be Scout 2)
-	(defrule
-	(up-compare-goal g-scout2-id >= 0)
-	(not
-		(up-set-target-by-id g: g-scout2-id))
-	=>
-	(set-goal g-scout2-id PENDING)
-	)
-
-	;Scout 3 died, set to -1 (to allow a new unit to be Scout 3)
-	(defrule
-	(up-compare-goal g-scout3-id >= 0)
-	(not
-		(up-set-target-by-id g: g-scout3-id))
-	=>
-	(set-goal g-scout3-id PENDING)
-	)
-
-	;Stop sheep exploring
-	(defrule
-	(up-compare-goal g-scout2-id >= 0)
-	(up-set-target-by-id g: g-scout2-id)
-	(up-object-data object-data-class == livestock-class)
-	(or
-		(up-compare-goal g-scouting-distance > 25)
-    	(or
-			(up-compare-goal g-current-sheep-count <= 2)
-			(nor
-        		(goal g-scouting-status FIND-RESOURCES)
-       			(goal g-scouting-status SCOUT-TOWN))))
-	=>
-	(set-goal g-scout2-id PENDING)
-	)
-
-	(defrule
-	(up-compare-goal g-scout3-id >= 0)
-	(up-set-target-by-id g: g-scout3-id)
-	(up-object-data object-data-class == livestock-class)
-	(or
-		(up-compare-goal g-scouting-distance > 22)
-    	(or
-			(up-compare-goal g-current-sheep-count <= 3)
-			(nor
-        		(goal g-scouting-status FIND-RESOURCES)
-       			(goal g-scouting-status SCOUT-TOWN))))
-	=>
-	(set-goal g-scout3-id PENDING)
-	)
-
-	;No Scout Unit
-	(defrule
-	(game-time < 5)
-	(military-population == 0)
-	(up-compare-goal g-scout1-id != -2)
-	=>
-	(set-goal g-scout1-id -2)
-	)
-
-	;If Scout 2 doesn't exist, put Scout 3 in its place
-	(defrule
-	(not
-		(up-set-target-by-id g: g-scout2-id))
-	(up-set-target-by-id g: g-scout3-id)
-	=>
-	(up-modify-goal g-scout2-id g:= g-scout3-id)
-	(set-goal g-scout3-id PENDING)
+	(set-goal g-scout-id -2)
 	)
 
 ;----------------------------
@@ -1488,15 +1195,45 @@
 
 	;Get coordinates for sheep gather point
 	(defrule
-	(building-type-count town-center == 1)
+	(up-compare-goal g-map-style != NOMAD)
+	(up-compare-goal g-position-self-x >= 0)
+	(up-compare-goal g-position-self-y >= 0)
 	=>
 	(up-copy-point g-sheep-gather-x g-position-self-x)
 	(up-modify-goal g-sheep-gather-x c:- 4)
-	(disable-self)
 	)
 
+	(defrule
+	(up-compare-goal g-map-style == NOMAD)
+	(up-compare-goal g-position-self-x >= 0)
+	(up-compare-goal g-position-self-y >= 0)
+	=>
+	(up-copy-point g-sheep-gather-x g-position-self-x)
+	(up-modify-goal g-sheep-gather-x c:- 1)
+	(up-modify-goal g-sheep-gather-y c:+ 1)
+	)
+
+	; (defrule
+	; (true)
+	; =>
+	; (up-full-reset-search)
+	; (up-find-local c: villager-class c: 1)
+	; )
+
+	; (defrule
+	; (or
+	; 	(not
+	; 		(up-can-build-line 0 g-sheep-gather-x c: palisade-wall))
+	; 	(and
+	; 		(up-set-target-object search-local c: 0)
+	; 		(up-path-distance g-sheep-gather-x 1 == 65535)))
+	; =>
+	; (up-copy-point g-sheep-gather-x g-position-self-x)
+	; (up-modify-goal g-sheep-gather-x c:- 3)
+	; )
+
 ;---------------------------------
-;	GOAL: g-sheep-found-count
+;	GOAL: g-total-sheep-found
 ;	GOAL: g-current-sheep-count
 ;---------------------------------
 
@@ -1513,197 +1250,11 @@
 	(up-modify-goal g-temp g:= g-local-total)
 	(up-modify-goal g-temp g:- g-current-sheep-count)
 	(up-modify-goal g-temp c:max 0)
-	(up-modify-goal g-sheep-found-count g:+ g-temp)
+	(up-modify-goal g-total-sheep-found g:+ g-temp)
 	(up-modify-goal g-current-sheep-count g:= g-local-total)
 	)
 
-;------------------------------
-;	GOAL: g-current-sheep-id
-;	GOAL: g-next-sheep-id
-;------------------------------
 
-	(load "The General 1.2/Functions/Reset Mini")
-
-	;If we don't have a sheep currently being gathered, set next sheep as the current sheep
-	(defrule
-	(building-type-count town-center == 1)
-	(not
-		(up-set-target-by-id g: g-current-sheep-id))
-	(up-set-target-by-id g: g-next-sheep-id)
-	=>
-	(up-modify-goal g-current-sheep-id g:= g-next-sheep-id)
-	(set-goal g-next-sheep-id PENDING)
-	)
-
-	;If we still don't have a current sheep set to gather, find one
-	(defrule
-	(building-type-count town-center == 1)
-	(up-compare-goal g-current-sheep-count > 0)
-	(or
-		(not
-			(up-set-target-by-id g: g-current-sheep-id))
-		(not
-			(up-set-target-by-id g: g-next-sheep-id)))
-	=>
-	(set-goal g-temp sheep)
-	)
-
-	(defrule
-	(goal g-temp sheep)
-	(not
-		(up-set-target-by-id g: g-current-sheep-id))
-	=>
-	(up-set-target-point g-position-self-x)	;search from sheep near sheep gather point
-	(up-full-reset-search)
-	(up-find-local c: livestock-class c: 20)
-	(up-remove-objects search-local object-data-id g:== g-scout2-id)	;don't use sheep scouts
-	(up-remove-objects search-local object-data-id g:== g-scout3-id)	;don't use sheep scouts
-	(up-clean-search search-local object-data-distance search-order-asc)
-	(up-add-object-by-id search-local g: g-scout2-id)	;add scout 2 to end of search, sheep scouts have lowest priority to be gathered
-	(up-add-object-by-id search-local g: g-scout3-id)	;add scout 3 to end of search
-	(up-remove-objects search-local object-data-class != livestock-class)	;remove scouts 2 or 3 if they aren't sheep
-	(up-get-search-state g-local-total)
-	)
-
-	;Set currently gathered sheep ID
-	(defrule
-	(goal g-temp sheep)
-	(not
-		(up-set-target-by-id g: g-current-sheep-id))
-	(up-set-target-object search-local c: 0)
-	(up-object-data object-data-class == livestock-class)
-	=>
-	(up-get-object-data object-data-id g-current-sheep-id)
-	)
-
-	;Set next sheep to gather
-
-	(defrule
-	(goal g-temp sheep)
-	(up-set-target-by-id g: g-current-sheep-id)
-	(not
-		(up-set-target-by-id g: g-next-sheep-id))
-	=>
-	(up-set-target-point g-position-self-x)	;search from sheep near sheep gather point
-	(up-full-reset-search)
-	(up-find-local c: livestock-class c: 20)
-	(up-remove-objects search-local object-data-id g:== g-scout2-id)	;don't use sheep scouts
-	(up-remove-objects search-local object-data-id g:== g-scout3-id)	;don't use sheep scouts
-	(up-clean-search search-local object-data-distance search-order-asc)
-	(up-add-object-by-id search-local g: g-scout2-id)	;add scout 2 to end of search, sheep scouts have lowest priority to be gathered
-	(up-add-object-by-id search-local g: g-scout3-id)	;add scout 3 to end of search
-	(up-remove-objects search-local object-data-class != livestock-class)	;remove scouts 2 or 3 if they aren't sheep
-	(up-remove-objects search-local object-data-id g:== g-current-sheep-id)
-	(up-get-search-state g-local-total)
-	)
-
-	(defrule
-	(goal g-temp sheep)
-	(up-set-target-by-id g: g-current-sheep-id)
-	(not
-		(up-set-target-by-id g: g-next-sheep-id))
-	(up-set-target-object search-local c: 0)
-	(up-object-data object-data-class == livestock-class)
-	=>
-	(up-get-object-data object-data-id g-next-sheep-id)
-	)
-
-	(defrule
-	(true)
-	=>
-	(up-set-target-point g-position-self-x)
-	)
-
-	(defrule
-	(up-set-target-by-id g: g-current-sheep-id)
-	(up-set-target-by-id g: g-next-sheep-id)
-	(up-object-data object-data-distance > 7)
-	=>
-	(up-full-reset-search)
-	(up-find-local c: livestock-class c: 20)
-	(up-remove-objects search-local object-data-id g:== g-scout2-id)	;don't use sheep scouts
-	(up-remove-objects search-local object-data-id g:== g-scout3-id)	;don't use sheep scouts
-	(up-clean-search search-local object-data-distance search-order-asc)
-	(up-add-object-by-id search-local g: g-scout2-id)	;add scout 2 to end of search, sheep scouts have lowest priority to be gathered
-	(up-add-object-by-id search-local g: g-scout3-id)	;add scout 3 to end of search
-	(up-remove-objects search-local object-data-class != livestock-class)	;remove scouts 2 or 3 if they aren't sheep
-	(up-remove-objects search-local object-data-id g:== g-current-sheep-id)
-	(up-get-search-state g-local-total)
-	)
-
-	(defrule
-	(up-set-target-by-id g: g-current-sheep-id)
-	(up-set-target-by-id g: g-next-sheep-id)
-	(up-object-data object-data-distance > 7)
-	(up-set-target-object search-local c: 0)
-	(up-object-data object-data-class == livestock-class)
-	=>
-	(up-get-object-data object-data-id g-next-sheep-id)
-	)
-
-	(defrule
-	(up-set-target-by-id g: g-next-sheep-id)
-	(up-compare-goal g-next-sheep-id g:== g-scout2-id)
-	=>
-	(set-goal g-scout2-id PENDING)
-	)
-
-	(defrule
-	(up-set-target-by-id g: g-next-sheep-id)
-	(up-compare-goal g-next-sheep-id g:== g-scout3-id)
-	=>
-	(set-goal g-scout3-id PENDING)
-	)
-
-	;If sheep scouts are set as the currently gathered sheep or sheep to be gathered next, reset their scout ID
-	(defrule
-	(up-compare-goal g-scout2-id != PENDING)
-	(or
-		(up-compare-goal g-current-sheep-id g:== g-scout2-id)
-		(up-compare-goal g-next-sheep-id g:== g-scout2-id))
-	=>
-	(set-goal g-scout2-id PENDING)
-	)
-
-	(defrule
-	(up-compare-goal g-scout3-id != PENDING)
-	(or
-		(up-compare-goal g-current-sheep-id g:== g-scout3-id)
-		(up-compare-goal g-next-sheep-id g:== g-scout3-id))
-	=>
-	(set-goal g-scout3-id PENDING)
-	)
-
-	;Reset current or next sheep if they are dead or converted
-	(defrule
-	(up-compare-goal g-current-sheep-id != PENDING)
-	(or
-		(not
-			(up-set-target-by-id g: g-current-sheep-id))
-		(and
-			(up-set-target-by-id g: g-current-sheep-id)
-			(and
-				(up-object-data object-data-player != my-player-number)
-				(up-object-data object-data-hitpoints == 7))))
-	=>
-	(set-goal g-current-sheep-id PENDING)
-	)
-
-	(defrule
-	(up-compare-goal g-next-sheep-id != PENDING)
-	(or
-		(not
-			(up-set-target-by-id g: g-next-sheep-id))
-		(and
-			(up-set-target-by-id g: g-next-sheep-id)
-			(or
-				(and
-					(up-object-data object-data-player != my-player-number)
-					(up-object-data object-data-hitpoints == 7))
-				(up-object-data object-data-hitpoints == 0))))
-	=>
-	(set-goal g-next-sheep-id PENDING)
-	)
 
 ;-----------------------------------
 ;	GOAL: g-true-housing-headroom
@@ -2534,30 +2085,27 @@
 		(load "The General 1.2/Functions/Reset Mini")
 
 		(defrule
-		(up-compare-flag g-flag == BOAR-HUNTING-CONDITIONS-MET)
-		(or
-			(unit-type-count villager < 10)
-			(or
-				(goal g-current-boar-count 0)
-				(and
-					(up-research-status c: ri-loom < research-pending)
-					(or
-						(cc-players-unit-type-count 0 elephant > 0)
-						(cc-players-unit-type-count 0 rhino > 0)))))
+		(true)
 		=>
 		(up-modify-flag g-flag c:- BOAR-HUNTING-CONDITIONS-MET)
 		)
 
 		(defrule
-		(up-compare-flag g-flag != BOAR-HUNTING-CONDITIONS-MET)
 		; (dropsite-min-distance live-boar <= MAX-BOAR-HUNT-DISTANCE)
-		(unit-type-count villager >= 10)
+		(unit-type-count villager >= 5)
+		(or
+			(unit-type-count villager >= 10)
+			(and
+				(unit-type-count villager-shepherd == 0)
+				(goal g-current-sheep-count 0)))
 		(up-compare-goal g-current-boar-count > 0)
 		(or
-			(up-research-status c: ri-loom >= research-pending)
-			(and
-				(cc-players-unit-type-count 0 elephant == 0)
-				(cc-players-unit-type-count 0 rhino == 0)))
+			(goal g-map-style NOMAD)
+			(or
+				(up-research-status c: ri-loom >= research-pending)
+				(and
+					(cc-players-unit-type-count 0 elephant == 0)
+					(cc-players-unit-type-count 0 rhino == 0))))
 		=>
 		(up-modify-flag g-flag c:+ BOAR-HUNTING-CONDITIONS-MET)
 		)
@@ -2772,7 +2320,7 @@
 	(up-compare-goal g-current-strategy != FC-CRUSH)
 	(up-compare-goal g-current-strategy != FC-MORLEY)
 	(up-compare-goal g-current-strategy != FC-DEMON)
-	(up-compare-goal g-current-strategy != FC-CASTLE-DROP)
+	; (up-compare-goal g-current-strategy != FC-CASTLE-DROP)
 	(up-compare-goal g-current-strategy != BOOMC-KNIGHTS)
 	(up-compare-goal g-current-strategy != BOOMC-CAMELS)
 	=>
@@ -3713,6 +3261,45 @@
 		(up-jump-rule -2)
 		)
 
+;---------------------------------
+;	GOAL: g-id-loop-min-animals
+;---------------------------------
+
+	(load "The General 1.2/Functions/Reset Mini")
+
+	(defrule
+	(game-time > 3)
+	(game-time < 10)
+	=>
+	(set-goal g-loop-counter 0)
+	(disable-self)
+	)
+
+		(defrule
+		(game-time > 3)
+		(game-time < 10)
+		(up-compare-goal g-id-loop-min-animals < 0)
+		(up-set-target-by-id g: g-loop-counter)
+		(up-object-data object-data-carry > 0)
+		(up-object-data object-data-hitpoints > 0)
+		(or
+			(up-object-data object-data-class == deer-class)
+			(up-object-data object-data-class == boar-class))
+		=>
+		(up-modify-goal g-id-loop-min-animals g:= g-loop-counter)
+		; (up-chat-data-to-all "Max Objects on map at start: %d" g: g-id-loop-min-animals)
+		(up-jump-rule 1)
+		)
+
+		(defrule
+		(game-time > 3)
+		(game-time < 10)
+		(up-compare-goal g-loop-counter g:< g-id-loop-max-objects)
+		=>
+		(up-modify-goal g-loop-counter c:+ 1)
+		(up-jump-rule -2)
+		)
+
 ;--------------------------------------
 ;	GOAL: g-total-decaying-hunt-food
 ;--------------------------------------
@@ -4320,26 +3907,27 @@
 	)
 
 	;Garrison new units inside buildings if we have small military
-	(defrule
-	(goal g-gather-inside NO)
-	(goal g-attacking NO)
-	(goal g-target-age-parity WE-ARE-AHEAD)
-	(soldier-count < 3)
-	=>
-	(set-goal g-gather-inside YES)
-	(up-gather-inside c: monastery c: 1)
-	(up-gather-inside c: barracks c: 1)
-	(up-gather-inside c: archery-range c: 1)
-	(up-gather-inside c: stable c: 1)
-	(up-gather-inside c: siege-workshop c: 1)
-	(up-gather-inside c: castle c: 1)
-	(up-jump-rule 1)
-	)
+	; (defrule
+	; (goal g-gather-inside NO)
+	; (goal g-attacking NO)
+	; (goal g-target-age-parity WE-ARE-AHEAD)
+	; ; (soldier-count < 3)
+	; =>
+	; (set-goal g-gather-inside YES)
+	; (up-gather-inside c: monastery c: 1)
+	; (up-gather-inside c: barracks c: 1)
+	; (up-gather-inside c: archery-range c: 1)
+	; (up-gather-inside c: stable c: 1)
+	; (up-gather-inside c: siege-workshop c: 1)
+	; (up-gather-inside c: castle c: 1)
+	; (up-jump-rule 1)
+	; )
 		(defrule
 		(goal g-gather-inside NO)
 		(goal g-attacking NO)
 		(up-compare-goal g-target-age-parity != WE-ARE-AHEAD)
-		(soldier-count < 4)
+		; (soldier-count < 4)
+		(soldier-count < 3)
 		=>
 		(set-goal g-gather-inside YES)
 		(up-gather-inside c: monastery c: 1)
@@ -4350,23 +3938,23 @@
 		(up-gather-inside c: castle c: 1)
 		)
 
-	;Garrison new units inside buildings if we are attacked and outnumbered
-	(defrule
-	(goal g-gather-inside NO)
-	(goal g-attacking NO)
-	(goal g-town-under-attack YES)
-	(up-compare-goal g-enemy-units-in-town >= 6)
-	(soldier-count < 10)
-	(up-compare-goal g-temp g:> g-temp2)	;Enemy outnumbers us
-	=>
-	(set-goal g-gather-inside YES)
-	(up-gather-inside c: monastery c: 1)
-	(up-gather-inside c: barracks c: 1)
-	(up-gather-inside c: archery-range c: 1)
-	(up-gather-inside c: stable c: 1)
-	(up-gather-inside c: siege-workshop c: 1)
-	(up-gather-inside c: castle c: 1)
-	)
+	; ;Garrison new units inside buildings if we are attacked and outnumbered
+	; (defrule
+	; (goal g-gather-inside NO)
+	; (goal g-attacking NO)
+	; (goal g-town-under-attack YES)
+	; (up-compare-goal g-enemy-units-in-town >= 6)
+	; (soldier-count < 10)
+	; (up-compare-goal g-temp g:> g-temp2)	;Enemy outnumbers us
+	; =>
+	; (set-goal g-gather-inside YES)
+	; (up-gather-inside c: monastery c: 1)
+	; (up-gather-inside c: barracks c: 1)
+	; (up-gather-inside c: archery-range c: 1)
+	; (up-gather-inside c: stable c: 1)
+	; (up-gather-inside c: siege-workshop c: 1)
+	; (up-gather-inside c: castle c: 1)
+	; )
 	
 	;Set new buildings to also garrison units
 	;Check if new garrisonable building exists, if so, set gather point
@@ -4401,20 +3989,22 @@
 	;Ungarrison
 	(defrule
 	(goal g-attacking NO)
-	(soldier-count < 4)
-	=>
-	(up-jump-rule 2)
-	)
-	
-	(defrule
-	(goal g-attacking NO)
-	(goal g-town-under-attack YES)
-	(up-compare-goal g-enemy-units-in-town >= 6)
-	(soldier-count < 10)
-	(up-compare-goal g-temp g:> g-temp2)	;Enemy outnumbers us
+	; (soldier-count < 4)
+	(soldier-count < 3)
+	(up-compare-goal g-target-age-parity != WE-ARE-AHEAD)
 	=>
 	(up-jump-rule 1)
 	)
+	
+	; (defrule
+	; (goal g-attacking NO)
+	; (goal g-town-under-attack YES)
+	; (up-compare-goal g-enemy-units-in-town >= 6)
+	; (soldier-count < 10)
+	; (up-compare-goal g-temp g:> g-temp2)	;Enemy outnumbers us
+	; =>
+	; (up-jump-rule 1)
+	; )
 
 		(defrule
 		(goal g-gather-inside YES)

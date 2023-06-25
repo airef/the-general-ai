@@ -119,16 +119,54 @@
 
                 #else ;DE
 
-                    (defrule
+                    ; (defrule
+                    ; (goal g-temp3 44444)
+                    ; (up-set-target-object search-remote g: g-loop-counter)
+                    ; (up-point-terrain g-point-x != terrain-forest)          ;terrain 6
+                    ; (up-point-terrain g-point-x != terrain-forest-palm)     ;terrain 13
+                    ; (up-point-terrain g-point-x != terrain-forest-jungle)   ;terrain 17
+                    ; (up-point-terrain g-point-x != terrain-forest-bamboo)   ;terrain 18
+                    ; (up-point-terrain g-point-x != terrain-forest-pine)     ;terrain 19
+                    ; (up-point-terrain g-point-x != terrain-forest-oak)      ;terrain 20
+                    ; (up-point-terrain g-point-x != terrain-forest-snow)     ;terrain 21
+                    ; (up-point-terrain g-point-x != terrain-forest-dragon)   ;terrain 48
+                    ; (up-point-terrain g-point-x != terrain-forest-baobab)   ;terrain 49
+                    ; (up-point-terrain g-point-x != terrain-forest-acacia)   ;terrain 50
+                    ; (up-point-terrain g-point-x != terrain-forest-mangrove) ;terrain 55
+                    ; =>
+                    ; (set-goal g-temp 4341)
+                    ; )
+
+                    ; (defrule
+                    ; (goal g-temp3 44444)
+                    ; (goal g-temp 4341)
+                    ; (up-set-target-object search-remote g: g-loop-counter)
+                    ; (up-point-terrain g-point-x != terrain-forest-rainforest)       ;terrain 56
+                    ; (up-point-terrain g-point-x != terrain-forest-mediterranean)    ;terrain 88
+                    ; (up-point-terrain g-point-x != terrain-forest-bush)             ;terrain 89
+                    ; (up-point-terrain g-point-x != terrain-forest-reeds-shallows)   ;terrain 90
+                    ; (up-point-terrain g-point-x != terrain-forest-reeds-beach)      ;terrain 91
+                    ; (up-point-terrain g-point-x != terrain-forest-reeds)            ;terrain 92
+                    ; (up-point-terrain g-point-x != terrain-forest-autumn)           ;terrain 104
+                    ; (up-point-terrain g-point-x != terrain-forest-autumn-snow)      ;terrain 105
+                    ; (up-point-terrain g-point-x != terrain-forest-dead)             ;terrain 106
+                    ; (up-point-terrain g-point-x != 110)             ;terrain 110
+                    ; (up-point-terrain g-point-x != 112)             ;terrain 112
+                    ; =>
+                    ; (set-goal g-temp3 44443)
+                    ; (set-goal g-temp PENDING)
+                    ; )
+					
+					(defrule
                     (goal g-temp3 44444)
                     (up-set-target-object search-remote g: g-loop-counter)
-                    (up-point-terrain g-point-x != terrain-forest)          ;terrain 6
-                    (up-point-terrain g-point-x != terrain-forest-palm)     ;terrain 13
+                    (up-point-terrain g-point-x != 10) 
+                    (up-point-terrain g-point-x != 13) 
                     (up-point-terrain g-point-x != terrain-forest-jungle)   ;terrain 17
                     (up-point-terrain g-point-x != terrain-forest-bamboo)   ;terrain 18
                     (up-point-terrain g-point-x != terrain-forest-pine)     ;terrain 19
                     (up-point-terrain g-point-x != terrain-forest-oak)      ;terrain 20
-                    (up-point-terrain g-point-x != terrain-forest-snow)     ;terrain 21
+                    (up-point-terrain g-point-x != terrain-forest-snow)     ;terrain 21 
                     (up-point-terrain g-point-x != terrain-forest-dragon)   ;terrain 48
                     (up-point-terrain g-point-x != terrain-forest-baobab)   ;terrain 49
                     (up-point-terrain g-point-x != terrain-forest-acacia)   ;terrain 50
@@ -150,6 +188,8 @@
                     (up-point-terrain g-point-x != terrain-forest-autumn)           ;terrain 104
                     (up-point-terrain g-point-x != terrain-forest-autumn-snow)      ;terrain 105
                     (up-point-terrain g-point-x != terrain-forest-dead)             ;terrain 106
+                    (up-point-terrain g-point-x != 110)             ;terrain 110
+                    (up-point-terrain g-point-x != 112)             ;terrain 112
                     =>
                     (set-goal g-temp3 44443)
                     (set-goal g-temp PENDING)
@@ -802,7 +842,8 @@
 					(up-compare-goal g-loop-counter2 g:< g-build-line-zone-radius)
 					=>
 					(up-modify-goal g-loop-counter2 c:+ 1)
-					(up-modify-goal g-loop-counter g:neg g-build-line-zone-radius)
+					(up-modify-goal g-loop-counter g:= g-build-line-zone-radius)
+					(up-modify-goal g-loop-counter c:* -1)
 					(up-copy-point g-point-x g-build-line-point-x)
 					(up-modify-goal g-point-x g:- g-loop-counter)
 					(up-modify-goal g-point-y g:- g-loop-counter2)
@@ -859,8 +900,9 @@
 				(up-compare-goal g-build-line-zone-radius g:< g-build-line-max-zone-radius)
 				=>
 				(up-modify-goal g-build-line-zone-radius c:+ 1)
-				(up-modify-goal g-loop-counter g:neg g-build-line-zone-radius)
-				(up-modify-goal g-loop-counter2 g:neg g-build-line-zone-radius)
+				(up-modify-goal g-loop-counter g:= g-build-line-zone-radius)
+				(up-modify-goal g-loop-counter c:* -1)
+				(up-modify-goal g-loop-counter2 g:= g-loop-counter)
 				(up-get-point-elevation g-build-line-point-x g-temp)
 				(up-jump-rule -13)
 				)

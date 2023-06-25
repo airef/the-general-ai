@@ -4,6 +4,53 @@
 ;				        TAUNTS
 ;=========================<>=========================
 
+	;----------------------------
+	;	Taunt 232 - Sheep Data
+	;----------------------------
+
+		(load "The General 1.2/Functions/Reset Mini")
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 232)
+		=>
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Current sheep: %d" g: g-current-sheep-count)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Sheep gather x: %d" g: g-sheep-gather-x)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Sheep gather y: %d" g: g-sheep-gather-y)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 232)
+		(up-set-target-by-id g: g-current-sheep-id)
+		=>
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "Current sheep set")
+		(up-get-point position-object g-point-x)
+		(up-send-flare g-point-x)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 232)
+		(up-set-target-by-id g: g-next-sheep-id)
+		=>
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "Next sheep set")
+		(up-get-point position-object g-point-x)
+		(up-send-flare g-point-x)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 232)
+		(up-set-target-by-id g: g-backup-sheep-id)
+		=>
+		(chat-to-player THIS-ANY-TAUNT-PLAYER "Backup sheep set")
+		(up-get-point position-object g-point-x)
+		(up-send-flare g-point-x)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 232)
+		=>
+		(acknowledge-taunt THIS-ANY-TAUNT-PLAYER 232)
+		)
+
 	;-------------------------------
 	;	Taunt 233 - Scouting Data
 	;-------------------------------
@@ -12,7 +59,7 @@
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 233)
-		(up-set-target-by-id g: g-scout1-id)
+		(up-set-target-by-id g: g-scout-id)
 		=>
 		(up-get-point position-object g-point-x)
 		(up-get-object-data object-data-action g-temp)
@@ -22,27 +69,11 @@
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 233)
-		(up-set-target-by-id g: g-scout2-id)
-		=>
-		(up-get-point position-object g-point-x)
-		(up-send-flare g-point-x)
-		)
-
-		(defrule
-		(taunt-detected TAUNT-PLAYER 233)
-		(up-set-target-by-id g: g-scout3-id)
-		=>
-		(up-get-point position-object g-point-x)
-		(up-send-flare g-point-x)
-		)
-
-		(defrule
-		(taunt-detected TAUNT-PLAYER 233)
 		=>
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Scout Status: %d" g: g-scouting-status)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Scout DUC Status: %d" g: g-duc-scouting)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Scout Groups: %d" s: sn-number-explore-groups)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Num Explorers: %d" s: sn-total-number-explorers)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Cap Vil Explorers: %d" s: sn-cap-civilian-explorers)
 		(acknowledge-taunt THIS-ANY-TAUNT-PLAYER 233)
 		)
 
@@ -54,23 +85,16 @@
 		(defrule
 		(taunt-detected TAUNT-PLAYER 234)
 		=>
+		(up-send-flare g-position-self-x)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Mining Camp max distance: %d" s: sn-mining-camp-max-distance)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Lumber Camp max distance: %d" s: sn-lumber-camp-max-distance)
-		)
-
-		(defrule
-		(taunt-detected TAUNT-PLAYER 234)
-		; (up-compare-flag g-attack-method-flag == USE-TSA)
-		=>
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Max TS: %d" s: sn-maximum-town-size)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Safe TS: %d" s: sn-safe-town-size)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Peaceful TS: %d" s: csn-peaceful-town-size)
-		)
-
-		(defrule
-		(taunt-detected TAUNT-PLAYER 234)
-		=>
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Under Attack?: %d" g: g-town-under-attack)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Bldgs in town: %d" g: g-enemy-buildings-in-town)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Units in town: %d" g: g-enemy-units-in-town)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Garrisoning soldiers?: %d" g: g-gather-inside)
 		)
 
 		(defrule
@@ -78,19 +102,6 @@
 		(taunt-detected TAUNT-PLAYER 234)
 		=>
 		(chat-to-player THIS-ANY-TAUNT-PLAYER "ES Under Attack")
-		)
-
-		(defrule
-		(taunt-detected TAUNT-PLAYER 234)
-		=>
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Bldgs in town: %d" g: g-enemy-buildings-in-town)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Units in town: %d" g: g-enemy-units-in-town)
-		)
-
-		(defrule
-		(taunt-detected TAUNT-PLAYER 234)
-		=>
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER "Garrisoning soldiers?: %d" g: g-gather-inside)
 		)
 
 		(defrule
