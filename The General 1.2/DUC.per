@@ -544,6 +544,16 @@
                 (up-modify-goal g-scout-los c:max 6)
                 )
 
+                (defrule
+                (or
+                    (up-compare-goal g-difficulty >= HARDEST)
+                    (building-type-count-total town-center == 0))
+                (up-group-size c: 8 > 0)
+                (up-set-target-object search-local g: g-loop-counter)
+                =>
+                (up-modify-goal g-scout-los c:- 1)
+                )
+
                 ;Find best point to scout
                 (defrule
                 (or
@@ -1994,7 +2004,7 @@
         (set-goal g-current-boar-id PENDING)
         (set-goal g-boar-hunt-status PENDING)
         (set-goal g-boar-lurer-id PENDING)
-        ; (chat-local-to-self CHAT-BOAR-RESET)
+        ; (chat-local-to-self "reset boar-hunting")
         )
 
         (defrule
@@ -2010,7 +2020,7 @@
         (set-goal g-current-boar-id PENDING)
         (set-goal g-boar-hunt-status PENDING)
         (set-goal g-boar-lurer-id PENDING)
-        ; (chat-local-to-self CHAT-BOAR-RESEND-LURER)
+        ; (chat-local-to-self "boar lurer was retasked, send lurer again")
         )
 
         (defrule
@@ -2021,7 +2031,7 @@
         (up-compare-goal g-current-boar-count > 0)
         =>
         (set-goal g-boar-hunt-status READY-TO-LURE)
-        ; (chat-local-to-self CHAT-BOAR-READY-TO-LURE)
+        ; (chat-local-to-self "ready to lure")
         ; (up-chat-data-to-all "Total hunt: %d" g: g-total-decaying-hunt-food)
         )
 
@@ -2078,7 +2088,7 @@
         (up-get-point position-center g-point-x)
         (up-set-target-point g-point-x)
         (up-clean-search search-remote object-data-distance search-order-desc)
-        ; (chat-local-to-self CHAT-BOAR-SEARCH-FOR-BOAR)
+        ; (chat-local-to-self "search for boar")
         )
 
         ;Get ID of boar to lure
@@ -2092,7 +2102,7 @@
         =>
         (up-get-object-data object-data-id g-current-boar-id)
         (set-goal g-boar-hunt-status SET-BOAR-ID)
-        ; (chat-local-to-self CHAT-BOAR-SET-BOAR)
+        ; (chat-local-to-self "set boar to hunt")
         )
 
         (load "The General 1.2/Functions/Reset Mini")
@@ -2156,7 +2166,7 @@
         =>
         (up-get-object-data object-data-id g-boar-lurer-id)
         (set-goal g-boar-hunt-status DROP-LURER-RESOURCES)
-        ; (chat-local-to-self CHAT-BOAR-FIND-LURER)
+        ; (chat-local-to-self "find boar lurer")
         )
 
         (defrule
@@ -2175,7 +2185,7 @@
         (up-set-target-object search-remote c: 0)
         (up-add-object-by-id search-local g: g-boar-lurer-id)
         (up-target-objects 1 action-default -1 -1)
-        ; (chat-local-to-self CHAT-BOAR-DROP-RESOURCES)
+        ; (chat-local-to-self "drop resources before luring boar")
         )
 
         (defrule
@@ -2194,7 +2204,7 @@
         (up-add-object-by-id search-local g: g-boar-lurer-id)
         (up-target-objects 1 action-default -1 -1)	;right-click the boar with the villager, villager will auto-retreat to TC once boar attacks
         (set-goal g-boar-hunt-status TARGET-BOAR)
-        ; (chat-local-to-self CHAT-BOAR-TARGET-BOAR)
+        ; (chat-local-to-self "target boar")
         )
 
         (defrule
@@ -2204,7 +2214,7 @@
         (up-object-data object-data-action == actionid-attack)
         =>
         (set-goal g-boar-hunt-status LURE-BOAR)
-        ; (chat-local-to-self CHAT-BOAR-RETREAT-LURER)
+        ; (chat-local-to-self "retreat lurer")
         )
 
         (defrule
@@ -2261,7 +2271,7 @@
         (set-goal g-boar-hunt-status ASSIST-HUNTING-BOAR)
         (up-drop-resources food c: 3)
         (up-target-objects 1 action-default -1 -1)
-        ; (chat-local-to-self CHAT-BOAR-ASSIST)
+        ; (chat-local-to-self "assist hunting boar")
         )
 
         (defrule
@@ -2290,7 +2300,7 @@
         (up-set-target-object search-remote c: 0)
         =>
         (up-target-objects 1 action-garrison -1 -1)
-        (chat-local-to-self CHAT-BOAR-RUNNING-AWAY)
+        (chat-local-to-self "boar is running away, stop hunting")
         )
 
         (defrule
@@ -2300,7 +2310,7 @@
         (up-object-data object-data-hitpoints == 0)
         =>
         (set-goal g-boar-hunt-status PENDING)
-        ; (chat-local-to-self CHAT-BOAR-HUNTED)
+        ; (chat-local-to-self "boar is hunted")
         )
 
     ;---------------------
@@ -3828,7 +3838,7 @@
             (up-compare-goal g-local-total > 0)
             =>
             (up-target-objects 0 action-default -1 -1)
-            ; (chat-to-player my-player-number CHAT-TARGET-RAM-WITH-VILLAGERS)
+            ; (chat-to-player my-player-number "Destroying enemy ram with vils")
             )
 
             (defrule

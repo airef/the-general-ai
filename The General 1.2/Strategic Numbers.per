@@ -236,7 +236,7 @@
     (up-modify-sn sn-maximum-town-size c:- 1)
     (up-modify-sn sn-safe-town-size s:min sn-maximum-town-size)
     (up-modify-sn csn-peaceful-town-size s:min sn-maximum-town-size)
-    ; (up-chat-data-to-player my-player-number CHAT-REDUCE-TS-FOR-TOWERS s: sn-maximum-town-size)
+    ; (up-chat-data-to-player my-player-number "Reduce TS against trush: %d" s: sn-maximum-town-size)
     )
 
 ;-------------------------------
@@ -455,14 +455,14 @@
     (building-type-count-total mining-camp > 1)
     =>
     (set-strategic-number sn-mining-camp-max-distance 24)
-    ; (up-chat-data-to-player my-player-number CHAT-CAMP-MINING-SET-DISTANCE s: sn-mining-camp-max-distance)
+    ; (up-chat-data-to-player my-player-number "Set mining camp max dist: %d" s: sn-mining-camp-max-distance)
     )
 
     (defrule
     (up-compare-sn sn-mining-camp-max-distance s:< csn-peaceful-town-size)
     =>
     (up-modify-sn sn-mining-camp-max-distance s:= csn-peaceful-town-size)
-    ; (up-chat-data-to-player my-player-number CHAT-CAMP-MINING-PEACEFUL-DISTANCE s: sn-mining-camp-max-distance)
+    ; (up-chat-data-to-player my-player-number "Set mining camp max dist to town size: %d" s: sn-mining-camp-max-distance)
     )
 
     (load "The General 1.2/Functions/Reset Mini")
@@ -494,7 +494,7 @@
         =>
         (set-goal g-temp -1)
         (up-modify-sn sn-mining-camp-max-distance c:+ 5)
-        ; (up-chat-data-to-player my-player-number CHAT-CAMP-GOLD-INCREASE-DISTANCE s: sn-mining-camp-max-distance)
+        ; (up-chat-data-to-player my-player-number "Increase gold camp dist: %d" s: sn-mining-camp-max-distance)
         (up-jump-rule -2)
         )
 
@@ -527,7 +527,7 @@
         =>
         (set-goal g-temp -1)
         (up-modify-sn sn-mining-camp-max-distance c:+ 5)
-        ; (up-chat-data-to-player my-player-number CHAT-CAMP-STONE-INCREASE-DISTANCE s: sn-mining-camp-max-distance)
+        ; (up-chat-data-to-player my-player-number "Increase stone camp dist: %d" s: sn-mining-camp-max-distance)
         (up-jump-rule -2)
         )
 
@@ -544,7 +544,7 @@
     (strategic-number sn-mining-camp-max-distance >= SIXTY-PERCENT-MAP-SIZE)
     =>
     (set-strategic-number sn-mining-camp-max-distance HUNDRED-PERCENT-MAP-SIZE)
-    ; (up-chat-data-to-player my-player-number CHAT-CAMP-MINING-MAX-DISTANCE s: sn-mining-camp-max-distance)
+    ; (up-chat-data-to-player my-player-number "Set mining camp distance to max: %d" s: sn-mining-camp-max-distance)
     )
 
 ;------------------------------

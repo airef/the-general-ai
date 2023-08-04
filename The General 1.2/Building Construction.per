@@ -1310,7 +1310,7 @@
 		(set-goal g-build-line-bldg mill)
 		(set-goal g-build-line-resource-type forage-class)
 		(set-goal g-build-line-max-distance 25)
-		; (chat-to-player my-player-number CHAT-MILL-FORAGE)
+		; (chat-to-player my-player-number "forage mill")
 		)
 
 		;Hunting mill
@@ -1325,7 +1325,7 @@
 		(set-goal g-build-line-bldg mill)
 		(set-goal g-build-line-resource-type deer-class)
 		(set-goal g-build-line-max-distance 40)
-		; (chat-to-player my-player-number CHAT-MILL-DEER)
+		; (chat-to-player my-player-number "deer mill")
 		)
 
 		(defrule
@@ -1397,7 +1397,7 @@
 		(set-goal g-build-line-resource-type gold)
 		(set-goal g-build-line-dropsite-distance 7)
 		(set-goal g-build-line-enemy-bldg-distance 25)
-		; (chat-to-player my-player-number CHAT-CAMP-GOLD)
+		; (chat-to-player my-player-number "gold camp")
 		)
 
 		(load "The General 1.2/Functions/Reset Mini")
@@ -1541,7 +1541,7 @@
 		(set-goal g-build-line-bldg 0)
 		(set-goal g-build-line-resource-type PENDING)
 		(set-goal g-build-line-type PENDING)
-		; (chat-local-to-self CHAT-NO-LOCATION-FOR-GOLD-CAMP)
+		; (chat-local-to-self "can't find gold camp location")
 		)
 
 		(defrule
@@ -1656,7 +1656,7 @@
 		(set-goal g-build-line-resource-type stone)
 		(set-goal g-build-line-dropsite-distance 6)
 		(set-goal g-build-line-enemy-bldg-distance 25)
-		; (chat-to-player my-player-number CHAT-CAMP-STONE)
+		; (chat-to-player my-player-number "stone camp")
 		)
 
 		(defrule
@@ -1902,7 +1902,7 @@
 		(up-timer-status t-dead-builders == timer-running)
 		=>
 		(up-assign-builders c: my-tower-type c: -1)
-		; (chat-to-player my-player-number CHAT-STOP-SENDING-TOWER-BUILDERS)
+		; (chat-to-player my-player-number "stop sending tower builders")
 		)
 
 		;Build watch tower near closest dropsite to enemy. Also prioritize tower near soldier gather point.
@@ -2017,9 +2017,10 @@
 		(up-copy-point g-place-point-x g-point-x)
 		(up-set-target-point g-place-point-x)
 		(up-modify-flag g-flag c:+ PLACE-POINT-USED)
+		(set-strategic-number sn-placement-zone-size 0)
 		(set-strategic-number sn-placement-fail-delta 0)
 		(up-build place-point g-escrow c: my-tower-type)
-		; (chat-to-player my-player-number CHAT-BUILD-TOWER-BY-DROPSITE)
+		; (chat-to-player my-player-number "Build Tower by dropsite")
 		; (up-send-flare g-place-point-x)
 		)
 
@@ -2430,7 +2431,7 @@
 	(up-timer-status t-dead-builders == timer-running)
 	=>
 	(up-assign-builders c: town-center-foundation c: -1)
-	; (chat-to-player my-player-number CHAT-STOP-SENDING-TC-BUILDERS)
+	; (chat-to-player my-player-number "stop sending TC builders")
 	)
 
 ;=========================<>=========================
@@ -2530,7 +2531,7 @@
 		(up-timer-status t-dead-builders == timer-running)
 		=>
 		(up-assign-builders c: castle c: -1)
-		; (chat-to-player my-player-number CHAT-STOP-SENDING-CASTLE-BUILDERS)
+		; (chat-to-player my-player-number "stop sending castle builders")
 		)
 		
 	;-------------
@@ -2585,7 +2586,7 @@
 			(up-timer-status t-dead-builders == timer-running)
 			=>
 			(up-assign-builders c: my-unique-building c: -1)
-			; (chat-to-player my-player-number CHAT-STOP-SENDING-KREPOST-BUILDERS)
+			; (chat-to-player my-player-number "stop sending krepost builders")
 			)
 
 		#end-if
@@ -2650,7 +2651,7 @@
 		; (up-timer-status t-dead-builders == timer-running)
 		; =>
 		; (up-assign-builders c: siege-workshop c: -1)
-		; (chat-to-player my-player-number CHAT-STOP-SENDING-SIEGE-WORKSHOP-BUILDERS)
+		; (chat-to-player my-player-number "stop sending siege workshop builders")
 		; )
 
 	;----------------
@@ -2687,7 +2688,7 @@
 		; (up-timer-status t-dead-builders == timer-running)
 		; =>
 		; (up-assign-builders c: university c: -1)
-		; (chat-to-player my-player-number CHAT-STOP-SENDING-UNIVERSITY-BUILDERS)
+		; (chat-to-player my-player-number "stop sending university builders")
 		; )
 
 	;---------------
@@ -2742,7 +2743,7 @@
 		; (up-timer-status t-dead-builders == timer-running)
 		; =>
 		; (up-assign-builders c: monastery c: -1)
-		; (chat-to-player my-player-number CHAT-STOP-SENDING-MONASTERY-BUILDERS)
+		; (chat-to-player my-player-number "stop sending monastery builders")
 		; )
 
 	;--------------
@@ -2913,7 +2914,7 @@
 		; (up-timer-status t-dead-builders == timer-running)
 		; =>
 		; (up-assign-builders c: barracks c: -1)
-		; (chat-to-player my-player-number CHAT-STOP-SENDING-BARRACKS-BUILDERS)
+		; (chat-to-player my-player-number "stop sending barracks builders")
 		; )
 
 	;-------------------
@@ -2957,7 +2958,7 @@
 		; (up-timer-status t-dead-builders == timer-running)
 		; =>
 		; (up-assign-builders c: archery-range c: -1)
-		; (chat-to-player my-player-number CHAT-STOP-SENDING-ARCHERY-RANGE-BUILDERS)
+		; (chat-to-player my-player-number "stop sending archery range builders")
 		; )
 
 		(defrule
@@ -3183,7 +3184,7 @@
 		; (up-timer-status t-dead-builders == timer-running)
 		; =>
 		; (up-assign-builders c: stable c: -1)
-		; (chat-to-player my-player-number CHAT-STOP-SENDING-STABLE-BUILDERS)
+		; (chat-to-player my-player-number "stop sending stable builders")
 		; )
 
 		(defrule
@@ -3370,7 +3371,7 @@
 		(up-timer-status t-dead-builders == timer-running)
 		=>
 		(up-assign-builders c: market c: -1)
-		; (chat-to-player my-player-number CHAT-STOP-SENDING-MARKET-BUILDERS)
+		; (chat-to-player my-player-number "stop sending market builders")
 		)
 
 		(defrule
@@ -3467,7 +3468,7 @@
 		(up-timer-status t-dead-builders == timer-running)
 		=>
 		(up-assign-builders c: blacksmith c: -1)
-		; (chat-to-player my-player-number CHAT-STOP-SENDING-BLACKSMITH-BUILDERS)
+		; (chat-to-player my-player-number "stop sending blacksmith builders")
 		)
 
 		(defrule
@@ -3650,7 +3651,7 @@
 		(up-assign-builders c: mill c: 1)
 		(set-strategic-number sn-allow-adjacent-dropsites 1)
 		(build mill)
-		; (chat-to-player my-player-number CHAT-MILL-FARMING)
+		; (chat-to-player my-player-number "farm mill")
 		)
 
 		;Backup mill
@@ -3667,7 +3668,7 @@
 		(up-assign-builders c: mill c: 1)
 		(set-strategic-number sn-allow-adjacent-dropsites 1)
 		(build mill)
-		; (chat-to-player my-player-number CHAT-MILL-BACKUP)
+		; (chat-to-player my-player-number "backup mill")
 		)
 
 		;Nomad mill
@@ -3685,7 +3686,7 @@
 		(up-assign-builders c: mill c: 1)
 		(set-strategic-number sn-allow-adjacent-dropsites 1)
 		(build mill)
-		; (chat-to-player my-player-number CHAT-MILL-BACKUP)
+		; (chat-to-player my-player-number "nomad mill")
 		)
 
 	;-----------

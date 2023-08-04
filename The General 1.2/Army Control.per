@@ -118,6 +118,7 @@
     (up-modify-goal g-temp c:min 40)
     (up-modify-goal g-temp g:min g-max-group-size)
     (up-modify-goal g-min-group-size g:= g-temp)
+    (up-modify-goal g-min-group-size g:min g-required-attack-num)
     )    
 
     ;Increase g-max-group-size if we have a large military, set it to at least 1/3 of total military pop
@@ -136,6 +137,7 @@
     (up-modify-goal g-temp c:max 15)
     (up-modify-goal g-max-group-size g:min g-temp)
     (up-modify-goal g-min-group-size g:min g-max-group-size)
+    (up-modify-goal g-min-group-size g:min g-required-attack-num)
     ; (up-chat-data-to-all "Increase max %d" g: g-max-group-size)
     )
 
@@ -4635,6 +4637,7 @@
 
     (defrule
     (up-group-size g: g-current-group > 0)
+    (up-compare-goal g-attack-objective != HELP-ALLY-DEFEND)
     =>
     (up-get-indirect-goal g: g-current-group-action-goal-id g-current-group-action)
     (up-get-indirect-goal g: g-current-group-target-object-goal-id g-current-group-target-object-id)
@@ -4649,6 +4652,7 @@
 
     (defrule
     (up-group-size g: g-current-group > 0)
+    (up-compare-goal g-attack-objective != HELP-ALLY-DEFEND)
     =>
     (set-goal g-current-group-destination-object-id PENDING)
     (set-goal g-current-group-best-destination-score 0)
@@ -4666,6 +4670,7 @@
         (up-compare-flag g-current-group-type-flag == RANGED-SOLDIER-GROUP)
         (up-compare-flag g-current-group-type-flag == MONK-GROUP))
     (up-compare-flag g-current-group-flag != SCOUT-MODE)
+    (up-compare-goal g-attack-objective != HELP-ALLY-DEFEND)
     =>
     (set-goal g-current-group-destination-time 0)
     (up-set-indirect-goal g: g-current-group-destination-time-goal-id c: 0)
@@ -4687,6 +4692,7 @@
         (up-compare-flag g-current-group-type-flag == MELEE-SOLDIER-GROUP)
         (up-compare-flag g-current-group-type-flag == RANGED-SIEGE-GROUP))
     (up-compare-flag g-current-group-flag != SCOUT-MODE)
+    (up-compare-goal g-attack-objective != HELP-ALLY-DEFEND)
     =>
     (set-goal g-current-group-destination-time 0)
     (up-set-indirect-goal g: g-current-group-destination-time-goal-id c: 0)
@@ -4709,6 +4715,7 @@
             (up-compare-flag g-current-group-type-flag == MANGONEL-GROUP)
             (up-compare-flag g-current-group-type-flag == SCORPION-GROUP)))
     (up-compare-flag g-current-group-flag != SCOUT-MODE)
+    (up-compare-goal g-attack-objective != HELP-ALLY-DEFEND)
     =>
     (set-goal g-current-group-destination-time 0)
     (up-set-indirect-goal g: g-current-group-destination-time-goal-id c: 0)
@@ -4728,6 +4735,7 @@
         (goal g-current-group-destination-x PENDING)
         (goal g-current-group-destination-y PENDING))
     (up-compare-flag g-current-group-flag != SCOUT-MODE)
+    (up-compare-goal g-attack-objective != HELP-ALLY-DEFEND)
     =>
     (set-goal g-current-group-destination-time 0)
     (up-set-indirect-goal g: g-current-group-destination-time-goal-id c: 0)
@@ -4745,6 +4753,7 @@
     (defrule
     (up-group-size g: g-current-group > 0)
     (up-compare-goal g-current-group-destination-x >= 0)
+    (up-compare-goal g-attack-objective != HELP-ALLY-DEFEND)
     =>
     (up-full-reset-search)
     (up-set-group search-local g: g-current-group)
@@ -4755,6 +4764,7 @@
     (up-compare-goal g-current-group-destination-x >= 0)
     (up-set-target-object search-local c: 0)
     (up-path-distance g-current-group-destination-x 0 == 65535)
+    (up-compare-goal g-attack-objective != HELP-ALLY-DEFEND)
     =>
     (set-goal g-current-group-destination-time 0)
     (up-set-indirect-goal g: g-current-group-destination-time-goal-id c: 0)
@@ -4775,6 +4785,7 @@
     ; (goal g-current-group-action GROUP-RETREAT-FROM-OBJECT)
     ; (up-point-distance g-current-group-location-x g-current-group-destination-x <= 5)
     ; (up-compare-flag g-current-group-flag != SCOUT-MODE)
+    ; (up-compare-goal g-attack-objective != HELP-ALLY-DEFEND)
     ; =>
     ; (set-goal g-current-group-destination-time 0)
     ; (up-set-indirect-goal g: g-current-group-destination-time-goal-id c: 0)
@@ -5584,7 +5595,7 @@
         (up-log-data 0 CHAT-SET-NEW-DESTINATION-X g: g-current-group-destination-x)
         (up-log-data 0 CHAT-SET-NEW-DESTINATION-Y g: g-current-group-destination-y)
         ; (up-send-flare g-current-group-destination-x)
-        (up-chat-data-to-all "set new destination, ver %d" c: 2)
+        ; (up-chat-data-to-all "set new destination, ver %d" c: 2)
         )
 
     ;No enemy TC, find random point +/- 10 tiles away
@@ -5616,6 +5627,177 @@
     ; (up-chat-data-to-all "set new destination, ver %d" c: 3)
     )
 
+;---------------------------------------------
+;   Set Group Destination - Ally Assistance
+;---------------------------------------------
+
+    (load "The General 1.2/Functions/Reset")
+    (load "The General 1.2/Functions/Reset DUC")
+
+    ;Temp goals:
+    ;g-current-group-action
+    ;g-current-group-action-goal-id
+    ;g-current-group-destination-split-goal
+
+    ;Temp points:
+    ;g-current-group-destination-x
+    ;g-current-group-destination-y
+    ;g-current-group-destination-x-goal-id
+    ;g-current-group-destination-y-goal-id
+
+    (defrule
+    (up-group-size g: g-current-group > 0)
+    (goal g-attack-objective HELP-ALLY-DEFEND)
+    =>
+    (up-get-indirect-goal g: g-current-group-destination-x-goal-id g-current-group-destination-x)
+    (up-get-indirect-goal g: g-current-group-destination-y-goal-id g-current-group-destination-y)
+    )
+
+    (defrule
+    (up-group-size g: g-current-group > 0)
+    (goal g-attack-objective HELP-ALLY-DEFEND)
+    =>
+    (up-full-reset-search)
+    (up-modify-sn sn-focus-player-number s:= csn-ally-to-defend)
+    (up-find-remote c: town-center c: 10)
+    (up-find-remote c: house c: 10)
+    (up-find-remote c: lumber-camp c: 5)
+    (up-clean-search search-remote object-data-id search-order-asc)
+    )
+
+    (defrule
+    (up-group-size g: g-current-group > 0)
+    (goal g-attack-objective HELP-ALLY-DEFEND)
+    (up-set-target-object search-remote c: 0)
+    =>
+    (set-goal g-current-group-destination-split-goal 77777)
+    (up-get-point position-object g-point-x)
+    (up-set-target-point g-point-x)
+    (up-full-reset-search)
+    (up-filter-distance c: -1 c: 40)
+    (up-filter-include cmdid-military -1 -1 -1)
+    (set-strategic-number sn-focus-player-number 1)
+    )
+    
+        (defrule
+        (up-group-size g: g-current-group > 0)
+        (goal g-attack-objective HELP-ALLY-DEFEND)
+        (goal g-current-group-destination-split-goal 77777)
+        (up-compare-goal g-point-x >= 0)
+        (nand
+            (player-in-game focus-player)
+            (stance-toward focus-player enemy))
+        (up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
+        =>
+        (up-modify-sn sn-focus-player-number c:+ 1)
+        (up-jump-rule -1)
+        )
+    
+        (defrule
+        (up-group-size g: g-current-group > 0)
+        (goal g-attack-objective HELP-ALLY-DEFEND)
+        (goal g-current-group-destination-split-goal 77777)
+        (up-compare-goal g-point-x >= 0)
+        =>
+        (up-find-remote c: any-objects c: 40)
+        (up-get-search-state g-local-total)
+        )
+    
+        (defrule
+        (up-group-size g: g-current-group > 0)
+        (goal g-attack-objective HELP-ALLY-DEFEND)
+        (goal g-current-group-destination-split-goal 77777)
+        (up-compare-goal g-point-x >= 0)
+        (up-compare-goal g-remote-total < 40)
+        (up-compare-sn sn-focus-player-number < MAX-PLAYERS)
+        =>
+        (up-modify-sn sn-focus-player-number c:+ 1)
+        (up-jump-rule -3)
+        )
+
+    (defrule
+    (up-group-size g: g-current-group > 0)
+    (goal g-attack-objective HELP-ALLY-DEFEND)
+    (goal g-current-group-destination-split-goal 77777)
+    (up-compare-goal g-point-x >= 0)
+    (up-compare-goal g-remote-total > 0)
+    =>
+    (up-clean-search search-remote object-data-distance search-order-asc)
+    )
+
+    (defrule
+    (up-group-size g: g-current-group > 0)
+    (goal g-attack-objective HELP-ALLY-DEFEND)
+    (goal g-current-group-destination-split-goal 77777)
+    (up-compare-goal g-point-x >= 0)
+    (up-compare-goal g-remote-total > 0)
+    (up-set-target-object search-remote c: 0)
+    =>
+    (up-get-point position-object g-point2-x)
+    (up-lerp-tiles g-point2-x g-point-x c: 5)
+    (up-bound-point g-point2-x g-point2-x)
+    )
+
+    (defrule
+    (up-group-size g: g-current-group > 0)
+    (goal g-attack-objective HELP-ALLY-DEFEND)
+    (goal g-current-group-destination-split-goal 77777)
+    (up-compare-goal g-point-x >= 0)
+    (up-compare-goal g-point2-x >= 0)
+    (up-compare-goal g-remote-total > 0)
+    (up-set-target-object search-remote c: 0)
+    (up-point-distance g-current-group-destination-x g-point2-x >= 5)
+    =>
+    (set-goal g-current-group-destination-split-goal 77778)
+    (up-copy-point g-current-group-destination-x g-point2-x)
+    (up-full-reset-search)
+    (set-goal g-loop-counter 0)
+    (up-set-group search-local g: g-current-group)
+    )
+
+    (defrule
+    (up-group-size g: g-current-group > 0)
+    (goal g-attack-objective HELP-ALLY-DEFEND)
+    (goal g-current-group-destination-split-goal 77778)
+    (up-path-distance g-current-group-destination-x 0 == 65535) ;used to be strict path distance (1)
+    =>
+    (generate-random-number 7)
+    (up-get-fact random-number 0 g-temp4)
+    (up-modify-goal g-temp4 c:- 4)  ;random number will be between -3 and 3
+    (up-modify-goal g-current-group-destination-x g:+ g-temp4)
+    (generate-random-number 7)
+    (up-get-fact random-number 0 g-temp4)
+    (up-modify-goal g-temp4 c:- 4)  ;random number will be between -3 and 3
+    (up-modify-goal g-current-group-destination-y g:+ g-temp4)
+    (up-modify-goal g-loop-counter c:+ 1)
+    (up-jump-rule -1)
+    )
+
+    ;Set destination
+    (defrule
+    (up-group-size g: g-current-group > 0)
+    (goal g-attack-objective HELP-ALLY-DEFEND)
+    (goal g-current-group-destination-split-goal 77778)
+    (up-path-distance g-current-group-destination-x 0 != 65535) ;used to be strict path distance (1)
+    =>
+    (set-goal g-current-group-action PENDING)
+    (set-goal g-current-group-destination-time 0)
+    (up-set-indirect-goal g: g-current-group-destination-x-goal-id g: g-current-group-destination-x)
+    (up-set-indirect-goal g: g-current-group-destination-y-goal-id g: g-current-group-destination-y)
+    (up-set-indirect-goal g: g-current-group-action-goal-id c: PENDING)
+    (up-set-indirect-goal g: g-current-group-destination-time-goal-id c: 0)
+    (up-get-fact game-time 0 g-temp5)
+    (up-get-fact player-number 0 g-temp6)
+    (up-log-data 0 CHAT-LOG-ENTRY c: 0)
+    (up-log-data 0 CHAT-LOG-TIME g: g-temp5)
+    (up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
+    (up-log-data 0 CHAT-SET-NEW-DESTINATION c: 1)
+    (up-log-data 0 CHAT-SET-NEW-DESTINATION-X g: g-current-group-destination-x)
+    (up-log-data 0 CHAT-SET-NEW-DESTINATION-Y g: g-current-group-destination-y)
+    ; (up-send-flare g-current-group-destination-x)
+    ; (up-chat-data-to-all "set new destination, ver %d" c: 6)
+    )
+
 ;----------------------------------------
 ;   Set Group Destination - Scout Mode
 ;----------------------------------------
@@ -5640,6 +5822,7 @@
     (up-group-size g: g-current-group > 0)
     (player-in-game target-player)
     (stance-toward target-player enemy)
+    (up-compare-goal g-attack-objective != HELP-ALLY-DEFEND)
     =>
     (up-get-indirect-goal g: g-current-group-flag-goal-id g-current-group-flag)
     )
@@ -5649,6 +5832,7 @@
     (up-compare-flag g-current-group-flag == SCOUT-MODE)
     (player-in-game target-player)
     (stance-toward target-player enemy)
+    (up-compare-goal g-attack-objective != HELP-ALLY-DEFEND)
     =>
     (up-get-indirect-goal g: g-current-group-location-x-goal-id g-current-group-location-x)
     (up-get-indirect-goal g: g-current-group-location-y-goal-id g-current-group-location-y)
@@ -8550,7 +8734,7 @@
         ;   Remove Potential Targets Based on Group Type/Action
         ;---------------------------------------------------------
 
-            ;If scouting, remove all non-monk objects
+            ;If scouting or assisting ally, remove all non-monk objects
             (defrule
             (up-group-size g: g-current-group > 0)
             (up-set-target-object search-local c: 0)
@@ -8558,7 +8742,11 @@
             (or
                 (up-compare-flag g-current-group-flag == DANGEROUS-OBJECT-NEARBY)
                 (up-compare-goal g-current-group-avoidance-counter >= 3))
-            (up-compare-flag g-current-group-flag == SCOUT-MODE)
+            (or
+                (up-compare-flag g-current-group-flag == SCOUT-MODE)
+                (and
+                    (goal g-attack-objective HELP-ALLY-DEFEND)
+                    (up-point-distance g-current-group-location-x g-current-group-destination-x >= 25)))
             =>
             (up-remove-objects search-local object-data-train-site != monastery)
             (up-get-search-state g-local-total)
@@ -8574,9 +8762,13 @@
             (up-compare-goal g-local-total > 0)
             (or
                 (up-compare-flag g-current-group-flag == SCOUT-MODE)
-                (and
-                    (up-point-distance g-current-group-location-x g-current-group-destination-x >= 6)
-                    (up-compare-flag g-current-group-flag == RAID-MODE)))
+                (or
+                    (and
+                        (up-point-distance g-current-group-location-x g-current-group-destination-x >= 6)
+                        (up-compare-flag g-current-group-flag == RAID-MODE))
+                    (and
+                        (goal g-attack-objective HELP-ALLY-DEFEND)
+                        (up-point-distance g-current-group-location-x g-current-group-destination-x >= 25))))
             =>
             (up-remove-objects search-local object-data-cmdid == cmdid-civilian-building)
             (up-remove-objects search-local object-data-cmdid == cmdid-military-building)

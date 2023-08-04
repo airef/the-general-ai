@@ -3,6 +3,272 @@
 (load "The General 1.2/Functions/Reset")
 
 ;=========================<>=========================
+;		   		  SET TARGET PLAYER
+;=========================<>=========================
+
+	(load "The General 1.2/Functions/Reset Mini")
+
+	;If helping ally, set target player to -1 to encourage helping allies (does this work?)
+	; (defrule
+	; (goal g-attack-objective HELP-ALLY-DEFEND)
+	; (up-compare-sn sn-target-player-number != -1)
+	; =>
+	; (up-modify-sn sn-target-player-number c:= -1)
+	; )
+
+	;If no enemy building found, set target player randomly
+	(defrule
+	(goal g-attack-objective ATTACK-TARGET-ENEMY)
+	(or
+		(players-building-count every-enemy <= 0)
+		(up-compare-goal g-closest-enemy <= 0))
+	(or
+		(up-compare-goal g-game-focus != DEFENSIVE)
+		(goal g-enemy-units-in-town 0))
+	(up-compare-sn sn-target-player-number <= 0)
+	=>
+	(up-find-player enemy find-random g-temp)
+	(up-modify-sn sn-target-player-number g:= g-temp)
+	)
+
+	;If enemy building found, set target to be closest enemy
+	(defrule
+	(goal g-attack-objective ATTACK-TARGET-ENEMY)
+	(players-building-count any-enemy > 0)
+	(up-compare-goal g-closest-enemy > 0)
+	(or
+		(up-compare-goal g-game-focus != DEFENSIVE)
+		(goal g-enemy-units-in-town 0))
+	(up-compare-sn sn-target-player-number g:!= g-closest-enemy)
+	=>
+	(up-modify-sn sn-target-player-number g:= g-closest-enemy)
+	)
+
+	(load "The General 1.2/Functions/Reset Mini")
+
+	;If under attack, set target player as the player attacking us instead
+	(defrule
+	(goal g-attack-objective ATTACK-TARGET-ENEMY)
+	(up-compare-goal g-game-focus == DEFENSIVE)
+	(up-compare-goal g-enemy-units-in-town > 0)
+	=>
+	(set-strategic-number sn-focus-player-number 1)
+	(set-goal g-temp2 PENDING)	;Player with most soldiers
+	(set-goal g-temp3 0)		;Highest player soldier count in our town
+	)
+
+		(defrule
+		(goal g-attack-objective ATTACK-TARGET-ENEMY)
+		(up-compare-goal g-game-focus == DEFENSIVE)
+		(up-compare-goal g-enemy-units-in-town > 0)
+		(nand
+			(player-in-game focus-player)
+			(stance-toward focus-player enemy))
+		(up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
+		=>
+		(up-modify-sn sn-focus-player-number c:+ 1)
+		(up-jump-rule -1)
+		)
+
+		(defrule
+		(goal g-attack-objective ATTACK-TARGET-ENEMY)
+		(up-compare-goal g-game-focus == DEFENSIVE)
+		(up-compare-goal g-enemy-units-in-town > 0)
+		(up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
+		=>
+		(up-modify-goal g-temp s:= csn-peaceful-town-size)
+		(up-modify-goal g-temp c:* 2)	;increase distance to search for enemy buildings by 200% because csn-peaceful-town-size...
+		(up-modify-goal g-temp c:min 30)	;...is measured as a square around the TC, not a circle
+		(up-full-reset-search)				
+		(up-set-target-point g-position-self-x)	
+		(up-filter-distance c: -1 g: g-temp)	;search for buildings within csn-peaceful-town-size
+		(up-filter-include cmdid-military -1 -1 -1)
+		(up-find-remote c: any-objects c: 40)
+		(up-get-search-state g-local-total)
+		)
+
+		(defrule
+		(goal g-attack-objective ATTACK-TARGET-ENEMY)
+		(up-compare-goal g-game-focus == DEFENSIVE)
+		(up-compare-goal g-enemy-units-in-town > 0)
+		(up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
+		(up-compare-goal g-remote-total g:> g-temp3)
+		=>
+		(up-modify-goal g-temp2 s:= sn-focus-player-number)
+		(up-modify-goal g-temp3 g:= g-remote-total)
+		)
+
+		(defrule
+		(goal g-attack-objective ATTACK-TARGET-ENEMY)
+		(up-compare-goal g-game-focus == DEFENSIVE)
+		(up-compare-goal g-enemy-units-in-town > 0)
+		(up-compare-sn sn-focus-player-number < MAX-PLAYERS)
+		=>
+		(up-modify-sn sn-focus-player-number c:+ 1)
+		(up-jump-rule -4)
+		)
+
+	(defrule
+	(goal g-attack-objective ATTACK-TARGET-ENEMY)
+	(up-compare-goal g-game-focus == DEFENSIVE)
+	(up-compare-goal g-enemy-units-in-town > 0)
+	(up-compare-goal g-temp2 > 0)
+	(up-compare-sn sn-target-player-number g:!= g-temp2)
+	=>
+	(up-modify-sn sn-target-player-number g:= g-temp2)
+	; (up-chat-data-to-player my-player-number "p%d is attacking us, switch target" s: sn-target-player-number)
+	)
+
+	;If defensive, but didn't find any enemy units in the town, fall back to other options above
+	(defrule
+	(goal g-attack-objective ATTACK-TARGET-ENEMY)
+	(up-compare-goal g-game-focus == DEFENSIVE)
+	(up-compare-goal g-enemy-units-in-town > 0)
+	(up-compare-goal g-temp2 <= 0)
+	(or
+		(players-building-count every-enemy <= 0)
+		(up-compare-goal g-closest-enemy <= 0))
+	=>
+	(up-find-player enemy find-random g-temp)
+	(up-modify-sn sn-target-player-number g:= g-temp)
+	)
+
+	(defrule
+	(goal g-attack-objective ATTACK-TARGET-ENEMY)
+	(up-compare-goal g-game-focus == DEFENSIVE)
+	(up-compare-goal g-enemy-units-in-town > 0)
+	(up-compare-goal g-temp2 <= 0)
+	(players-building-count any-enemy > 0)
+	(up-compare-goal g-closest-enemy > 0)
+	=>
+	(up-modify-sn sn-target-player-number g:= g-closest-enemy)
+	)
+
+	(load "The General 1.2/Functions/Reset Mini")
+	
+	;If helping ally defend, set target player to attacking enemy
+	(defrule
+	(goal g-attack-objective HELP-ALLY-DEFEND)
+	=>
+	(up-modify-sn sn-focus-player-number s:= csn-ally-to-defend)
+	(up-full-reset-search)
+	(up-find-remote c: town-center c: 10)
+	(up-find-remote c: house c: 10)
+	(up-find-remote c: lumber-camp c: 5)
+	(up-clean-search search-remote object-data-id search-order-asc)
+	)
+	
+	(defrule
+	(goal g-attack-objective HELP-ALLY-DEFEND)
+	(up-set-target-object search-remote c: 0)
+	=>
+	(up-get-point position-object g-point-x)
+	(up-set-target-point g-point-x)
+	(up-full-reset-search)
+	(up-filter-distance c: -1 c: 40)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(set-strategic-number sn-focus-player-number 1)
+	)
+	
+		(defrule
+		(goal g-attack-objective HELP-ALLY-DEFEND)
+		(up-compare-goal g-point-x >= 0)
+		(nand
+			(player-in-game focus-player)
+			(stance-toward focus-player enemy))
+		(up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
+		=>
+		(up-modify-sn sn-focus-player-number c:+ 1)
+		(up-jump-rule -1)
+		)
+	
+		(defrule
+		(goal g-attack-objective HELP-ALLY-DEFEND)
+		(up-compare-goal g-point-x >= 0)
+		(up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
+		=>
+		(up-find-remote c: any-objects c: 40)
+		(up-get-search-state g-local-total)
+		)
+	
+		(defrule
+		(goal g-attack-objective HELP-ALLY-DEFEND)
+		(up-compare-goal g-point-x >= 0)
+		(up-compare-goal g-remote-total < 40)
+		(up-compare-sn sn-focus-player-number < MAX-PLAYERS)
+		=>
+		(up-modify-sn sn-focus-player-number c:+ 1)
+		(up-jump-rule -3)
+		)
+	
+	(defrule
+	(goal g-attack-objective HELP-ALLY-DEFEND)
+	(up-compare-goal g-point-x >= 0)
+	(up-compare-goal g-remote-total >= 3)
+	=>
+	(up-clean-search search-remote object-data-distance search-order-asc)
+	)
+	
+	(defrule
+	(goal g-attack-objective HELP-ALLY-DEFEND)
+	(up-compare-goal g-point-x >= 0)
+	(up-compare-goal g-remote-total >= 3)
+	(up-set-target-object search-remote c: 0)
+	=>
+	(up-modify-goal g-temp2 s:= sn-target-player-number)
+	(up-get-object-data object-data-player g-temp)
+	(up-modify-sn sn-target-player-number g:= g-temp)
+	)
+
+	; (defrule
+	; (goal g-attack-objective HELP-ALLY-DEFEND)
+	; (up-compare-goal g-point-x >= 0)
+	; (up-compare-goal g-remote-total >= 3)
+	; (up-set-target-object search-remote c: 0)
+	; (up-compare-goal g-temp g:!= g-temp2)
+	; =>
+	; (up-chat-data-to-all "prepare to assist ally against p%d" g: g-temp)
+	; )
+
+	;Set Target Player Position
+	(defrule
+	(or
+		(up-compare-goal g-closest-enemy <= 0)
+		(players-building-count target-player == 0))
+	=>
+	(up-get-point position-flank g-target-enemy-x)
+	)
+
+	(load "The General 1.2/Functions/Reset Mini")
+
+	(defrule
+	(up-compare-goal g-closest-enemy > 0)
+	(players-building-count target-player > 0)
+	=>
+	(up-full-reset-search)
+	(up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+	(up-find-remote c: town-center c: 5)
+	(up-clean-search search-remote object-data-id search-order-asc)
+	)
+
+	(defrule
+	(up-compare-goal g-closest-enemy > 0)
+	(players-building-count target-player > 0)
+	(up-set-target-object search-remote c: 0)
+	=>
+	(up-get-point position-object g-target-enemy-x)
+	)
+
+	(defrule
+	(up-compare-goal g-closest-enemy > 0)
+	(players-building-count target-player > 0)
+	(not
+		(up-set-target-object search-remote c: 0))
+	=>
+	(up-get-point position-target g-target-enemy-x)
+	)
+
+;=========================<>=========================
 ;		   		 ADJUST ATTACK STATUS
 ;=========================<>=========================
 
@@ -488,6 +754,18 @@
 			(up-modify-goal g-stop-attack-num c:%* 60)
 			)
 
+		;---------------------
+		;	Ally Assistance
+		;---------------------
+
+			(defrule
+			(current-age >= castle-age)
+			(goal g-attack-objective HELP-ALLY-DEFEND)
+			=>
+			(up-modify-goal g-required-attack-num g:min g-min-military-pop)
+			(up-modify-goal g-stop-attack-num c:%* 60)
+			)
+
 ;=========================<>=========================
 ;			   		 START ATTACK
 ;=========================<>=========================
@@ -496,15 +774,17 @@
 	(current-age == castle-age)
 	(goal g-attacking NO)
 	(goal g-town-under-attack NO)
-	(military-population g:>= g-required-attack-num)
-	(military-population g:>= g-stop-attack-num)
+	(or
+		(population >= NINETY-PERCENT-POP)
+		(and
+			(military-population g:>= g-required-attack-num)
+			(military-population g:>= g-stop-attack-num)))
 	; (military-population >= 5)
 	(players-building-count target-player > 0)
 	(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)
 	(up-compare-goal g-age-status != TO-IMPERIAL)
 	=>
 	(set-goal g-attacking YES)
-	(set-goal g-attack-coordination ATTACK-STARTED)
 	(up-modify-goal g-attack-status c:+ 1)
 	(set-strategic-number sn-number-civilian-militia 0)
 	(up-jump-rule 1)
@@ -513,15 +793,17 @@
 		(current-age == castle-age)
 		(goal g-attacking NO)
 		(goal g-town-under-attack NO)
-		(military-population g:>= g-required-attack-num)
-		(military-population g:>= g-stop-attack-num)
+		(or
+			(population >= NINETY-PERCENT-POP)
+			(and
+				(military-population g:>= g-required-attack-num)
+				(military-population g:>= g-stop-attack-num)))
 		(players-building-count target-player > 0)
 		(up-get-fact military-population 0 g-temp)
 		(up-modify-goal g-temp g:- g-required-attack-num)
 		(up-compare-goal g-temp >= 10)
 		=>
 		(set-goal g-attacking YES)
-		(set-goal g-attack-coordination ATTACK-STARTED)
 		(up-modify-goal g-attack-status c:+ 1)
 		(set-strategic-number sn-number-civilian-militia 0)
 		)
@@ -540,7 +822,6 @@
 	(up-compare-goal g-support-unit-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
 	=>
 	(set-goal g-attacking YES)
-	(set-goal g-attack-coordination ATTACK-STARTED)
 	(up-modify-goal g-attack-status c:+ 1)
 	(set-strategic-number sn-number-civilian-militia 0)
 	(up-jump-rule 1)
@@ -559,7 +840,6 @@
 		(up-modify-goal g-temp g:- g-required-attack-num)
 		=>
 		(set-goal g-attacking YES)
-		(set-goal g-attack-coordination ATTACK-STARTED)
 		(up-modify-goal g-attack-status c:+ 1)
 		(set-strategic-number sn-number-civilian-militia 0)
 		)
@@ -573,6 +853,26 @@
 	(up-timer-status t-first-attack == timer-disabled)
 	=>
 	(enable-timer t-first-attack 60)
+	)
+
+	(defrule
+	(goal g-attacking YES)
+	(up-compare-goal g-attack-coordination < ATTACK-STARTED)
+	(goal g-attack-objective HELP-ALLY-DEFEND)
+	=>
+	(set-goal g-attack-coordination ATTACK-STARTED)
+	(up-modify-sn sn-focus-player-number s:= csn-ally-to-defend)
+	(chat-to-player focus-player TAUNT-48-ASSIST)
+	(chat-to-player my-player-number TAUNT-48-ASSIST)
+	(disable-timer t-ally-assistance-chat-delay)
+	)
+
+	(defrule
+	(goal g-attacking YES)
+	(up-compare-goal g-attack-coordination < ATTACK-STARTED)
+	(up-compare-goal g-attack-objective != HELP-ALLY-DEFEND)
+	=>
+	(set-goal g-attack-coordination ATTACK-STARTED)
 	)
 
 ;=========================<>=========================
@@ -613,6 +913,14 @@
 	)
 	
 	;Stop attack
+	(defrule
+	(goal g-attack-coordination STOP-ATTACKING)
+	(goal g-attack-objective HELP-ALLY-DEFEND)
+	=>
+	(set-goal g-attack-objective PENDING)
+	(chat-to-all "reset objective")
+	)
+
 	(defrule
 	(or
 		(goal g-attack-status FIRST-FEUDAL-ATTACK)

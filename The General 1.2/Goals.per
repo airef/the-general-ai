@@ -201,9 +201,8 @@
 		(up-compare-goal g-enemy-units-in-town >= 2)
 		(goal g-town-under-attack YES)
 		=>
-		(up-modify-goal g-temp g:= g-enemy-units-in-town)
-		(up-get-fact military-population 0 g-temp2)
-		(up-modify-goal g-temp g:- g-temp2)
+		(up-get-fact military-population 0 g-temp)
+		(up-modify-goal g-temp g:- g-enemy-units-in-town)
 		)
 
 		(defrule
@@ -608,9 +607,17 @@
 		;Loop through all in-game enemies and count their buildings and units
 
 		(defrule
-		(player-in-game focus-player)
-		(not
-			(stance-toward focus-player ally))	;self is also considered an ally, so this rule won't count our own buildings
+		(nand
+			(player-in-game focus-player)
+			(stance-toward focus-player enemy))
+		(up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
+		=>
+		(up-modify-sn sn-focus-player-number c:+ 1)
+		(up-jump-rule -1)
+		)
+
+		(defrule
+		(true)
 		=>
 		(up-modify-goal g-temp s:= csn-peaceful-town-size)
 		(up-modify-goal g-temp c:* 2)	;increase distance to search for enemy buildings by 200% because csn-peaceful-town-size...
@@ -628,9 +635,7 @@
 		)
 
 		(defrule
-		(player-in-game focus-player)
-		(not
-			(stance-toward focus-player ally))
+		(true)
 		=>
 		(up-modify-goal g-temp s:= csn-peaceful-town-size)
 		(up-modify-goal g-temp c:* 2)	
@@ -648,13 +653,13 @@
 		(up-compare-sn sn-focus-player-number < MAX-PLAYERS)
 		=>
 		(up-modify-sn sn-focus-player-number c:+ 1)
-		(up-jump-rule -3)
+		(up-jump-rule -4)
 		)
 
 	(defrule
 	(up-compare-goal g-temp2 > 0)
 	=>
-	(up-modify-goal g-enemy-units-in-town g:= g-remote-total)
+	(up-modify-goal g-enemy-units-in-town g:= g-temp2)
 	(disable-timer t-enemy-in-town)
 	)
 
@@ -1439,9 +1444,10 @@
 ;------------------------------
 
 	(defrule
-	(up-compare-goal g-attack-objective != ATTACK-TARGET-ENEMY)
+	(goal g-attack-objective PENDING)
 	=>
 	(set-goal g-attack-objective ATTACK-TARGET-ENEMY)
+	(chat-to-all "default attack objective")
 	)
 
 ;---------------------------
@@ -1593,7 +1599,7 @@
 	; (up-compare-goal g-closest-enemy <= 0)
 	; (timer-triggered t-10-sec)
 	; =>
-	; (chat-to-all CHAT-CLOSEST-ENEMY-BUG)
+	; (chat-to-all "Closest enemy not set properly")
 	; )
 
 ;---------------------------------------------
