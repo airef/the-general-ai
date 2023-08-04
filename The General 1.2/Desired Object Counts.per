@@ -1968,8 +1968,10 @@
 					(or
 						(civ-selected italian)
 						(or
-							(civ-selected mayan)
-							(civ-selected vietnamese)))))
+							(civ-selected korean)
+							(or
+								(civ-selected mayan)
+								(civ-selected vietnamese))))))
 			=>
 			(up-modify-goal g-desired-num-archer g:= g-desired-num-military)
 			(up-modify-goal g-desired-num-archer c:%* 50)
@@ -1991,16 +1993,6 @@
 						(or
 							(goal g-previous-strategy MIDI-SKIRMS)
 							(goal g-previous-strategy LATEI-TRASHKIRMS)))))
-			=>
-			(up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
-			(up-modify-goal g-desired-num-skirmisher c:%* 50)
-			)
-			(defrule
-			(up-compare-goal g-desired-num-military > 0)
-			(current-age == imperial-age)
-			(goal g-primary-unit my-unique-unit)
-			(building-type-count castle < 2)
-			(civ-selected korean)
 			=>
 			(up-modify-goal g-desired-num-skirmisher g:= g-desired-num-military)
 			(up-modify-goal g-desired-num-skirmisher c:%* 50)
@@ -3118,6 +3110,17 @@
 		(up-modify-goal g-desired-num-town-center c:max 3)
 		)
 
+		(defrule
+		(goal g-game-focus DEFENSIVE)
+		(goal g-town-under-attack YES)
+		(up-compare-goal g-difficulty >= HARD)
+		(up-compare-goal g-target-pop-parity <= -20)
+		(building-type-count town-center <= 1)
+		(up-compare-goal g-desired-num-town-center < 2)
+		=>
+		(up-modify-goal g-desired-num-town-center c:max 2)
+		)
+
 		;Boom
 		(defrule
 		(goal g-game-focus BOOM)
@@ -3407,6 +3410,7 @@
 		#load-if-not-defined CHINESE-CIV
 
 			(defrule
+			(up-compare-goal g-map-style != NOMAD)
 			(building-type-count-total house < 1)
 			=>
 			(set-goal g-desired-num-house 1)
@@ -3423,11 +3427,13 @@
 				(current-age == dark-age)
 				(up-compare-goal g-true-housing-headroom < 2)
 				(population-headroom > 0)
-				(building-type-count-total house >= 1)
+				(or
+					(building-type-count-total house >= 1)
+					(goal g-map-style NOMAD))
 				(up-pending-objects c: house == 0)
 				=>
 				(up-modify-goal g-temp g:= g-true-housing-headroom)
-				(up-modify-goal g-temp c:- 1)	;matches number in condition above
+				(up-modify-goal g-temp c:- 2)	;matches number in condition above
 				(up-modify-goal g-temp c:z/ -5)	;use negative 5 because g-temp is zero or negative at this point
 				(up-modify-goal g-temp c:+ 1)
 				(up-modify-goal g-desired-num-house g:+ g-temp)
@@ -3443,7 +3449,7 @@
 				(up-pending-objects c: house == 0)
 				=>
 				(up-modify-goal g-temp g:= g-true-housing-headroom)
-				(up-modify-goal g-temp c:- 1)	;matches number in condition above
+				(up-modify-goal g-temp c:- 2)	;matches number in condition above
 				(up-modify-goal g-temp c:z/ -5)	;use negative 5 because g-temp is zero or negative at this point
 				(up-modify-goal g-temp c:+ 1)
 				(up-modify-goal g-desired-num-house g:+ g-temp)
@@ -3493,7 +3499,9 @@
 			(current-age == dark-age)
 			(up-compare-goal g-true-housing-headroom < 2)
 			(population-headroom > 0)
-			(building-type-count-total house >= 1)
+			(or
+				(building-type-count-total house >= 1)
+				(goal g-map-style NOMAD))
 			(up-pending-objects c: house == 0)
 			=>
 			(up-modify-goal g-temp g:= g-true-housing-headroom)
@@ -3759,7 +3767,11 @@
 		(defrule
 		(game-time > 30)
 		(up-gaia-type-count-total c: gold > 0)
-		(building-type-count-total lumber-camp > 0)
+		(or
+			(building-type-count-total lumber-camp > 0)
+			(and
+				(goal g-map-style NOMAD)
+				(dropsite-min-distance wood < 3)))
 		(up-compare-goal g-current-gold-camp-total < 1)
 		(or
 			(and
@@ -3792,7 +3804,11 @@
 		(defrule
 		(game-time > 30)
 		(up-gaia-type-count-total c: stone > 0)
-		(building-type-count-total lumber-camp > 0)
+		(or
+			(building-type-count-total lumber-camp > 0)
+			(and
+				(goal g-map-style NOMAD)
+				(dropsite-min-distance wood < 3)))
 		(up-compare-goal g-current-stone-camp-total < 1)
 		(or
 			(and
@@ -4230,23 +4246,29 @@
 		(up-compare-goal g-desired-num-farm > 0)
 		(building-available farm)
 		(or
-			(up-set-target-by-id g: g-current-sheep-id)
+			(and
+				(up-set-target-by-id g: g-current-sheep-id)
+				(up-object-data object-data-class == livestock-class))
 			(unit-type-count villager-shepherd > 0))
 		(up-compare-goal g-current-sheep-count > 0)
 		=>
 		(up-modify-goal g-desired-num-farm c:- 6)
 		(up-modify-goal g-desired-num-farm c:max 0)
+		; (chat-to-all "reduce for sheep")
 		)
 		(defrule
 		(up-compare-goal g-desired-num-farm > 0)
 		(building-available farm)
 		(or
-			(up-set-target-by-id g: g-current-sheep-id)
+			(and
+				(up-set-target-by-id g: g-current-sheep-id)
+				(up-object-data object-data-class == livestock-class))
 			(unit-type-count villager-shepherd > 0))
 		(up-compare-goal g-current-sheep-count <= 0)
 		=>
 		(up-modify-goal g-desired-num-farm c:- 2)
 		(up-modify-goal g-desired-num-farm c:max 0)
+		; (chat-to-all "reduce a little for sheep")
 		)
 
 		;Subtract needed farms if we have forage bushes near mill or have foragers
@@ -4281,6 +4303,7 @@
 		=>
 		(up-modify-goal g-desired-num-farm c:- 5)
 		(up-modify-goal g-desired-num-farm c:max 0)
+		; (chat-to-all "reduce for forage")
 		)
 		(defrule
 		(up-compare-goal g-desired-num-farm > 0)
@@ -4289,6 +4312,7 @@
 		=>
 		(up-modify-goal g-desired-num-farm c:- 2)
 		(up-modify-goal g-desired-num-farm c:max 0)
+		; (chat-to-all "reduce littel for forage")
 		)
 
 		;Subtract needed farms if we are gathering boar
@@ -4297,21 +4321,31 @@
 		(building-available farm)
 		(up-set-target-by-id g: g-current-boar-id)
 		(or
+			(up-object-data object-data-hitpoints <= 0)
+			(up-compare-goal g-boar-hunt-status >= TARGET-BOAR))
+		(up-object-data object-data-class == boar-class)
+		(or
 			(up-object-data object-data-carry >= 60)
 			(up-compare-goal g-current-boar-count > 0))
 		=>
 		(up-modify-goal g-desired-num-farm c:- 6)
 		(up-modify-goal g-desired-num-farm c:max 0)
+		; (chat-to-all "reduce for boar")
 		)
 		(defrule
 		(up-compare-goal g-desired-num-farm > 0)
 		(building-available farm)
 		(up-set-target-by-id g: g-current-boar-id)
+		(or
+			(up-object-data object-data-hitpoints <= 0)
+			(up-compare-goal g-boar-hunt-status >= TARGET-BOAR))
+		(up-object-data object-data-class == boar-class)
 		(up-object-data object-data-carry < 60)
 		(up-compare-goal g-current-boar-count <= 0)
 		=>
 		(up-modify-goal g-desired-num-farm c:- 2)
 		(up-modify-goal g-desired-num-farm c:max 0)
+		; (chat-to-all "reduce for a little boar")
 		)
 
 		;Subtract needed farms if we are gathering deer
@@ -4320,12 +4354,15 @@
 		(building-available farm)
 		(unit-type-count villager-hunter > 0)
 		(or
-			(up-set-target-by-id g: g-current-deer-id)
+			(and
+				(up-set-target-by-id g: g-current-deer-id)
+				(up-object-data object-data-hitpoints <= 0))
 			(dropsite-min-distance deer-hunting < 4))
 		(up-compare-goal g-total-decaying-hunt-food >= 30)
 		=>
 		(up-modify-goal g-desired-num-farm c:- 3)
 		(up-modify-goal g-desired-num-farm c:max 0)
+		; (chat-to-all "reduce for deer")
 		)
 		; (defrule
 		; (up-compare-goal g-desired-num-farm > 0)
@@ -4356,6 +4393,7 @@
 			(or
 				(up-compare-const FORAGE-PILE-1 > 0)
 				(up-compare-const MIN-BOAR > 0)))
+		(up-compare-goal g-map-style != NOMAD)
 		(up-compare-goal g-age-status <= TO-FEUDAL)
 		(goal g-current-strategy FC-MORLEY)
 		(wood-amount < 385)	;save for stable + blacksmith
@@ -4370,6 +4408,7 @@
 				(or
 					(up-compare-const FORAGE-PILE-1 > 0)
 					(up-compare-const MIN-BOAR > 0)))
+			(up-compare-goal g-map-style != NOMAD)
 			(goal g-age-status TO-FEUDAL)
 			=>
 			(up-modify-goal g-desired-num-farm c:min 11)
@@ -5709,6 +5748,7 @@
 
 		(defrule
 		(goal g-map-style NOMAD)
+		(up-compare-goal g-closest-enemy-building-distance >= 25)
 		(up-compare-goal g-desired-num-tower < 1)
 		(up-compare-goal g-age-status >= TO-FEUDAL)
 		(current-age <= feudal-age)
@@ -5938,6 +5978,13 @@
 		(up-compare-goal g-difficulty >= MODERATE)
 		(up-compare-goal g-age-status >= SAVE-FOR-IMPERIAL)
 		(goal g-support-unit my-unique-unit)
+		=>
+		(up-modify-goal g-desired-num-castle c:max 2)
+		)
+
+		(defrule
+		(up-compare-goal g-difficulty >= MODERATE)
+		(building-type-count-total castle >= 1)
 		=>
 		(up-modify-goal g-desired-num-castle c:max 2)
 		)

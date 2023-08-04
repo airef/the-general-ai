@@ -141,6 +141,27 @@
     (up-modify-sn sn-maximum-town-size c:max 32)
     )
 
+    (defrule
+    (timer-triggered t-5-sec)
+    (goal g-map-style NOMAD)
+    (current-age <= feudal-age)
+    (or
+        (up-compare-sn sn-safe-town-size < 20)
+        (or
+            (up-compare-sn sn-maximum-town-size < 20)
+            (up-compare-sn csn-peaceful-town-size < 20)))
+    (building-available farm)
+    (building-type-count town-center > 0)
+    (wood-amount >= 300)
+    (up-object-type-count-total c: farm g:< g-desired-num-farm)
+    (up-pending-objects c: farm == 0)
+    =>
+    (up-modify-sn sn-safe-town-size c:+ 1)
+    (up-modify-sn csn-peaceful-town-size c:+ 1)
+    (up-modify-sn sn-maximum-town-size c:+ 1)
+    ; (chat-to-all "Increase TS for farms")
+    )
+
     #load-if-defined TEST-LATER
 
         (load "The General 1.2/Functions/Reset")
@@ -208,8 +229,8 @@
     (military-population < 6)
     (goal g-attacking NO)
     (or
-        (up-building-type-in-town c: watch-tower >= 1)
-        (up-building-type-in-town c: donjon >= 1))
+        (up-building-type-in-town c: watch-tower > 1)
+        (up-building-type-in-town c: donjon > 1))
     (up-compare-sn sn-maximum-town-size > 12)
     =>
     (up-modify-sn sn-maximum-town-size c:- 1)
@@ -420,6 +441,11 @@
     (set-strategic-number sn-lumber-camp-max-distance HUNDRED-PERCENT-MAP-SIZE)
     )
 
+    (defrule
+    (building-type-count-total town-center == 0)
+    =>
+    (set-strategic-number sn-lumber-camp-max-distance HUNDRED-PERCENT-MAP-SIZE)
+    )
 ;---------------------------------
 ;   SN-MINING-CAMP-MAX-DISTANCE
 ;---------------------------------
@@ -575,14 +601,16 @@
 ;-------------------------------
 
     (defrule
-    (up-compare-sn sn-minimum-number-hunters != 4)
+    (up-compare-sn sn-minimum-number-hunters < 3)
+    (up-compare-goal g-desired-num-food-vils >= 3)
     (or
         (up-compare-goal g-total-decaying-hunt-food > 0)
         (and
             (up-set-target-by-id g: g-current-boar-id)
             (up-object-data object-data-hitpoints < 5)))
     =>
-    (up-modify-sn sn-minimum-number-hunters c:= 4)
+    (up-modify-sn sn-minimum-number-hunters c:= 3)
+    (up-modify-sn sn-minimum-number-hunters g:min g-desired-num-food-vils)
     )
 
     (defrule

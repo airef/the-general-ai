@@ -160,115 +160,75 @@
 	;	Trade Units
 	;-----------------
 
-		#load-if-not-defined ITALIAN-CIV
+		;----------------
+		;	Trade Cogs
+		;----------------
 
-			;----------------
-			;	Trade Cogs
-			;----------------
-
-				(defrule
-				(goal g-game-focus BOOM)
-				(up-object-type-count-total c: trade-cog g:< g-desired-num-trade-cog)
-				(up-research-status c: ri-caravan >= research-pending)
-				(can-train-with-escrow trade-cog)
-				=>
-				(up-train g-escrow c: trade-cog)
-				)
-
-				(defrule
-				(up-compare-goal g-game-focus != BOOM)
-				(up-object-type-count-total c: trade-cog g:< g-desired-num-trade-cog)
-				(up-research-status c: ri-caravan >= research-pending)
-				(can-train trade-cog)
-				=>
-				(train trade-cog)
-				)
-
-			;-----------------
-			;	Trade Carts
-			;-----------------
-
-				(defrule
-				(goal g-game-focus BOOM)
-				(up-object-type-count-total c: trade-cart g:< g-desired-num-trade-cart)
-				(can-train-with-escrow trade-cart)
-				(up-compare-goal g-enemy-units-in-town < 10)
-				(up-research-status c: ri-caravan >= research-pending)
-				=>
-				(up-train g-escrow c: trade-cart)
-				)
-
-				(defrule
-				(up-compare-goal g-game-focus != BOOM)
-				(up-object-type-count-total c: trade-cart g:< g-desired-num-trade-cart)
-				(can-train trade-cart)
-				(up-compare-goal g-enemy-units-in-town < 10)
-				(up-research-status c: ri-caravan >= research-pending)
-				=>
-				(train trade-cart)
-				)
-
-		#else
-
-			;----------------
-			;	Trade Cogs
-			;----------------
-
-				(defrule
-				(goal g-game-focus BOOM)
-				(up-object-type-count-total c: trade-cog g:< g-desired-num-trade-cog)
-				(up-research-status c: ri-caravan >= research-pending)
+			(defrule
+			(goal g-game-focus BOOM)
+			(up-object-type-count-total c: trade-cog g:< g-desired-num-trade-cog)
+			(up-research-status c: ri-caravan >= research-pending)
+			(or
+				(not
+					(civ-selected italian))
 				(or
-					(up-research-status c: my-unique-research >= research-pending)
-					(building-type-count castle == 0))
-				(can-train-with-escrow trade-cog)
-				=>
-				(up-train g-escrow c: trade-cog)
-				)
+					(up-research-status c: ri-silk-road >= research-pending)
+					(building-type-count castle == 0)))
+			(can-train-with-escrow trade-cog)
+			=>
+			(up-train g-escrow c: trade-cog)
+			)
 
-				(defrule
-				(up-compare-goal g-game-focus != BOOM)
-				(up-object-type-count-total c: trade-cog g:< g-desired-num-trade-cog)
-				(up-research-status c: ri-caravan >= research-pending)
+			(defrule
+			(up-compare-goal g-game-focus != BOOM)
+			(up-object-type-count-total c: trade-cog g:< g-desired-num-trade-cog)
+			(up-research-status c: ri-caravan >= research-pending)
+			(or
+				(not
+					(civ-selected italian))
 				(or
-					(up-research-status c: my-unique-research >= research-pending)
-					(building-type-count castle == 0))
-				(can-train trade-cog)
-				=>
-				(train trade-cog)
-				)
+					(up-research-status c: ri-silk-road >= research-pending)
+					(building-type-count castle == 0)))
+			(can-train trade-cog)
+			=>
+			(train trade-cog)
+			)
 
-			;-----------------
-			;	Trade Carts
-			;-----------------
+		;-----------------
+		;	Trade Carts
+		;-----------------
 
-				(defrule
-				(goal g-game-focus BOOM)
-				(up-object-type-count-total c: trade-cart g:< g-desired-num-trade-cart)
-				(can-train-with-escrow trade-cart)
-				(up-compare-goal g-enemy-units-in-town < 10)
-				(up-research-status c: ri-caravan >= research-pending)
+			(defrule
+			(goal g-game-focus BOOM)
+			(up-object-type-count-total c: trade-cart g:< g-desired-num-trade-cart)
+			(can-train-with-escrow trade-cart)
+			(up-compare-goal g-enemy-units-in-town < 10)
+			(up-research-status c: ri-caravan >= research-pending)
+			(or
+				(not
+					(civ-selected italian))
 				(or
-					(up-research-status c: my-unique-research >= research-pending)
-					(building-type-count castle == 0))
-				=>
-				(up-train g-escrow c: trade-cart)
-				)
+					(up-research-status c: ri-silk-road >= research-pending)
+					(building-type-count castle == 0)))
+			=>
+			(up-train g-escrow c: trade-cart)
+			)
 
-				(defrule
-				(up-compare-goal g-game-focus != BOOM)
-				(up-object-type-count-total c: trade-cart g:< g-desired-num-trade-cart)
-				(can-train trade-cart)
-				(up-compare-goal g-enemy-units-in-town < 10)
-				(up-research-status c: ri-caravan >= research-pending)
+			(defrule
+			(up-compare-goal g-game-focus != BOOM)
+			(up-object-type-count-total c: trade-cart g:< g-desired-num-trade-cart)
+			(can-train trade-cart)
+			(up-compare-goal g-enemy-units-in-town < 10)
+			(up-research-status c: ri-caravan >= research-pending)
+			(or
+				(not
+					(civ-selected italian))
 				(or
-					(up-research-status c: my-unique-research >= research-pending)
-					(building-type-count castle == 0))
-				=>
-				(train trade-cart)
-				)
-			
-		#end-if
+					(up-research-status c: ri-silk-road >= research-pending)
+					(building-type-count castle == 0)))
+			=>
+			(train trade-cart)
+			)
 
 ;=========================<>=========================
 ;				       MILITARY

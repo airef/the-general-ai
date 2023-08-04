@@ -132,6 +132,27 @@
         (set-goal g-desired-future-wood-vils 4)
         )
 
+        (defrule
+        (goal g-map-style NOMAD)
+        (unit-type-count villager <= 5)
+        (wood-amount < 25)
+        =>
+        (up-modify-goal g-desired-future-food-vils c:- 1)
+        (up-modify-goal g-desired-future-wood-vils c:+ 1)
+        )
+
+        (defrule
+        (goal g-map-style NOMAD)
+        (unit-type-count villager >= 6)
+        (unit-type-count villager <= 17)
+        (or
+            (wood-amount < 100)
+            (building-type-count-total farm >= 3))
+        =>
+        (up-modify-goal g-desired-future-food-vils c:- 1)
+        (up-modify-goal g-desired-future-wood-vils c:+ 1)
+        )
+
     ;-------------------
     ;   25-vil Morley
     ;-------------------
@@ -149,7 +170,7 @@
         (defrule
         (goal g-current-strategy FC-MORLEY)
         (unit-type-count villager >= 23)
-        (unit-type-count villager <= 25)
+        ; (unit-type-count villager <= 25)
         (up-compare-goal g-age-status < TO-CASTLE)
         =>
         (set-goal g-desired-future-food-vils 12)
@@ -159,7 +180,7 @@
 
         (defrule
         (goal g-current-strategy FC-MORLEY)
-        (unit-type-count villager >= 25)
+        ; (unit-type-count villager >= 25)
         (goal g-age-status TO-CASTLE)
         (goal g-percent-dynamic-gathering 0)
         =>
@@ -169,17 +190,6 @@
         )
 
         ;Switch to using gathering percentages (out of 1000 villagers)
-        (defrule
-        (goal g-current-strategy FC-MORLEY)
-        (unit-type-count villager >= 26)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        (goal g-percent-dynamic-gathering 0)
-        =>
-        (set-goal g-desired-future-food-vils 580)
-        (set-goal g-desired-future-wood-vils 320)
-        (set-goal g-desired-future-gold-vils 100)
-        )
-
         (defrule
         (goal g-current-strategy FC-MORLEY)
         (unit-type-count villager >= 25)
@@ -242,7 +252,7 @@
         (defrule
         (goal g-current-strategy FC-CASTLE-DROP)
         (unit-type-count villager >= 28)
-        (unit-type-count villager <= 32)
+        ; (unit-type-count villager <= 32)
         (up-compare-goal g-age-status < TO-CASTLE)
         =>
         (set-goal g-desired-future-food-vils 15)
@@ -252,18 +262,6 @@
         )
 
         ;Switch to using gathering percentages (out of 1000 villagers)
-        (defrule
-        (goal g-current-strategy FC-CASTLE-DROP)
-        (unit-type-count villager >= 33)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        (goal g-percent-dynamic-gathering 0)
-        =>
-        (set-goal g-desired-future-food-vils 450)
-        (set-goal g-desired-future-wood-vils 300)
-        (set-goal g-desired-future-gold-vils 65)
-        (set-goal g-desired-future-stone-vils 185)
-        )
-
         (defrule
         (goal g-current-strategy FC-CASTLE-DROP)
         (up-compare-goal g-age-status >= TO-CASTLE)
@@ -334,7 +332,7 @@
             (goal g-current-strategy FC-KRUSH)
             (goal g-current-strategy EARLYC-KNIGHTS))
         (unit-type-count villager >= 30)
-        (unit-type-count villager <= 31)
+        ; (unit-type-count villager <= 31)
         (up-compare-goal g-age-status < TO-CASTLE)
         =>
         (set-goal g-desired-future-food-vils 15)
@@ -343,19 +341,6 @@
         )
 
         ;Switch to using gathering percentages (out of 1000 villagers)
-        (defrule
-        (or
-            (goal g-current-strategy FC-KRUSH)
-            (goal g-current-strategy EARLYC-KNIGHTS))
-        (unit-type-count villager >= 32)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        (goal g-percent-dynamic-gathering 0)
-        =>
-        (set-goal g-desired-future-food-vils 580)
-        (set-goal g-desired-future-wood-vils 320)
-        (set-goal g-desired-future-gold-vils 100)
-        )
-
         (defrule
         (or
             (goal g-current-strategy FC-KRUSH)
@@ -440,7 +425,7 @@
             (goal g-current-strategy FC-CRUSH)
             (goal g-current-strategy EARLYC-CAMELS))
         (unit-type-count villager >= 30)
-        (unit-type-count villager <= 31)
+        ; (unit-type-count villager <= 31)
         (up-compare-goal g-age-status < TO-CASTLE)
         =>
         (set-goal g-desired-future-food-vils 16)
@@ -449,19 +434,6 @@
         )
 
         ;Switch to using gathering percentages (out of 1000 villagers)
-        (defrule
-        (or
-            (goal g-current-strategy FC-CRUSH)
-            (goal g-current-strategy EARLYC-CAMELS))
-        (unit-type-count villager >= 32)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        (goal g-percent-dynamic-gathering 0)
-        =>
-        (set-goal g-desired-future-food-vils 520)
-        (set-goal g-desired-future-wood-vils 270)
-        (set-goal g-desired-future-gold-vils 210)
-        )
-
         (defrule
         (or
             (goal g-current-strategy FC-CRUSH)
@@ -536,7 +508,7 @@
         (defrule
         (goal g-current-strategy BOOMC-KNIGHTS)
         (unit-type-count villager >= 28)
-        (unit-type-count villager <= 30)
+        ; (unit-type-count villager <= 30)
         (up-compare-goal g-age-status < TO-CASTLE)
         =>
         (set-goal g-desired-future-food-vils 13)
@@ -545,17 +517,6 @@
         )
 
         ;Switch to using gathering percentages (out of 1000 villagers)
-        (defrule
-        (goal g-current-strategy BOOMC-KNIGHTS)
-        (unit-type-count villager >= 31)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        (goal g-percent-dynamic-gathering 0)
-        =>
-        (set-goal g-desired-future-food-vils 440)
-        (set-goal g-desired-future-wood-vils 400)
-        (set-goal g-desired-future-gold-vils 160)
-        )
-
         (defrule
         (goal g-current-strategy BOOMC-KNIGHTS)
         (goal g-age-status TO-CASTLE)
@@ -614,7 +575,7 @@
         (defrule
         (goal g-current-strategy BOOMC-CAMELS)
         (unit-type-count villager >= 28)
-        (unit-type-count villager <= 30)
+        ; (unit-type-count villager <= 30)
         (up-compare-goal g-age-status < TO-CASTLE)
         =>
         (set-goal g-desired-future-food-vils 13)
@@ -623,17 +584,6 @@
         )
 
         ;Switch to using gathering percentages (out of 1000 villagers)
-        (defrule
-        (goal g-current-strategy BOOMC-CAMELS)
-        (unit-type-count villager >= 31)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        (goal g-percent-dynamic-gathering 0)
-        =>
-        (set-goal g-desired-future-food-vils 440)
-        (set-goal g-desired-future-wood-vils 400)
-        (set-goal g-desired-future-gold-vils 160)
-        )
-
         (defrule
         (goal g-current-strategy BOOMC-CAMELS)
         (goal g-age-status TO-CASTLE)
@@ -676,7 +626,7 @@
             (goal g-current-strategy FC-EAGLES-REVENGE)
             (goal g-current-strategy EARLYC-EAGLES))
         (unit-type-count villager >= 26)
-        (unit-type-count villager <= 30)
+        ; (unit-type-count villager <= 30)
         (up-compare-goal g-age-status < TO-CASTLE)
         =>
         (set-goal g-desired-future-food-vils 14)
@@ -685,19 +635,6 @@
         )
 
         ;Switch to using gathering percentages (out of 1000 villagers)
-        (defrule
-        (or
-            (goal g-current-strategy FC-EAGLES-REVENGE)
-            (goal g-current-strategy EARLYC-EAGLES))
-        (unit-type-count villager >= 31)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        (goal g-percent-dynamic-gathering 0)
-        =>
-        (set-goal g-desired-future-food-vils 470)
-        (set-goal g-desired-future-wood-vils 340)
-        (set-goal g-desired-future-gold-vils 190)
-        )
-
         (defrule
         (or
             (goal g-current-strategy FC-EAGLES-REVENGE)
@@ -756,7 +693,7 @@
             (goal g-current-strategy FC-STRONGBOW)
             (goal g-current-strategy EARLYC-XBOWS))
         (unit-type-count villager >= 25)
-        (unit-type-count villager <= 30)
+        ; (unit-type-count villager <= 30)
         (up-compare-goal g-age-status < TO-CASTLE)
         =>
         (set-goal g-desired-future-food-vils 13)
@@ -765,19 +702,6 @@
         )
 
         ;Switch to using gather percentages (out of 1000 villagers)
-        (defrule
-        (or
-            (goal g-current-strategy FC-STRONGBOW)
-            (goal g-current-strategy EARLYC-XBOWS))
-        (unit-type-count villager >= 31)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        (goal g-percent-dynamic-gathering 0)
-        =>
-        (set-goal g-desired-future-food-vils 430)
-        (set-goal g-desired-future-wood-vils 370)
-        (set-goal g-desired-future-gold-vils 200)
-        )
-
         (defrule
         (or
             (goal g-current-strategy FC-STRONGBOW)
@@ -831,7 +755,7 @@
         (defrule
         (goal g-current-strategy FC-GENGHIS)
         (unit-type-count villager >= 25)
-        (unit-type-count villager <= 30)
+        ; (unit-type-count villager <= 30)
         (up-compare-goal g-age-status < TO-CASTLE)
         =>
         (set-goal g-desired-future-food-vils 13)
@@ -840,17 +764,6 @@
         )
 
         ;Switch to using gather percentages (out of 1000 villagers)
-        (defrule
-        (goal g-current-strategy FC-GENGHIS)
-        (unit-type-count villager >= 31)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        (goal g-percent-dynamic-gathering 0)
-        =>
-        (set-goal g-desired-future-food-vils 430)
-        (set-goal g-desired-future-wood-vils 370)
-        (set-goal g-desired-future-gold-vils 200)
-        )
-
         (defrule
         (goal g-current-strategy FC-GENGHIS)
         (goal g-age-status TO-CASTLE)
@@ -898,7 +811,7 @@
         (defrule
         (goal g-current-strategy BOOMC-XBOWS)
         (unit-type-count villager >= 26)
-        (unit-type-count villager <= 30)
+        ; (unit-type-count villager <= 30)
         (up-compare-goal g-age-status < TO-CASTLE)
         =>
         (set-goal g-desired-future-food-vils 15)
@@ -907,17 +820,6 @@
         )
 
         ;Switch to using gathering percentages (out of 1000 villagers)
-        (defrule
-        (goal g-current-strategy BOOMC-XBOWS)
-        (unit-type-count villager >= 31)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        (goal g-percent-dynamic-gathering 0)
-        =>
-        (set-goal g-desired-future-food-vils 500)
-        (set-goal g-desired-future-wood-vils 340)
-        (set-goal g-desired-future-gold-vils 160)
-        )
-
         (defrule
         (goal g-current-strategy BOOMC-XBOWS)
         (goal g-age-status TO-CASTLE)
@@ -936,6 +838,53 @@
         (set-goal g-desired-future-wood-vils 220)   ;24%
         (set-goal g-desired-future-gold-vils 210)   ;23%
         (set-goal g-desired-future-stone-vils 80)
+        )
+
+    ;-----------------------------
+    ;   Build Order Adjustments
+    ;-----------------------------
+
+        (defrule
+        (up-object-type-count-total c: villager g:>= g-required-num-villager)
+        (up-compare-goal g-age-status < TO-FEUDAL)
+        =>
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-research-cost c: feudal-age c: 1)
+        )
+
+        (defrule
+        (up-object-type-count-total c: villager g:>= g-required-num-villager)
+        (up-compare-goal g-age-status < TO-FEUDAL)
+        (food-amount g:< g-food-cost)
+        =>
+        (up-modify-goal g-desired-future-food-vils c:+ 10)
+        )
+
+        (defrule
+        (up-object-type-count-total c: villager g:>= g-required-num-villager)
+        (current-age == feudal-age)
+        (up-compare-goal g-age-status < TO-CASTLE)
+        =>
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-research-cost c: castle-age c: 1)
+        )
+
+        (defrule
+        (up-object-type-count-total c: villager g:>= g-required-num-villager)
+        (current-age == feudal-age)
+        (up-compare-goal g-age-status < TO-CASTLE)
+        (food-amount g:< g-food-cost)
+        =>
+        (up-modify-goal g-desired-future-food-vils c:+ 10)
+        )
+
+        (defrule
+        (up-object-type-count-total c: villager g:>= g-required-num-villager)
+        (current-age == feudal-age)
+        (up-compare-goal g-age-status < TO-CASTLE)
+        (gold-amount g:< g-gold-cost)
+        =>
+        (up-modify-goal g-desired-future-gold-vils c:+ 10)
         )
 
     ;-------------------------------
@@ -1138,14 +1087,16 @@
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
-        (up-resource-amount amount-wood g:< g-wood-cost)
+        ; (up-resource-amount amount-wood g:< g-wood-cost)
+        (wood-amount < 400)
         =>
         (up-modify-goal g-total-buildings-wood-needed g:+ g-wood-cost)
         )
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
-        (up-resource-amount amount-stone g:< g-stone-cost)
+        ; (up-resource-amount amount-stone g:< g-stone-cost)
+        (stone-amount < 200)
         =>
         (up-modify-goal g-total-buildings-stone-needed g:+ g-stone-cost)
         )
@@ -1153,19 +1104,11 @@
         ;Houses
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
-        (up-object-type-count-total c: house g:< g-desired-num-house)
         (population-headroom > 0)
+        (housing-headroom < 15)
         =>
         (up-setup-cost-data 1 g-food-cost)
-        (up-add-object-cost c: house c: 1)
-        )
-
-        (defrule
-        (up-timer-status t-15-sec == timer-triggered)
-        (up-object-type-count-total c: house g:< g-desired-num-house)
-        (up-resource-amount amount-wood g:< g-wood-cost)
-        (population-headroom > 0)
-        =>
+        (up-add-object-cost c: house c: 2)
         (up-modify-goal g-total-buildings-wood-needed g:+ g-wood-cost)
         )
 
@@ -1180,7 +1123,8 @@
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-object-type-count-total c: mill g:< g-desired-num-mill)
-        (up-resource-amount amount-wood g:< g-wood-cost)
+        ; (up-resource-amount amount-wood g:< g-wood-cost)
+        (wood-amount < 300)
         =>
         (up-modify-goal g-total-buildings-wood-needed g:+ g-wood-cost)
         )
@@ -1196,7 +1140,8 @@
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-object-type-count-total c: mining-camp g:< g-desired-num-mining-camp)
-        (up-resource-amount amount-wood g:< g-wood-cost)
+        ; (up-resource-amount amount-wood g:< g-wood-cost)
+        (wood-amount < 300)
         =>
         (up-modify-goal g-total-buildings-wood-needed g:+ g-wood-cost)
         )
@@ -1212,7 +1157,8 @@
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-object-type-count-total c: lumber-camp g:< g-desired-num-lumber-camp)
-        (up-resource-amount amount-wood g:< g-wood-cost)
+        ; (up-resource-amount amount-wood g:< g-wood-cost)
+        (wood-amount < 300)
         =>
         (up-modify-goal g-total-buildings-wood-needed g:+ g-wood-cost)
         )
@@ -1228,7 +1174,8 @@
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-object-type-count-total c: dock g:< g-desired-num-dock)
-        (up-resource-amount amount-wood g:< g-wood-cost)
+        ; (up-resource-amount amount-wood g:< g-wood-cost)
+        (wood-amount < 300)
         =>
         (up-modify-goal g-total-buildings-wood-needed g:+ g-wood-cost)
         )
@@ -1244,15 +1191,13 @@
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-compare-goal g-usable-farm-count-total g:< g-desired-num-farm)
-        (or
-            (building-type-count mill > 0)
-            (civ-selected khmer))
-        (up-resource-amount amount-wood g:< g-wood-cost)
+        ; (up-resource-amount amount-wood g:< g-wood-cost)
+        (wood-amount < 300)
         =>
         (up-modify-goal g-temp g:= g-desired-num-farm)
         (up-modify-goal g-temp g:- g-usable-farm-count-total)                    ;get difference between desired farms and current farms
-        (up-modify-goal g-temp c:max 5)
-        (up-modify-goal g-temp g:* g-wood-cost)                          ;multiply number of extra farms wanted by farm cost (cap at 5 extra farms)
+        (up-modify-goal g-temp c:min 7)
+        (up-modify-goal g-temp g:* g-wood-cost)                          ;multiply number of extra farms wanted by farm cost (cap at 7 extra farms)
         (up-modify-goal g-total-buildings-wood-needed g:+ g-temp)
         )
 
@@ -1267,7 +1212,8 @@
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-object-type-count-total c: blacksmith g:< g-desired-num-blacksmith)
-        (up-resource-amount amount-wood g:< g-wood-cost)
+        ; (up-resource-amount amount-wood g:< g-wood-cost)
+        (wood-amount < 400)
         =>
         (up-modify-goal g-total-buildings-wood-needed g:+ g-wood-cost)
         )
@@ -1283,10 +1229,8 @@
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-object-type-count-total c: market g:< g-desired-num-market)
-        (or
-            (building-type-count mill > 0)
-            (civ-selected khmer))
-        (up-resource-amount amount-wood g:< g-wood-cost)
+        ; (up-resource-amount amount-wood g:< g-wood-cost)
+        (wood-amount < 400)
         =>
         (up-modify-goal g-total-buildings-wood-needed g:+ g-wood-cost)
         )
@@ -1302,7 +1246,8 @@
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-object-type-count-total c: monastery g:< g-desired-num-monastery)
-        (up-resource-amount amount-wood g:< g-wood-cost)
+        ; (up-resource-amount amount-wood g:< g-wood-cost)
+        (wood-amount < 400)
         =>
         (up-modify-goal g-total-buildings-wood-needed g:+ g-wood-cost)
         )
@@ -1318,7 +1263,8 @@
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-object-type-count-total c: university g:< g-desired-num-university)
-        (up-resource-amount amount-wood g:< g-wood-cost)
+        ; (up-resource-amount amount-wood g:< g-wood-cost)
+        (wood-amount < 400)
         =>
         (up-modify-goal g-total-buildings-wood-needed g:+ g-wood-cost)
         )
@@ -1364,7 +1310,8 @@
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-object-type-count-total c: barracks g:< g-desired-num-barracks)
-        (up-resource-amount amount-wood g:< g-wood-cost)
+        ; (up-resource-amount amount-wood g:< g-wood-cost)
+        (wood-amount < 400)
         =>
         (up-modify-goal g-total-buildings-wood-needed g:+ g-wood-cost)
         )
@@ -1380,7 +1327,8 @@
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
-        (up-resource-amount amount-wood g:< g-wood-cost)
+        ; (up-resource-amount amount-wood g:< g-wood-cost)
+        (wood-amount < 400)
         =>
         (up-modify-goal g-total-buildings-wood-needed g:+ g-wood-cost)
         )
@@ -1396,7 +1344,8 @@
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-object-type-count-total c: stable g:< g-desired-num-stable)
-        (up-resource-amount amount-wood g:< g-wood-cost)
+        ; (up-resource-amount amount-wood g:< g-wood-cost)
+        (wood-amount < 400)
         =>
         (up-modify-goal g-total-buildings-wood-needed g:+ g-wood-cost)
         )
@@ -1412,7 +1361,8 @@
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-object-type-count-total c: siege-workshop g:< g-desired-num-siege-workshop)
-        (up-resource-amount amount-wood g:< g-wood-cost)
+        ; (up-resource-amount amount-wood g:< g-wood-cost)
+        (wood-amount < 400)
         =>
         (up-modify-goal g-total-buildings-wood-needed g:+ g-wood-cost)
         )
@@ -1428,14 +1378,16 @@
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-compare-goal g-tower-line g:< g-desired-num-tower)
-        (up-resource-amount amount-wood g:< g-wood-cost)
+        ; (up-resource-amount amount-wood g:< g-wood-cost)
+        (wood-amount < 200)
         =>
         (up-modify-goal g-total-buildings-wood-needed g:+ g-wood-cost)
         )
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-compare-goal g-tower-line g:< g-desired-num-tower)
-        (up-resource-amount amount-stone g:< g-stone-cost)
+        ; (up-resource-amount amount-stone g:< g-stone-cost)
+        (stone-amount < 300)
         =>
         (up-modify-goal g-total-buildings-stone-needed g:+ g-stone-cost)
         )
@@ -1451,14 +1403,16 @@
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-object-type-count-total c: bombard-tower g:< g-desired-num-bombard-tower)
-        (up-resource-amount amount-gold g:< g-gold-cost)
+        ; (up-resource-amount amount-gold g:< g-gold-cost)
+        (gold-amount < 300)
         =>
         (up-modify-goal g-total-buildings-gold-needed g:+ g-gold-cost)
         )
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-object-type-count-total c: bombard-tower g:< g-desired-num-bombard-tower)
-        (up-resource-amount amount-stone g:< g-stone-cost)
+        ; (up-resource-amount amount-stone g:< g-stone-cost)
+        (stone-amount < 300)
         =>
         (up-modify-goal g-total-buildings-stone-needed g:+ g-stone-cost)
         )
@@ -1490,10 +1444,25 @@
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
         (up-object-type-count-total c: my-unique-building g:< g-desired-num-unique-building)
-        (up-resource-amount amount-gold g:< g-gold-cost)
-        (up-resource-amount amount-stone g:< g-stone-cost)
+        ; (up-resource-amount amount-wood g:< g-wood-cost)
+        (wood-amount < 400)
+        =>
+        (up-modify-goal g-total-buildings-wood-needed g:+ g-wood-cost)
+        )
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: my-unique-building g:< g-desired-num-unique-building)
+        ; (up-resource-amount amount-gold g:< g-gold-cost)
+        (gold-amount < 400)
         =>
         (up-modify-goal g-total-buildings-gold-needed g:+ g-gold-cost)
+        )
+        (defrule
+        (up-timer-status t-15-sec == timer-triggered)
+        (up-object-type-count-total c: my-unique-building g:< g-desired-num-unique-building)
+        ; (up-resource-amount amount-stone g:< g-stone-cost)
+        (stone-amount < 400)
+        =>
         (up-modify-goal g-total-buildings-stone-needed g:+ g-stone-cost)
         )
 

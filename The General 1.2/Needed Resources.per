@@ -461,64 +461,129 @@
 	;	Unique Unit Upgrade - Priority or Secondary Imperial Tech
 	;---------------------------------------------------------------
 
-		(defrule
-		(goal g-primary-unit my-unique-unit)
-		(up-compare-goal g-age-status >= TO-IMPERIAL)
-		(up-research-status c: my-unique-unit-upgrade < research-pending)
-		(building-type-count castle > 0)
-		=>
-		(up-setup-cost-data 1 g-food-cost)
-		(up-add-research-cost c: my-unique-unit-upgrade c: 1)
-		(up-modify-goal g-important-techs-wood-needed g:+ g-wood-cost)
-		(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
-		(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
-		(up-modify-goal g-max-food-needed g:max g-food-cost)
-		(up-modify-goal g-max-gold-needed g:max g-gold-cost)
-		(up-modify-goal g-max-wood-needed g:max g-food-cost)
-		)
-		(defrule
-		(goal g-support-unit my-unique-unit)
-		(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
-		; (or
-		; 	(up-compare-goal g-unique-unit-line >= 7)
-		; 	(up-compare-goal g-unique-unit-line g:>= g-desired-num-unique-unit))
-		(current-age == imperial-age)
-		(up-research-status c: my-unique-unit-upgrade == research-available)
-		(building-type-count castle > 0)
-		=>
-		(up-setup-cost-data 1 g-food-cost)
-		(up-add-research-cost c: my-unique-unit-upgrade c: 1)
-		(up-modify-goal g-important-techs-wood-needed g:+ g-food-cost)
-		(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
-		(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
-		(up-modify-goal g-max-food-needed g:max g-food-cost)
-		(up-modify-goal g-max-gold-needed g:max g-gold-cost)
-		(up-modify-goal g-max-wood-needed g:max g-food-cost)
-		)
+		#load-if-not-defined KOREAN-CIV
 
-		(defrule
-		(taunt-detected TAUNT-PLAYER 246)
-		(goal g-primary-unit my-unique-unit)
-		(up-compare-goal g-age-status >= TO-IMPERIAL)
-		(up-research-status c: my-unique-unit-upgrade < research-pending)
-		(building-type-count castle > 0)
-		=>
-		(up-store-tech-name c: my-unique-unit-upgrade)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
-		)
-		(defrule
-		(taunt-detected TAUNT-PLAYER 246)
-		(goal g-support-unit my-unique-unit)
-		(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
-		; (or
-		; 	(up-compare-goal g-unique-unit-line >= 7)
-		; 	(up-compare-goal g-unique-unit-line g:>= g-desired-num-unique-unit))
-		(up-research-status c: my-unique-unit-upgrade == research-available)
-		(building-type-count castle > 0)
-		=>
-		(up-store-tech-name c: my-unique-unit-upgrade)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
-		)
+			(defrule
+			(goal g-primary-unit my-unique-unit)
+			(up-compare-goal g-age-status >= TO-IMPERIAL)
+			(up-research-status c: my-unique-unit-upgrade < research-pending)
+			(building-type-count castle > 0)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: my-unique-unit-upgrade c: 1)
+			(up-modify-goal g-important-techs-wood-needed g:+ g-wood-cost)
+			(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
+			(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
+			(up-modify-goal g-max-food-needed g:max g-food-cost)
+			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
+			(up-modify-goal g-max-wood-needed g:max g-food-cost)
+			)
+			(defrule
+			(goal g-support-unit my-unique-unit)
+			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			; (or
+			; 	(up-compare-goal g-unique-unit-line >= 7)
+			; 	(up-compare-goal g-unique-unit-line g:>= g-desired-num-unique-unit))
+			(current-age == imperial-age)
+			(up-research-status c: my-unique-unit-upgrade == research-available)
+			(building-type-count castle > 0)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: my-unique-unit-upgrade c: 1)
+			(up-modify-goal g-important-techs-wood-needed g:+ g-food-cost)
+			(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
+			(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
+			(up-modify-goal g-max-food-needed g:max g-food-cost)
+			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
+			(up-modify-goal g-max-wood-needed g:max g-food-cost)
+			)
+
+			(defrule
+			(taunt-detected TAUNT-PLAYER 246)
+			(goal g-primary-unit my-unique-unit)
+			(up-compare-goal g-age-status >= TO-IMPERIAL)
+			(up-research-status c: my-unique-unit-upgrade < research-pending)
+			(building-type-count castle > 0)
+			=>
+			(up-store-tech-name c: my-unique-unit-upgrade)
+			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
+			)
+			(defrule
+			(taunt-detected TAUNT-PLAYER 246)
+			(goal g-support-unit my-unique-unit)
+			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			; (or
+			; 	(up-compare-goal g-unique-unit-line >= 7)
+			; 	(up-compare-goal g-unique-unit-line g:>= g-desired-num-unique-unit))
+			(up-research-status c: my-unique-unit-upgrade == research-available)
+			(building-type-count castle > 0)
+			=>
+			(up-store-tech-name c: my-unique-unit-upgrade)
+			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
+			)
+
+		#else
+
+			(defrule
+			(goal g-primary-unit my-unique-unit)
+			(up-compare-goal g-age-status >= TO-IMPERIAL)
+			(up-research-status c: ri-elite-war-wagon < research-pending)
+			(building-type-count castle > 0)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-elite-war-wagon c: 1)
+			(up-modify-goal g-important-techs-wood-needed g:+ g-wood-cost)
+			(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
+			(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
+			(up-modify-goal g-max-food-needed g:max g-food-cost)
+			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
+			(up-modify-goal g-max-wood-needed g:max g-food-cost)
+			)
+			(defrule
+			(goal g-support-unit my-unique-unit)
+			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			; (or
+			; 	(up-compare-goal g-unique-unit-line >= 7)
+			; 	(up-compare-goal g-unique-unit-line g:>= g-desired-num-unique-unit))
+			(current-age == imperial-age)
+			(up-research-status c: ri-elite-war-wagon == research-available)
+			(building-type-count castle > 0)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-elite-war-wagon c: 1)
+			(up-modify-goal g-important-techs-wood-needed g:+ g-food-cost)
+			(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
+			(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
+			(up-modify-goal g-max-food-needed g:max g-food-cost)
+			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
+			(up-modify-goal g-max-wood-needed g:max g-food-cost)
+			)
+
+			(defrule
+			(taunt-detected TAUNT-PLAYER 246)
+			(goal g-primary-unit my-unique-unit)
+			(up-compare-goal g-age-status >= TO-IMPERIAL)
+			(up-research-status c: ri-elite-war-wagon < research-pending)
+			(building-type-count castle > 0)
+			=>
+			(up-store-tech-name c: ri-elite-war-wagon)
+			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
+			)
+			(defrule
+			(taunt-detected TAUNT-PLAYER 246)
+			(goal g-support-unit my-unique-unit)
+			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			; (or
+			; 	(up-compare-goal g-unique-unit-line >= 7)
+			; 	(up-compare-goal g-unique-unit-line g:>= g-desired-num-unique-unit))
+			(up-research-status c: ri-elite-war-wagon == research-available)
+			(building-type-count castle > 0)
+			=>
+			(up-store-tech-name c: ri-elite-war-wagon)
+			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
+			)
+
+		#end-if
 
 ;=========================<>=========================
 ;				     UNIQUE TECHS
@@ -534,11 +599,11 @@
 			(goal g-primary-unit-class infantry-class)
 			; (unit-type-count infantry-class >= 10)
 			(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-garland-wars == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-garland-wars c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -547,11 +612,11 @@
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			; (unit-type-count infantry-class >= 15)
 			(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-garland-wars == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-garland-wars c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -561,10 +626,10 @@
 			(goal g-primary-unit-class infantry-class)
 			; (unit-type-count infantry-class >= 10)
 			(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-garland-wars == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-garland-wars)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 			(defrule
@@ -573,10 +638,10 @@
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			; (unit-type-count infantry-class >= 15)
 			(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-garland-wars == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-garland-wars)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -591,11 +656,11 @@
 				(up-compare-goal g-skirmisher-line g:>= g-desired-num-skirmisher))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 			(up-compare-goal g-skirmisher-tech-progress >= SECONDARY-CASTLE-COMPLETE)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-atlatl == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-atlatl c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -608,10 +673,10 @@
 				(up-compare-goal g-skirmisher-line g:>= g-desired-num-skirmisher))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 			(up-compare-goal g-skirmisher-tech-progress >= SECONDARY-CASTLE-COMPLETE)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-atlatl == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-atlatl)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -623,11 +688,11 @@
 				(up-compare-goal g-skirmisher-line g:>= g-desired-num-skirmisher))
 			(up-compare-goal g-skirmisher-tech-progress >= SECONDARY-CASTLE-COMPLETE)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-atlatl == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-atlatl c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -641,10 +706,10 @@
 				(up-compare-goal g-skirmisher-line g:>= g-desired-num-skirmisher))
 			(up-compare-goal g-skirmisher-tech-progress >= SECONDARY-CASTLE-COMPLETE)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-atlatl == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-atlatl)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -667,11 +732,11 @@
 							(goal g-support-unit battle-elephant)
 							(goal g-support-unit elephant-archer)))))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-paiks == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-paiks c: 1)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -682,11 +747,11 @@
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-paiks == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-paiks c: 1)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -703,10 +768,10 @@
 							(goal g-support-unit battle-elephant)
 							(goal g-support-unit elephant-archer)))))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-paiks == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-paiks)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 			(defrule
@@ -716,10 +781,10 @@
 				(and
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-paiks == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-paiks)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -739,11 +804,11 @@
 				(up-compare-goal g-camel-line >= 10)
 				(up-compare-goal g-unique-unit-line >= 12))
 			(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-maghrabi-camels == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-maghrabi-camels c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -756,11 +821,11 @@
 				(up-compare-goal g-camel-line >= 12)
 				(up-compare-goal g-unique-unit-line >= 15))
 			(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-maghrabi-camels == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-maghrabi-camels c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -774,10 +839,10 @@
 				(up-compare-goal g-camel-line >= 10)
 				(up-compare-goal g-unique-unit-line >= 12))
 			(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-maghrabi-camels == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-maghrabi-camels)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 			(defrule
@@ -790,10 +855,10 @@
 				(up-compare-goal g-camel-line >= 12)
 				(up-compare-goal g-unique-unit-line >= 15))
 			(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-maghrabi-camels == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-maghrabi-camels)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -808,11 +873,11 @@
 				(food-amount >= 1250))
 			(up-compare-goal g-primary-unit-tech-progress >= SECONDARY-CASTLE-COMPLETE)
 			(up-compare-goal g-current-age-primary-unit-tech-progress >= PRIORITY-COMPLETE)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-kasbah == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-kasbah c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -821,11 +886,11 @@
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(up-compare-goal g-desired-num-support-unit >= 15)
 			(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-kasbah == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-kasbah c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -838,10 +903,10 @@
 				(food-amount >= 1250))
 			(up-compare-goal g-primary-unit-tech-progress >= SECONDARY-CASTLE-COMPLETE)
 			(up-compare-goal g-current-age-primary-unit-tech-progress >= PRIORITY-COMPLETE)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-kasbah == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-kasbah)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 			(defrule
@@ -850,10 +915,10 @@
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(up-compare-goal g-desired-num-support-unit >= 15)
 			(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-kasbah == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-kasbah)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -875,11 +940,11 @@
 						(or
 							(goal g-support-unit hand-cannoneer)
 							(goal g-support-unit my-unique-unit)))))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-wagenburg-tactics == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-wagenburg-tactics c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -895,10 +960,10 @@
 						(or
 							(goal g-support-unit hand-cannoneer)
 							(goal g-support-unit my-unique-unit)))))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-wagenburg-tactics == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-wagenburg-tactics)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -918,11 +983,11 @@
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(unit-type-count archery-class >= 12)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-yeomen == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-yeomen c: 1)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -936,10 +1001,10 @@
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(unit-type-count archery-class >= 12)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-yeomen == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-yeomen)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -950,11 +1015,11 @@
 			(defrule
 			(up-compare-goal g-desired-num-trebuchet > 3)
 			(unit-type-count trebuchet-set > 1)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-warwolf == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-warwolf c: 1)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			)
@@ -963,10 +1028,10 @@
 			(taunt-detected TAUNT-PLAYER 246)
 			(up-compare-goal g-desired-num-trebuchet > 3)
 			(unit-type-count trebuchet-set > 1)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-warwolf == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-warwolf)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -985,11 +1050,11 @@
 					(goal g-support-unit-class cavalry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-stirrups == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-stirrups c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -1002,10 +1067,10 @@
 					(goal g-support-unit-class cavalry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-stirrups == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-stirrups)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1019,11 +1084,11 @@
 				(and
 					(goal g-support-unit militiaman)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-bagains == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-bagains c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -1035,10 +1100,10 @@
 				(and
 					(goal g-support-unit militiaman)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-bagains == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-bagains)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1057,11 +1122,11 @@
 					(goal g-support-unit battle-elephant)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-howdah == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-howdah c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			)
@@ -1074,10 +1139,10 @@
 					(goal g-support-unit battle-elephant)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-howdah == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-howdah)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1091,11 +1156,11 @@
 				(and
 					(goal g-support-unit-class cavalry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-manipur-cavalry == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-manipur-cavalry c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -1107,11 +1172,11 @@
 				(and
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-manipur-cavalry == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-manipur-cavalry c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -1124,10 +1189,10 @@
 				(and
 					(goal g-support-unit-class cavalry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-manipur-cavalry == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-manipur-cavalry)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1139,10 +1204,10 @@
 				(and
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-manipur-cavalry == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-manipur-cavalry)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 			#end-if
@@ -1161,11 +1226,11 @@
 			(or
 				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 				(food-amount >= 1250))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-greek-fire == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-greek-fire c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			)
@@ -1177,10 +1242,10 @@
 			(or
 				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 				(food-amount >= 1250))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-greek-fire == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-greek-fire)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1194,11 +1259,11 @@
 				(and
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-logistica == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-logistica c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -1210,10 +1275,10 @@
 				(and
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-logistica == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-logistica)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1231,11 +1296,11 @@
 				(or
 					(up-compare-goal g-desired-num-mangonel >= 3)
 					(up-compare-goal g-desired-num-scorpion >= 5)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-furor-celtica == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-furor-celtica c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -1247,10 +1312,10 @@
 				(or
 					(up-compare-goal g-desired-num-mangonel >= 3)
 					(up-compare-goal g-desired-num-scorpion >= 5)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-furor-celtica == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-furor-celtica)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1270,11 +1335,11 @@
 						(goal g-support-unit my-unique-unit)
 						(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS))
 					(up-compare-goal g-desired-num-scorpion > 4)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-rocketry == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-rocketry c: 1)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -1288,10 +1353,10 @@
 						(goal g-support-unit my-unique-unit)
 						(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS))
 					(up-compare-goal g-desired-num-scorpion > 4)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-rocketry == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-rocketry)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1310,11 +1375,11 @@
 					(goal g-primary-unit cavalry-archer)
 					(goal g-primary-unit steppe-lancer)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-steppe-husbandry == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-steppe-husbandry c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			(up-jump-rule 1)
@@ -1327,11 +1392,11 @@
 						(goal g-support-unit cavalry-archer)
 						(goal g-support-unit steppe-lancer)))
 				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-steppe-husbandry == research-available)
 				(building-type-count castle > 0)
 				=>
 				(up-setup-cost-data 1 g-food-cost)
-				(up-add-research-cost c: my-second-unique-research c: 1)
+				(up-add-research-cost c: ri-steppe-husbandry c: 1)
 				(up-modify-goal g-max-food-needed g:max g-food-cost)
 				(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 				)
@@ -1344,10 +1409,10 @@
 					(goal g-primary-unit cavalry-archer)
 					(goal g-primary-unit steppe-lancer)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-steppe-husbandry == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-steppe-husbandry)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			(up-jump-rule 1)
 			)
@@ -1360,10 +1425,10 @@
 						(goal g-support-unit cavalry-archer)
 						(goal g-support-unit steppe-lancer)))
 				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-steppe-husbandry == research-available)
 				(building-type-count castle > 0)
 				=>
-				(up-store-tech-name c: my-second-unique-research)
+				(up-store-tech-name c: ri-steppe-husbandry)
 				(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 				)
 
@@ -1381,11 +1446,11 @@
 				(or
 					(goal g-primary-unit condottiero)
 					(goal g-primary-unit my-unique-unit)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-wootz-steel == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-wootz-steel c: 1)
 			(up-modify-escrow food g:- g-food-cost)
 			(up-modify-escrow gold g:- g-gold-cost)
 			)
@@ -1396,11 +1461,11 @@
 				(or
 					(goal g-support-unit condottiero)
 					(goal g-support-unit my-unique-unit)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-wootz-steel == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-wootz-steel c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -1412,10 +1477,10 @@
 				(or
 					(goal g-primary-unit condottiero)
 					(goal g-primary-unit my-unique-unit)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-wootz-steel == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-wootz-steel)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 			(defrule
@@ -1426,10 +1491,10 @@
 				(or
 					(goal g-support-unit condottiero)
 					(goal g-support-unit my-unique-unit)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-wootz-steel == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-wootz-steel)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1448,11 +1513,11 @@
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-royal-heirs == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-royal-heirs c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -1465,10 +1530,10 @@
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-royal-heirs == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-royal-heirs)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1482,11 +1547,11 @@
 				(or
 					(up-compare-goal g-desired-num-mangonel >= 3)
 					(up-compare-goal g-desired-num-scorpion >= 5)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-torsion-engines == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-torsion-engines c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -1498,10 +1563,10 @@
 				(or
 					(up-compare-goal g-desired-num-mangonel >= 3)
 					(up-compare-goal g-desired-num-scorpion >= 5)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-torsion-engines == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-torsion-engines)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1520,11 +1585,11 @@
 					(goal g-support-unit-class cavalry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-chivalry == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-chivalry c: 1)
 			(up-modify-goal g-important-techs-wood-needed g:+ g-wood-cost)
 			(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
@@ -1539,10 +1604,10 @@
 					(goal g-support-unit-class cavalry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-chivalry == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-chivalry)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1556,11 +1621,11 @@
 				(and
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-bearded-axe == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-bearded-axe c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -1572,10 +1637,10 @@
 				(and
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-bearded-axe == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-bearded-axe)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1594,11 +1659,11 @@
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-anarchy == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-anarchy c: 1)
 			(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
 			(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
@@ -1613,10 +1678,10 @@
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-anarchy == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-anarchy)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1630,11 +1695,11 @@
 				(and
 					(goal g-support-unit-class infantry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-perfusion == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-perfusion c: 1)
 			(up-modify-goal g-important-techs-wood-needed g:+ g-wood-cost)
 			(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
@@ -1648,10 +1713,10 @@
 				(and
 					(goal g-support-unit-class infantry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-perfusion == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-perfusion)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1674,11 +1739,11 @@
 							(goal g-primary-unit my-unique-unit)
 							(goal g-primary-unit my-second-unique-unit)))))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-kshatriyas == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-kshatriyas c: 1)
 			(up-modify-escrow food g:- g-food-cost)
 			(up-modify-escrow gold g:- g-gold-cost)
 			)
@@ -1690,11 +1755,11 @@
 					(goal g-support-unit scout-cavalry)
 					(goal g-support-unit elephant-archer)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-kshatriyas == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-kshatriyas c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -1704,11 +1769,11 @@
 				(goal g-support-unit my-unique-unit)
 				(goal g-support-unit my-second-unique-unit))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-kshatriyas == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-kshatriyas c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -1725,10 +1790,10 @@
 							(goal g-primary-unit my-unique-unit)
 							(goal g-primary-unit my-second-unique-unit)))))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-kshatriyas == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-kshatriyas)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 			(defrule
@@ -1744,10 +1809,10 @@
 							(goal g-support-unit my-unique-unit)
 							(goal g-support-unit my-second-unique-unit)))))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-kshatriyas == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-kshatriyas)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1759,11 +1824,11 @@
 			(or
 				(goal g-primary-unit camel)
 				(goal g-primary-unit elephant-archer))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-frontier-guards == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-frontier-guards c: 1)
 			(up-modify-escrow food g:- g-food-cost)
 			(up-modify-escrow gold g:- g-gold-cost)
 			)
@@ -1772,11 +1837,11 @@
 			(or
 				(goal g-support-unit camel)
 				(goal g-support-unit elephant-archer))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-frontier-guards == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-frontier-guards c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -1786,10 +1851,10 @@
 			(or
 				(goal g-primary-unit camel)
 				(goal g-primary-unit elephant-archer))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-frontier-guards == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-frontier-guards)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 			(defrule
@@ -1798,10 +1863,10 @@
 			(or
 				(goal g-support-unit camel)
 				(goal g-support-unit elephant-archer))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-frontier-guards == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-frontier-guards)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1817,11 +1882,11 @@
 			(goal g-primary-unit my-unique-unit)
 			(up-compare-goal g-unique-unit-tech-progress >= SECONDARY-CASTLE-COMPLETE)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-marauders == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-marauders c: 1)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -1831,11 +1896,11 @@
 			(up-compare-goal g-unique-unit-tech-progress >= SECONDARY-CASTLE-COMPLETE)
 			(up-compare-goal g-desired-num-unique-unit >= 12)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-marauders == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-marauders c: 1)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -1845,10 +1910,10 @@
 			(up-compare-goal g-unique-unit-tech-progress >= SECONDARY-CASTLE-COMPLETE)
 			(goal g-primary-unit my-unique-unit)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-marauders == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-marauders)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 			(defrule
@@ -1858,10 +1923,10 @@
 			(up-compare-goal g-unique-unit-tech-progress >= SECONDARY-CASTLE-COMPLETE)
 			(up-compare-goal g-desired-num-unique-unit >= 12)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-marauders == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-marauders)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -1881,11 +1946,11 @@
 			(or
 				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 				(food-amount >= 1200))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-andean-sling == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-andean-sling c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			(up-jump-rule 3)
@@ -1898,11 +1963,11 @@
 				(or
 					(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 					(food-amount >= 1200))
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-andean-sling == research-available)
 				(building-type-count castle > 0)
 				=>
 				(up-setup-cost-data 1 g-food-cost)
-				(up-add-research-cost c: my-second-unique-research c: 1)
+				(up-add-research-cost c: ri-andean-sling c: 1)
 				(up-modify-goal g-max-food-needed g:max g-food-cost)
 				(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 				(up-jump-rule 2)
@@ -1916,11 +1981,11 @@
 				(or
 					(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 					(food-amount >= 1200))
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-andean-sling == research-available)
 				(building-type-count castle > 0)
 				=>
 				(up-setup-cost-data 1 g-food-cost)
-				(up-add-research-cost c: my-second-unique-research c: 1)
+				(up-add-research-cost c: ri-andean-sling c: 1)
 				(up-modify-goal g-max-food-needed g:max g-food-cost)
 				(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 				(up-jump-rule 1)
@@ -1934,11 +1999,11 @@
 				(or
 					(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 					(food-amount >= 1200))
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-andean-sling == research-available)
 				(building-type-count castle > 0)
 				=>
 				(up-setup-cost-data 1 g-food-cost)
-				(up-add-research-cost c: my-second-unique-research c: 1)
+				(up-add-research-cost c: ri-andean-sling c: 1)
 				(up-modify-goal g-max-food-needed g:max g-food-cost)
 				(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 				)
@@ -1952,10 +2017,10 @@
 			(or
 				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 				(food-amount >= 1200))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-andean-sling == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-andean-sling)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			(up-jump-rule 3)
 			)
@@ -1968,10 +2033,10 @@
 				(or
 					(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 					(food-amount >= 1200))
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-andean-sling == research-available)
 				(building-type-count castle > 0)
 				=>
-				(up-store-tech-name c: my-second-unique-research)
+				(up-store-tech-name c: ri-andean-sling)
 				(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 				(up-jump-rule 2)
 				)
@@ -1985,10 +2050,10 @@
 				(or
 					(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 					(food-amount >= 1200))
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-andean-sling == research-available)
 				(building-type-count castle > 0)
 				=>
-				(up-store-tech-name c: my-second-unique-research)
+				(up-store-tech-name c: ri-andean-sling)
 				(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 				(up-jump-rule 1)
 				)
@@ -2002,10 +2067,10 @@
 				(or
 					(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 					(food-amount >= 1200))
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-andean-sling == research-available)
 				(building-type-count castle > 0)
 				=>
-				(up-store-tech-name c: my-second-unique-research)
+				(up-store-tech-name c: ri-andean-sling)
 				(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 				)
 
@@ -2019,11 +2084,11 @@
 				(or
 					(goal g-primary-unit slinger)
 					(goal g-primary-unit my-unique-unit)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-frontier-guards == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-frontier-guards c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			(up-jump-rule 1)
@@ -2035,11 +2100,11 @@
 					(or
 						(goal g-support-unit slinger)
 						(goal g-support-unit my-unique-unit)))
-				(up-research-status c: my-unique-research == research-available)
+				(up-research-status c: ri-frontier-guards == research-available)
 				(building-type-count castle > 0)
 				=>
 				(up-setup-cost-data 1 g-food-cost)
-				(up-add-research-cost c: my-unique-research c: 1)
+				(up-add-research-cost c: ri-frontier-guards c: 1)
 				(up-modify-goal g-max-food-needed g:max g-food-cost)
 				(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 				)
@@ -2051,10 +2116,10 @@
 				(or
 					(goal g-primary-unit slinger)
 					(goal g-primary-unit my-unique-unit)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-frontier-guards == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-frontier-guards)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			(up-jump-rule 1)
 			)
@@ -2065,10 +2130,10 @@
 					(or
 						(goal g-support-unit slinger)
 						(goal g-support-unit my-unique-unit)))
-				(up-research-status c: my-unique-research == research-available)
+				(up-research-status c: ri-frontier-guards == research-available)
 				(building-type-count castle > 0)
 				=>
-				(up-store-tech-name c: my-unique-research)
+				(up-store-tech-name c: ri-frontier-guards)
 				(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 				)
 
@@ -2086,11 +2151,11 @@
 				(and
 					(goal g-support-unit hand-cannoneer)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-shatagni == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-shatagni c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -2102,10 +2167,10 @@
 				(and
 					(goal g-support-unit hand-cannoneer)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-shatagni == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-shatagni)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -2128,11 +2193,11 @@
 				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 				(up-research-status c: ri-chain-mail >= research-pending)
 				(up-research-status c: ri-iron-casting >= research-pending)
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-pavise == research-available)
 				(building-type-count castle > 0)
 				=>
 				(up-setup-cost-data 1 g-food-cost)
-				(up-add-research-cost c: my-second-unique-research c: 1)
+				(up-add-research-cost c: ri-pavise c: 1)
 				(up-modify-goal g-max-food-needed g:max g-food-cost)
 				(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 				)
@@ -2147,10 +2212,10 @@
 				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 				(up-research-status c: ri-chain-mail >= research-pending)
 				(up-research-status c: ri-iron-casting >= research-pending)
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-pavise == research-available)
 				(building-type-count castle > 0)
 				=>
-				(up-store-tech-name c: my-second-unique-research)
+				(up-store-tech-name c: ri-pavise)
 				(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 				)
 
@@ -2163,11 +2228,11 @@
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 			(up-research-status c: ri-leather-archer-armor >= research-pending)
 			(up-research-status c: ri-bodkin-arrow >= research-pending)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-pavise == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-pavise c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			(up-jump-rule 1)
@@ -2180,11 +2245,11 @@
 				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 				(up-research-status c: ri-leather-archer-armor >= research-pending)
 				(up-research-status c: ri-bodkin-arrow >= research-pending)
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-pavise == research-available)
 				(building-type-count castle > 0)
 				=>
 				(up-setup-cost-data 1 g-food-cost)
-				(up-add-research-cost c: my-second-unique-research c: 1)
+				(up-add-research-cost c: ri-pavise c: 1)
 				(up-modify-goal g-max-food-needed g:max g-food-cost)
 				(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 				)
@@ -2197,10 +2262,10 @@
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 			(up-research-status c: ri-leather-archer-armor >= research-pending)
 			(up-research-status c: ri-bodkin-arrow >= research-pending)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-pavise == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-pavise)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			(up-jump-rule 1)
 			)
@@ -2213,10 +2278,10 @@
 				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 				(up-research-status c: ri-leather-archer-armor >= research-pending)
 				(up-research-status c: ri-bodkin-arrow >= research-pending)
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-pavise == research-available)
 				(building-type-count castle > 0)
 				=>
-				(up-store-tech-name c: my-second-unique-research)
+				(up-store-tech-name c: ri-pavise)
 				(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 				)
 
@@ -2229,11 +2294,11 @@
 				(up-compare-goal g-desired-num-trade-cart > 0)
 				(up-compare-goal g-desired-num-trade-cog > 0))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-silk-road == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-silk-road c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -2244,10 +2309,10 @@
 				(up-compare-goal g-desired-num-trade-cart > 0)
 				(up-compare-goal g-desired-num-trade-cog > 0))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-silk-road == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-silk-road)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -2262,11 +2327,11 @@
 			(defrule
 			(up-compare-goal g-desired-num-tower >= 4)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-yasama == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-yasama c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			)
@@ -2275,10 +2340,10 @@
 			(taunt-detected TAUNT-PLAYER 246)
 			(up-compare-goal g-desired-num-tower >= 4)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-yasama == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-yasama)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -2288,11 +2353,11 @@
 
 			(defrule
 			(up-compare-goal g-desired-num-trebuchet >= 3)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-kataparuto == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-kataparuto c: 1)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -2300,10 +2365,10 @@
 			(defrule
 			(taunt-detected TAUNT-PLAYER 246)
 			(up-compare-goal g-desired-num-trebuchet >= 3)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-kataparuto == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-kataparuto)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -2322,11 +2387,11 @@
 					(goal g-support-unit battle-elephant)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-tusk-swords == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-tusk-swords c: 1)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -2339,10 +2404,10 @@
 					(goal g-support-unit battle-elephant)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-tusk-swords == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-tusk-swords)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -2358,11 +2423,11 @@
 						(goal g-support-unit my-unique-unit)
 						(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS))
 					(up-compare-goal g-desired-num-scorpion > 5)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-double-crossbow == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-double-crossbow c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -2376,10 +2441,10 @@
 						(goal g-support-unit my-unique-unit)
 						(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS))
 					(up-compare-goal g-desired-num-scorpion > 5)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-double-crossbow == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-double-crossbow)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -2396,11 +2461,11 @@
 				(defrule
 				(up-compare-goal g-desired-num-tower >= 3)
 				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-eupseong == research-available)
 				(building-type-count castle > 0)
 				=>
 				(up-setup-cost-data 1 g-food-cost)
-				(up-add-research-cost c: my-second-unique-research c: 1)
+				(up-add-research-cost c: ri-eupseong c: 1)
 				(up-modify-goal g-max-food-needed g:max g-food-cost)
 				(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 				)
@@ -2409,10 +2474,10 @@
 				(taunt-detected TAUNT-PLAYER 246)
 				(up-compare-goal g-desired-num-tower >= 3)
 				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-eupseong == research-available)
 				(building-type-count castle > 0)
 				=>
-				(up-store-tech-name c: my-second-unique-research)
+				(up-store-tech-name c: ri-eupseong)
 				(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 				)
 
@@ -2424,11 +2489,11 @@
 
 			(defrule
 			(up-compare-goal g-desired-num-mangonel >= 3)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-shinkichon == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-shinkichon c: 1)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -2436,10 +2501,10 @@
 			(defrule
 			(taunt-detected TAUNT-PLAYER 246)
 			(up-compare-goal g-desired-num-mangonel >= 3)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-shinkichon == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-shinkichon)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -2455,11 +2520,11 @@
 			(or
 				(goal g-primary-unit spearman)
 				(goal g-primary-unit skirmisher))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-tower-shields == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-tower-shields c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			(up-jump-rule 1)
@@ -2469,11 +2534,11 @@
 				(or
 					(goal g-support-unit spearman)
 					(goal g-support-unit skirmisher))
-				(up-research-status c: my-unique-research == research-available)
+				(up-research-status c: ri-tower-shields == research-available)
 				(building-type-count castle > 0)
 				=>
 				(up-setup-cost-data 1 g-food-cost)
-				(up-add-research-cost c: my-unique-research c: 1)
+				(up-add-research-cost c: ri-tower-shields c: 1)
 				(up-modify-goal g-max-food-needed g:max g-food-cost)
 				(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 				)
@@ -2483,10 +2548,10 @@
 			(or
 				(goal g-primary-unit spearman)
 				(goal g-primary-unit skirmisher))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-tower-shields == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-tower-shields)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			(up-jump-rule 1)
 			)
@@ -2496,10 +2561,10 @@
 				(or
 					(goal g-support-unit spearman)
 					(goal g-support-unit skirmisher))
-				(up-research-status c: my-unique-research == research-available)
+				(up-research-status c: ri-tower-shields == research-available)
 				(building-type-count castle > 0)
 				=>
-				(up-store-tech-name c: my-unique-research)
+				(up-store-tech-name c: ri-tower-shields)
 				(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 				)
 
@@ -2515,11 +2580,11 @@
 			(goal g-primary-unit my-unique-unit)
 			(up-compare-goal g-desired-num-unique-unit >= 15)
 			(up-compare-goal g-unique-unit-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-corvinian-army == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-corvinian-army c: 1)
 			(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
 			(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
@@ -2532,11 +2597,11 @@
 				(up-compare-goal g-desired-num-unique-unit >= 15)
 				(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
 				(up-compare-goal g-unique-unit-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-corvinian-army == research-available)
 				(building-type-count castle > 0)
 				=>
 				(up-setup-cost-data 1 g-food-cost)
-				(up-add-research-cost c: my-second-unique-research c: 1)
+				(up-add-research-cost c: ri-corvinian-army c: 1)
 				(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
 				(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
 				(up-modify-goal g-max-food-needed g:max g-food-cost)
@@ -2551,11 +2616,11 @@
 						(goal g-support-unit my-unique-unit)
 						(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 				(up-compare-goal g-desired-num-unique-unit > 10)
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-corvinian-army == research-available)
 				(building-type-count castle > 0)
 				=>
 				(up-setup-cost-data 1 g-food-cost)
-				(up-add-research-cost c: my-second-unique-research c: 1)
+				(up-add-research-cost c: ri-corvinian-army c: 1)
 				(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
 				(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
 				(up-modify-goal g-max-food-needed g:max g-food-cost)
@@ -2567,10 +2632,10 @@
 			(goal g-primary-unit my-unique-unit)
 			(up-compare-goal g-desired-num-unique-unit >= 15)
 			(up-compare-goal g-unique-unit-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-corvinian-army == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-corvinian-army)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			(up-jump-rule 2)
 			)
@@ -2581,10 +2646,10 @@
 				(up-compare-goal g-desired-num-unique-unit >= 15)
 				(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
 				(up-compare-goal g-unique-unit-tech-progress >= REQUIRED-IMPERIAL-COMPLETE)
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-corvinian-army == research-available)
 				(building-type-count castle > 0)
 				=>
-				(up-store-tech-name c: my-second-unique-research)
+				(up-store-tech-name c: ri-corvinian-army)
 				(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 				(up-jump-rule 1)
 				)
@@ -2597,10 +2662,10 @@
 						(goal g-support-unit my-unique-unit)
 						(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 				(up-compare-goal g-desired-num-unique-unit > 10)
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-corvinian-army == research-available)
 				(building-type-count castle > 0)
 				=>
-				(up-store-tech-name c: my-second-unique-research)
+				(up-store-tech-name c: ri-corvinian-army)
 				(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 				)
 
@@ -2611,11 +2676,11 @@
 			(defrule
 			(goal g-primary-unit cavalry-archer)
 			(up-compare-goal g-cavalry-archer-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-recurve-bow == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-recurve-bow c: 1)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -2624,11 +2689,11 @@
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
 			(up-compare-goal g-cavalry-archer-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-recurve-bow == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-recurve-bow c: 1)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -2637,10 +2702,10 @@
 			(taunt-detected TAUNT-PLAYER 246)
 			(goal g-primary-unit cavalry-archer)
 			(up-compare-goal g-cavalry-archer-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-recurve-bow == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-recurve-bow)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 			(defrule
@@ -2649,10 +2714,10 @@
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
 			(up-compare-goal g-cavalry-archer-tech-progress >= PRIORITY-IMPERIAL-COMPLETE)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-recurve-bow == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-recurve-bow)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -2667,11 +2732,11 @@
 			(defrule
 			(up-compare-goal g-desired-num-dock >= 4)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-thalassocracy == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-thalassocracy c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -2680,10 +2745,10 @@
 			(taunt-detected TAUNT-PLAYER 246)
 			(up-compare-goal g-desired-num-dock >= 4)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-thalassocracy == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-thalassocracy)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -2697,11 +2762,11 @@
 				(and
 					(goal g-support-unit militiaman)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-forced-levy == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-forced-levy c: 1)
 			(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
 			(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
@@ -2711,11 +2776,11 @@
 				(defrule
 				(up-compare-goal g-desired-num-militia > 10)
 				(goal g-age-status LATE-IMPERIAL)
-				(up-research-status c: my-unique-research == research-available)
+				(up-research-status c: ri-forced-levy == research-available)
 				(building-type-count castle > 0)
 				=>
 				(up-setup-cost-data 1 g-food-cost)
-				(up-add-research-cost c: my-unique-research c: 1)
+				(up-add-research-cost c: ri-forced-levy c: 1)
 				(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
 				(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
 				(up-modify-goal g-max-food-needed g:max g-food-cost)
@@ -2729,10 +2794,10 @@
 				(and
 					(goal g-support-unit militiaman)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-forced-levy == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-forced-levy)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			(up-jump-rule 1)
 			)
@@ -2740,10 +2805,10 @@
 				(taunt-detected TAUNT-PLAYER 246)
 				(up-compare-goal g-desired-num-militia > 10)
 				(goal g-age-status LATE-IMPERIAL)
-				(up-research-status c: my-unique-research == research-available)
+				(up-research-status c: ri-forced-levy == research-available)
 				(building-type-count castle > 0)
 				=>
-				(up-store-tech-name c: my-unique-research)
+				(up-store-tech-name c: ri-forced-levy)
 				(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 				)
 
@@ -2761,11 +2826,11 @@
 				(and
 					(goal g-support-unit-class cavalry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-farimba == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-farimba c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -2777,10 +2842,10 @@
 				(and
 					(goal g-support-unit-class cavalry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-farimba == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-farimba)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -2843,11 +2908,11 @@
 					(up-compare-goal g-skirmisher-line >= 12)
 					(up-compare-goal g-skirmisher-line g:>= g-desired-num-skirmisher))
 				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-hulche-javelineers == research-available)
 				(building-type-count castle > 0)
 				=>
 				(up-setup-cost-data 1 g-food-cost)
-				(up-add-research-cost c: my-second-unique-research c: 1)
+				(up-add-research-cost c: ri-hulche-javelineers c: 1)
 				(up-modify-goal g-max-food-needed g:max g-food-cost)
 				(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 				)
@@ -2863,10 +2928,10 @@
 					(up-compare-goal g-skirmisher-line >= 12)
 					(up-compare-goal g-skirmisher-line g:>= g-desired-num-skirmisher))
 				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-hulche-javelineers == research-available)
 				(building-type-count castle > 0)
 				=>
-				(up-store-tech-name c: my-second-unique-research)
+				(up-store-tech-name c: ri-hulche-javelineers)
 				(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 				)
 
@@ -2883,11 +2948,11 @@
 					(goal g-support-unit eagle-warrior)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-research-status c: ri-elite-eagle-warrior >= research-pending)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-el-dorado == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-el-dorado c: 1)
 			(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
 			(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
@@ -2902,10 +2967,10 @@
 					(goal g-support-unit eagle-warrior)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-research-status c: ri-elite-eagle-warrior >= research-pending)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-el-dorado == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-el-dorado)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -2923,11 +2988,11 @@
 				(or
 					(up-compare-goal g-desired-num-mangonel >= 3)
 					(up-compare-goal g-desired-num-scorpion >= 5)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-drill == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-drill c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -2939,10 +3004,10 @@
 				(or
 					(up-compare-goal g-desired-num-mangonel >= 3)
 					(up-compare-goal g-desired-num-scorpion >= 5)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-drill == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-drill)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -2963,11 +3028,11 @@
 						(goal g-support-unit archer)
 						(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-kamandaran == research-available)
 				(building-type-count castle > 0)
 				=>
 				(up-setup-cost-data 1 g-food-cost)
-				(up-add-research-cost c: my-second-unique-research c: 1)
+				(up-add-research-cost c: ri-kamandaran c: 1)
 				(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
 				(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
 				(up-modify-goal g-max-food-needed g:max g-food-cost)
@@ -2977,11 +3042,11 @@
 					(defrule
 					(up-compare-goal g-desired-num-archer > 10)
 					(goal g-age-status LATE-IMPERIAL)
-					(up-research-status c: my-second-unique-research == research-available)
+					(up-research-status c: ri-kamandaran == research-available)
 					(building-type-count castle > 0)
 					=>
 					(up-setup-cost-data 1 g-food-cost)
-					(up-add-research-cost c: my-second-unique-research c: 1)
+					(up-add-research-cost c: ri-kamandaran c: 1)
 					(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
 					(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
 					(up-modify-goal g-max-food-needed g:max g-food-cost)
@@ -2996,20 +3061,20 @@
 						(goal g-support-unit archer)
 						(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-kamandaran == research-available)
 				(building-type-count castle > 0)
 				=>
-				(up-store-tech-name c: my-second-unique-research)
+				(up-store-tech-name c: ri-kamandaran)
 				(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 				(up-jump-rule 1)
 				)
 					(defrule
 					(up-compare-goal g-desired-num-archer > 10)
 					(goal g-age-status LATE-IMPERIAL)
-					(up-research-status c: my-second-unique-research == research-available)
+					(up-research-status c: ri-kamandaran == research-available)
 					(building-type-count castle > 0)
 					=>
-					(up-store-tech-name c: my-second-unique-research)
+					(up-store-tech-name c: ri-kamandaran)
 					(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 					)
 
@@ -3025,11 +3090,11 @@
 				(and
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-mahouts == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-mahouts c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -3041,10 +3106,10 @@
 				(and
 					(goal g-support-unit my-unique-unit)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-mahouts == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-mahouts)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -3062,11 +3127,11 @@
 				(and
 					(goal g-support-unit knight)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-szlachta-privileges == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-szlachta-privileges c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -3078,10 +3143,10 @@
 				(and
 					(goal g-support-unit knight)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-szlachta-privileges == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-szlachta-privileges)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -3095,11 +3160,11 @@
 				(and
 					(goal g-support-unit scout-cavalry)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-lechitic-legacy == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-lechitic-legacy c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -3111,10 +3176,10 @@
 				(and
 					(goal g-support-unit scout-cavalry)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-lechitic-legacy == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-lechitic-legacy)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -3132,11 +3197,11 @@
 				(or
 					(goal g-primary-unit my-unique-unit)
 					(up-compare-goal g-desired-num-bombard-cannon > 2)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-arquebus == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-arquebus c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			(up-jump-rule 1)
@@ -3146,11 +3211,11 @@
 				(or
 					(goal g-support-unit hand-cannoneer)
 					(goal g-support-unit my-unique-unit))
-				(up-research-status c: my-unique-research == research-available)
+				(up-research-status c: ri-arquebus == research-available)
 				(building-type-count castle > 0)
 				=>
 				(up-setup-cost-data 1 g-food-cost)
-				(up-add-research-cost c: my-unique-research c: 1)
+				(up-add-research-cost c: ri-arquebus c: 1)
 				(up-modify-goal g-max-food-needed g:max g-food-cost)
 				(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 				)
@@ -3162,10 +3227,10 @@
 				(or
 					(goal g-primary-unit my-unique-unit)
 					(up-compare-goal g-desired-num-bombard-cannon > 2)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-arquebus == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-arquebus)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			(up-jump-rule 1)
 			)
@@ -3175,10 +3240,10 @@
 				(or
 					(goal g-support-unit hand-cannoneer)
 					(goal g-support-unit my-unique-unit))
-				(up-research-status c: my-unique-research == research-available)
+				(up-research-status c: ri-arquebus == research-available)
 				(building-type-count castle > 0)
 				=>
-				(up-store-tech-name c: my-unique-research)
+				(up-store-tech-name c: ri-arquebus)
 				(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 				)
 
@@ -3194,11 +3259,11 @@
 			(or
 				(goal g-primary-unit camel)
 				(goal g-primary-unit my-unique-unit))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-zealotry == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-zealotry c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -3207,11 +3272,11 @@
 			(or
 				(goal g-support-unit camel)
 				(goal g-support-unit my-unique-unit))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-zealotry == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-zealotry c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -3221,10 +3286,10 @@
 			(or
 				(goal g-primary-unit camel)
 				(goal g-primary-unit my-unique-unit))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-zealotry == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-zealotry)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 			(defrule
@@ -3233,10 +3298,10 @@
 			(or
 				(goal g-support-unit camel)
 				(goal g-support-unit my-unique-unit))
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-zealotry == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-zealotry)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -3254,11 +3319,11 @@
 				(and
 					(goal g-support-unit knight)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-hauberk == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-hauberk c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -3270,10 +3335,10 @@
 				(and
 					(goal g-support-unit knight)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-hauberk == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-hauberk)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -3291,11 +3356,11 @@
 				(and
 					(goal g-support-unit-class infantry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-druzhina == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-druzhina c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -3307,10 +3372,10 @@
 				(and
 					(goal g-support-unit-class infantry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-druzhina == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-druzhina)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -3332,11 +3397,11 @@
 					(goal g-primary-unit cavalry-archer)
 					(goal g-primary-unit steppe-lancer)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-silk-armor == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-silk-armor c: 1)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -3348,11 +3413,11 @@
 					(goal g-support-unit cavalry-archer)
 					(goal g-support-unit steppe-lancer)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-silk-armor == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-silk-armor c: 1)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -3365,10 +3430,10 @@
 					(goal g-primary-unit cavalry-archer)
 					(goal g-primary-unit steppe-lancer)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-silk-armor == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-silk-armor)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 			(defrule
@@ -3380,10 +3445,10 @@
 					(goal g-support-unit cavalry-archer)
 					(goal g-support-unit steppe-lancer)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-silk-armor == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-silk-armor)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -3393,11 +3458,11 @@
 
 			(defrule
 			(up-compare-goal g-desired-num-trebuchet >= 4)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-timurid-siegecraft == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-timurid-siegecraft c: 1)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -3405,10 +3470,10 @@
 			(defrule
 			(taunt-detected TAUNT-PLAYER 246)
 			(up-compare-goal g-desired-num-trebuchet >= 4)
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-timurid-siegecraft == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-timurid-siegecraft)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -3431,11 +3496,11 @@
 							(up-compare-goal g-desired-num-bombard-cannon >= 3)
 							(up-compare-goal g-desired-num-trebuchet >= 3)))))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-ironclad == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-ironclad c: 1)
 			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -3452,10 +3517,10 @@
 							(up-compare-goal g-desired-num-bombard-cannon >= 3)
 							(up-compare-goal g-desired-num-trebuchet >= 3)))))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-ironclad == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-ironclad)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -3469,11 +3534,11 @@
 				(and
 					(up-compare-goal g-desired-num-castle > 0)
 					(goal g-game-focus DEFENSIVE)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-crenellations == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-crenellations c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-stone-needed g:max g-stone-cost)
 			)
@@ -3485,10 +3550,10 @@
 				(and
 					(up-compare-goal g-desired-num-castle > 0)
 					(goal g-game-focus DEFENSIVE)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-crenellations == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-crenellations)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -3505,11 +3570,11 @@
 				(goal g-primary-unit cavalry-archer)
 				(goal g-primary-unit genitour))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-sipahi == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-sipahi c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			(up-jump-rule 1)
@@ -3520,11 +3585,11 @@
 					(goal g-support-unit cavalry-archer)
 					(goal g-support-unit genitour))
 				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-sipahi == research-available)
 				(building-type-count castle > 0)
 				=>
 				(up-setup-cost-data 1 g-food-cost)
-				(up-add-research-cost c: my-second-unique-research c: 1)
+				(up-add-research-cost c: ri-sipahi c: 1)
 				(up-modify-goal g-max-food-needed g:max g-food-cost)
 				(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 				)
@@ -3535,10 +3600,10 @@
 				(goal g-primary-unit cavalry-archer)
 				(goal g-primary-unit genitour))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-sipahi == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-sipahi)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			(up-jump-rule 1)
 			)
@@ -3549,10 +3614,10 @@
 					(goal g-support-unit cavalry-archer)
 					(goal g-support-unit genitour))
 				(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-				(up-research-status c: my-second-unique-research == research-available)
+				(up-research-status c: ri-sipahi == research-available)
 				(building-type-count castle > 0)
 				=>
-				(up-store-tech-name c: my-second-unique-research)
+				(up-store-tech-name c: ri-sipahi)
 				(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 				)
 
@@ -3566,11 +3631,11 @@
 				(or
 					(up-compare-goal g-desired-num-bombard-cannon >= 2)
 					(up-compare-goal g-desired-num-cannon-galleon >= 2)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-artillery == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-artillery c: 1)
 			(up-modify-goal g-max-stone-needed g:max g-stone-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -3582,10 +3647,10 @@
 				(or
 					(up-compare-goal g-desired-num-bombard-cannon >= 2)
 					(up-compare-goal g-desired-num-cannon-galleon >= 2)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-artillery == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-artillery)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -3604,11 +3669,11 @@
 					(goal g-support-unit battle-elephant)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-chatras == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-chatras c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -3621,10 +3686,10 @@
 					(goal g-support-unit battle-elephant)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-chatras == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-chatras)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
@@ -3643,11 +3708,11 @@
 					(goal g-support-unit-class infantry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-chieftains == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-second-unique-research c: 1)
+			(up-add-research-cost c: ri-chieftains c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -3660,28 +3725,28 @@
 					(goal g-support-unit-class infantry-class)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(up-research-status c: my-second-unique-research == research-available)
+			(up-research-status c: ri-chieftains == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-second-unique-research)
+			(up-store-tech-name c: ri-chieftains)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 
-		;-------------------
-		;	Berserkergang
-		;-------------------
+		;----------------
+		;	Bogsveigar
+		;----------------
 
 			(defrule
 			(or
-				(goal g-primary-unit my-unique-unit)
+				(goal g-primary-unit archer)
 				(and
-					(goal g-support-unit my-unique-unit)
+					(goal g-support-unit archer)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-bogsveigar == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: my-unique-research c: 1)
+			(up-add-research-cost c: ri-bogsveigar c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			)
@@ -3689,14 +3754,14 @@
 			(defrule
 			(taunt-detected TAUNT-PLAYER 246)
 			(or
-				(goal g-primary-unit my-unique-unit)
+				(goal g-primary-unit archer)
 				(and
-					(goal g-support-unit my-unique-unit)
+					(goal g-support-unit archer)
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-			(up-research-status c: my-unique-research == research-available)
+			(up-research-status c: ri-bogsveigar == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: my-unique-research)
+			(up-store-tech-name c: ri-bogsveigar)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			)
 

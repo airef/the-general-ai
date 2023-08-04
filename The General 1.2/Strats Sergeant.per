@@ -70,16 +70,29 @@
 		(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
 		(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
 		)
-		(defrule
-		(building-type-count-total castle >= 2)
-		=>
-		(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
-		)
-		(defrule
-		(building-type-count-total castle < 2)
-		=>
-		(set-goal g-mid-imperial-strategy MIDI-CAV-ARCHERS)
-		)
+
+		#load-if-defined UP-1-PLAYER-TEAM
+
+			(defrule
+			(building-type-count-total castle >= 2)
+			=>
+			(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
+			)
+			(defrule
+			(building-type-count-total castle < 2)
+			=>
+			(set-goal g-mid-imperial-strategy MIDI-CAV-ARCHERS)
+			)
+
+		#else
+	
+			(defrule
+			(true)
+			=>
+			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
+			)
+
+		#end-if
 
 		(defconst LATE-CHAMPIONS-PRIORITY 1000)
 		(defconst LATE-HALBS-PRIORITY 500)
@@ -276,7 +289,18 @@
 		(set-goal g-early-castle-strategy FC-KRUSH)
 		(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
 		(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-		(set-goal g-mid-imperial-strategy MIDI-SKIRMS)
+		; (set-goal g-mid-imperial-strategy MIDI-SKIRMS)
+		)
+
+		(defrule
+		(building-type-count-total castle >= 2)
+		=>
+		(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
+		)
+		(defrule
+		(building-type-count-total castle < 2)
+		=>
+		(set-goal g-mid-imperial-strategy MIDI-PALADINS)
 		)
 
 		(defconst LATE-CHAMPIONS-PRIORITY 1000)
@@ -403,12 +427,12 @@
 		(defrule
 		(true)
 		=>
-		(set-goal g-dark-strategy FC-KRUSH)
-		(set-goal g-early-feudal-strategy FC-KRUSH)
-		(set-goal g-mid-feudal-strategy FC-KRUSH)
-		(set-goal g-early-castle-strategy FC-KRUSH)
-		(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
-		(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
+		(set-goal g-dark-strategy FC-STRONGBOW)
+		(set-goal g-early-feudal-strategy FC-STRONGBOW)
+		(set-goal g-mid-feudal-strategy FC-STRONGBOW)
+		(set-goal g-early-castle-strategy FC-STRONGBOW)
+		(set-goal g-mid-castle-strategy MIDC-XBOWS)
+		(set-goal g-early-imperial-strategy EARLYI-ARBINGER)
 		(set-goal g-mid-imperial-strategy MIDI-ARBS)
 		)
 
@@ -523,8 +547,25 @@
 		(set-goal g-early-castle-strategy FC-KRUSH)
 		(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
 		(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-		(set-goal g-mid-imperial-strategy MIDI-CAV-ARCHERS)
 		)
+
+		#load-if-defined UP-1-PLAYER-TEAM
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-mid-imperial-strategy MIDI-CAV-ARCHERS)
+			)
+
+		#else
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
+			)
+
+		#end-if
 
 		(defconst LATE-CHAMPIONS-PRIORITY 500)
 		(defconst LATE-HALBS-PRIORITY 700)
@@ -569,8 +610,25 @@
 		(set-goal g-early-castle-strategy FC-CRUSH)
 		(set-goal g-mid-castle-strategy MIDC-CAMELS)
 		(set-goal g-early-imperial-strategy EARLYI-CAMELSTORM)
-		(set-goal g-mid-imperial-strategy MIDI-CANNONEERS)
 		)
+
+		#load-if-defined UP-1-PLAYER-TEAM
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-mid-imperial-strategy MIDI-CANNONEERS)
+			)
+
+		#else
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-mid-imperial-strategy MIDI-CAMELS)
+			)
+
+		#end-if
 
 		(defconst LATE-CHAMPIONS-PRIORITY 700)
 		(defconst LATE-HALBS-PRIORITY 600)
@@ -664,13 +722,13 @@
 		(defrule
 		(true)
 		=>
-		(set-goal g-dark-strategy FC-KRUSH)
-		(set-goal g-early-feudal-strategy FC-KRUSH)
-		(set-goal g-mid-feudal-strategy FC-KRUSH)
-		(set-goal g-early-castle-strategy FC-KRUSH)
-		(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
-		(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-		(set-goal g-mid-imperial-strategy MIDI-ARBS)
+		(set-goal g-dark-strategy FC-STRONGBOW)
+		(set-goal g-early-feudal-strategy FC-STRONGBOW)
+		(set-goal g-mid-feudal-strategy FC-STRONGBOW)
+		(set-goal g-early-castle-strategy FC-STRONGBOW)
+		(set-goal g-mid-castle-strategy MIDC-XBOWS)
+		(set-goal g-early-imperial-strategy EARLYI-ARBINGER)
+		(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
 		)
 
 		(defconst LATE-CHAMPIONS-PRIORITY 700)
@@ -727,8 +785,25 @@
 		(set-goal g-early-castle-strategy FC-KRUSH)
 		(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
 		(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
-		(set-goal g-mid-imperial-strategy MIDI-CAV-ARCHERS)
 		)
+
+		#load-if-defined UP-1-PLAYER-TEAM
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-mid-imperial-strategy MIDI-CAV-ARCHERS)
+			)
+
+		#else
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-mid-imperial-strategy MIDI-PALADINS)
+			)
+
+		#end-if
 
 		(defconst LATE-CHAMPIONS-PRIORITY 1000)
 		(defconst LATE-HALBS-PRIORITY 600)
@@ -999,7 +1074,7 @@
 		=>
 		(set-goal g-initial-strategy FC-KRUSH)
 		(up-get-fact dropsite-min-distance stone g-temp)
-		(up-chat-data-to-all "Stone drop %d" g: g-temp)
+		; (up-chat-data-to-all "Stone drop %d" g: g-temp)
 		(disable-self)
 		)
 	
@@ -1152,11 +1227,11 @@
 		(defrule
 		(true)
 		=>
-		(set-goal g-dark-strategy FC-KRUSH)
-		(set-goal g-early-feudal-strategy FC-KRUSH)
-		(set-goal g-mid-feudal-strategy FC-KRUSH)
-		(set-goal g-early-castle-strategy FC-KRUSH)
-		(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
+		(set-goal g-dark-strategy FC-STRONGBOW)
+		(set-goal g-early-feudal-strategy FC-STRONGBOW)
+		(set-goal g-mid-feudal-strategy FC-STRONGBOW)
+		(set-goal g-early-castle-strategy FC-STRONGBOW)
+		(set-goal g-mid-castle-strategy MIDC-XBOWS)
 		)
 		(defrule
 		(building-type-count-total castle >= 2)

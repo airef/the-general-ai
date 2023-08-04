@@ -7215,7 +7215,9 @@
             (up-modify-goal g-temp5 c:* 2)
             (up-get-fact current-age 0 g-temp6)
             (up-modify-goal g-temp5 g:- g-temp6)
-            (up-compare-goal g-local-total g:> g-temp5)
+            (or
+                (up-compare-goal g-local-total g:> g-temp5)
+                (up-compare-goal g-local-total > 7))
             (up-compare-goal g-loop-counter <= 39)
             =>
             (up-remove-objects search-remote object-data-index g:== g-loop-counter)
@@ -7232,7 +7234,9 @@
             (up-get-object-data object-data-garrison-count g-temp5)
             (up-modify-goal g-temp5 c:* 2)
             (up-modify-goal g-temp5 c:- 4)
-            (up-compare-goal g-local-total g:> g-temp5)
+            (or
+                (up-compare-goal g-local-total g:> g-temp5)
+                (up-compare-goal g-local-total > 5))
             (up-compare-goal g-loop-counter <= 39)
             =>
             (up-remove-objects search-remote object-data-index g:== g-loop-counter)
@@ -7288,7 +7292,7 @@
             ; (up-modify-goal g-temp5 c:/ 2)
             ; (up-modify-goal g-temp5 c:+ 8)
             ; (up-compare-goal g-local-total g:> g-temp5)
-            (up-compare-goal g-local-total > 12)
+            (up-compare-goal g-local-total > 7) ;was 12
             (up-compare-goal g-loop-counter <= 39)
             =>
             (up-remove-objects search-remote object-data-index g:== g-loop-counter)
@@ -9471,9 +9475,13 @@
                     (up-compare-flag g-current-group-type-flag != MONK-GROUP)
                     (or
                         (up-group-size g: g-current-group >= 10)
-                        (and
-                            (up-compare-flag g-current-group-type-flag == RANGED-SIEGE-GROUP)
-                            (up-group-size g: g-current-group >= 2)))
+                        (or
+                            (and
+                                (up-group-size g: g-current-group >= 5)
+                                (up-compare-flag g-current-group-type-flag == MELEE-SOLDIER-GROUP))
+                            (and
+                                (up-compare-flag g-current-group-type-flag == RANGED-SIEGE-GROUP)
+                                (up-group-size g: g-current-group >= 2))))
                     =>
                     (up-remove-objects search-remote object-data-index g:== g-loop-counter)
                     (up-get-search-state g-local-total)
@@ -9487,10 +9495,14 @@
                     (up-object-data object-data-type == town-center)
                     (up-compare-flag g-current-group-type-flag != MONK-GROUP)
                     (or
-                        (up-group-size g: g-current-group >= 16)
-                        (and
-                            (up-compare-flag g-current-group-type-flag == RANGED-SIEGE-GROUP)
-                            (up-group-size g: g-current-group >= 4)))
+                        (up-group-size g: g-current-group >= 12)
+                        (or
+                            (and
+                                (up-group-size g: g-current-group >= 7)
+                                (up-compare-flag g-current-group-type-flag == MELEE-SOLDIER-GROUP))
+                            (and
+                                (up-compare-flag g-current-group-type-flag == RANGED-SIEGE-GROUP)
+                                (up-group-size g: g-current-group >= 4))))
                     =>
                     (up-remove-objects search-remote object-data-index g:== g-loop-counter)
                     (up-get-search-state g-local-total)
