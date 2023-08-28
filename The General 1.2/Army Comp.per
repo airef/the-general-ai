@@ -794,7 +794,7 @@
         (defrule
         (goal g-current-unit-type SUPPORT-HAND-CANNONEER)
         =>
-        (set-goal g-current-unit-score 1100)
+        (set-goal g-current-unit-score 900)
         )
         (defrule
         (goal g-current-unit-type SUPPORT-SCOUT-CAVALRY)
@@ -1884,6 +1884,28 @@
             (defrule
             (goal g-current-unit-type SUPPORT-UNIQUE-UNIT)
             (goal g-primary-unit spearman)
+            =>
+            (up-modify-goal g-current-unit-score c:+ 300)
+            )
+
+        #end-if
+
+		#load-if-defined ROMANS-CIV
+        
+            (defrule
+            (goal g-current-unit-type SUPPORT-UNIQUE-UNIT)
+            =>
+            (up-modify-goal g-current-unit-score c:+ 1000)
+            )
+            (defrule
+            (goal g-current-unit-type SUPPORT-UNIQUE-UNIT)
+            (current-age == imperial-age)
+            =>
+            (up-modify-goal g-current-unit-score c:+ 200)
+            )
+            (defrule
+            (goal g-current-unit-type SUPPORT-UNIQUE-UNIT)
+            (goal g-primary-unit militiaman)
             =>
             (up-modify-goal g-current-unit-score c:+ 300)
             )
@@ -3008,6 +3030,15 @@
         (up-log-data 0 CHAT-COUNTER-AMOUNT c: 100)
         )
         (defrule
+        (goal g-current-unit-type SUPPORT-MILITIA)
+        (research-completed ri-legionary)
+        =>
+        (up-modify-goal g-current-unit-score c:+ 200)
+        ; (up-log-data 0 CHAT-ADJUST-FOR-TECHS-COMPLETE c: 100)
+        (up-log-data 0 CHAT-COUNTER-TYPE c: 9)
+        (up-log-data 0 CHAT-COUNTER-AMOUNT c: 200)
+        )
+        (defrule
         (goal g-current-unit-type SUPPORT-SPEARMAN)
         (research-completed ri-pikeman)
         =>
@@ -3407,46 +3438,48 @@
     ;   Tech Not Available to Civ (10)
     ;------------------------------------
 
-        (defrule
-        (goal g-current-unit-type SUPPORT-MILITIA)
-        (up-compare-const TWO-HANDED-SWORDSMAN-AVAILABLE == NO)
-        (current-age < imperial-age)
-        =>
-        (up-modify-goal g-current-unit-score c:- 200)
-        ; (up-log-data 0 CHAT-ADJUST-FOR-TECHS-NOT-AVAILABLE c: -200)
-        (up-log-data 0 CHAT-COUNTER-TYPE c: 10)
-        (up-log-data 0 CHAT-COUNTER-AMOUNT c: -200)
-        )
-        (defrule
-        (goal g-current-unit-type SUPPORT-MILITIA)
-        (up-compare-const TWO-HANDED-SWORDSMAN-AVAILABLE == NO)
-        (current-age == imperial-age)
-        =>
-        (up-modify-goal g-current-unit-score c:- 300)
-        ; (up-log-data 0 CHAT-ADJUST-FOR-TECHS-NOT-AVAILABLE c: -300)
-        (up-log-data 0 CHAT-COUNTER-TYPE c: 10)
-        (up-log-data 0 CHAT-COUNTER-AMOUNT c: -300)
-        )
-        (defrule
-        (goal g-current-unit-type SUPPORT-MILITIA)
-        (up-compare-const CHAMPION-AVAILABLE == NO)
-        (current-age < imperial-age)
-        =>
-        (up-modify-goal g-current-unit-score c:- 200)
-        ; (up-log-data 0 CHAT-ADJUST-FOR-TECHS-NOT-AVAILABLE c: -200)
-        (up-log-data 0 CHAT-COUNTER-TYPE c: 10)
-        (up-log-data 0 CHAT-COUNTER-AMOUNT c: -200)
-        )
-        (defrule
-        (goal g-current-unit-type SUPPORT-MILITIA)
-        (up-compare-const CHAMPION-AVAILABLE == NO)
-        (current-age == imperial-age)
-        =>
-        (up-modify-goal g-current-unit-score c:- 300)
-        ; (up-log-data 0 CHAT-ADJUST-FOR-TECHS-NOT-AVAILABLE c: -300)
-        (up-log-data 0 CHAT-COUNTER-TYPE c: 10)
-        (up-log-data 0 CHAT-COUNTER-AMOUNT c: -300)
-        )
+        #load-if-not-defined ROMANS-CIV
+            (defrule
+            (goal g-current-unit-type SUPPORT-MILITIA)
+            (up-compare-const TWO-HANDED-SWORDSMAN-AVAILABLE == NO)
+            (current-age < imperial-age)
+            =>
+            (up-modify-goal g-current-unit-score c:- 200)
+            ; (up-log-data 0 CHAT-ADJUST-FOR-TECHS-NOT-AVAILABLE c: -200)
+            (up-log-data 0 CHAT-COUNTER-TYPE c: 10)
+            (up-log-data 0 CHAT-COUNTER-AMOUNT c: -200)
+            )
+            (defrule
+            (goal g-current-unit-type SUPPORT-MILITIA)
+            (up-compare-const TWO-HANDED-SWORDSMAN-AVAILABLE == NO)
+            (current-age == imperial-age)
+            =>
+            (up-modify-goal g-current-unit-score c:- 300)
+            ; (up-log-data 0 CHAT-ADJUST-FOR-TECHS-NOT-AVAILABLE c: -300)
+            (up-log-data 0 CHAT-COUNTER-TYPE c: 10)
+            (up-log-data 0 CHAT-COUNTER-AMOUNT c: -300)
+            )
+            (defrule
+            (goal g-current-unit-type SUPPORT-MILITIA)
+            (up-compare-const CHAMPION-AVAILABLE == NO)
+            (current-age < imperial-age)
+            =>
+            (up-modify-goal g-current-unit-score c:- 200)
+            ; (up-log-data 0 CHAT-ADJUST-FOR-TECHS-NOT-AVAILABLE c: -200)
+            (up-log-data 0 CHAT-COUNTER-TYPE c: 10)
+            (up-log-data 0 CHAT-COUNTER-AMOUNT c: -200)
+            )
+            (defrule
+            (goal g-current-unit-type SUPPORT-MILITIA)
+            (up-compare-const CHAMPION-AVAILABLE == NO)
+            (current-age == imperial-age)
+            =>
+            (up-modify-goal g-current-unit-score c:- 300)
+            ; (up-log-data 0 CHAT-ADJUST-FOR-TECHS-NOT-AVAILABLE c: -300)
+            (up-log-data 0 CHAT-COUNTER-TYPE c: 10)
+            (up-log-data 0 CHAT-COUNTER-AMOUNT c: -300)
+            )
+        #end-if
         (defrule
         (goal g-current-unit-type SUPPORT-SPEARMAN)
         (up-compare-const PIKEMAN-AVAILABLE == NO)
@@ -4042,7 +4075,9 @@
             (players-civ target-player aztec)
             (or
                 (players-civ target-player incan)
-                (players-civ target-player gothic)))
+                (or
+                    (players-civ target-player gothic)
+                    (players-civ target-player romans))))
         =>
         (up-modify-goal g-current-unit-score c:+ 200)
         (up-log-data 0 CHAT-COUNTER-TYPE c: 12)
@@ -4192,7 +4227,9 @@
         )
         (defrule
         (goal g-current-unit-type SUPPORT-EAGLE-WARRIOR)
-        (players-civ target-player gothic)
+        (or
+            (players-civ target-player gothic)
+            (players-civ target-player romans))
         =>
         (up-modify-goal g-current-unit-score c:- 300)
         (up-log-data 0 CHAT-COUNTER-TYPE c: 12)
@@ -4464,7 +4501,9 @@
         )
         (defrule
         (goal g-current-unit-type SUPPORT-HAND-CANNONEER)
-        (players-civ target-player viking)
+        (or
+            (players-civ target-player viking)
+            (players-civ target-player romans))
         =>
         (up-modify-goal g-current-unit-score c:+ 200)
         (up-log-data 0 CHAT-COUNTER-TYPE c: 12)
@@ -4521,7 +4560,9 @@
                         (players-civ target-player japanese)
                         (or
                             (players-civ target-player malay)
-                            (players-civ target-player viking))))))
+                            (or
+                                (players-civ target-player romans)
+                                (players-civ target-player viking)))))))
         =>
         (up-modify-goal g-current-unit-score c:+ 200)
         (up-log-data 0 CHAT-COUNTER-TYPE c: 12)
@@ -4921,7 +4962,9 @@
                         (players-civ target-player celtic)
                         (or
                             (players-civ target-player dravidians)
-                            (players-civ target-player viking)))))
+                            (or
+                                (players-civ target-player romans)
+                                (players-civ target-player viking))))))
             =>
             (up-modify-goal g-current-unit-score c:+ 200)
             (up-log-data 0 CHAT-COUNTER-TYPE c: 13)
@@ -5505,8 +5548,10 @@
                 (or
                     (players-civ target-player mayan)
                     (or
-                        (players-civ target-player slavic)
-                        (players-civ target-player viking))))
+                        (players-civ target-player romans)
+                        (or
+                            (players-civ target-player slavic)
+                            (players-civ target-player viking)))))
             =>
             (up-modify-goal g-current-unit-score c:+ 200)
             (up-log-data 0 CHAT-COUNTER-TYPE c: 13)
@@ -6011,7 +6056,9 @@
             (goal g-current-unit-type SUPPORT-UNIQUE-UNIT)
             (or
                 (players-civ target-player gurjaras)
-                (players-civ target-player teutonic))
+                (or
+                    (players-civ target-player romans)
+                    (players-civ target-player teutonic)))
             =>
             (up-modify-goal g-current-unit-score c:- 200)
             (up-log-data 0 CHAT-COUNTER-TYPE c: 13)
@@ -7329,6 +7376,58 @@
             )
 
 		#end-if
+
+        #load-if-defined ROMANS-CIV
+
+            (defrule
+            (goal g-current-unit-type SUPPORT-SCORPION)
+            =>
+            (up-modify-goal g-current-unit-score c:+ 300)
+            (up-log-data 0 CHAT-COUNTER-TYPE c: 13)
+            (up-log-data 0 CHAT-COUNTER-AMOUNT c: 300)
+            )
+
+            (defrule
+            (or
+                (goal g-current-unit-type SUPPORT-MILITIA)
+                (goal g-current-unit-type SUPPORT-CONDOTTIERO))
+            =>
+            (up-modify-goal g-current-unit-score c:+ 200)
+            (up-log-data 0 CHAT-COUNTER-TYPE c: 13)
+            (up-log-data 0 CHAT-COUNTER-AMOUNT c: 200)
+            )
+
+            (defrule
+            (goal g-current-unit-type SUPPORT-SPEARMAN)
+            =>
+            (up-modify-goal g-current-unit-score c:+ 100)
+            (up-log-data 0 CHAT-COUNTER-TYPE c: 13)
+            (up-log-data 0 CHAT-COUNTER-AMOUNT c: 100)
+            )
+
+            (defrule
+            (goal g-current-unit-type SUPPORT-MILITIA)
+            (goal g-primary-unit my-unique-unit)
+            =>
+            (up-modify-goal g-current-unit-score c:+ 200)
+            (up-log-data 0 CHAT-COUNTER-TYPE c: 13)
+            (up-log-data 0 CHAT-COUNTER-AMOUNT c: 200)
+            )
+
+            (defrule
+            (research-completed ri-comitatenses)
+            (or
+                (goal g-current-unit-type SUPPORT-MILITIA)
+                (or
+                    (goal g-current-unit-type SUPPORT-KNIGHT)
+                    (goal g-current-unit-type SUPPORT-UNIQUE-UNIT)))
+            =>
+            (up-modify-goal g-current-unit-score c:+ 100)
+            (up-log-data 0 CHAT-COUNTER-TYPE c: 13)
+            (up-log-data 0 CHAT-COUNTER-AMOUNT c: 100)
+            )
+
+        #end-if
 
 		#load-if-defined SARACEN-CIV
 

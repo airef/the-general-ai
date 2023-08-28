@@ -2263,6 +2263,17 @@
 			(up-modify-goal g-desired-num-knight g:= g-desired-num-military)
 			(up-modify-goal g-desired-num-knight c:%* 50)
 			)
+			(defrule
+			(up-compare-goal g-age-status < LATE-IMPERIAL)
+			(up-compare-goal g-desired-num-military > 0)
+			(current-age == imperial-age)
+			(goal g-primary-unit my-unique-unit)
+			(building-type-count castle < 2)
+			(civ-selected romans)
+			=>
+			(up-modify-goal g-desired-num-knight g:= g-desired-num-military)
+			(up-modify-goal g-desired-num-knight c:%* 50)
+			)
 
 		;------------
 		;	Camels
@@ -2901,10 +2912,12 @@
 				(or
 					(civ-selected persian)
 					(or
-						(civ-selected saracen)
+						(civ-selected romans)
 						(or
-							(civ-selected magyar)
-							(civ-selected slavic))))))
+							(civ-selected saracen)
+							(or
+								(civ-selected magyar)
+								(civ-selected slavic)))))))
 		=>
 		(up-modify-goal g-desired-num-cavalry g:+ g-desired-num-unique-unit)
 		)

@@ -1447,7 +1447,7 @@
 	(goal g-attack-objective PENDING)
 	=>
 	(set-goal g-attack-objective ATTACK-TARGET-ENEMY)
-	(chat-to-all "default attack objective")
+	; (chat-to-all "default attack objective")
 	)
 
 ;---------------------------
@@ -2428,7 +2428,15 @@
 	(current-age == imperial-age)
 	(up-compare-goal g-game-focus != REBUILD)
 	=>
-	(set-goal g-min-military-pop 16)
+	(set-goal g-min-military-pop 20)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(players-current-age any-enemy == imperial-age)
+	(players-unit-count any-enemy >= SEVENTY-PERCENT-POP)
+	=>
+	(set-goal g-min-military-pop 25)
 	)
 
 ;----------------------------------------------------

@@ -730,6 +730,16 @@
 			(up-modify-goal g-required-attack-num c:+ 15)
 			)
 
+			;Adjust for imperial age
+			(defrule
+			(current-age == imperial-age)
+			(players-current-age any-enemy == imperial-age)
+			(population < NINETY-PERCENT-POP)
+			=>
+			(up-modify-goal g-required-attack-num c:+ 10)
+			)
+
+			;Set required/stop attack numbers
 			(defrule
 			(current-age == castle-age)
 			(up-compare-goal g-attack-status > FIRST-CASTLE-ATTACK)
@@ -918,7 +928,7 @@
 	(goal g-attack-objective HELP-ALLY-DEFEND)
 	=>
 	(set-goal g-attack-objective PENDING)
-	(chat-to-all "reset objective")
+	; (chat-to-all "reset objective")
 	)
 
 	(defrule
@@ -951,45 +961,36 @@
 ;		         SWITCH ATTACK TYPES
 ;=========================<>=========================
 
+	(defrule
+	(true)
+	=>
+	(set-goal g-attack-method-flag 0)
+	)
+
 	#load-if-defined DE-AVAILABLE
 
 		(defrule
 		(up-compare-goal g-difficulty >= EXTREME)
-		; (up-compare-goal g-attack-status < BEFORE-IMPERIAL-ATTACKS)
 		(current-age <= castle-age)
-		(up-compare-flag g-attack-method-flag != USE-DUC)
 		=>
 		(up-modify-flag g-attack-method-flag c:+ USE-DUC)
-		(up-modify-flag g-attack-method-flag c:- USE-TSA)
-		(up-modify-flag g-attack-method-flag c:- USE-ATTACK-GROUPS)
-		(up-modify-flag g-attack-method-flag c:- USE-ATTACK-NOW)
-		(disable-self)
 		)
 
 		(defrule
 		(or
-			; (up-compare-goal g-attack-status >= BEFORE-IMPERIAL-ATTACKS)
 			(current-age == imperial-age)
 			(up-compare-goal g-difficulty < EXTREME))
-		(or
-			(up-compare-flag g-attack-method-flag == USE-DUC)
-			(up-compare-flag g-attack-method-flag != USE-TSA))
+		(up-compare-goal g-attack-objective != HELP-ALLY-DEFEND)
 		=>
-		(up-modify-flag g-attack-method-flag c:- USE-DUC)
 		(up-modify-flag g-attack-method-flag c:+ USE-TSA)
-		(up-modify-flag g-attack-method-flag c:- USE-ATTACK-GROUPS)
-		(up-modify-flag g-attack-method-flag c:- USE-ATTACK-NOW)
 		)
 
 	#else
 
 		(defrule
-		(up-compare-flag g-attack-method-flag != USE-TSA)
+		(true)
 		=>
-		(up-modify-flag g-attack-method-flag c:- USE-DUC)
 		(up-modify-flag g-attack-method-flag c:+ USE-TSA)
-		(up-modify-flag g-attack-method-flag c:- USE-ATTACK-GROUPS)
-		(up-modify-flag g-attack-method-flag c:- USE-ATTACK-NOW)
 		)
 
 	#end-if
@@ -997,7 +998,6 @@
 	;If enemies have no buildings left, switch to attack groups
 	(defrule
 	(goal g-attacking YES)
-	(up-compare-flag g-attack-method-flag != USE-ATTACK-GROUPS)
 	(up-compare-flag g-attack-method-flag != USE-DUC)
 	(players-building-count every-enemy == 0)
 	(game-time > 600)

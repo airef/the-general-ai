@@ -3134,6 +3134,83 @@
 
 	#end-if
 
+	#load-if-defined ROMANS-CIV	
+
+		;---------------
+		;	Ballistas
+		;---------------
+			
+			(defrule
+			(up-compare-goal g-desired-num-scorpion >= 4)
+			(can-research-with-escrow ri-ballistas)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-ballistas c: 1)
+			(up-modify-escrow wood g:- g-wood-cost)
+			(up-modify-escrow gold g:- g-gold-cost)
+			(research ri-ballistas)
+			)
+
+			(defrule
+			(or
+				(up-compare-goal g-desired-num-scorpion > 0)
+				(or
+					(unit-type-count scorpion-line > 2)
+					(or
+						(up-compare-goal g-desired-num-galley > 0)
+						(unit-type-count galley-line > 2))))
+			(can-research ri-ballistas)
+			=>
+			(research ri-ballistas)
+			)
+
+		;------------------
+		;	Comitatenses
+		;------------------
+			
+			(defrule
+			(or
+				(goal g-primary-unit militiaman)
+				(or
+					(goal g-primary-unit knight)
+					(goal g-primary-unit my-unique-unit)))
+			(can-research-with-escrow ri-comitatenses)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-comitatenses c: 1)
+			(up-modify-escrow food g:- g-food-cost)
+			(up-modify-escrow gold g:- g-gold-cost)
+			(research ri-comitatenses)
+			)
+			(defrule
+			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			(or
+				(goal g-support-unit militiaman)
+				(or
+					(goal g-support-unit knight)
+					(goal g-support-unit my-unique-unit)))
+			(can-research-with-escrow ri-comitatenses)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-comitatenses c: 1)
+			(up-modify-escrow food g:- g-food-cost)
+			(up-modify-escrow gold g:- g-gold-cost)
+			(research ri-comitatenses)
+			)
+
+			(defrule
+			(or
+				(up-compare-goal g-desired-num-militia > 10)
+				(or
+					(up-compare-goal g-desired-num-unique-unit > 10)
+					(up-compare-goal g-desired-num-knight > 10)))
+			(can-research ri-comitatenses)
+			=>
+			(research ri-comitatenses)
+			)
+
+	#end-if
+
 	#load-if-defined SARACEN-CIV
 
 		#load-if-defined DE-AVAILABLE
@@ -6015,71 +6092,111 @@
 
 		#end-if
 
-	;---------------------------------------------------
-	;	Two-Handed Swordsman - Required Imperial Tech
-	;---------------------------------------------------
+	#load-if-not-defined ROMANS-CIV
 
-		(defrule
-		(or
-			(goal g-primary-unit militiaman)
-			(goal g-support-unit militiaman))
-		(can-research-with-escrow ri-two-handed-swordsman)
-		=>
-		(up-setup-cost-data 1 g-food-cost)
-		(up-add-research-cost c: ri-two-handed-swordsman c: 1)
-		(up-modify-escrow food g:- g-food-cost)
-		(up-modify-escrow gold g:- g-gold-cost)
-		(research ri-two-handed-swordsman)
-		)
+		;---------------------------------------------------
+		;	Two-Handed Swordsman - Required Imperial Tech
+		;---------------------------------------------------
 
-		(defrule
-		(up-compare-goal g-desired-num-militia > 10)
-		(unit-type-count militiaman-line > 15)
-		(can-research ri-two-handed-swordsman)
-		=>
-		(research ri-two-handed-swordsman)
-		)
-		(defrule
-		(population >= EIGHTY-PERCENT-POP)
-		(unit-type-count militiaman-line > 15)
-		(can-research ri-two-handed-swordsman)
-		=>
-		(research ri-two-handed-swordsman)
-		)
+			(defrule
+			(or
+				(goal g-primary-unit militiaman)
+				(goal g-support-unit militiaman))
+			(can-research-with-escrow ri-two-handed-swordsman)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-two-handed-swordsman c: 1)
+			(up-modify-escrow food g:- g-food-cost)
+			(up-modify-escrow gold g:- g-gold-cost)
+			(research ri-two-handed-swordsman)
+			)
 
-	;---------------------------------------
-	;	Champion - Priority Imperial Tech
-	;---------------------------------------
+			(defrule
+			(up-compare-goal g-desired-num-militia > 10)
+			(unit-type-count militiaman-line > 15)
+			(can-research ri-two-handed-swordsman)
+			=>
+			(research ri-two-handed-swordsman)
+			)
+			(defrule
+			(population >= EIGHTY-PERCENT-POP)
+			(unit-type-count militiaman-line > 15)
+			(can-research ri-two-handed-swordsman)
+			=>
+			(research ri-two-handed-swordsman)
+			)
 
-		(defrule
-		(or
-			(goal g-primary-unit militiaman)
-			(and
-				(goal g-support-unit militiaman)
-				(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-		(can-research-with-escrow ri-champion)
-		=>
-		(up-setup-cost-data 1 g-food-cost)
-		(up-add-research-cost c: ri-champion c: 1)
-		(up-modify-escrow food g:- g-food-cost)
-		(up-modify-escrow gold g:- g-gold-cost)
-		(research ri-champion)
-		)
+		;---------------------------------------
+		;	Champion - Priority Imperial Tech
+		;---------------------------------------
 
-		(defrule
-		(up-compare-goal g-desired-num-militia > 10)
-		(unit-type-count militiaman-line > 15)
-		(can-research ri-champion)
-		=>
-		(research ri-champion)
-		)
-		(defrule
-		(population >= NINETY-PERCENT-POP)
-		(unit-type-count militiaman-line > 5)
-		(can-research ri-champion)
-		=>
-		(research ri-champion)
-		)
+			(defrule
+			(or
+				(goal g-primary-unit militiaman)
+				(and
+					(goal g-support-unit militiaman)
+					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
+			(can-research-with-escrow ri-champion)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-champion c: 1)
+			(up-modify-escrow food g:- g-food-cost)
+			(up-modify-escrow gold g:- g-gold-cost)
+			(research ri-champion)
+			)
+
+			(defrule
+			(up-compare-goal g-desired-num-militia > 10)
+			(unit-type-count militiaman-line > 15)
+			(can-research ri-champion)
+			=>
+			(research ri-champion)
+			)
+			(defrule
+			(population >= NINETY-PERCENT-POP)
+			(unit-type-count militiaman-line > 5)
+			(can-research ri-champion)
+			=>
+			(research ri-champion)
+			)
+
+	#else
+
+		;---------------------------------------
+		;	Legionary - Priority Imperial Tech
+		;---------------------------------------
+
+			(defrule
+			(or
+				(goal g-primary-unit militiaman)
+				(and
+					(goal g-support-unit militiaman)
+					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
+			(can-research-with-escrow ri-legionary)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-legionary c: 1)
+			(up-modify-escrow food g:- g-food-cost)
+			(up-modify-escrow gold g:- g-gold-cost)
+			(research ri-legionary)
+			)
+
+			(defrule
+			(up-compare-goal g-desired-num-militia > 10)
+			(unit-type-count militiaman-line > 15)
+			(can-research ri-legionary)
+			=>
+			(research ri-legionary)
+			)
+			(defrule
+			(population >= NINETY-PERCENT-POP)
+			(unit-type-count militiaman-line > 5)
+			(can-research ri-legionary)
+			=>
+			(research ri-legionary)
+			)
+
+	#end-if
 
 	;---------------------------------------
 	;	Scale Mail - Priority Castle Tech (>= 4 infantry)

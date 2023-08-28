@@ -995,6 +995,29 @@
 
 	#end-if
 
+	#load-if-defined ROMANS-CIV
+
+		(defrule
+		(true)
+		=>
+		(set-goal g-dark-strategy FC-KRUSH)
+		(set-goal g-early-feudal-strategy FC-KRUSH)
+		(set-goal g-mid-feudal-strategy FC-KRUSH)
+		(set-goal g-early-castle-strategy FC-KRUSH)
+		(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
+		(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
+		(set-goal g-mid-imperial-strategy MIDI-CHAMPIONS)
+		)
+
+		(defconst LATE-CHAMPIONS-PRIORITY 1200)
+		(defconst LATE-HALBS-PRIORITY 900)
+		(defconst LATE-SKIRMS-PRIORITY 700)
+		(defconst LATE-GENITOURS-PRIORITY 400)
+		(defconst LATE-HUSSARS-PRIORITY 750)
+		(defconst LATE-UU-PRIORITY 0)
+
+	#end-if
+
 	#load-if-defined SARACEN-CIV
 
 		(defrule
@@ -1932,7 +1955,9 @@
 	(defrule
 	(up-compare-goal g-strats-end-rule-id > 0)
 	(goal g-primary-unit cavalry-archer)
-	(up-compare-const TWO-HANDED-SWORDSMAN-AVAILABLE == YES)
+	(or
+		(up-compare-const TWO-HANDED-SWORDSMAN-AVAILABLE == YES)
+		(civ-selected romans))
 	(up-compare-goal g-enemy-huskarls-count >= 6)
 	(up-compare-goal g-enemy-foot-archers-count g:< g-enemy-huskarls-count)
 	(up-compare-goal g-enemy-cavalry-archers-count g:< g-enemy-huskarls-count)
@@ -1977,27 +2002,47 @@
 	)
 
 	;Switch to champion strategy if enemy has spearmen
-	(defrule
-	(up-compare-goal g-strats-end-rule-id > 0)
-	(goal g-primary-unit cavalry-archer)
-	(up-compare-const TWO-HANDED-SWORDSMAN-AVAILABLE == YES)
-	(up-compare-goal g-enemy-spearmen-count >= 12)
-	(or
-		(up-compare-goal g-enemy-spearmen-count >= 20)
-		(up-compare-const CHAMPION-AVAILABLE == YES))
-	(up-compare-goal g-enemy-foot-archers-count g:< g-enemy-spearmen-count)
-	(up-compare-goal g-enemy-cavalry-archers-count g:< g-enemy-spearmen-count)
-	(up-compare-goal g-enemy-hand-cannoneers-count g:< g-enemy-spearmen-count)
-	(up-compare-goal g-enemy-cataphracts-count g:< g-enemy-spearmen-count)
-	(up-compare-goal g-enemy-jaguar-warriors-count g:< g-enemy-spearmen-count)
-	(up-compare-goal g-enemy-teutonic-knights-count g:< g-enemy-spearmen-count)
-	=>
-	(set-goal g-mid-castle-strategy MIDC-SWORDS)
-	(set-goal g-early-imperial-strategy EARLYI-CHAMPFLOOD)
-	(set-goal g-mid-imperial-strategy MIDI-CHAMPIONS)
-	; (chat-local-to-self "Switching to champs strategy")
-	(up-jump-direct g: g-strats-end-rule-id)
-	)
+	#load-if-not-defined ROMANS-CIV
+		(defrule
+		(up-compare-goal g-strats-end-rule-id > 0)
+		(goal g-primary-unit cavalry-archer)
+		(up-compare-const TWO-HANDED-SWORDSMAN-AVAILABLE == YES)
+		(up-compare-goal g-enemy-spearmen-count >= 12)
+		(or
+			(up-compare-goal g-enemy-spearmen-count >= 20)
+			(up-compare-const CHAMPION-AVAILABLE == YES))
+		(up-compare-goal g-enemy-foot-archers-count g:< g-enemy-spearmen-count)
+		(up-compare-goal g-enemy-cavalry-archers-count g:< g-enemy-spearmen-count)
+		(up-compare-goal g-enemy-hand-cannoneers-count g:< g-enemy-spearmen-count)
+		(up-compare-goal g-enemy-cataphracts-count g:< g-enemy-spearmen-count)
+		(up-compare-goal g-enemy-jaguar-warriors-count g:< g-enemy-spearmen-count)
+		(up-compare-goal g-enemy-teutonic-knights-count g:< g-enemy-spearmen-count)
+		=>
+		(set-goal g-mid-castle-strategy MIDC-SWORDS)
+		(set-goal g-early-imperial-strategy EARLYI-CHAMPFLOOD)
+		(set-goal g-mid-imperial-strategy MIDI-CHAMPIONS)
+		; (chat-local-to-self "Switching to champs strategy")
+		(up-jump-direct g: g-strats-end-rule-id)
+		)
+	#else
+		(defrule
+		(up-compare-goal g-strats-end-rule-id > 0)
+		(goal g-primary-unit cavalry-archer)
+		(up-compare-goal g-enemy-spearmen-count >= 12)
+		(up-compare-goal g-enemy-foot-archers-count g:< g-enemy-spearmen-count)
+		(up-compare-goal g-enemy-cavalry-archers-count g:< g-enemy-spearmen-count)
+		(up-compare-goal g-enemy-hand-cannoneers-count g:< g-enemy-spearmen-count)
+		(up-compare-goal g-enemy-cataphracts-count g:< g-enemy-spearmen-count)
+		(up-compare-goal g-enemy-jaguar-warriors-count g:< g-enemy-spearmen-count)
+		(up-compare-goal g-enemy-teutonic-knights-count g:< g-enemy-spearmen-count)
+		=>
+		(set-goal g-mid-castle-strategy MIDC-SWORDS)
+		(set-goal g-early-imperial-strategy EARLYI-CHAMPFLOOD)
+		(set-goal g-mid-imperial-strategy MIDI-CHAMPIONS)
+		; (chat-local-to-self "Switching to champs strategy")
+		(up-jump-direct g: g-strats-end-rule-id)
+		)
+	#end-if
 
 	;Switch to skirmisher strategy if enemy has spearmen
 	(defrule
@@ -2105,27 +2150,47 @@
 	)
 
 	;Switch to champion strategy if enemy has spearmen
-	(defrule
-	(up-compare-goal g-strats-end-rule-id > 0)
-	(goal g-primary-unit knight)
-	(up-compare-goal g-enemy-spearmen-count >= 12)
-	(up-compare-const TWO-HANDED-SWORDSMAN-AVAILABLE == YES)
-	(or
-		(up-compare-const CHAMPION-AVAILABLE == YES)
-		(up-compare-goal g-enemy-spearmen-count >= 20))
-	(up-compare-goal g-enemy-foot-archers-count g:< g-enemy-spearmen-count)
-	(up-compare-goal g-enemy-cavalry-archers-count g:< g-enemy-spearmen-count)
-	(up-compare-goal g-enemy-hand-cannoneers-count < 12)
-	(up-compare-goal g-enemy-cataphracts-count < 6)
-	(up-compare-goal g-enemy-jaguar-warriors-count < 6)
-	(up-compare-goal g-enemy-teutonic-knights-count g:< g-enemy-spearmen-count)
-	=>
-	(set-goal g-mid-castle-strategy MIDC-SWORDS)
-	(set-goal g-early-imperial-strategy EARLYI-CHAMPFLOOD)
-	(set-goal g-mid-imperial-strategy MIDI-CHAMPIONS)
-	; (chat-local-to-self "Switching to champs strategy")
-	(up-jump-direct g: g-strats-end-rule-id)
-	)
+	#load-if-not-defined ROMANS-CIV
+		(defrule
+		(up-compare-goal g-strats-end-rule-id > 0)
+		(goal g-primary-unit knight)
+		(up-compare-goal g-enemy-spearmen-count >= 12)
+		(up-compare-const TWO-HANDED-SWORDSMAN-AVAILABLE == YES)
+		(or
+			(up-compare-const CHAMPION-AVAILABLE == YES)
+			(up-compare-goal g-enemy-spearmen-count >= 20))
+		(up-compare-goal g-enemy-foot-archers-count g:< g-enemy-spearmen-count)
+		(up-compare-goal g-enemy-cavalry-archers-count g:< g-enemy-spearmen-count)
+		(up-compare-goal g-enemy-hand-cannoneers-count < 12)
+		(up-compare-goal g-enemy-cataphracts-count < 6)
+		(up-compare-goal g-enemy-jaguar-warriors-count < 6)
+		(up-compare-goal g-enemy-teutonic-knights-count g:< g-enemy-spearmen-count)
+		=>
+		(set-goal g-mid-castle-strategy MIDC-SWORDS)
+		(set-goal g-early-imperial-strategy EARLYI-CHAMPFLOOD)
+		(set-goal g-mid-imperial-strategy MIDI-CHAMPIONS)
+		; (chat-local-to-self "Switching to champs strategy")
+		(up-jump-direct g: g-strats-end-rule-id)
+		)
+	#else
+		(defrule
+		(up-compare-goal g-strats-end-rule-id > 0)
+		(goal g-primary-unit knight)
+		(up-compare-goal g-enemy-spearmen-count >= 12)
+		(up-compare-goal g-enemy-foot-archers-count g:< g-enemy-spearmen-count)
+		(up-compare-goal g-enemy-cavalry-archers-count g:< g-enemy-spearmen-count)
+		(up-compare-goal g-enemy-hand-cannoneers-count < 12)
+		(up-compare-goal g-enemy-cataphracts-count < 6)
+		(up-compare-goal g-enemy-jaguar-warriors-count < 6)
+		(up-compare-goal g-enemy-teutonic-knights-count g:< g-enemy-spearmen-count)
+		=>
+		(set-goal g-mid-castle-strategy MIDC-SWORDS)
+		(set-goal g-early-imperial-strategy EARLYI-CHAMPFLOOD)
+		(set-goal g-mid-imperial-strategy MIDI-CHAMPIONS)
+		; (chat-local-to-self "Switching to champs strategy")
+		(up-jump-direct g: g-strats-end-rule-id)
+		)
+	#end-if
 
 	;Switch to cavalry archer strategy if enemy has spearmen
 	(defrule

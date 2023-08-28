@@ -3249,6 +3249,97 @@
 
 	#end-if
 
+	#load-if-defined ROMANS-CIV
+
+		;---------------
+		;	Ballistas
+		;---------------
+
+			(defrule
+			(up-compare-goal g-desired-num-scorpion >= 4)
+			(up-research-status c: ri-ballistas == research-available)
+			(building-type-count castle > 0)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-ballistas c: 1)
+			(up-modify-goal g-max-wood-needed g:max g-wood-cost)
+			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
+			)
+
+			(defrule
+			(taunt-detected TAUNT-PLAYER 246)
+			(up-compare-goal g-desired-num-scorpion >= 4)
+			(up-research-status c: ri-ballistas == research-available)
+			(building-type-count castle > 0)
+			=>
+			(up-store-tech-name c: ri-ballistas)
+			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
+			)
+
+		;------------------
+		;	Comitatenses
+		;------------------
+
+			(defrule
+			(or
+				(goal g-primary-unit militiaman)
+				(or
+					(goal g-primary-unit knight)
+					(goal g-primary-unit my-unique-unit)))
+			(up-research-status c: ri-comitatenses == research-available)
+			(building-type-count castle > 0)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-comitatenses c: 1)
+			(up-modify-goal g-max-food-needed g:max g-food-cost)
+			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
+			)
+			(defrule
+			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			(or
+				(goal g-support-unit militiaman)
+				(or
+					(goal g-support-unit knight)
+					(goal g-support-unit my-unique-unit)))
+			(up-research-status c: ri-comitatenses == research-available)
+			(building-type-count castle > 0)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-comitatenses c: 1)
+			(up-modify-goal g-max-food-needed g:max g-food-cost)
+			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
+			)
+
+			(defrule
+			(taunt-detected TAUNT-PLAYER 246)
+			(or
+				(goal g-primary-unit militiaman)
+				(or
+					(goal g-primary-unit knight)
+					(goal g-primary-unit my-unique-unit)))
+			(up-research-status c: ri-comitatenses == research-available)
+			(building-type-count castle > 0)
+			=>
+			(up-store-tech-name c: ri-comitatenses)
+			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
+			)
+			(defrule
+			(taunt-detected TAUNT-PLAYER 246)
+			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+			(or
+				(goal g-support-unit militiaman)
+				(or
+					(goal g-support-unit knight)
+					(goal g-support-unit my-unique-unit)))
+			(up-research-status c: ri-comitatenses == research-available)
+			(building-type-count castle > 0)
+			=>
+			(up-store-tech-name c: ri-comitatenses)
+			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
+			)
+
+	#end-if
+
 	#load-if-defined SARACEN-CIV
 
 		;--------------
@@ -7027,100 +7118,141 @@
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 		)
 
-	;---------------------------------------------------
-	;	Two-Handed Swordsman - Required Imperial Tech
-	;---------------------------------------------------
+	#load-if-defined ROMANS-CIV
 
-		(defrule
-		(goal g-primary-unit militiaman)
-		(goal g-age-status TO-IMPERIAL)
-		(up-compare-const TWO-HANDED-SWORDSMAN-AVAILABLE == YES)
-		(building-type-count barracks > 0)
-		=>
-		(up-setup-cost-data 1 g-food-cost)
-		(up-add-research-cost c: ri-two-handed-swordsman c: 1)
-		(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
-		(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
-		(up-modify-goal g-max-food-needed g:max g-food-cost)
-		(up-modify-goal g-max-gold-needed g:max g-gold-cost)
-		)
+		;---------------------------------------------------
+		;	Two-Handed Swordsman - Required Imperial Tech
+		;---------------------------------------------------
 
-		(defrule
-		(taunt-detected TAUNT-PLAYER 246)
-		(goal g-primary-unit militiaman)
-		(goal g-age-status TO-IMPERIAL)
-		(up-compare-const TWO-HANDED-SWORDSMAN-AVAILABLE == YES)
-		(building-type-count barracks > 0)
-		=>
-		(up-store-tech-name c: ri-two-handed-swordsman)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
-		)
-
-		(defrule
-		(or
+			(defrule
 			(goal g-primary-unit militiaman)
-			(and
-				(goal g-support-unit militiaman)
-				(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-		(up-research-status c: ri-two-handed-swordsman == research-available)
-		(building-type-count barracks > 0)
-		=>
-		(up-setup-cost-data 1 g-food-cost)
-		(up-add-research-cost c: ri-two-handed-swordsman c: 1)
-		(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
-		(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
-		(up-modify-goal g-max-food-needed g:max g-food-cost)
-		(up-modify-goal g-max-gold-needed g:max g-gold-cost)
-		)
+			(goal g-age-status TO-IMPERIAL)
+			(up-compare-const TWO-HANDED-SWORDSMAN-AVAILABLE == YES)
+			(building-type-count barracks > 0)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-two-handed-swordsman c: 1)
+			(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
+			(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
+			(up-modify-goal g-max-food-needed g:max g-food-cost)
+			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
+			)
 
-		(defrule
-		(taunt-detected TAUNT-PLAYER 246)
-		(or
+			(defrule
+			(taunt-detected TAUNT-PLAYER 246)
 			(goal g-primary-unit militiaman)
-			(and
-				(goal g-support-unit militiaman)
-				(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-		(up-research-status c: ri-two-handed-swordsman == research-available)
-		(building-type-count barracks > 0)
-		=>
-		(up-store-tech-name c: ri-two-handed-swordsman)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
-		)
+			(goal g-age-status TO-IMPERIAL)
+			(up-compare-const TWO-HANDED-SWORDSMAN-AVAILABLE == YES)
+			(building-type-count barracks > 0)
+			=>
+			(up-store-tech-name c: ri-two-handed-swordsman)
+			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
+			)
 
-	;---------------------------------------
-	;	Champion - Priority Imperial Tech
-	;---------------------------------------
+			(defrule
+			(or
+				(goal g-primary-unit militiaman)
+				(and
+					(goal g-support-unit militiaman)
+					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
+			(up-research-status c: ri-two-handed-swordsman == research-available)
+			(building-type-count barracks > 0)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-two-handed-swordsman c: 1)
+			(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
+			(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
+			(up-modify-goal g-max-food-needed g:max g-food-cost)
+			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
+			)
 
-		(defrule
-		(or
-			(goal g-primary-unit militiaman)
-			(and
-				(goal g-support-unit militiaman)
-				(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-		(up-research-status c: ri-champion == research-available)
-		(building-type-count barracks > 0)
-		=>
-		(up-setup-cost-data 1 g-food-cost)
-		(up-add-research-cost c: ri-champion c: 1)
-		(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
-		(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
-		(up-modify-goal g-max-food-needed g:max g-food-cost)
-		(up-modify-goal g-max-gold-needed g:max g-gold-cost)
-		)
+			(defrule
+			(taunt-detected TAUNT-PLAYER 246)
+			(or
+				(goal g-primary-unit militiaman)
+				(and
+					(goal g-support-unit militiaman)
+					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
+			(up-research-status c: ri-two-handed-swordsman == research-available)
+			(building-type-count barracks > 0)
+			=>
+			(up-store-tech-name c: ri-two-handed-swordsman)
+			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
+			)
 
-		(defrule
-		(taunt-detected TAUNT-PLAYER 246)
-		(or
-			(goal g-primary-unit militiaman)
-			(and
-				(goal g-support-unit militiaman)
-				(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
-		(up-research-status c: ri-champion == research-available)
-		(building-type-count barracks > 0)
-		=>
-		(up-store-tech-name c: ri-champion)
-		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
-		)
+		;---------------------------------------
+		;	Champion - Priority Imperial Tech
+		;---------------------------------------
+
+			(defrule
+			(or
+				(goal g-primary-unit militiaman)
+				(and
+					(goal g-support-unit militiaman)
+					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
+			(up-research-status c: ri-champion == research-available)
+			(building-type-count barracks > 0)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-champion c: 1)
+			(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
+			(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
+			(up-modify-goal g-max-food-needed g:max g-food-cost)
+			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
+			)
+
+			(defrule
+			(taunt-detected TAUNT-PLAYER 246)
+			(or
+				(goal g-primary-unit militiaman)
+				(and
+					(goal g-support-unit militiaman)
+					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
+			(up-research-status c: ri-champion == research-available)
+			(building-type-count barracks > 0)
+			=>
+			(up-store-tech-name c: ri-champion)
+			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
+			)
+
+	#else
+
+		;---------------------------------------
+		;	Legionary - Priority Imperial Tech
+		;---------------------------------------
+
+			(defrule
+			(or
+				(goal g-primary-unit militiaman)
+				(and
+					(goal g-support-unit militiaman)
+					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
+			(up-research-status c: ri-legionary == research-available)
+			(building-type-count barracks > 0)
+			=>
+			(up-setup-cost-data 1 g-food-cost)
+			(up-add-research-cost c: ri-legionary c: 1)
+			(up-modify-goal g-important-techs-food-needed g:+ g-food-cost)
+			(up-modify-goal g-important-techs-gold-needed g:+ g-gold-cost)
+			(up-modify-goal g-max-food-needed g:max g-food-cost)
+			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
+			)
+
+			(defrule
+			(taunt-detected TAUNT-PLAYER 246)
+			(or
+				(goal g-primary-unit militiaman)
+				(and
+					(goal g-support-unit militiaman)
+					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
+			(up-research-status c: ri-legionary == research-available)
+			(building-type-count barracks > 0)
+			=>
+			(up-store-tech-name c: ri-legionary)
+			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
+			)
+
+	#end-if
 
 	;---------------------------------------
 	;	Scale Mail - Priority Castle Tech (>= 4 infantry)
