@@ -1151,6 +1151,17 @@
 
 	#end-if
 
+	#load-if-defined UP-1-PLAYER-TEAM
+
+		(defrule
+		(true)
+		=>
+		(set-goal g-position FLANK)
+		(disable-self)
+		)
+
+	#end-if
+
 ;----------------------
 ;	GOAL: g-scout-id
 ;----------------------
@@ -2183,12 +2194,15 @@
 
 		(defrule
 		(up-compare-goal g-current-age-primary-unit-tech-progress >= PRIORITY-COMPLETE)
+		(or
+			(up-compare-goal g-current-age-primary-unit-tech-progress >= SECONDARY-COMPLETE)
+			(up-compare-goal g-current-age-support-unit-tech-progress < REQUIRED-COMPLETE))
 		(unit-type-count villager >= 80)
 		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 		(or
 			(building-type-count-total town-center >= 3)
 			(up-compare-goal g-desired-num-town-center < 3))
-		(military-population g:>= g-min-military-pop)
+		(up-compare-goal g-human-military-count g:>= g-min-military-pop)
 		=>
 		(up-modify-flag g-flag c:+ SAVE-FOR-SUPPORT-UNIT-TECHS)
 		)
@@ -2271,7 +2285,7 @@
 		(defrule
 		(up-compare-goal g-game-focus != REBUILD)
 		(building-type-count town-center > 1)
-		(military-population g:< g-min-military-pop)
+		(up-compare-goal g-human-military-count g:< g-min-military-pop)
 		=>
 		(up-modify-flag g-flag c:- ALLOW-QUEUED-VILLAGERS)
 		)
@@ -2284,7 +2298,7 @@
 		(up-compare-goal g-usable-farm-count >= 14)
 		(or
 			(up-compare-goal g-game-focus != DEFENSIVE)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-wheel-barrow == research-available)
 		=>
 		(up-modify-goal g-flag c:- ALLOW-QUEUED-VILLAGERS)
@@ -2780,7 +2794,7 @@
 	(up-compare-goal g-villager-training != LIMITED-TRAIN-WITH-ESCROW)
 	(up-object-type-count-total c: villager g:< g-desired-num-villager)
 	(goal g-game-focus DEFENSIVE)
-	(military-population g:< g-min-military-pop)
+	(up-compare-goal g-human-military-count g:< g-min-military-pop)
 	(or
 		(up-compare-goal g-desired-num-infantry > 0)
 		(up-compare-goal g-desired-num-cavalry > 0))
@@ -2792,7 +2806,7 @@
 	(up-compare-goal g-villager-training != LIMITED-TRAIN-WITH-ESCROW)
 	(up-object-type-count-total c: villager g:< g-desired-num-villager)
 	(goal g-game-focus DEFENSIVE)
-	(military-population g:< g-min-military-pop)
+	(up-compare-goal g-human-military-count g:< g-min-military-pop)
 	(or
 		(up-compare-goal g-desired-num-genitour > 0)
 		(or
@@ -2807,7 +2821,7 @@
 	(up-compare-goal g-villager-training != LIMITED-TRAIN-WITH-ESCROW)
 	(up-object-type-count-total c: villager g:< g-desired-num-villager)
 	(goal g-game-focus DEFENSIVE)
-	(military-population g:< g-min-military-pop)
+	(up-compare-goal g-human-military-count g:< g-min-military-pop)
 	(up-compare-goal g-desired-num-second-unique-unit > 0)
 	(up-pending-objects c: villager >= 2)
 	=>
@@ -4365,3 +4379,18 @@
 		(up-modify-goal g-loop-counter c:+ 1)
 		(up-jump-rule -3)
 		)
+
+;----------------------------------
+;	GOAL: g-human-military-count
+;----------------------------------
+
+	(defrule
+	(military-population > 0)
+	=>
+	(up-get-fact military-population 0 g-human-military-count)
+	(up-get-fact unit-type-count warship-class g-temp)
+	(up-modify-goal g-human-military-count g:- g-temp)
+	(up-modify-goal g-human-military-count g:- g-siege-class)
+	(up-get-fact unit-type-count scorpion-class g-temp)
+	(up-modify-goal g-human-military-count g:+ g-temp)
+	)

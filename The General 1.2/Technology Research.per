@@ -142,7 +142,7 @@
 						(up-compare-goal g-usable-farm-count < 25)))
 				(and
 					(goal g-game-focus DEFENSIVE)
-					(military-population g:< g-min-military-pop))))
+					(up-compare-goal g-human-military-count g:< g-min-military-pop))))
 		=>
 		(up-jump-rule 1)
 		)
@@ -190,7 +190,7 @@
 		(up-compare-goal g-usable-farm-count >= 14)
 		(or
 			(up-compare-goal g-game-focus != DEFENSIVE)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
         =>
 		(up-setup-cost-data 1 g-food-cost)
 		(up-add-research-cost c: ri-wheel-barrow c: 1)
@@ -229,7 +229,7 @@
 			(up-compare-goal g-usable-farm-count >= 25))
 		(or
 			(up-compare-goal g-game-focus != DEFENSIVE)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 		(up-research-status c: ri-heavy-plow >= research-pending)
 		(can-research ri-hand-cart)
@@ -246,7 +246,7 @@
         (up-compare-goal g-eco-tech-progress >= SECONDARY-CASTLE-COMPLETE)
 		(or
 			(up-compare-goal g-game-focus != DEFENSIVE)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(unit-type-count villager-gold >= 7)
         (can-research ri-gold-mining)
         =>
@@ -7236,7 +7236,7 @@
 		)
 
 		(defrule
-		(military-population g:>= g-min-military-pop)
+		(up-compare-goal g-human-military-count g:>= g-min-military-pop)
 		(up-compare-goal g-desired-num-monk >= 3)
 		(unit-type-count monastery-class >= 3)
 		(up-compare-goal g-current-age-primary-unit-tech-progress >= SECONDARY-COMPLETE)
@@ -7275,7 +7275,7 @@
 			)
 
 			(defrule
-			(military-population g:>= g-min-military-pop)
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop)
 			(up-compare-goal g-desired-num-monk >= 3)
 			(unit-type-count monastery-class >= 3)
 			(up-compare-goal g-current-age-primary-unit-tech-progress >= SECONDARY-COMPLETE)

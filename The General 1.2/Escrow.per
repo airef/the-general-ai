@@ -45,7 +45,7 @@
 
         (defrule
         (goal g-game-focus DEFENSIVE)
-        (military-population g:>= g-min-military-pop)
+        (up-compare-goal g-human-military-count g:>= g-min-military-pop)
         (or
             (up-compare-goal g-current-age-primary-unit-tech-progress < REQUIRED-COMPLETE)
             (and
@@ -125,7 +125,7 @@
 
         (defrule
         (goal g-game-focus DEFENSIVE)
-        (military-population g:>= g-min-military-pop)
+        (up-compare-goal g-human-military-count g:>= g-min-military-pop)
         (up-research-status c: ri-heresy < research-pending)
         (up-compare-const HERESY-AVAILABLE == YES)
         (up-compare-goal g-enemy-monks-count >= 12)
@@ -136,7 +136,7 @@
 
         (defrule
         (goal g-game-focus DEFENSIVE)
-        (military-population g:>= g-min-military-pop)
+        (up-compare-goal g-human-military-count g:>= g-min-military-pop)
         (up-research-status c: ri-faith < research-pending)
         (up-compare-const HERESY-AVAILABLE == NO)
         (up-compare-goal g-enemy-monks-count >= 12)
@@ -183,7 +183,7 @@
                 (or
                     (up-compare-goal g-desired-num-eagle-warrior > 0)
                     (up-compare-goal g-desired-num-condottiero > 0))))
-        (military-population g:>= g-min-military-pop)
+        (up-compare-goal g-human-military-count g:>= g-min-military-pop)
         =>
         (set-goal g-wood-escrow-type ACCUMULATED)
         )
@@ -194,7 +194,7 @@
             (up-object-type-count-total c: barracks g:< g-desired-num-barracks)
             (building-type-count barracks == 0)
             (up-compare-goal g-desired-num-second-unique-unit > 0)
-            (military-population g:>= g-min-military-pop)
+            (up-compare-goal g-human-military-count g:>= g-min-military-pop)
             =>
             (set-goal g-wood-escrow-type ACCUMULATED)
             )
@@ -215,7 +215,7 @@
 						(or
 							(up-compare-goal g-desired-num-genitour > 0)
 							(up-compare-goal g-desired-num-elephant-archer > 0))))))
-        (military-population g:>= g-min-military-pop)
+        (up-compare-goal g-human-military-count g:>= g-min-military-pop)
         =>
         (set-goal g-wood-escrow-type ACCUMULATED)
         )
@@ -226,7 +226,7 @@
             (up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
             (building-type-count archery-range == 0)
             (up-compare-goal g-desired-num-second-unique-unit > 0)
-            (military-population g:>= g-min-military-pop)
+            (up-compare-goal g-human-military-count g:>= g-min-military-pop)
             =>
             (set-goal g-wood-escrow-type ACCUMULATED)
             )
@@ -245,7 +245,7 @@
                     (or
                         (up-compare-goal g-desired-num-battle-elephant > 0)
                         (up-compare-goal g-desired-num-steppe-lancer > 0)))))
-        (military-population g:>= g-min-military-pop)
+        (up-compare-goal g-human-military-count g:>= g-min-military-pop)
         =>
         (set-goal g-wood-escrow-type ACCUMULATED)
         )
@@ -256,7 +256,7 @@
             (up-object-type-count-total c: stable g:< g-desired-num-stable)
             (building-type-count stable == 0)
             (up-compare-goal g-desired-num-second-unique-unit > 0)
-            (military-population g:>= g-min-military-pop)
+            (up-compare-goal g-human-military-count g:>= g-min-military-pop)
             =>
             (set-goal g-wood-escrow-type ACCUMULATED)
             )
@@ -273,7 +273,7 @@
                 (or
                     (up-compare-goal g-desired-num-scorpion > 0)
                     (up-compare-goal g-desired-num-bombard-cannon > 0))))
-        (military-population g:>= g-min-military-pop)
+        (up-compare-goal g-human-military-count g:>= g-min-military-pop)
         =>
         (set-goal g-wood-escrow-type ACCUMULATED)
         )
@@ -284,7 +284,7 @@
         (or
             (up-compare-goal g-desired-num-unique-unit > 0)
             (up-compare-goal g-desired-num-trebuchet > 0))
-        (military-population g:>= g-min-military-pop)
+        (up-compare-goal g-human-military-count g:>= g-min-military-pop)
         =>
         (set-goal g-stone-escrow-type ACCUMULATED)
         )
@@ -293,7 +293,7 @@
         (up-object-type-count-total c: monastery g:< g-desired-num-monastery)
         (building-type-count monastery == 0)
         (up-compare-goal g-desired-num-monk > 0)
-        (military-population g:>= g-min-military-pop)
+        (up-compare-goal g-human-military-count g:>= g-min-military-pop)
         =>
         (set-goal g-wood-escrow-type ACCUMULATED)
         )
@@ -304,7 +304,7 @@
             (up-object-type-count-total c: monastery g:< g-desired-num-monastery)
             (building-type-count monastery == 0)
             (up-compare-goal g-desired-num-second-unique-unit > 0)
-            (military-population g:>= g-min-military-pop)
+            (up-compare-goal g-human-military-count g:>= g-min-military-pop)
             =>
             (set-goal g-wood-escrow-type ACCUMULATED)
             )
@@ -368,7 +368,7 @@
                     (up-compare-goal g-desired-num-military > 0))))
         (or
             (up-compare-goal g-target-military-parity > 0)
-            (military-population g:>= g-required-attack-num))
+            (up-compare-goal g-human-military-count g:>= g-required-attack-num))
         (up-compare-goal g-current-age-primary-unit-tech-progress < REQUIRED-COMPLETE)
         =>
         (set-goal g-wood-escrow-type IMMEDIATE)
@@ -385,7 +385,7 @@
                 (up-compare-goal g-current-age-eco-tech-progress < SECONDARY-COMPLETE)))
         (or
             (up-compare-goal g-target-military-parity > 0)
-            (military-population g:>= g-required-attack-num))
+            (up-compare-goal g-human-military-count g:>= g-required-attack-num))
         =>
         (set-goal g-wood-escrow-type IMMEDIATE)
         (set-goal g-food-escrow-type IMMEDIATE)
@@ -556,7 +556,7 @@
             (goal g-game-focus AGGRESSIVE)
             (goal g-game-focus BALANCED))
         (goal g-age-status SAVE-FOR-FEUDAL)
-        (military-population g:>= g-min-military-pop)
+        (up-compare-goal g-human-military-count g:>= g-min-military-pop)
         =>
         (set-goal g-food-escrow-type IMMEDIATE)
         )
@@ -568,7 +568,7 @@
         (or
             (goal g-age-status SAVE-FOR-CASTLE)
             (goal g-age-status SAVE-FOR-IMPERIAL))
-        (military-population g:>= g-min-military-pop)
+        (up-compare-goal g-human-military-count g:>= g-min-military-pop)
         =>
         (set-goal g-food-escrow-type IMMEDIATE)
         (set-goal g-gold-escrow-type IMMEDIATE)

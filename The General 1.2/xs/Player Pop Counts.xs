@@ -9,17 +9,75 @@ const int INDEXGOAL = 503; //This goal ID stores the index of the stored object 
 const int TYPEGOAL = 504; //This goal ID stores the building or unit type (or class) of an object
 const int OUTPUTGOAL = 505; //This goal ID stores the output value of a function that an AI script can use, usually an object ID or the number of objects found
 
+const int ANY_ALLY = -101;
+const int ANY_ENEMY = -106;
+const int ALLY = 0;
+const int ENEMY = 3;
+
 /*List of Functions
 
 Functions for AI scripters to use.
 
     Counting Functions:
+    bool getPlayersObjectCount - Gets the total number of objects for the given player that are in the explored objects list. Same as getPlayersObjectTypeCount with TYPEGOAL set to -1.
+        Set PLAYERGOAL to the player you want to check.
+            PLAYERGOAL options:
+            1. -1 (-1 counts the given type of object for all players)
+            2. 0 (gaia, only includes alive huntable gaia animals)
+            3. 1-8, my-player-number, scenario-player-#, lobby-player-#
+            4. any-ally or any-enemy (sums up object counts from all allies (not including self) or all enemies (including neutral players))
 
+    bool getPlayersObjectTypeCount - Gets the number of the given object for the given player that are in the explored objects list.
+        Set PLAYERGOAL to the player you want to check.
+            PLAYERGOAL options:
+            1. -1 (-1 counts the given type of object for all players)
+            2. 0 (gaia, only includes alive huntable gaia animals)
+            3. 1-8, my-player-number, scenario-player-#, lobby-player-#
+            4. any-ally or any-enemy (sums up object counts from all allies (not including self) or all enemies (including neutral players))
+        Set TYPEGOAL to the object type you want to check.
+            TYPEGOAL options:
+            1. -1 (-1 counts all explored objects belonging to the given player)
+            2. Unit or Building ID
+            3. Unit or Building line
+            4. Unit or Building class
+            5. Unit or Building set (can also use "spearman-set", "palisade-gate-set", or "stone-gate-set")
+
+    bool getPlayersBuildingCount - Gets the total number of buildings for the given player that are in the explored objects list. Counts building-class, farm-class, and tower-class. Doesn't include walls or towers.
+        Set PLAYERGOAL to the player you want to check. See getPlayersObjectCount description above.
+    bool getPlayersBuildingTypeCount - Calls getPlayersObjectTypeCount if TYPEGOAL isn't set to -1. Calls getPlayersBuildingCount if TYPEGOAL is set to -1.
+        Set PLAYERGOAL to the player you want to check. See getPlayersObjectTypeCount description above.
+        Set TYPEGOAL to the object type you want to check. See getPlayersObjectTypeCount description above.
+    bool getPlayersUnitCount - Gets the total number of units for the given player that are in the explored objects list.
+        Set PLAYERGOAL to the player you want to check. See getPlayersObjectCount description above.
+    bool getPlayersUnitTypeCount - Calls getPlayersObjectTypeCount if TYPEGOAL isn't set to -1. Calls getPlayersUnitCount if TYPEGOAL is set to -1.
+        Set PLAYERGOAL to the player you want to check. See getPlayersObjectTypeCount description above.
+        Set TYPEGOAL to the object type you want to check. See getPlayersObjectTypeCount description above.
+    bool getPlayersCivilianCount - Gets the total number of villagers, fishing ships, trade carts, and trade cogs.
+        Set PLAYERGOAL to the player you want to check. See getPlayersObjectCount description above.
+    bool getPlayersMilitaryCount - Gets the total number of military units (anything that isn't a civilian unit or livestock).
+        Set PLAYERGOAL to the player you want to check. See getPlayersObjectCount description above.
+    bool getPlayersSoldierCount - Gets the total number of land-based military units, including monks.
+        Set PLAYERGOAL to the player you want to check. See getPlayersObjectCount description above.
+    bool getPlayersWarshipCount - Gets the total number of warships and transport ships.
+        Set PLAYERGOAL to the player you want to check. See getPlayersObjectCount description above.
+    bool getPlayersHumanSoldierCount - Gets the total number of land-based non-siege military units, including monks.
+        Set PLAYERGOAL to the player you want to check. See getPlayersObjectCount description above.
+    bool getPlayersSiegeCount - Gets the total number of siege weapons, including petards, organ guns, ballista elephants, hussite wagons, and armored elephants.
+        Set PLAYERGOAL to the player you want to check. See getPlayersObjectCount description above.
 
     Getter Functions:
     bool getObjectsArraySize - Gets the size of the explored objects list. This list includes the explored objects of all players except Gaia.
         The size is stored in OUTPUTGOAL.
+    bool getGaiaArraySize - Gets the size of the gaia animals list. This list includes all gaia animals on the map at the start of the game, whether they've been explored or not. This is a cheating function if it is used for anything else other than looping through the gaia animals array.
+        The size is stored in OUTPUTGOAL.
+    bool getStance - Gets the current stance, ally or enemy, of the given player.
+        Set PLAYERGOAL to the player number you want to get the stance toward. Doesn't work with gaia (0).
+        The stance is stored in OUTPUTGOAL.
+        An allied player returns 0 and an enemy player (or neutral) returns 3. If the given player is my-player-number, it returns -1, and an invalid player returns -2.
     bool getObjectId - Gets the object Id at the index of the explored objects list that matches the index stored in INDEXGOAL.
+        Set INDEXGOAL to the index of the objectsArray you want to retrieve before using this function.
+        The Id is stored in OUTPUTGOAL.
+    bool getGaiaObjectId - Gets the gaia object Id at the index of the explored objects list that matches the index stored in INDEXGOAL.
         Set INDEXGOAL to the index of the objectsArray you want to retrieve before using this function.
         The Id is stored in OUTPUTGOAL.
     bool getObjectPlayer - Gets the player of the object Id at the index of the explored objects list that matches the index stored in INDEXGOAL.
@@ -45,18 +103,25 @@ Functions for AI scripters to use.
 Functions used by Player Pop Count.per to track explored objects. To be used only in the Player Pop Count.per file.
 You shouldn't have to touch these. These functions are listed here for the sake of reading the existing Player Pop Counts code.
 
-    void createExploredObjectsArrays - Only use once at beginning of the game. Creates an explored objects list for each player to store explored objects.
-    void addObject - Adds the object ID stored in IDGOAL to the explored objects list.
+    void createArrays - Only use once at beginning of the game. Creates an explored objects list for each player to store explored objects, as well as other arrays.
         Set IDGOAL or INPUTGOAL to the object Id you want to add to the explored objects list.
+    void addPlayerObject - Calls addObject to add the object ID stored in IDGOAL to the explored objects list.
+    void addGaiaObject - Calls addObject to add the gaia animal object ID stored in IDGOAL to the gaia animal list.
     void removeObject - If the object ID stored in IDGOAL is stored in the explored objects list, the object ID in the list is set to -1, and it calls the removeNullObjects() function to remove it from the explored objects list.
         Set IDGOAL or INPUTGOAL to the object Id you want to remove from the explored objects list.
     void resizeArrays - Sets the size of the objectsPlayerArray, objectsTypeArray, and objectsClassArray to the same size as the explored objects list.
     void getNextObjectId - Finds the Id of the next object in the array to skip during the ID loop search for new objects
 
     Called Functions: (only can be called by other functions, not by the AI script)
-    bool removeNullObjects - Called by the removeObject function to remove any -1 values from the explored objects list. Returns true if an object was removed, otherwise false.
+    void addObject(array) - Adds the object ID stored in IDGOAL to the specified array.
+    bool removeNullObjects() - Called by the removeObject function to remove any -1 values from the explored objects list. Returns true if an object was removed, otherwise false.
+    bool checkValidPlayer(player) - Called by the various counting functions to check if the player stored in PLAYERGOAL is a valid player. PLAYERGOAL must be -1, 1 through 8, any-ally, or any-enemy.
+    int countObjects(player, type) - Called by the various counting functions to count the number of objects that match the given player and object type.
 
     Setter Functions:
+    bool setStance - Set the stored stance in the stanceArray for the given player stored in PLAYERGOAL to the value stored in INPUTGOAL.
+        Set PLAYERGOAL to a player number from 1 to 8 before using this function.
+        Set IDGOAL or INPUTGOAL to the stance (ally or enemy) you want to store for the given player.
     bool setObjectId - Sets the INDEXGOAL index of the explored objects list (objectsArray) to the value stored in IDGOAL.
         Set INDEXGOAL to the index of the objectsArray you want to modify before using this function.
         Set IDGOAL or INPUTGOAL to the value you want to modify this index to.
@@ -82,8 +147,10 @@ int objectsArray = -1;
 int objectsPlayerArray = -1;
 int objectsTypeArray = -1;
 int objectsClassArray = -1;
+int stanceArray = -1;
+int gaiaArray = -1;
 
-void createExploredObjectsArrays() {
+void createArrays() {
     int id = -1;
     
     id = xsArrayCreateInt(0, -1, "Objects Array");
@@ -101,6 +168,14 @@ void createExploredObjectsArrays() {
     id = xsArrayCreateInt(0, -1, "Objects Class Array");
     if (id >= 0)
         objectsClassArray = id;
+
+    id = xsArrayCreateInt(8, -2, "Stance Array");   //-2 means not in game
+    if (id >= 0)
+        stanceArray = id;
+
+    id = xsArrayCreateInt(0, -1, "Gaia Array");
+    if (id >= 0)
+        gaiaArray = id;
 }
 
 bool removeNullObjects() {
@@ -117,11 +192,17 @@ bool removeNullObjects() {
             j = i;
             while (j < xsArrayGetSize(objectsArray) - 1)  {
                 xsArraySetInt(objectsArray, j, xsArrayGetInt(objectsArray, j + 1));
+                xsArraySetInt(objectsPlayerArray, j, xsArrayGetInt(objectsPlayerArray, j + 1));
+                xsArraySetInt(objectsTypeArray, j, xsArrayGetInt(objectsTypeArray, j + 1));
+                xsArraySetInt(objectsClassArray, j, xsArrayGetInt(objectsClassArray, j + 1));
                 j++;
             }
 
             //Make array smaller
             xsArrayResizeInt(objectsArray, xsArrayGetSize(objectsArray) - 1);
+            xsArrayResizeInt(objectsPlayerArray, xsArrayGetSize(objectsArray));
+            xsArrayResizeInt(objectsTypeArray, xsArrayGetSize(objectsArray));
+            xsArrayResizeInt(objectsClassArray, xsArrayGetSize(objectsArray));
             removed = true;
         }
     }
@@ -129,13 +210,13 @@ bool removeNullObjects() {
     return (removed);
 }
 
-void addObject() {
+void addObject(int arrayId = -1) {
     
     //Check if ID is already in the array
     bool newId = true;
     int id = xsGetGoal(IDGOAL);
-    for (i = 0; < xsArrayGetSize(objectsArray)) {
-        if (xsArrayGetInt(objectsArray, i) == id) {
+    for (i = 0; < xsArrayGetSize(arrayId)) {
+        if (xsArrayGetInt(arrayId, i) == id) {
             newId = false;
         }
     }
@@ -143,10 +224,18 @@ void addObject() {
     //Add object ID to array if it isn't in the array
     int index = -1;
     if (newId) {
-        xsArrayResizeInt(objectsArray, xsArrayGetSize(objectsArray) + 1);
-        index = xsArrayGetSize(objectsArray) - 1;
-        xsArraySetInt(objectsArray, index, id);
+        xsArrayResizeInt(arrayId, xsArrayGetSize(arrayId) + 1);
+        index = xsArrayGetSize(arrayId) - 1;
+        xsArraySetInt(arrayId, index, id);
     }
+}
+
+void addPlayerObject() {
+    addObject(objectsArray);
+}
+
+void addGaiaObject() {
+    addObject(gaiaArray);
 }
 
 void removeObject() {
@@ -233,12 +322,42 @@ bool getObjectsArraySize() {
     }
     return (worked);
 }
+
+bool getGaiaArraySize() {
+    xsSetGoal(OUTPUTGOAL, xsArrayGetSize(gaiaArray));
+    bool worked = true;
+    if (xsGetGoal(OUTPUTGOAL) != xsArrayGetSize(gaiaArray)) {
+        worked = false;
+        xsChatData("getGaiaArraySize function failed");
+    }
+    return (worked);
+}
+
+bool getStance() {
+    xsSetGoal(OUTPUTGOAL, xsArrayGetInt(stanceArray, xsGetGoal(PLAYERGOAL) - 1));
+    bool worked = true;
+    if (xsGetGoal(OUTPUTGOAL) != xsArrayGetInt(stanceArray, xsGetGoal(PLAYERGOAL) - 1)) {
+        worked = false;
+        xsChatData("getStance function failed");
+    }
+    return (worked);
+}
+
 bool getObjectId() {
     xsSetGoal(OUTPUTGOAL, xsArrayGetInt(objectsArray, xsGetGoal(INDEXGOAL)));
     bool worked = true;
     if (xsGetGoal(OUTPUTGOAL) != xsArrayGetInt(objectsArray, xsGetGoal(INDEXGOAL))) {
         worked = false;
         xsChatData("getObjectId function failed");
+    }
+    return (worked);
+}
+bool getGaiaObjectId() {
+    xsSetGoal(OUTPUTGOAL, xsArrayGetInt(gaiaArray, xsGetGoal(INDEXGOAL)));
+    bool worked = true;
+    if (xsGetGoal(OUTPUTGOAL) != xsArrayGetInt(gaiaArray, xsGetGoal(INDEXGOAL))) {
+        worked = false;
+        xsChatData("getGaiaObjectId function failed");
     }
     return (worked);
 }
@@ -271,6 +390,16 @@ bool getObjectClass() {
 }
 
 //Setter Functions
+bool setStance() {
+    xsArraySetInt(stanceArray, xsGetGoal(PLAYERGOAL) - 1, xsGetGoal(INPUTGOAL));
+    bool worked = true;
+    if (xsArrayGetInt(stanceArray, xsGetGoal(PLAYERGOAL) - 1) != xsGetGoal(INPUTGOAL)) {
+        worked = false;
+        xsChatData("setStance function failed");
+    }
+    return (worked);
+}
+
 bool setObjectId() {
     xsArraySetInt(objectsArray, xsGetGoal(INDEXGOAL), xsGetGoal(IDGOAL));
     bool worked = true;
@@ -330,10 +459,534 @@ bool chatObjectClass() {
     return (worked);
 }
 
+bool checkValidPlayer(int player = -1) {
+    bool valid = true;
+    if ((player < -1 || player > 8) && player != ANY_ALLY && player != ANY_ENEMY) {
+        xsChatData("player number is invalid");
+        valid = false;
+    }
+    return (valid);
+}
+
+int countObjects(int player = -1, int type = -1) {
+    int count = 0;
+    int idType = 0; //0 = unit ID, 1 = class ID, 2 = line ID, 3 = set ID
+
+    //Check which type of object was give (unit ID, class ID, line ID, or set ID)
+    if (type >= 900 && type <= 969) {
+        idType = 1;
+    }
+    if (type == 83) {
+        type = cVillagerClass;
+        idType = 1;
+    }
+    if (type == 128) {
+        type = cTradeCartClass;
+        idType = 1;
+    }
+    if (type == 128) {
+        type = cTradeCartClass;
+        idType = 1;
+    }
+    if (type < -1) {
+        idType = 2;
+    }
+    if (type >= 970 && type <= 999) {
+        idType = 3;
+    }
+
+    //Count objects
+    for (i = 0; < xsArrayGetSize(objectsArray)) {
+        if (player == -1 || (player == xsArrayGetInt(objectsPlayerArray, i)) || (player == ANY_ALLY && xsArrayGetInt(stanceArray, xsArrayGetInt(objectsPlayerArray, i) - 1) == ALLY) || (player == ANY_ENEMY && xsArrayGetInt(stanceArray, xsArrayGetInt(objectsPlayerArray, i) - 1) == ENEMY)) {
+            if (idType == 1) {          //class was given
+                if (type == -1 || type == xsArrayGetInt(objectsClassArray, i)) {
+                    count = count + 1;
+                }
+            }
+            else if (idType == 2) {     //line was given
+                for (j = 0; < xsArrayGetSize(lineIdArray)) {
+                    if (type == xsArrayGetInt(lineIdArray, j)) {
+                        for (k = 0; < xsArrayGetSize(wallLineArray + j)) {
+                            if (xsArrayGetInt(wallLineArray + j, k) == xsArrayGetInt(objectsTypeArray, i)) {
+                                count = count + 1;
+                            }
+                        }
+                    }
+                }
+            }
+            else if (idType == 3) {     //set was given
+                for (j = 0; < xsArrayGetSize(setIdArray)) {
+                    if (type == xsArrayGetInt(setIdArray, j)) {
+                        xsChatData("Food Set Index "+j);
+                        for (k = 0; < xsArrayGetSize(monkSetArray + j)) {
+                            if (xsArrayGetInt(monkSetArray + j, k) == xsArrayGetInt(objectsTypeArray, i)) {
+                                count = count + 1;
+                            }
+                        }
+                    }
+                }
+            }
+            else {                      //object ID was given
+                if (type == -1 || type == xsArrayGetInt(objectsTypeArray, i)) {
+                    count = count + 1;
+                }
+            }
+        }
+    }
+
+    return (count);
+}
+
+bool getPlayersObjectTypeCount() {
+    int player = xsGetGoal(PLAYERGOAL);
+    int type = xsGetGoal(TYPEGOAL);
+    int count = 0;
+    bool worked = checkValidPlayer(player);
+
+    if (worked) {
+        count = countObjects(player, type);
+    }
+    else {
+        count = -2;
+    }
+
+    xsSetGoal(OUTPUTGOAL, count);
+    return (worked);
+}
+
 bool getPlayersObjectCount() {
     int player = xsGetGoal(PLAYERGOAL);
-    if (player == -1) {
-        getObjectsArraySize();
+    int type = -1;
+    int count = 0;
+    bool worked = checkValidPlayer(player);
+
+    if (worked) {
+        count = countObjects(player, type);
     }
-    return (true);
+    else {
+        count = -2;
+    }
+
+    xsSetGoal(OUTPUTGOAL, count);
+    return (worked);
+}
+
+bool getPlayersBuildingCount() {
+    int player = xsGetGoal(PLAYERGOAL);
+    int count = 0;
+    bool worked = checkValidPlayer(player);
+
+    if (worked) {
+        int type = cBuildingClass;
+        count = count + countObjects(player, type);
+        type = cFarmClass;
+        count = count + countObjects(player, type);
+        type = cTowerClass;
+        count = count + countObjects(player, type);
+    }
+    else {
+        count = -2;
+    }
+
+    xsSetGoal(OUTPUTGOAL, count);
+    return (worked);
+}
+
+bool getPlayersBuildingTypeCount() {
+    if (TYPEGOAL != -1)
+        bool worked = getPlayersObjectTypeCount();
+    else
+        worked = getPlayersBuildingCount();
+
+    return (worked);
+}
+
+bool getPlayersUnitCount() {
+    int player = xsGetGoal(PLAYERGOAL);
+    int type = -1;
+    int count = 0;
+    bool worked = checkValidPlayer(player);
+
+    if (worked) {
+        count = countObjects(player, type);
+        type = cBuildingClass;
+        count = count - countObjects(player, type);
+        type = cFarmClass;
+        count = count - countObjects(player, type);
+        type = cTowerClass;
+        count = count - countObjects(player, type);
+        type = cWallClass;
+        count = count - countObjects(player, type);
+        type = cGateClass;
+        count = count - countObjects(player, type);
+        type = cFlagClass;
+        count = count - countObjects(player, type);
+        type = cMiscellaneousClass;
+        count = count - countObjects(player, type);
+        type = cRelicClass;
+        count = count - countObjects(player, type);
+        type = cArtifactClass;
+        count = count - countObjects(player, type);
+    }
+    else {
+        count = -2;
+    }
+
+    xsSetGoal(OUTPUTGOAL, count);
+    return (worked);
+}
+
+bool getPlayersUnitTypeCount() {
+    if (TYPEGOAL != -1)
+        bool worked = getPlayersObjectTypeCount();
+    else
+        worked = getPlayersUnitCount();
+
+    return (worked);
+}
+
+bool getPlayersCivilianCount() {
+    int player = xsGetGoal(PLAYERGOAL);
+    int type = -1;
+    int count = 0;
+    bool worked = checkValidPlayer(player);
+
+    if (worked) {
+        type = cTradeBoatClass;
+        count = count + countObjects(player, type);
+        type = cVillagerClass;
+        count = count + countObjects(player, type);
+        type = cTradeCartClass;
+        count = count + countObjects(player, type);
+        type = cFishingBoatClass;
+        count = count + countObjects(player, type);
+    }
+    else {
+        count = -2;
+    }
+
+    xsSetGoal(OUTPUTGOAL, count);
+    return (worked);
+
+}
+
+bool getPlayersMilitaryCount() {
+    int player = xsGetGoal(PLAYERGOAL);
+    int type = -1;
+    int count = 0;
+    bool worked = checkValidPlayer(player);
+
+    if (worked) {
+        getPlayersUnitCount();
+        count = xsGetGoal(OUTPUTGOAL);
+        type = cVillagerClass;
+        count = count - countObjects(player, type);
+        type = cTradeCartClass;
+        count = count - countObjects(player, type);
+        type = cFishingBoatClass;
+        count = count - countObjects(player, type);
+        type = cLivestockClass;
+        count = count - countObjects(player, type);
+        type = cControlledAnimalClass;
+        count = count - countObjects(player, type);
+    }
+    else {
+        count = -2;
+    }
+
+    xsSetGoal(OUTPUTGOAL, count);
+    return (worked);
+
+}
+
+bool getPlayersWarshipCount() {
+    int player = xsGetGoal(PLAYERGOAL);
+    int type = -1;
+    int count = 0;
+    bool worked = checkValidPlayer(player);
+
+    if (worked) {
+        type = cWarshipClass;
+        count = count + countObjects(player, type);
+        type = cTransportShipClass;
+        count = count + countObjects(player, type);
+    }
+    else {
+        count = -2;
+    }
+
+    xsSetGoal(OUTPUTGOAL, count);
+    return (worked);
+
+}
+
+bool getPlayersSoldierCount() {
+    int player = xsGetGoal(PLAYERGOAL);
+    int type = -1;
+    int count = 0;
+    bool worked = checkValidPlayer(player);
+
+    if (worked) {
+        getPlayersMilitaryCount();
+        count = xsGetGoal(OUTPUTGOAL);
+        type = cWarshipClass;
+        count = count - countObjects(player, type);
+        type = cTransportShipClass;
+        count = count - countObjects(player, type);
+    }
+    else {
+        count = -2;
+    }
+
+    xsSetGoal(OUTPUTGOAL, count);
+    return (worked);
+
+}
+
+bool getPlayersSiegeCount() {
+    int player = xsGetGoal(PLAYERGOAL);
+    int type = -1;
+    int count = 0;
+    bool worked = checkValidPlayer(player);
+
+    if (worked) {
+        type = cSiegeWeaponClass;
+        count = count + countObjects(player, type);
+        type = cPetardClass;
+        count = count + countObjects(player, type);
+        type = cPackedUnitClass;
+        count = count + countObjects(player, type);
+        type = cUnpackedSiegeUnitClass;
+        count = count + countObjects(player, type);
+        type = cScorpionClass;
+        count = count + countObjects(player, type);
+        type = cBallistaElephantLine;
+        count = count + countObjects(player, type);
+        type = cArmoredElephantLine;
+        count = count + countObjects(player, type);
+    }
+    else {
+        count = -2;
+    }
+
+    xsSetGoal(OUTPUTGOAL, count);
+    return (worked);
+
+}
+
+bool getPlayersHumanSoldierCount() {
+    int player = xsGetGoal(PLAYERGOAL);
+    int type = -1;
+    int count = 0;
+    bool worked = checkValidPlayer(player);
+
+    if (worked) {
+        getPlayersSoldierCount();
+        count = xsGetGoal(OUTPUTGOAL);
+        getPlayersSiegeCount();
+        count = count - xsGetGoal(OUTPUTGOAL);
+    }
+    else {
+        count = -2;
+    }
+
+    xsSetGoal(OUTPUTGOAL, count);
+    return (worked);
+
+}
+
+bool getPlayersObjectTypeCountMin() {
+    int player = xsGetGoal(PLAYERGOAL);
+    int type = xsGetGoal(TYPEGOAL);
+    int count = 99999;
+    int minPlayer = -1;
+    bool worked = false;
+
+    if (player == ANY_ALLY || player == ANY_ENEMY) {
+        worked = true;
+        for (i = 0; < 8) {
+            if ((player == ANY_ALLY && xsArrayGetInt(stanceArray, i) == ALLY) || (player == ANY_ENEMY && xsArrayGetInt(stanceArray, i) == ENEMY)) {
+                xsSetGoal(PLAYERGOAL, i + 1);
+                getPlayersObjectTypeCount();
+                if (xsGetGoal(OUTPUTGOAL) < count) {
+                    count = min(count, xsGetGoal(OUTPUTGOAL));
+                    minPlayer = i + 1;
+                }
+            }
+        }        
+    }
+    else {
+        xsChatData("Invalid Player Number: "+player);
+        count = -2;
+    }
+
+    xsSetGoal(OUTPUTGOAL, count);
+    xsSetGoal(PLAYERGOAL, minPlayer);
+    return (worked);
+}
+
+bool getPlayersObjectTypeCountMax() {
+    int player = xsGetGoal(PLAYERGOAL);
+    int type = xsGetGoal(TYPEGOAL);
+    int count = 0;
+    int maxPlayer = -1;
+    bool worked = false;
+
+    if (player == ANY_ALLY || player == ANY_ENEMY) {
+        worked = true;
+        for (i = 0; < 8) {
+            if ((player == ANY_ALLY && xsArrayGetInt(stanceArray, i) == ALLY) || (player == ANY_ENEMY && xsArrayGetInt(stanceArray, i) == ENEMY)) {
+                xsSetGoal(PLAYERGOAL, i + 1);
+                getPlayersObjectTypeCount();
+                if (xsGetGoal(OUTPUTGOAL) > count) {
+                    count = max(count, xsGetGoal(OUTPUTGOAL));
+                    maxPlayer = i + 1;
+                }
+            }
+        }        
+    }
+    else {
+        xsChatData("Invalid Player Number: "+player);
+        count = -2;
+    }
+
+    xsSetGoal(OUTPUTGOAL, count);
+    xsSetGoal(PLAYERGOAL, maxPlayer);
+    return (worked);
+}
+
+bool getPlayersObjectCountMin() {
+    xsSetGoal(TYPEGOAL, -1);
+    bool worked = getPlayersObjectTypeCountMin();
+
+    return (worked);
+}
+
+bool getPlayersObjectCountMax() {
+    xsSetGoal(TYPEGOAL, -1);
+    bool worked = getPlayersObjectTypeCountMax();
+
+    return (worked);
+}
+
+
+
+bool getPlayersMilitaryCountMin() {
+    int player = xsGetGoal(PLAYERGOAL);
+    int type = xsGetGoal(TYPEGOAL);
+    int count = 99999;
+    int minPlayer = -1;
+    bool worked = false;
+
+    if (player == ANY_ALLY || player == ANY_ENEMY) {
+        worked = true;
+        for (i = 0; < 8) {
+            if ((player == ANY_ALLY && xsArrayGetInt(stanceArray, i) == ALLY) || (player == ANY_ENEMY && xsArrayGetInt(stanceArray, i) == ENEMY)) {
+                xsSetGoal(PLAYERGOAL, i + 1);
+                getPlayersMilitaryCount();
+                if (xsGetGoal(OUTPUTGOAL) < count) {
+                    count = min(count, xsGetGoal(OUTPUTGOAL));
+                    minPlayer = i + 1;
+                }
+            }
+        }        
+    }
+    else {
+        xsChatData("Invalid Player Number: "+player);
+        count = -2;
+    }
+
+    xsSetGoal(OUTPUTGOAL, count);
+    xsSetGoal(PLAYERGOAL, minPlayer);
+    return (worked);
+}
+
+bool getPlayersMilitaryCountMax() {
+    int player = xsGetGoal(PLAYERGOAL);
+    int type = xsGetGoal(TYPEGOAL);
+    int count = 0;
+    int maxPlayer = -1;
+    bool worked = false;
+
+    if (player == ANY_ALLY || player == ANY_ENEMY) {
+        worked = true;
+        for (i = 0; < 8) {
+            if ((player == ANY_ALLY && xsArrayGetInt(stanceArray, i) == ALLY) || (player == ANY_ENEMY && xsArrayGetInt(stanceArray, i) == ENEMY)) {
+                xsSetGoal(PLAYERGOAL, i + 1);
+                getPlayersMilitaryCount();
+                if (xsGetGoal(OUTPUTGOAL) > count) {
+                    count = max(count, xsGetGoal(OUTPUTGOAL));
+                    maxPlayer = i + 1;
+                }
+            }
+        }        
+    }
+    else {
+        xsChatData("Invalid Player Number: "+player);
+        count = -2;
+    }
+
+    xsSetGoal(OUTPUTGOAL, count);
+    xsSetGoal(PLAYERGOAL, maxPlayer);
+    return (worked);
+}
+
+bool getPlayersCivilianCountMin() {
+    int player = xsGetGoal(PLAYERGOAL);
+    int type = xsGetGoal(TYPEGOAL);
+    int count = 99999;
+    int minPlayer = -1;
+    bool worked = false;
+
+    if (player == ANY_ALLY || player == ANY_ENEMY) {
+        worked = true;
+        for (i = 0; < 8) {
+            if ((player == ANY_ALLY && xsArrayGetInt(stanceArray, i) == ALLY) || (player == ANY_ENEMY && xsArrayGetInt(stanceArray, i) == ENEMY)) {
+                xsSetGoal(PLAYERGOAL, i + 1);
+                getPlayersCivilianCount();
+                if (xsGetGoal(OUTPUTGOAL) < count) {
+                    count = min(count, xsGetGoal(OUTPUTGOAL));
+                    minPlayer = i + 1;
+                }
+            }
+        }        
+    }
+    else {
+        xsChatData("Invalid Player Number: "+player);
+        count = -2;
+    }
+
+    xsSetGoal(OUTPUTGOAL, count);
+    xsSetGoal(PLAYERGOAL, minPlayer);
+    return (worked);
+}
+
+bool getPlayersCivilianCountMax() {
+    int player = xsGetGoal(PLAYERGOAL);
+    int type = xsGetGoal(TYPEGOAL);
+    int count = 0;
+    int maxPlayer = -1;
+    bool worked = false;
+
+    if (player == ANY_ALLY || player == ANY_ENEMY) {
+        worked = true;
+        for (i = 0; < 8) {
+            if ((player == ANY_ALLY && xsArrayGetInt(stanceArray, i) == ALLY) || (player == ANY_ENEMY && xsArrayGetInt(stanceArray, i) == ENEMY)) {
+                xsSetGoal(PLAYERGOAL, i + 1);
+                getPlayersCivilianCount();
+                if (xsGetGoal(OUTPUTGOAL) > count) {
+                    count = max(count, xsGetGoal(OUTPUTGOAL));
+                    maxPlayer = i + 1;
+                }
+            }
+        }        
+    }
+    else {
+        xsChatData("Invalid Player Number: "+player);
+        count = -2;
+    }
+
+    xsSetGoal(OUTPUTGOAL, count);
+    xsSetGoal(PLAYERGOAL, maxPlayer);
+    return (worked);
 }

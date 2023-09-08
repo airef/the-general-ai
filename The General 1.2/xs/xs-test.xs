@@ -820,7 +820,7 @@ void createAttackBonusArrays() {
         highHPSiegeAttackArrayValues = id;
         xsArraySetInt(highHpSiegeAttackArrayValues, 0, 40);
         xsArraySetInt(highHpSiegeAttackArrayValues, 1, 50);
-        xsArraySetInt(highHpSiegeAttackArrayValues, 2, 75);
+        xsArraySetInt(highHpSiegeAttackArrayValues, 2, 50);
         xsArraySetInt(highHpSiegeAttackArrayValues, 3, 40);
         xsArraySetInt(highHpSiegeAttackArrayValues, 4, 50);
     }

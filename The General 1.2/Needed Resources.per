@@ -135,7 +135,7 @@
 			(up-compare-goal g-age-status >= MID-CASTLE))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(building-type-count lumber-camp > 0)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
@@ -156,7 +156,7 @@
 			(up-compare-goal g-age-status >= MID-CASTLE))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(building-type-count lumber-camp > 0)
 		=>
 		(up-store-tech-name c: ri-bow-saw)
@@ -176,7 +176,7 @@
 		(up-research-status c: ri-double-bit-axe >= research-pending)
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-horse-collar == research-available)
 		(up-compare-goal g-age-status >= TO-CASTLE)
 		(building-type-count mill > 0)
@@ -201,7 +201,7 @@
 		(up-research-status c: ri-double-bit-axe >= research-pending)
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-horse-collar == research-available)
 		(up-compare-goal g-age-status >= TO-CASTLE)
 		(building-type-count mill > 0)
@@ -226,7 +226,7 @@
 						(up-compare-goal g-usable-farm-count < 25)))
 				(and
 					(goal g-game-focus DEFENSIVE)
-					(military-population g:< g-min-military-pop))))
+					(up-compare-goal g-human-military-count g:< g-min-military-pop))))
 		=>
 		(up-jump-rule 2)
 		)
@@ -242,7 +242,7 @@
 					(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(building-type-count mill > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
@@ -263,7 +263,7 @@
 					(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(building-type-count mill > 0)
 			=>
 			(up-store-tech-name c: ri-heavy-plow)
@@ -282,7 +282,7 @@
 		(up-compare-goal g-usable-farm-count >= 14)
 		(or
 			(up-compare-goal g-game-focus != DEFENSIVE)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-wheel-barrow == research-available)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
@@ -302,7 +302,7 @@
 		(up-compare-goal g-usable-farm-count >= 14)
 		(or
 			(up-compare-goal g-game-focus != DEFENSIVE)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-wheel-barrow == research-available)
 		=>
 		(up-store-tech-name c: ri-wheel-barrow)
@@ -323,7 +323,7 @@
 		(population >= 80)
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 		(up-research-status c: ri-heavy-plow >= research-pending)
 		(up-research-status c: ri-hand-cart == research-available)
@@ -347,7 +347,7 @@
 		(population >= 80)
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 		(up-research-status c: ri-heavy-plow >= research-pending)
 		(up-research-status c: ri-hand-cart == research-available)
@@ -2084,11 +2084,11 @@
 				(or
 					(goal g-primary-unit slinger)
 					(goal g-primary-unit my-unique-unit)))
-			(up-research-status c: ri-frontier-guards == research-available)
+			(up-research-status c: ri-fabric-shields == research-available)
 			(building-type-count castle > 0)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
-			(up-add-research-cost c: ri-frontier-guards c: 1)
+			(up-add-research-cost c: ri-fabric-shields c: 1)
 			(up-modify-goal g-max-food-needed g:max g-food-cost)
 			(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 			(up-jump-rule 1)
@@ -2100,11 +2100,11 @@
 					(or
 						(goal g-support-unit slinger)
 						(goal g-support-unit my-unique-unit)))
-				(up-research-status c: ri-frontier-guards == research-available)
+				(up-research-status c: ri-fabric-shields == research-available)
 				(building-type-count castle > 0)
 				=>
 				(up-setup-cost-data 1 g-food-cost)
-				(up-add-research-cost c: ri-frontier-guards c: 1)
+				(up-add-research-cost c: ri-fabric-shields c: 1)
 				(up-modify-goal g-max-food-needed g:max g-food-cost)
 				(up-modify-goal g-max-gold-needed g:max g-gold-cost)
 				)
@@ -2116,10 +2116,10 @@
 				(or
 					(goal g-primary-unit slinger)
 					(goal g-primary-unit my-unique-unit)))
-			(up-research-status c: ri-frontier-guards == research-available)
+			(up-research-status c: ri-fabric-shields == research-available)
 			(building-type-count castle > 0)
 			=>
-			(up-store-tech-name c: ri-frontier-guards)
+			(up-store-tech-name c: ri-fabric-shields)
 			(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 			(up-jump-rule 1)
 			)
@@ -2130,10 +2130,10 @@
 					(or
 						(goal g-support-unit slinger)
 						(goal g-support-unit my-unique-unit)))
-				(up-research-status c: ri-frontier-guards == research-available)
+				(up-research-status c: ri-fabric-shields == research-available)
 				(building-type-count castle > 0)
 				=>
-				(up-store-tech-name c: ri-frontier-guards)
+				(up-store-tech-name c: ri-fabric-shields)
 				(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 				)
 
@@ -4520,7 +4520,7 @@
 					(unit-type-count cavalry-class g:>= g-desired-num-cavalry))))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-chain-barding == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -4543,7 +4543,7 @@
 					(unit-type-count cavalry-class g:>= g-desired-num-cavalry))))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-chain-barding == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -4563,7 +4563,7 @@
 					(unit-type-count cavalry-class g:>= g-desired-num-cavalry))))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-chain-barding == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -4585,7 +4585,7 @@
 					(unit-type-count cavalry-class g:>= g-desired-num-cavalry))))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-chain-barding == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -4694,7 +4694,7 @@
 					(goal g-town-under-attack YES)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(goal g-primary-unit-class cavalry-class)
 			(up-research-status c: ri-bloodlines == research-available)
 			(building-type-count stable > 0)
@@ -4715,7 +4715,7 @@
 					(goal g-town-under-attack YES)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(goal g-support-unit-class cavalry-class)
 			(up-compare-goal g-support-unit != battle-elephant)
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
@@ -4739,7 +4739,7 @@
 					(goal g-town-under-attack YES)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(goal g-primary-unit-class cavalry-class)
 			(up-research-status c: ri-bloodlines == research-available)
 			(building-type-count stable > 0)
@@ -4757,7 +4757,7 @@
 					(goal g-town-under-attack YES)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(goal g-support-unit-class cavalry-class)
 			(up-compare-goal g-support-unit != battle-elephant)
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
@@ -4789,7 +4789,7 @@
 					(goal g-town-under-attack YES)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(goal g-primary-unit-class cavalry-class)
 			(up-research-status c: ri-husbandry == research-available)
 			(building-type-count stable > 0)
@@ -4807,7 +4807,7 @@
 					(goal g-town-under-attack YES)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(goal g-support-unit-class cavalry-class)
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
@@ -4829,7 +4829,7 @@
 					(goal g-town-under-attack YES)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(goal g-primary-unit-class cavalry-class)
 			(up-research-status c: ri-husbandry == research-available)
 			(building-type-count stable > 0)
@@ -4847,7 +4847,7 @@
 					(goal g-town-under-attack YES)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(goal g-support-unit-class cavalry-class)
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
@@ -5537,7 +5537,7 @@
 			(unit-type-count archery-class g:>= g-desired-num-foot-archers))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-bodkin-arrow == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -5557,7 +5557,7 @@
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5574,7 +5574,7 @@
 				(unit-type-count cavalry-archer-class g:>= g-desired-num-cavalry-archers))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5594,7 +5594,7 @@
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5611,7 +5611,7 @@
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5630,7 +5630,7 @@
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5650,7 +5650,7 @@
 			(unit-type-count archery-class g:>= g-desired-num-foot-archers))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-bodkin-arrow == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -5667,7 +5667,7 @@
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5683,7 +5683,7 @@
 				(unit-type-count cavalry-archer-class g:>= g-desired-num-cavalry-archers))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5700,7 +5700,7 @@
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5716,7 +5716,7 @@
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5732,7 +5732,7 @@
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-bodkin-arrow == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5831,7 +5831,7 @@
 		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-thumb-ring == research-available)
 		(building-type-count archery-range > 0)
 		=>
@@ -5850,7 +5850,7 @@
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-thumb-ring == research-available)
 			(building-type-count archery-range > 0)
 			=>
@@ -5869,7 +5869,7 @@
 		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-thumb-ring == research-available)
 		(building-type-count archery-range > 0)
 		=>
@@ -5887,7 +5887,7 @@
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-thumb-ring == research-available)
 			(building-type-count archery-range > 0)
 			=>
@@ -5906,7 +5906,7 @@
 		(unit-type-count archery-class >= 7)
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-padded-archer-armor == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -5924,7 +5924,7 @@
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-padded-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5942,7 +5942,7 @@
 		(unit-type-count archery-class >= 7)
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-padded-archer-armor == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -5959,7 +5959,7 @@
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-padded-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -5979,7 +5979,7 @@
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-padded-archer-armor == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -6001,7 +6001,7 @@
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-padded-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6024,7 +6024,7 @@
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-padded-archer-armor == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -6045,7 +6045,7 @@
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-padded-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6065,7 +6065,7 @@
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-padded-archer-armor == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -6087,7 +6087,7 @@
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-padded-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6110,7 +6110,7 @@
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-padded-archer-armor == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -6131,7 +6131,7 @@
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-padded-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6156,7 +6156,7 @@
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(can-research-with-escrow ri-leather-archer-armor)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
@@ -6178,7 +6178,7 @@
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(can-research-with-escrow ri-leather-archer-armor)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
@@ -6200,7 +6200,7 @@
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(can-research-with-escrow ri-leather-archer-armor)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
@@ -6222,7 +6222,7 @@
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(can-research-with-escrow ri-leather-archer-armor)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
@@ -6245,7 +6245,7 @@
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(can-research-with-escrow ri-leather-archer-armor)
 		=>
 		(up-store-tech-name c: ri-leather-archer-armor)
@@ -6266,7 +6266,7 @@
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(can-research-with-escrow ri-leather-archer-armor)
 			=>
 			(up-store-tech-name c: ri-leather-archer-armor)
@@ -6287,7 +6287,7 @@
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(can-research-with-escrow ri-leather-archer-armor)
 			=>
 			(up-store-tech-name c: ri-leather-archer-armor)
@@ -6308,7 +6308,7 @@
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(can-research-with-escrow ri-leather-archer-armor)
 			=>
 			(up-store-tech-name c: ri-leather-archer-armor)
@@ -6326,7 +6326,7 @@
 				(unit-type-count cavalry-archer-class >= 10)))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-leather-archer-armor == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -6346,7 +6346,7 @@
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-leather-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6362,7 +6362,7 @@
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-leather-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6379,7 +6379,7 @@
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-leather-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6397,7 +6397,7 @@
 				(unit-type-count cavalry-cannon-class >= 10)))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-leather-archer-armor == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -6420,7 +6420,7 @@
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-leather-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6437,7 +6437,7 @@
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-leather-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6457,7 +6457,7 @@
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-leather-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6478,7 +6478,7 @@
 				(unit-type-count cavalry-cannon-class >= 10)))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-leather-archer-armor == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -6498,7 +6498,7 @@
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-leather-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6514,7 +6514,7 @@
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-leather-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6531,7 +6531,7 @@
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-leather-archer-armor == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -6628,7 +6628,7 @@
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-ballistics == research-available)
 		(building-type-count university > 0)
 		=>
@@ -6649,7 +6649,7 @@
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-ballistics == research-available)
 			(building-type-count university > 0)
 			=>
@@ -6671,7 +6671,7 @@
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-ballistics == research-available)
 		(building-type-count university > 0)
 		=>
@@ -6691,7 +6691,7 @@
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-ballistics == research-available)
 			(building-type-count university > 0)
 			=>
@@ -6714,7 +6714,7 @@
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-ballistics == research-available)
 			(building-type-count university > 0)
 			=>
@@ -6738,7 +6738,7 @@
 					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-ballistics == research-available)
 			(building-type-count university > 0)
 			=>
@@ -7347,7 +7347,7 @@
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-chain-mail == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -7370,7 +7370,7 @@
 			(up-compare-goal g-age-status >= MID-CASTLE)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-chain-mail == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -7390,7 +7390,7 @@
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-chain-mail == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -7410,7 +7410,7 @@
 			(up-compare-goal g-age-status >= MID-CASTLE)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-chain-mail == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -7494,7 +7494,7 @@
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-forging == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -7514,7 +7514,7 @@
 				(unit-type-count steppe-lancer-line >= 8))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-forging == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -7534,7 +7534,7 @@
 				(up-compare-goal g-age-status >= TO-IMPERIAL))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-forging == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -7557,7 +7557,7 @@
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-forging == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -7576,7 +7576,7 @@
 				(unit-type-count steppe-lancer-line >= 8))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-forging == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -7595,7 +7595,7 @@
 				(up-compare-goal g-age-status >= TO-IMPERIAL))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-forging == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -7616,7 +7616,7 @@
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-iron-casting == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -7637,7 +7637,7 @@
 			(up-compare-goal g-age-status >= MID-CASTLE)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-iron-casting == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -7657,7 +7657,7 @@
 				(up-compare-goal g-age-status >= TO-IMPERIAL)))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-iron-casting == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -7677,7 +7677,7 @@
 			(up-compare-goal g-age-status >= MID-CASTLE)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-iron-casting == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -7696,7 +7696,7 @@
 					(up-compare-goal g-age-status >= TO-IMPERIAL))))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-iron-casting == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -7718,7 +7718,7 @@
 						(up-compare-goal g-age-status >= TO-IMPERIAL))))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-iron-casting == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -7740,7 +7740,7 @@
 					(up-compare-goal g-age-status >= TO-IMPERIAL))))
 		(or
 			(goal g-town-under-attack NO)
-			(military-population g:>= g-min-military-pop))
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-iron-casting == research-available)
 		(building-type-count blacksmith > 0)
 		=>
@@ -7761,7 +7761,7 @@
 						(up-compare-goal g-age-status >= TO-IMPERIAL))))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-iron-casting == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -7883,7 +7883,7 @@
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-supplies == research-available)
 			(building-type-count barracks > 0)
 			=>
@@ -7904,7 +7904,7 @@
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-supplies == research-available)
 			(building-type-count barracks > 0)
 			=>
@@ -7928,7 +7928,7 @@
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-gambesons == research-available)
 			(building-type-count barracks > 0)
 			=>
@@ -7949,7 +7949,7 @@
 					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-gambesons == research-available)
 			(building-type-count barracks > 0)
 			=>
@@ -7980,7 +7980,7 @@
 			(goal g-primary-unit-class infantry-class)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-squires == research-available)
 			(building-type-count barracks > 0)
 			=>
@@ -8000,7 +8000,7 @@
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-squires == research-available)
 			(building-type-count barracks > 0)
 			=>
@@ -8020,7 +8020,7 @@
 			(goal g-primary-unit-class infantry-class)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-squires == research-available)
 			(building-type-count barracks > 0)
 			=>
@@ -8040,7 +8040,7 @@
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 			(or
 				(goal g-town-under-attack NO)
-				(military-population g:>= g-min-military-pop))
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 			(up-research-status c: ri-squires == research-available)
 			(building-type-count barracks > 0)
 			=>
@@ -9219,7 +9219,7 @@
 
 		(defrule
 		(up-object-type-count-total c: battering-ram-line g:< g-desired-num-ram-type)
-		(military-population g:>= g-min-military-pop)
+		(up-compare-goal g-human-military-count g:>= g-min-military-pop)
 		(or
 			(unit-type-count-total battering-ram-line < 1)
 			(and
@@ -9235,7 +9235,7 @@
 		(defrule
 		(taunt-detected TAUNT-PLAYER 246)
 		(up-object-type-count-total c: battering-ram-line g:< g-desired-num-ram-type)
-		(military-population g:>= g-min-military-pop)
+		(up-compare-goal g-human-military-count g:>= g-min-military-pop)
 		(or
 			(unit-type-count-total battering-ram-line < 1)
 			(and
@@ -9285,7 +9285,7 @@
 
 			(defrule
 			(up-object-type-count-total c: trebuchet-set g:< g-desired-num-trebuchet)
-			(military-population g:>= g-min-military-pop)
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop)
 			(or
 				(unit-type-count-total trebuchet-set < 1)
 				(and
@@ -9301,7 +9301,7 @@
 			(defrule
 			(taunt-detected TAUNT-PLAYER 246)
 			(up-object-type-count-total c: trebuchet-set g:< g-desired-num-trebuchet)
-			(military-population g:>= g-min-military-pop)
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop)
 			(or
 				(unit-type-count-total trebuchet-set < 1)
 				(and
@@ -9317,7 +9317,7 @@
 			(defrule
 			; (up-object-type-count-total c: trebuchet-set g:< g-desired-num-trebuchet)	;bugged in DE
 			(up-object-type-count c: trebuchet-set g:< g-desired-num-trebuchet)
-			(military-population g:>= g-min-military-pop)
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop)
 			(or
 				(unit-type-count trebuchet-set < 1)
 				(and
@@ -9334,7 +9334,7 @@
 			(taunt-detected TAUNT-PLAYER 246)
 			; (up-object-type-count-total c: trebuchet-set g:< g-desired-num-trebuchet)	;bugged in DE
 			(up-object-type-count c: trebuchet-set g:< g-desired-num-trebuchet)
-			(military-population g:>= g-min-military-pop)
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop)
 			(or
 				(unit-type-count trebuchet-set < 1)
 				(and
@@ -9355,7 +9355,7 @@
 
 			(defrule
 			(up-object-type-count-total c: bombard-cannon-line g:< g-desired-num-bombard-cannon)
-			(military-population g:>= g-min-military-pop)
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop)
 			(or
 				(unit-type-count-total bombard-cannon-line < 1)
 				(and
@@ -9371,7 +9371,7 @@
 			(defrule
 			(taunt-detected TAUNT-PLAYER 246)
 			(up-object-type-count-total c: bombard-cannon-line g:< g-desired-num-bombard-cannon)
-			(military-population g:>= g-min-military-pop)
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop)
 			(or
 				(unit-type-count-total bombard-cannon-line < 1)
 				(and
@@ -9386,7 +9386,7 @@
 
 			(defrule
 			(up-object-type-count-total c: bombard-cannon g:< g-desired-num-bombard-cannon)
-			(military-population g:>= g-min-military-pop)
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop)
 			(or
 				(unit-type-count-total bombard-cannon < 1)
 				(and
@@ -9402,7 +9402,7 @@
 			(defrule
 			(taunt-detected TAUNT-PLAYER 246)
 			(up-object-type-count-total c: bombard-cannon g:< g-desired-num-bombard-cannon)
-			(military-population g:>= g-min-military-pop)
+			(up-compare-goal g-human-military-count g:>= g-min-military-pop)
 			(or
 				(unit-type-count-total bombard-cannon < 1)
 				(and
@@ -9444,7 +9444,7 @@
 
 		(defrule
 		(up-object-type-count-total c: trade-cart g:< g-desired-num-trade-cart)
-		(military-population g:>= g-min-military-pop)
+		(up-compare-goal g-human-military-count g:>= g-min-military-pop)
 		(nor
 			(goal g-game-focus DEFENSIVE)
 			(goal g-game-focus AGGRESSIVE))
@@ -9460,7 +9460,7 @@
 		(defrule
 		(taunt-detected TAUNT-PLAYER 246)
 		(up-object-type-count-total c: trade-cart g:< g-desired-num-trade-cart)
-		(military-population g:>= g-min-military-pop)
+		(up-compare-goal g-human-military-count g:>= g-min-military-pop)
 		(nor
 			(goal g-game-focus DEFENSIVE)
 			(goal g-game-focus AGGRESSIVE))
@@ -9475,7 +9475,7 @@
 
 		(defrule
 		(up-object-type-count-total c: trade-cog g:< g-desired-num-trade-cog)
-		(military-population g:>= g-min-military-pop)
+		(up-compare-goal g-human-military-count g:>= g-min-military-pop)
 		(nor
 			(goal g-game-focus DEFENSIVE)
 			(goal g-game-focus AGGRESSIVE))
@@ -9491,7 +9491,7 @@
 		(defrule
 		(taunt-detected TAUNT-PLAYER 246)
 		(up-object-type-count-total c: trade-cog g:< g-desired-num-trade-cog)
-		(military-population g:>= g-min-military-pop)
+		(up-compare-goal g-human-military-count g:>= g-min-military-pop)
 		(nor
 			(goal g-game-focus DEFENSIVE)
 			(goal g-game-focus AGGRESSIVE))
