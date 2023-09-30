@@ -289,15 +289,15 @@
 	(up-modify-flag g-flag c:+ FIRST-ATTACK-LAUNCHED)
 	)
 
-	(defrule
-	(goal g-game-focus BOOM)
-	(up-compare-goal g-current-strategy >= BOOMC-STRATS-START)	;Boom Strategies
-	(up-compare-goal g-current-strategy <= BOOMI-STRATS-END)
-	(goal g-attack-status BEFORE-CASTLE-ATTACKS)
-	=>
-	(set-goal g-attack-status BEFORE-LATER-CASTLE-ATTACKS)
-	(up-modify-flag g-flag c:+ FIRST-ATTACK-LAUNCHED)
-	)
+	; (defrule
+	; (goal g-game-focus BOOM)
+	; (up-compare-goal g-current-strategy >= BOOMC-STRATS-START)	;Boom Strategies
+	; (up-compare-goal g-current-strategy <= BOOMI-STRATS-END)
+	; (goal g-attack-status BEFORE-CASTLE-ATTACKS)
+	; =>
+	; (set-goal g-attack-status BEFORE-LATER-CASTLE-ATTACKS)
+	; (up-modify-flag g-flag c:+ FIRST-ATTACK-LAUNCHED)
+	; )
 
 	(defrule
 	(up-compare-goal g-attack-status < BEFORE-IMPERIAL-ATTACKS)
@@ -532,6 +532,15 @@
 			(up-modify-goal g-required-attack-num c:+ 5)
 			)
 
+			;Adjust numbers for town under attack
+			(defrule
+			(current-age == castle-age)
+			(up-compare-goal g-attack-status <= FIRST-CASTLE-ATTACK)
+			(goal g-town-under-attack YES)
+			=>
+			(up-modify-goal g-required-attack-num c:+ 5)
+			)
+
 			;Adjust stop attack numbers based on required attack numbers
 			(defrule
 			(current-age == castle-age)
@@ -739,6 +748,14 @@
 			(up-modify-goal g-required-attack-num c:+ 10)
 			)
 
+			;Adjust numbers for town under attack
+			(defrule
+			(up-compare-goal g-attack-status > FIRST-CASTLE-ATTACK)
+			(goal g-town-under-attack YES)
+			=>
+			(up-modify-goal g-required-attack-num c:+ 10)
+			)
+
 			;Set required/stop attack numbers
 			(defrule
 			(current-age == castle-age)
@@ -796,7 +813,7 @@
 	=>
 	(set-goal g-attacking YES)
 	(up-modify-goal g-attack-status c:+ 1)
-	(set-strategic-number sn-number-civilian-militia 0)
+	; (set-strategic-number sn-number-civilian-militia 0)
 	(up-jump-rule 1)
 	)
 		(defrule
@@ -815,7 +832,7 @@
 		=>
 		(set-goal g-attacking YES)
 		(up-modify-goal g-attack-status c:+ 1)
-		(set-strategic-number sn-number-civilian-militia 0)
+		; (set-strategic-number sn-number-civilian-militia 0)
 		)
 
 	(defrule
@@ -833,7 +850,7 @@
 	=>
 	(set-goal g-attacking YES)
 	(up-modify-goal g-attack-status c:+ 1)
-	(set-strategic-number sn-number-civilian-militia 0)
+	; (set-strategic-number sn-number-civilian-militia 0)
 	(up-jump-rule 1)
 	)
 		(defrule
@@ -851,7 +868,7 @@
 		=>
 		(set-goal g-attacking YES)
 		(up-modify-goal g-attack-status c:+ 1)
-		(set-strategic-number sn-number-civilian-militia 0)
+		; (set-strategic-number sn-number-civilian-militia 0)
 		)
 
 	(defrule
@@ -942,7 +959,7 @@
 	(up-modify-goal g-attack-status c:+ 1)	;move back to previous attack status
 	(up-modify-sn sn-maximum-town-size s:= csn-peaceful-town-size)
 	(up-update-targets)
-	(set-strategic-number sn-number-civilian-militia 4)
+	; (set-strategic-number sn-number-civilian-militia 4)
 	(set-goal g-attack-coordination RETREAT)
 	(up-jump-rule 1)
 	)
@@ -953,7 +970,7 @@
 		(up-modify-goal g-attack-status c:- 1)	;move back to previous attack status
 		(up-modify-sn sn-maximum-town-size s:= csn-peaceful-town-size)
 		(up-update-targets)
-		(set-strategic-number sn-number-civilian-militia 4)
+		; (set-strategic-number sn-number-civilian-militia 4)
 		(set-goal g-attack-coordination RETREAT)
 		)
 

@@ -225,19 +225,181 @@
     #end-if
 
     ;Reduced town size if enemy towers in town
-    (defrule
-    (military-population < 6)
-    (goal g-attacking NO)
-    (or
-        (up-building-type-in-town c: watch-tower > 1)
-        (up-building-type-in-town c: donjon > 1))
-    (up-compare-sn sn-maximum-town-size > 12)
-    =>
-    (up-modify-sn sn-maximum-town-size c:- 1)
-    (up-modify-sn sn-safe-town-size s:min sn-maximum-town-size)
-    (up-modify-sn csn-peaceful-town-size s:min sn-maximum-town-size)
+    ; (defrule
+    ; (military-population < 6)
+    ; (goal g-attacking NO)
+    ; (or
+    ;     (up-building-type-in-town c: watch-tower > 1)
+    ;     (up-building-type-in-town c: donjon > 1))
+    ; (up-compare-sn sn-maximum-town-size > 12)
+    ; =>
+    ; (up-modify-sn sn-maximum-town-size c:- 1)
+    ; (up-modify-sn sn-safe-town-size s:min sn-maximum-town-size)
+    ; (up-modify-sn csn-peaceful-town-size s:min sn-maximum-town-size)
     ; (up-chat-data-to-player my-player-number "Reduce TS against trush: %d" s: sn-maximum-town-size)
+    ; )
+
+    (defrule
+    (up-compare-flag g-flag == TRUSH-DEFENSE)
+    =>
+    (up-modify-sn sn-maximum-town-size c:max 30)
     )
+
+;--------------------------------
+;   SN-NUMBER-CIVILIAN-MILITIA
+;--------------------------------
+
+    ; (load "The General 1.2/Functions/Reset Mini")
+
+    ; (defrule
+    ; (players-building-count any-enemy > 0)
+    ; (military-population < 10)
+    ; =>
+    ; (set-strategic-number sn-focus-player-number 1)
+    ; (up-full-reset-search)
+    ; (up-set-target-point g-position-self-x)
+    ; )
+
+    ;     (defrule
+    ;     (players-building-count any-enemy > 0)
+    ;     (military-population < 10)
+    ;     (nand
+    ;         (player-in-game focus-player)
+    ;         (stance-toward focus-player enemy))
+    ;     (strategic-number sn-focus-player-number <= MAX-PLAYERS)
+    ;     =>
+    ;     (up-modify-sn sn-focus-player-number c:+ 1)
+    ;     (up-jump-rule -1)
+    ;     )
+
+    ;     (defrule
+    ;     (players-building-count any-enemy > 0)
+    ;     (military-population < 10)
+    ;     =>
+    ;     (up-reset-filters)
+    ;     (up-filter-distance c: -1 c: 30)
+    ;     (up-find-remote c: tower-class c: 40)
+    ;     (up-find-remote c: castle c: 40)
+    ;     (up-filter-status c: status-pending c: list-active)
+    ;     (up-find-status-remote c: tower-class c: 40)
+    ;     (up-find-status-remote c: castle c: 40)
+    ;     (up-get-search-state g-local-total)
+    ;     )
+
+    ;     (defrule
+    ;     (players-building-count any-enemy > 0)
+    ;     (military-population < 10)
+    ;     (strategic-number sn-focus-player-number < 8)
+    ;     =>
+    ;     (up-modify-sn sn-focus-player-number c:+ 1)
+    ;     (up-jump-rule -3)
+    ;     )
+
+    ; (defrule
+    ; (players-building-count any-enemy > 0)
+    ; (military-population < 10)
+    ; (up-compare-goal g-remote-total > 0)
+    ; =>
+    ; (up-clean-search search-remote object-data-distance search-order-asc)
+    ; )
+
+    ; (defrule
+    ; (players-building-count any-enemy > 0)
+    ; (military-population < 10)
+    ; (up-compare-goal g-remote-total > 0)
+    ; (up-set-target-object search-remote c: 0)
+    ; (up-object-data object-data-class == tower-class)
+    ; =>
+    ; (chat-to-all "tower found")
+    ; (up-get-point position-object g-point-x)
+    ; (up-set-target-point g-point-x)
+    ; (up-get-object-data object-data-range g-temp)
+    ; (up-modify-goal g-temp c:+ 2)
+    ; (up-modify-goal g-temp c:* 100)
+    ; (up-get-object-data object-data-player g-temp2)
+    ; (up-modify-sn sn-focus-player-number g:= g-temp2)
+    ; (up-remove-objects search-remote object-data-precise-distance g:> g-temp)
+    ; (up-get-search-state g-local-total)
+    ; )
+
+    ; (defrule
+    ; (players-building-count any-enemy > 0)
+    ; (military-population < 10)
+    ; (up-compare-goal g-remote-total > 0)
+    ; (up-set-target-object search-remote c: 0)
+    ; (up-object-data object-data-class == tower-class)
+    ; (up-compare-goal g-remote-total > 1)
+    ; (strategic-number sn-number-civilian-militia > 0)
+    ; =>
+    ; (set-strategic-number sn-allow-civilian-offense 0)
+    ; (set-strategic-number sn-allow-civilian-defense 1)
+    ; (set-strategic-number sn-number-civilian-militia 0)
+    ; (chat-local-to-self "multiple towers, stop attacking towers with vils")
+    ; (up-jump-rule 4)
+    ; )
+
+    ;     (defrule
+    ;     (players-building-count any-enemy > 0)
+    ;     (military-population < 10)
+    ;     (up-compare-goal g-remote-total > 0)
+    ;     (up-set-target-object search-remote c: 0)
+    ;     (up-object-data object-data-class == tower-class)
+    ;     (up-compare-goal g-remote-total <= 1)
+    ;     (players-military-population focus-player < 7)
+    ;     =>
+    ;     (set-goal g-temp2 79)
+    ;     (up-modify-goal g-point-x g:- g-position-self-x)
+    ;     (up-modify-goal g-point-y g:- g-position-self-y)
+    ;     )
+
+    ;     (defrule
+    ;     (goal g-temp2 79)
+    ;     (players-building-count any-enemy > 0)
+    ;     (military-population < 10)
+    ;     (up-compare-goal g-remote-total > 0)
+    ;     (up-set-target-object search-remote c: 0)
+    ;     (up-object-data object-data-class == tower-class)
+    ;     (up-compare-goal g-remote-total <= 1)
+    ;     (up-compare-goal g-point-x < 0)
+    ;     =>
+    ;     (up-modify-goal g-point-x c:* -1)
+    ;     )
+
+    ;     (defrule
+    ;     (goal g-temp2 79)
+    ;     (players-building-count any-enemy > 0)
+    ;     (military-population < 10)
+    ;     (up-compare-goal g-remote-total > 0)
+    ;     (up-set-target-object search-remote c: 0)
+    ;     (up-object-data object-data-class == tower-class)
+    ;     (up-compare-goal g-remote-total <= 1)
+    ;     (up-compare-goal g-point-y < 0)
+    ;     =>
+    ;     (up-modify-goal g-point-y c:* -1)
+    ;     )
+
+    ;     (defrule
+    ;     (goal g-temp2 79)
+    ;     (players-building-count any-enemy > 0)
+    ;     (military-population < 10)
+    ;     (up-compare-goal g-remote-total > 0)
+    ;     (up-set-target-object search-remote c: 0)
+    ;     (up-object-data object-data-class == tower-class)
+    ;     (up-compare-goal g-remote-total <= 1)
+    ;     =>
+    ;     (up-modify-goal g-point-x g:max g-point-y)
+    ;     (up-modify-goal g-point-x c:+ 2)
+    ;     ; (up-modify-sn sn-maximum-town-size g:max g-point-x)
+    ;     (set-strategic-number sn-maximum-town-size 30)
+    ;     (up-modify-sn sn-safe-town-size s:max sn-maximum-town-size)
+    ;     (up-get-focus-fact unit-type-count villager-builder g-temp)
+    ;     (up-modify-goal g-temp c:max 6)
+    ;     (set-strategic-number sn-allow-civilian-offense 2)
+    ;     (set-strategic-number sn-allow-civilian-defense 3)
+    ;     (up-modify-sn sn-number-civilian-militia g:= g-temp)
+    ;     (up-chat-data-to-all "Order %d vils to attack towers" s: sn-number-civilian-militia)
+    ;     (up-chat-data-to-all "Set TS to %d to attack towers" s: sn-maximum-town-size)
+    ;     )
 
 ;-------------------------------
 ;   SN-NUMBER-EXPLORE-GROUPS
@@ -673,12 +835,12 @@
         (goal g-position FLANK)
         (goal g-town-under-attack YES))
     =>
-    (set-strategic-number csn-countering-preference 50)
+    (set-strategic-number csn-countering-preference 65)
     )
 
     (defrule
     (goal g-position POCKET)
     (goal g-town-under-attack NO)
     =>
-    (set-strategic-number csn-countering-preference 25)
+    (set-strategic-number csn-countering-preference 30)
     )

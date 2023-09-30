@@ -481,38 +481,28 @@
         (unit-type-count villager <= 25)
         (up-compare-goal g-age-status < TO-FEUDAL)
         =>
-        (set-goal g-desired-future-food-vils 16)
-        (set-goal g-desired-future-wood-vils 9)
+        (set-goal g-desired-future-food-vils 15)
+        (set-goal g-desired-future-wood-vils 10)
         )
 
         (defrule
         (goal g-current-strategy BOOMC-KNIGHTS)
         (unit-type-count villager >= 26)
         (unit-type-count villager <= 28)
-        (up-compare-goal g-age-status < TO-FEUDAL)
         =>
-        (set-goal g-desired-future-food-vils 16)
-        (set-goal g-desired-future-wood-vils 9)
+        (set-goal g-desired-future-food-vils 15)
+        (set-goal g-desired-future-wood-vils 10)
         (set-goal g-desired-future-gold-vils 3)
         )
 
         (defrule
         (goal g-current-strategy BOOMC-KNIGHTS)
-        (goal g-age-status TO-FEUDAL)
-        =>
-        (set-goal g-desired-future-food-vils 11)
-        (set-goal g-desired-future-wood-vils 13)
-        (set-goal g-desired-future-gold-vils 4)
-        )
-
-        (defrule
-        (goal g-current-strategy BOOMC-KNIGHTS)
-        (unit-type-count villager >= 28)
+        (unit-type-count villager >= 29)
         ; (unit-type-count villager <= 30)
         (up-compare-goal g-age-status < TO-CASTLE)
         =>
-        (set-goal g-desired-future-food-vils 13)
-        (set-goal g-desired-future-wood-vils 13)
+        (set-goal g-desired-future-food-vils 15)
+        (set-goal g-desired-future-wood-vils 11)
         (set-goal g-desired-future-gold-vils 4)
         )
 
@@ -522,9 +512,9 @@
         (goal g-age-status TO-CASTLE)
         (goal g-percent-dynamic-gathering 0)
         =>
-        (set-goal g-desired-future-food-vils 470)
-        (set-goal g-desired-future-wood-vils 370)
-        (set-goal g-desired-future-gold-vils 160)
+        (set-goal g-desired-future-food-vils 490)
+        (set-goal g-desired-future-wood-vils 390)
+        (set-goal g-desired-future-gold-vils 120)
         )
 
         ;Default post-build order percentages (out of 1000 villagers)
@@ -533,9 +523,36 @@
         (current-age >= castle-age)
         =>
         (set-goal g-desired-future-food-vils 520)   ;56%
-        (set-goal g-desired-future-wood-vils 220)   ;24%
-        (set-goal g-desired-future-gold-vils 180)   ;20%
+        (set-goal g-desired-future-wood-vils 280)   ;24%
+        (set-goal g-desired-future-gold-vils 120)   ;20%
         (set-goal g-desired-future-stone-vils 80)
+        )
+
+        ;Default post-build order percentages (out of 1000 villagers)
+        (defrule
+        (goal g-current-strategy BOOMC-KNIGHTS)
+        (current-age >= castle-age)
+        (up-object-type-count-total c: town-center g:< g-desired-num-town-center)
+        (stone-amount < 100)
+        =>
+        (set-goal g-desired-future-food-vils 520)   ;56%
+        (set-goal g-desired-future-wood-vils 300)   ;24%
+        (set-goal g-desired-future-gold-vils 100)   ;20%
+        (set-goal g-desired-future-stone-vils 80)
+        )
+
+        ;Default post-build order percentages (out of 1000 villagers)
+        (defrule
+        (goal g-current-strategy BOOMC-KNIGHTS)
+        (current-age >= castle-age)
+        (or
+            (up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
+            (stone-amount >= 100))
+        =>
+        (set-goal g-desired-future-food-vils 550)   ;56%
+        (set-goal g-desired-future-wood-vils 330)   ;24%
+        (set-goal g-desired-future-gold-vils 120)   ;20%
+        (set-goal g-desired-future-stone-vils 0)
         )
 
     ;-----------------

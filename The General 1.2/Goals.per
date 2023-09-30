@@ -213,6 +213,12 @@
 		)
 
 		(defrule
+		(up-compare-goal g-enemy-units-in-town >= 8)
+		=>
+		(up-modify-goal g-temp g:min g-target-military-parity)
+		)
+
+		(defrule
 		(up-compare-goal g-enemy-units-in-town >= 2)
 		(building-type-count castle > 0)
 		=>
@@ -293,9 +299,28 @@
 		; (chat-local-to-self "Defensive4")
 		)
 
+		;At least 2 towers near town
+
+		(load "The General 1.2/Functions/Reset Mini")
+
+		(defrule
+		(up-compare-flag g-flag == TRUSH-DEFENSE)
+		=>
+		(set-goal g-game-focus DEFENSIVE)
+		; (chat-local-to-self "Defensive5")
+		)
+
 	;----------
 	;	Boom
 	;----------
+
+		;Boom if we're pocket
+		(defrule
+		(goal g-game-focus PENDING)
+		(goal g-position POCKET)
+		=>
+		(set-goal g-game-focus BOOM)
+		)
 
 		;Boom if we fell behind in population and we have a strong ally
 		(defrule
@@ -684,7 +709,7 @@
 	(or
 		(town-under-attack)
 		(up-compare-goal g-enemy-units-in-town >= 7))
-	(goal g-attacking NO)
+	; (goal g-attacking NO)
 	(up-compare-goal g-town-under-attack != YES)
 	(or
 		(up-building-type-in-town c: castle > 0)
@@ -1523,7 +1548,9 @@
 				(players-civilian-population focus-player < 15)
 				(and
 					(players-civilian-population focus-player < 25)
-					(players-building-type-count focus-player town-center == 0)))
+					(or
+						(players-building-type-count focus-player town-center == 0)
+						(players-current-age focus-player <= feudal-age))))
 			=>
 			(up-modify-goal g-temp2 c:* 25)
 			)
@@ -1733,6 +1760,7 @@
 	(up-compare-flag g-flag != FIRST-ATTACK-LAUNCHED)
 	(up-compare-goal g-knight-tech-progress >= PRIORITY-CASTLE-COMPLETE)
 	(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
 	=>
 	(set-goal g-constant-train-unit knight)
 	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-knight)	;This sets g-desired-num-constant-train-unit-goal to the
@@ -1746,6 +1774,7 @@
 	(up-compare-flag g-flag != FIRST-ATTACK-LAUNCHED)
 	(up-compare-goal g-camel-tech-progress >= PRIORITY-CASTLE-COMPLETE)
 	(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
 	=>
 	(set-goal g-constant-train-unit camel)
 	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-camel)
@@ -1759,6 +1788,7 @@
 	(up-compare-flag g-flag != FIRST-ATTACK-LAUNCHED)
 	(up-compare-goal g-second-unique-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)
 	(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
 	=>
 	(set-goal g-constant-train-unit steppe-lancer)
 	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-steppe-lancer)
@@ -1772,6 +1802,7 @@
 	(up-compare-flag g-flag != FIRST-ATTACK-LAUNCHED)
 	(up-compare-goal g-eagle-warrior-tech-progress >= PRIORITY-CASTLE-COMPLETE)
 	(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
 	=>
 	(set-goal g-constant-train-unit eagle-warrior)
 	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-eagle-warrior)
@@ -1785,6 +1816,7 @@
 	(up-compare-flag g-flag != FIRST-ATTACK-LAUNCHED)
 	(up-compare-goal g-archer-tech-progress >= PRIORITY-CASTLE-COMPLETE)
 	(up-compare-goal g-eco-tech-progress >= SECONDARY-FEUDAL-COMPLETE)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
 	=>
 	(set-goal g-constant-train-unit archer)
 	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-archer)
@@ -1798,6 +1830,7 @@
 	(up-compare-flag g-flag != FIRST-ATTACK-LAUNCHED)
 	(up-compare-goal g-cavalry-archer-tech-progress >= PRIORITY-CASTLE-COMPLETE)
 	(up-compare-goal g-eco-tech-progress >= SECONDARY-FEUDAL-COMPLETE)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
 	=>
 	(set-goal g-constant-train-unit cavalry-archer)
 	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-cavalry-archer)
@@ -1813,6 +1846,7 @@
 		(up-research-status c: ri-sanctity >= research-pending)
 		(up-compare-const SANCTITY-AVAILABLE == NO))
 	(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
 	=>
 	(set-goal g-constant-train-unit monk)
 	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-monk)
@@ -1826,6 +1860,7 @@
 	(up-compare-flag g-flag != FIRST-ATTACK-LAUNCHED)
 	(up-compare-goal g-unique-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)
 	(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
 	=>
 	(set-goal g-constant-train-unit my-unique-unit)
 	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-unique-unit)
@@ -1846,7 +1881,9 @@
 	(current-age >= castle-age)
 	(or
 		(up-building-type-in-town c: castle > 0)
-		(military-population > 15))
+		(or
+			(military-population > 15)
+			(up-compare-flag g-flag == TRUSH-DEFENSE)))
 	(building-type-count siege-workshop > 0)
 	(up-compare-goal g-siege-class < 2)
 	(up-compare-goal g-desired-num-ram-type >= 2)
@@ -2318,6 +2355,14 @@
 		=>
 		(up-modify-goal g-flag c:- ALLOW-QUEUED-VILLAGERS)
 		)
+
+		;Priority Castle Eco Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-eco-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		=>
+		(up-modify-goal g-flag c:- ALLOW-QUEUED-VILLAGERS)
+		)
 		
 	;-----------------------
 	;	Enemy Fast Castle
@@ -2370,6 +2415,147 @@
 			)
 
 		#end-if
+
+	;-------------------
+	;	Trush Defense
+	;-------------------
+
+		(load "The General 1.2/Functions/Reset Mini")
+
+		(defrule
+		(up-compare-flag g-flag == TRUSH-DEFENSE)
+		=>
+		(up-modify-flag g-flag c:- TRUSH-DEFENSE)
+		)
+
+		(defrule
+		(players-building-count any-enemy > 0)
+		(military-population < 10)
+		(unit-type-count-total battering-ram-line < 2)
+		(unit-type-count-total armored-elephant-line < 2)
+		=>
+		(set-strategic-number sn-focus-player-number 1)
+		(up-full-reset-search)
+		(up-set-target-point g-position-self-x)
+		)
+
+			(defrule
+			(players-building-count any-enemy > 0)
+			(military-population < 10)
+			(unit-type-count-total battering-ram-line < 2)
+			(unit-type-count-total armored-elephant-line < 2)
+			(nand
+				(player-in-game focus-player)
+				(stance-toward focus-player enemy))
+			(strategic-number sn-focus-player-number <= MAX-PLAYERS)
+			=>
+			(up-modify-sn sn-focus-player-number c:+ 1)
+			(up-jump-rule -1)
+			)
+
+			(defrule
+			(players-building-count any-enemy > 0)
+			(military-population < 10)
+			(unit-type-count-total battering-ram-line < 2)
+			(unit-type-count-total armored-elephant-line < 2)
+			=>
+			(up-reset-filters)
+			(up-filter-distance c: -1 c: 30)
+			(up-filter-include cmdid-military -1 -1 -1)
+			(up-find-remote c: -1 c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+			(defrule
+			(players-building-count any-enemy > 0)
+			(military-population < 10)
+			(unit-type-count-total battering-ram-line < 2)
+			(unit-type-count-total armored-elephant-line < 2)
+			(strategic-number sn-focus-player-number < 8)
+			=>
+			(up-modify-sn sn-focus-player-number c:+ 1)
+			(up-jump-rule -3)
+			)
+
+		(defrule
+		(players-building-count any-enemy > 0)
+		(military-population < 10)
+		(unit-type-count-total battering-ram-line < 2)
+		(unit-type-count-total armored-elephant-line < 2)
+		(up-compare-goal g-remote-total < 10)
+		(or
+			(players-current-age every-enemy < castle-age)
+			(up-compare-goal g-remote-total < 6))
+		=>
+		(set-goal g-temp 79)
+		)
+
+		(defrule
+		(goal g-temp 79)
+		(players-building-count any-enemy > 0)
+		(military-population < 10)
+		(unit-type-count-total battering-ram-line < 2)
+		(unit-type-count-total armored-elephant-line < 2)
+		=>
+		(set-strategic-number sn-focus-player-number 1)
+		(up-full-reset-search)
+		(up-set-target-point g-position-self-x)
+		)
+
+			(defrule
+			(goal g-temp 79)
+			(players-building-count any-enemy > 0)
+			(military-population < 10)
+			(unit-type-count-total battering-ram-line < 2)
+			(unit-type-count-total armored-elephant-line < 2)
+			(nand
+				(player-in-game focus-player)
+				(stance-toward focus-player enemy))
+			(strategic-number sn-focus-player-number <= MAX-PLAYERS)
+			=>
+			(up-modify-sn sn-focus-player-number c:+ 1)
+			(up-jump-rule -1)
+			)
+
+			(defrule
+			(goal g-temp 79)
+			(players-building-count any-enemy > 0)
+			(military-population < 10)
+			(unit-type-count-total battering-ram-line < 2)
+			(unit-type-count-total armored-elephant-line < 2)
+			=>
+			(up-reset-filters)
+			(up-filter-distance c: -1 c: 30)
+			(up-find-remote c: tower-class c: 40)
+			(up-find-remote c: castle c: 40)
+			(up-filter-status c: status-pending c: list-active)
+			(up-find-status-remote c: tower-class c: 40)
+			(up-find-status-remote c: castle c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+			(defrule
+			(goal g-temp 79)
+			(players-building-count any-enemy > 0)
+			(military-population < 10)
+			(unit-type-count-total battering-ram-line < 2)
+			(unit-type-count-total armored-elephant-line < 2)
+			(strategic-number sn-focus-player-number < 8)
+			=>
+			(up-modify-sn sn-focus-player-number c:+ 1)
+			(up-jump-rule -3)
+			)
+
+		(defrule
+		(goal g-temp 79)
+		(players-building-count any-enemy > 0)
+		(military-population < 10)
+		(unit-type-count-total battering-ram-line < 2)
+		(unit-type-count-total armored-elephant-line < 2)
+		(up-compare-goal g-remote-total > 0)
+		=>
+		(up-modify-flag g-flag c:+ TRUSH-DEFENSE)
+		)
 
 ;------------------------------
 ;	GOAL: g-min-military-pop
@@ -4011,13 +4197,22 @@
 		(up-compare-goal g-target-age-parity != WE-ARE-AHEAD)
 		; (soldier-count < 4)
 		(soldier-count < 3)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
+		=>
+		(up-gather-inside c: siege-workshop c: 1)
+		)
+		(defrule
+		(goal g-gather-inside NO)
+		(goal g-attacking NO)
+		(up-compare-goal g-target-age-parity != WE-ARE-AHEAD)
+		; (soldier-count < 4)
+		(soldier-count < 3)
 		=>
 		(set-goal g-gather-inside YES)
 		(up-gather-inside c: monastery c: 1)
 		(up-gather-inside c: barracks c: 1)
 		(up-gather-inside c: archery-range c: 1)
 		(up-gather-inside c: stable c: 1)
-		(up-gather-inside c: siege-workshop c: 1)
 		(up-gather-inside c: castle c: 1)
 		)
 
@@ -4065,8 +4260,14 @@
 	(up-gather-inside c: barracks c: 1)
 	(up-gather-inside c: archery-range c: 1)
 	(up-gather-inside c: stable c: 1)
-	(up-gather-inside c: siege-workshop c: 1)
 	(up-gather-inside c: castle c: 1)
+	)
+	(defrule
+	(up-compare-goal g-temp3 g:!= g-previous-garrisonable-building-count)	;the number of garrisonable buildings has changed, reset gather points
+	(goal g-gather-inside YES)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
+	=>
+	(up-gather-inside c: siege-workshop c: 1)
 	)
 
 	;Ungarrison

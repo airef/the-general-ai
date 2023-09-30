@@ -3140,6 +3140,89 @@
             (up-target-point 0 action-delete -1 -1)
             )
 
+    ;----------------------------------------
+    ;   Delete Dropsites Near Enemy Towers
+    ;----------------------------------------
+
+        (load "The General 1.2/Functions/Reset Mini")
+
+        (defrule
+        (up-compare-flag g-flag == TRUSH-DEFENSE)
+        =>
+        (up-full-reset-search)
+        (up-find-local c: mill c: 10)
+        (up-find-local c: mining-camp c: 10)
+        (up-find-local c: lumber-camp c: 10)
+        (set-goal g-loop-counter 0)
+        (set-goal g-temp 0)
+        )
+
+        (defrule
+        (up-compare-flag g-flag == TRUSH-DEFENSE)
+        (up-set-target-object search-local g: g-loop-counter)
+        =>
+        (set-strategic-number sn-focus-player-number 1)
+        )
+
+            (defrule
+            (up-compare-flag g-flag == TRUSH-DEFENSE)
+            (up-set-target-object search-local g: g-loop-counter)
+            (nand
+                (player-in-game focus-player)
+                (stance-toward focus-player enemy))
+            (strategic-number sn-focus-player-number <= MAX-PLAYERS)
+            =>
+            (up-modify-sn sn-focus-player-number c:+ 1)
+            (up-jump-rule -1)
+            )
+
+            (defrule
+            (up-compare-flag g-flag == TRUSH-DEFENSE)
+            (up-set-target-object search-local g: g-loop-counter)
+            (strategic-number sn-focus-player-number <= MAX-PLAYERS)
+            =>
+            (up-get-point position-object g-point-x)
+            (up-set-target-point g-point-x)
+            (up-reset-search 0 0 1 1)
+            (up-filter-distance c: -1 c: 11)
+            (up-find-remote c: tower-class c: 40)
+            (up-get-search-state g-local-total)
+            (up-modify-goal g-temp g:+ g-remote-total)
+            ; (up-chat-data-to-all "Towers found: %d" g: g-temp)
+            )
+
+            (defrule
+            (up-compare-flag g-flag == TRUSH-DEFENSE)
+            (up-set-target-object search-local g: g-loop-counter)
+            (strategic-number sn-focus-player-number <= MAX-PLAYERS)
+            (up-compare-goal g-temp >= 2)
+            (or
+                (up-object-data object-data-base-type != lumber-camp)
+                (building-type-count-total lumber-camp > 1))
+            =>
+            (up-remove-objects search-local object-data-index g:!= g-loop-counter)
+            (up-target-point 0 action-delete -1 -1)
+            ; (chat-to-all "delete dropsite near enemy towers")
+            (up-jump-rule 2)
+            )
+
+            (defrule
+            (up-compare-flag g-flag == TRUSH-DEFENSE)
+            (up-set-target-object search-local g: g-loop-counter)
+            (strategic-number sn-focus-player-number < 8)
+            =>
+            (up-modify-sn sn-focus-player-number c:+ 1)
+            (up-jump-rule -4)
+            )
+
+            (defrule
+            (up-compare-flag g-flag == TRUSH-DEFENSE)
+            (up-modify-goal g-loop-counter c:+ 1)
+            (up-set-target-object search-local g: g-loop-counter)
+            =>
+            (up-jump-rule -6)
+            )
+
     ;-------------------------------------------
     ;   Dropsite Building Construction Assist
     ;-------------------------------------------

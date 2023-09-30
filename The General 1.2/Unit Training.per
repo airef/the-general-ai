@@ -25,6 +25,7 @@
 	(up-object-type-count-total g: g-constant-train-unit g:< g-desired-num-constant-train-unit)
 	(up-can-train g-escrow g: g-constant-train-unit)
 	(up-compare-goal g-age-status < MID-IMPERIAL)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
 	=>
 	(up-train g-escrow g: g-constant-train-unit)
 	)
@@ -348,6 +349,19 @@
 			(goal g-siege-workshop-next-unit battering-ram-line)
 			(not
 				(up-can-train g-escrow g: g-siege-workshop-next-unit)))
+		(up-compare-flag g-flag == TRUSH-DEFENSE)
+		(up-object-type-count-total c: battering-ram-line g:< g-desired-num-ram-type)
+		(can-train-with-escrow battering-ram-line)
+		=>
+		(up-train g-escrow c: battering-ram-line)
+		)
+
+		(defrule
+		(up-compare-goal g-siege-workshop-next-unit != 0)
+		(or
+			(goal g-siege-workshop-next-unit battering-ram-line)
+			(not
+				(up-can-train g-escrow g: g-siege-workshop-next-unit)))
 		(or
 			(players-unit-type-count any-enemy unpacked-trebuchet-class >= 2)
 			(goal g-attacking YES))
@@ -375,6 +389,11 @@
 		(goal g-siege-workshop-next-unit mangonel)
 		(up-compare-goal g-mangonel-line g:< g-desired-num-mangonel)
 		(can-train-with-escrow mangonel)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
 		=>
 		(up-train g-escrow c: mangonel)
 		)
@@ -394,6 +413,11 @@
 		(goal g-town-under-attack NO)
 		(up-object-type-count-total c: scorpion-line g:< g-desired-num-scorpion)
 		(can-train scorpion)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
 		=>
 		(train scorpion)
 		)
@@ -461,6 +485,11 @@
 				(up-compare-goal g-unique-unit-line g:< g-desired-num-unique-unit)
 				(goal g-unique-unit-line 0)
 				(can-train-with-escrow my-unique-unit)
+				(or
+					(up-compare-flag g-flag != TRUSH-DEFENSE)
+					(or
+						(unit-type-count-total battering-ram-line > 0)
+						(unit-type-count-total armored-elephant-line > 0)))
 				=>
 				(up-train g-escrow c: my-unique-unit)
 				)
@@ -471,6 +500,11 @@
 				(or
 					(goal g-temp 0)
 					(up-compare-goal g-difficulty >= HARDEST))
+				(or
+					(up-compare-flag g-flag != TRUSH-DEFENSE)
+					(or
+						(unit-type-count-total battering-ram-line > 0)
+						(unit-type-count-total armored-elephant-line > 0)))
 				=>
 				(train my-unique-unit)
 				)
@@ -623,6 +657,11 @@
 		(up-compare-goal g-desired-num-knight > 0)
 		(unit-type-count-total knight-line == 0)
 		(can-train-with-escrow knight-line)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
 		=>
 		(up-train g-escrow c: knight-line)
 		)
@@ -631,6 +670,11 @@
 		(goal g-stable-next-unit knight-line)
 		(up-object-type-count-total c: knight-line g:< g-desired-num-knight)
 		(can-train knight-line)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
 		=>
 		(train knight-line)
 		)
@@ -639,6 +683,11 @@
 		(up-compare-goal g-desired-num-camel > 0)
 		(up-compare-goal g-camel-line == 0)
 		(can-train-with-escrow camel)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
 		=>
 		(up-train g-escrow c: camel)
 		)
@@ -647,6 +696,11 @@
 		(goal g-stable-next-unit camel)
 		(up-object-type-count-total g: g-camel-line g:< g-desired-num-camel)
 		(can-train camel)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
 		=>
 		(train camel)
 		)
@@ -655,6 +709,11 @@
 		(up-compare-goal g-desired-num-steppe-lancer > 0)
 		(unit-type-count-total steppe-lancer-line == 0)
 		(can-train-with-escrow steppe-lancer-line)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
 		=>
 		(up-train g-escrow c: steppe-lancer-line)
 		)
@@ -663,6 +722,11 @@
 		(goal g-stable-next-unit steppe-lancer-line)
 		(up-object-type-count-total c: steppe-lancer-line g:< g-desired-num-steppe-lancer)
 		(can-train steppe-lancer-line)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
 		=>
 		(train steppe-lancer-line)
 		)
@@ -696,6 +760,11 @@
 			(or
 				(up-research-status c: ri-light-cavalry >= research-pending)
 				(up-compare-const LIGHT-CAVALRY-AVAILABLE == NO)))
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
 		=>
 		(up-train g-escrow c: scout-cavalry-line)
 		)
@@ -709,6 +778,11 @@
 			(or
 				(up-research-status c: ri-light-cavalry >= research-pending)
 				(up-compare-const LIGHT-CAVALRY-AVAILABLE == NO)))
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
 		=>
 		(train scout-cavalry-line)
 		)
@@ -721,6 +795,7 @@
 		(up-compare-goal g-desired-num-monk > 0)
 		(unit-type-count-total monk == 0)
 		(can-train-with-escrow monk)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
 		=>
 		(up-train g-escrow c: monk)
 		)
@@ -728,6 +803,7 @@
 		(defrule
 		(up-object-type-count-total c: monk-set g:< g-desired-num-monk)
 		(can-train monk)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
 		=>
 		(train monk)
 		)
@@ -738,6 +814,7 @@
 			(up-compare-goal g-desired-num-second-unique-unit > 0)
 			(unit-type-count-total missionary == 0)
 			(can-train-with-escrow missionary)
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
 			=>
 			(up-train g-escrow c: missionary)
 			)
@@ -745,6 +822,7 @@
 			(defrule
 			(up-object-type-count-total c: missionary g:< g-desired-num-second-unique-unit)
 			(can-train missionary)
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
 			=>
 			(train missionary)
 			)
@@ -761,6 +839,7 @@
 			(up-compare-goal g-desired-num-elephant-archer > 0)
 			(unit-type-count-total elephant-archer-line == 0)
 			(can-train-with-escrow elephant-archer-line)
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
 			=>
 			(up-train g-escrow c: elephant-archer-line)
 			)
@@ -773,6 +852,7 @@
 					(up-can-train 0 g: g-archery-range-next-unit)))
 			(up-object-type-count-total c: elephant-archer-line g:< g-desired-num-elephant-archer)
 			(can-train elephant-archer-line)
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
 			=>
 			(train elephant-archer-line)
 			)
@@ -783,6 +863,7 @@
 		(up-compare-goal g-desired-num-cavalry-archer > 0)
 		(unit-type-count-total cavalry-archer-line == 0)
 		(can-train-with-escrow cavalry-archer-line)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
 		=>
 		(up-train g-escrow c: cavalry-archer-line)
 		)
@@ -795,6 +876,7 @@
 				(up-can-train 0 g: g-archery-range-next-unit)))
 		(up-object-type-count-total c: cavalry-archer-line g:< g-desired-num-cavalry-archer)
 		(can-train cavalry-archer-line)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
 		=>
 		(train cavalry-archer-line)
 		)
@@ -803,6 +885,7 @@
 		(up-compare-goal g-desired-num-hand-cannoneer > 0)
 		(unit-type-count-total hand-cannoneer == 0)
 		(can-train-with-escrow hand-cannoneer)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
 		=>
 		(up-train g-escrow c: hand-cannoneer)
 		)
@@ -815,6 +898,7 @@
 				(up-can-train 0 g: g-archery-range-next-unit)))
 		(up-object-type-count-total c: hand-cannoneer g:< g-desired-num-hand-cannoneer)
 		(can-train hand-cannoneer)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
 		=>
 		(train hand-cannoneer)
 		)
@@ -825,6 +909,7 @@
 			(up-compare-goal g-desired-num-second-unique-unit > 0)
 			(unit-type-count-total slinger == 0)
 			(can-train-with-escrow slinger)
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
 			=>
 			(up-train g-escrow c: slinger)
 			)
@@ -837,6 +922,7 @@
 					(up-can-train 0 g: g-archery-range-next-unit)))
 			(up-object-type-count-total c: slinger g:< g-desired-num-second-unique-unit)
 			(can-train slinger)
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
 			=>
 			(train slinger)
 			)
@@ -852,6 +938,7 @@
 			(or
 				(up-research-status c: ri-crossbow >= research-pending)
 				(up-compare-const CROSSBOWMAN-AVAILABLE == NO)))
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
 		=>
 		(up-train g-escrow c: archer-line)
 		)
@@ -869,6 +956,7 @@
 			(or
 				(up-research-status c: ri-crossbow >= research-pending)
 				(up-compare-const CROSSBOWMAN-AVAILABLE == NO)))
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
 		=>
 		(train archer-line)
 		)
@@ -877,6 +965,7 @@
 		(up-compare-goal g-desired-num-genitour > 0)
 		(up-compare-goal g-genitour-line == 0)
 		(can-train-with-escrow genitour-placeholder)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
 		=>
 		(up-train g-escrow c: genitour-placeholder)
 		)
@@ -889,6 +978,7 @@
 				(up-can-train 0 g: g-archery-range-next-unit)))
 		(up-compare-goal g-genitour-line g:< g-desired-num-genitour)
 		(can-train genitour-placeholder)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
 		=>
 		(train genitour-placeholder)
 		)
@@ -902,6 +992,7 @@
 			(or
 				(up-research-status c: ri-elite-skirmisher >= research-pending)
 				(up-compare-const ELITE-SKIRMISHER-AVAILABLE == NO)))
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
 		=>
 		(up-train g-escrow c: skirmisher-line)
 		)
@@ -919,6 +1010,7 @@
 			(or
 				(up-research-status c: ri-elite-skirmisher >= research-pending)
 				(up-compare-const ELITE-SKIRMISHER-AVAILABLE == NO)))
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
 		=>
 		(train skirmisher)
 		)
@@ -931,6 +1023,11 @@
 		(up-compare-goal g-desired-num-condottiero > 0)
 		(unit-type-count-total condottiero == 0)
 		(can-train-with-escrow condottiero)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
 		=>
 		(up-train g-escrow c: condottiero)
 		)
@@ -943,6 +1040,11 @@
 				(up-can-train 0 g: g-barracks-next-unit)))
 		(up-object-type-count-total c: condottiero g:< g-desired-num-condottiero)
 		(can-train condottiero-placeholder)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
 		=>
 		(train condottiero-placeholder)
 		)
@@ -951,6 +1053,11 @@
 		(up-compare-goal g-desired-num-eagle-warrior > 0)
 		(up-compare-goal g-eagle-scout-line == 0)
 		(can-train-with-escrow eagle-warrior)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
 		=>
 		(up-train g-escrow c: eagle-warrior)
 		)
@@ -963,6 +1070,11 @@
 				(up-can-train 0 g: g-barracks-next-unit)))
 		(up-compare-goal g-eagle-scout-line g:< g-desired-num-eagle-warrior)
 		(can-train eagle-warrior)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
 		=>
 		(train eagle-warrior)
 		)
@@ -977,6 +1089,11 @@
 		(or
 			(current-age < castle-age)
 			(up-research-status c: ri-man-at-arms >= research-pending))
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
 		=>
 		(up-train g-escrow c: militiaman-line)
 		)
@@ -995,6 +1112,11 @@
 		(or
 			(current-age < castle-age)
 			(up-research-status c: ri-man-at-arms >= research-pending))
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
 		=>
 		(train militiaman-line)
 		)
@@ -1008,6 +1130,11 @@
 			(or
 				(up-research-status c: ri-pikeman >= research-pending)
 				(up-compare-const PIKEMAN-AVAILABLE == NO)))
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
 		=>
 		(up-train g-escrow c: spearman-line)
 		)
@@ -1025,6 +1152,11 @@
 			(or
 				(up-research-status c: ri-pikeman >= research-pending)
 				(up-compare-const PIKEMAN-AVAILABLE == NO)))
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
 		=>
 		(train spearman-line)
 		)

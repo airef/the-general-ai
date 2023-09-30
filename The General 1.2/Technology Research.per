@@ -81,7 +81,10 @@
 		(or
 			(up-compare-goal g-current-strategy != FC-STRONGBOW)
 			(up-compare-goal g-age-status >= MID-CASTLE))
-		(up-compare-goal g-primary-unit-tech-progress >= REQUIRED-CASTLE-COMPLETE)
+		(or
+			(goal g-game-focus BOOM)
+			(up-compare-goal g-primary-unit-tech-progress >= REQUIRED-CASTLE-COMPLETE))
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
 		(up-add-research-cost c: ri-bow-saw c: 1)
@@ -114,7 +117,9 @@
 			(goal g-strategy-type FAST-IMPERIAL))
 		(or
 			(up-compare-goal g-current-strategy != FC-STRONGBOW)
-			(up-compare-goal g-primary-unit-tech-progress >= SECONDARY-CASTLE-COMPLETE))
+			(or
+				(goal g-game-focus BOOM)
+				(up-compare-goal g-primary-unit-tech-progress >= SECONDARY-CASTLE-COMPLETE)))
 		(up-research-status c: ri-double-bit-axe >= research-pending)
 		(can-research-with-escrow ri-horse-collar)
 		(up-compare-goal g-age-status >= TO-CASTLE)
@@ -156,6 +161,7 @@
 				(and
 					(goal g-position POCKET)
 					(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)))
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
 			=>
 			(up-setup-cost-data 1 g-food-cost)
 			(up-add-research-cost c: ri-heavy-plow c: 1)
@@ -1008,10 +1014,14 @@
 			;Archers
 			(defrule
 			(or
-				(goal g-primary-unit-class archery-class)
+				(and
+					(goal g-primary-unit-class archery-class)
+					(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE))
 				(and
 					(goal g-support-unit-class archery-class)
-					(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
+					(and
+						(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+						(up-compare-goal g-support-unit-tech-progress >= PRIORITY-IMPERIAL-COMPLETE))))
 			(or
 				(unit-type-count archery-class >= 12)
 				(unit-type-count archery-class g:>= g-desired-num-foot-archers))
@@ -6669,26 +6679,48 @@
 		(or
 			(goal g-primary-unit-class infantry-class)
 			(goal g-support-unit-class infantry-class))
-		(or
-			(up-research-status c: ri-plate-mail < research-pending)
-			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
-		(or
-			(food-amount <= 575)
-			(gold-amount <= 375))
+		(up-research-status c: ri-plate-mail < research-pending)
+		(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == YES)
 		=>
-		(up-jump-rule 5)
+		(up-setup-cost-data 1 g-food-cost)
+		(up-add-research-cost c: ri-plate-mail c: 1)
+		(up-add-research-cost c: ri-blast-furnace c: 1)
+		)
+
+		(defrule
+		(or
+			(goal g-primary-unit-class infantry-class)
+			(goal g-support-unit-class infantry-class))
+		(up-research-status c: ri-plate-mail < research-pending)
+		(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == YES)
+		(or
+			(food-amount g:< g-food-cost)
+			(gold-amount g:< g-gold-cost))
+		=>
+		(up-jump-rule 6)
 		)
 
 		(defrule
 		(or
 			(goal g-primary-unit-class cavalry-class)
 			(goal g-support-unit-class cavalry-class))
+		(up-research-status c: ri-plate-barding < research-pending)
+		(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == YES)
+		=>
+		(up-setup-cost-data 1 g-food-cost)
+		(up-add-research-cost c: ri-plate-barding c: 1)
+		(up-add-research-cost c: ri-blast-furnace c: 1)
+		)
+
+		(defrule
 		(or
-			(up-research-status c: ri-plate-barding < research-pending)
-			(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+			(goal g-primary-unit-class cavalry-class)
+			(goal g-support-unit-class cavalry-class))
+		(up-research-status c: ri-plate-barding < research-pending)
+		(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == YES)
 		(or
-			(food-amount <= 625)
-			(gold-amount <= 425))
+			(food-amount g:< g-food-cost)
+			(gold-amount g:< g-gold-cost))
 		=>
 		(up-jump-rule 4)
 		)

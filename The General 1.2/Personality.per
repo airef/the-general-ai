@@ -503,6 +503,22 @@
 			(set-goal g-ally-requesting-aid PENDING)
 			)
 
+			;If ally is dead, don't defend
+			(defrule
+			(up-compare-goal g-ally-requesting-aid > 0)
+			(up-compare-goal g-ally-requesting-aid s:== csn-ally-to-defend)
+			(goal g-attack-objective HELP-ALLY-DEFEND)
+			(players-population focus-player < 40)
+			(or
+				(game-time >= 2000)
+				(players-population focus-player < 25))
+			=>
+			(up-modify-sn sn-focus-player-number g:= g-ally-requesting-aid)
+			(chat-to-player focus-player TAUNT-48-TOO-WEAK)
+			(chat-to-player my-player-number TAUNT-48-TOO-WEAK)
+			(set-goal g-ally-requesting-aid PENDING)
+			)
+
 			;Set csn-ally-to-defend
 			(load "The General 1.2/Functions/Reset Mini")
 

@@ -4,6 +4,51 @@
 
     (load "The General 1.2/Functions/Reset")
 
+    ;---------------------------
+    ;   Trade for Town Center
+    ;---------------------------
+
+		(defrule
+        (game-time >= 600)
+		(up-timer-status t-5-sec == timer-triggered)
+		(building-type-count-total town-center == 0)
+		=>
+		(up-get-fact commodity-buying-price food g-food-price)
+		(up-get-fact commodity-buying-price wood g-wood-price)
+		(up-get-fact commodity-buying-price stone g-stone-price)
+		(up-setup-cost-data 1 g-food-delta)
+		(up-add-object-cost c: town-center-foundation c: 1)
+		)
+
+        (defrule
+        (game-time >= 600)
+		(up-timer-status t-5-sec == timer-triggered)
+		(building-type-count-total town-center == 0)
+        (wood-amount g:< g-wood-delta)
+        (can-buy-commodity wood)
+        (up-compare-flag g-flag != TRADED)
+        =>
+        (buy-commodity wood)
+        (up-modify-flag g-flag c:+ TRADED)
+        (up-modify-goal g-total-wood-bought c:+ 100)
+        ; (chat-to-player my-player-number "buy wood for TC")
+        )
+
+        (defrule
+        (game-time >= 600)
+		(up-timer-status t-5-sec == timer-triggered)
+		(building-type-count-total town-center == 0)
+        (wood-amount g:>= g-wood-delta)
+        (stone-amount g:< g-stone-delta)
+        (can-buy-commodity stone)
+        (up-compare-flag g-flag != TRADED)
+        =>
+        (buy-commodity stone)
+        (up-modify-flag g-flag c:+ TRADED)
+        (up-modify-goal g-total-stone-bought c:+ 100)
+        ; (chat-to-player my-player-number "buy stone for TC")
+        )
+
     ;--------------------------
     ;   Trade for Castle Age
     ;--------------------------

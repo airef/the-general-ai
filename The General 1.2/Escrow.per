@@ -108,20 +108,20 @@
         (set-goal g-gold-escrow-type ACCUMULATED)
         )
 
-        (defrule
-        (or
-            (goal g-game-focus AGGRESSIVE)
-            (or
-                (goal g-game-focus BOOM)
-                (goal g-game-focus BALANCED)))
-        (up-research-status c: ri-faith < research-pending)
-        (up-compare-const HERESY-AVAILABLE == NO)
-        (up-compare-goal g-enemy-monks-count >= 12)
-        (building-type-count monastery > 0)
-        =>
-        (set-goal g-food-escrow-type ACCUMULATED)
-        (set-goal g-gold-escrow-type ACCUMULATED)
-        )
+        ; (defrule
+        ; (or
+        ;     (goal g-game-focus AGGRESSIVE)
+        ;     (or
+        ;         (goal g-game-focus BOOM)
+        ;         (goal g-game-focus BALANCED)))
+        ; (up-research-status c: ri-faith < research-pending)
+        ; (up-compare-const HERESY-AVAILABLE == NO)
+        ; (up-compare-goal g-enemy-monks-count >= 12)
+        ; (building-type-count monastery > 0)
+        ; =>
+        ; (set-goal g-food-escrow-type ACCUMULATED)
+        ; (set-goal g-gold-escrow-type ACCUMULATED)
+        ; )
 
         (defrule
         (goal g-game-focus DEFENSIVE)
@@ -134,17 +134,17 @@
         (set-goal g-gold-escrow-type ACCUMULATED)
         )
 
-        (defrule
-        (goal g-game-focus DEFENSIVE)
-        (up-compare-goal g-human-military-count g:>= g-min-military-pop)
-        (up-research-status c: ri-faith < research-pending)
-        (up-compare-const HERESY-AVAILABLE == NO)
-        (up-compare-goal g-enemy-monks-count >= 12)
-        (building-type-count monastery > 0)
-        =>
-        (set-goal g-food-escrow-type ACCUMULATED)
-        (set-goal g-gold-escrow-type ACCUMULATED)
-        )
+        ; (defrule
+        ; (goal g-game-focus DEFENSIVE)
+        ; (up-compare-goal g-human-military-count g:>= g-min-military-pop)
+        ; (up-research-status c: ri-faith < research-pending)
+        ; (up-compare-const HERESY-AVAILABLE == NO)
+        ; (up-compare-goal g-enemy-monks-count >= 12)
+        ; (building-type-count monastery > 0)
+        ; =>
+        ; (set-goal g-food-escrow-type ACCUMULATED)
+        ; (set-goal g-gold-escrow-type ACCUMULATED)
+        ; )
 
         (defrule
         (goal g-game-focus DEFENSIVE)
@@ -359,16 +359,11 @@
         
         ;Military/Eco Upgrades
         (defrule
-        (or
-            (goal g-game-focus AGGRESSIVE)
-            (or
-                (goal g-game-focus BALANCED)
-                (and
-                    (goal g-game-focus REBUILD)
-                    (up-compare-goal g-desired-num-military > 0))))
-        (or
-            (up-compare-goal g-target-military-parity > 0)
-            (up-compare-goal g-human-military-count g:>= g-required-attack-num))
+        (up-compare-goal g-game-focus != DEFENSIVE)
+        (up-compare-goal g-desired-num-military > 0)
+        ; (or
+        ;     (up-compare-goal g-target-military-parity > 0)
+        ;     (up-compare-goal g-human-military-count g:>= g-required-attack-num))
         (up-compare-goal g-current-age-primary-unit-tech-progress < REQUIRED-COMPLETE)
         =>
         (set-goal g-wood-escrow-type IMMEDIATE)

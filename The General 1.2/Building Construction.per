@@ -1340,6 +1340,13 @@
 		)
 
 		(defrule
+		(goal g-game-focus DEFENSIVE)
+		(up-compare-goal g-build-line-enemy-bldg-distance >= 12)
+		=>
+		(set-goal g-build-line-enemy-bldg-distance 12)
+		)
+
+		(defrule
 		(goal g-map-style NOMAD)
 		(up-compare-goal g-build-line-enemy-bldg-distance >= 8)
 		=>
@@ -1581,6 +1588,13 @@
 		)
 
 		(defrule
+		(goal g-game-focus DEFENSIVE)
+		(up-compare-goal g-build-line-enemy-bldg-distance >= 12)
+		=>
+		(set-goal g-build-line-enemy-bldg-distance 12)
+		)
+
+		(defrule
 		(goal g-map-style NOMAD)
 		(up-compare-goal g-build-line-enemy-bldg-distance >= 8)
 		=>
@@ -1613,6 +1627,13 @@
 		(set-goal g-build-line-zone-radius 0)
 		(set-goal g-build-line-max-zone-radius 7)
 		; (chat-to-player my-player-number CHAT-BUILD-BACKUP-TC-WOOD)
+		)
+
+		(defrule
+		(goal g-game-focus DEFENSIVE)
+		(up-compare-goal g-build-line-enemy-bldg-distance >= 12)
+		=>
+		(set-goal g-build-line-enemy-bldg-distance 12)
 		)
 
 		(defrule
@@ -1684,6 +1705,13 @@
 		(up-compare-goal g-current-stone-camp-total < 1)
 		=>
 		(set-goal g-build-line-max-distance 30)
+		)
+
+		(defrule
+		(goal g-game-focus DEFENSIVE)
+		(up-compare-goal g-build-line-enemy-bldg-distance >= 12)
+		=>
+		(set-goal g-build-line-enemy-bldg-distance 12)
 		)
 
 		(defrule
@@ -1800,6 +1828,13 @@
 		(set-goal g-build-line-dropsite-distance 8)
 		(set-goal g-build-line-enemy-bldg-distance 25)
 		; (chat-to-player my-player-number "later wood camp")
+		)
+
+		(defrule
+		(goal g-game-focus DEFENSIVE)
+		(up-compare-goal g-build-line-enemy-bldg-distance >= 12)
+		=>
+		(set-goal g-build-line-enemy-bldg-distance 12)
 		)
 
 		(defrule
@@ -2223,6 +2258,9 @@
 	(wood-amount >= 138)
 	(stone-amount >= 100)
 	(can-build-with-escrow mill)	;next cheapest building than Britons TC in terms of wood cost
+	(or
+		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+		(up-compare-flag g-flag != TRUSH-DEFENSE))
 	=>
 	(set-goal g-temp2 2343)
 	)
@@ -2610,9 +2648,7 @@
 
 		(defrule
 		(up-object-type-count-total c: siege-workshop g:< g-desired-num-siege-workshop)
-		(or
-			(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-			(goal g-game-focus AGGRESSIVE))
+		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(can-build-with-escrow siege-workshop)
 		(up-pending-objects c: siege-workshop < 1)
 		(up-compare-flag g-flag != PLACE-CONTROL-USED)
@@ -2625,7 +2661,9 @@
 		(up-object-type-count-total c: siege-workshop g:< g-desired-num-siege-workshop)
 		(or
 			(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-			(goal g-game-focus AGGRESSIVE))
+			(or
+				(goal g-game-focus AGGRESSIVE)
+				(up-compare-flag g-flag == TRUSH-DEFENSE)))
 		(can-build-with-escrow siege-workshop)
 		(up-pending-objects c: siege-workshop < 1)
 		(up-compare-flag g-flag != PLACE-CONTROL-USED)
@@ -2697,6 +2735,9 @@
 
 		(defrule
 		(up-object-type-count-total c: monastery g:< g-desired-num-monastery)
+		(or
+			(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+			(up-compare-flag g-flag != TRUSH-DEFENSE))
 		(goal g-primary-unit monk)
 		(can-build-with-escrow monastery)
 		(up-pending-objects c: monastery < 1)
@@ -2774,6 +2815,9 @@
 			(or
 				(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 				(building-type-count-total barracks == 0)))
+		(or
+			(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+			(up-compare-flag g-flag != TRUSH-DEFENSE))
 		(goal g-primary-unit-class infantry-class)
 		(up-compare-goal g-primary-unit != my-unique-unit)
 		(up-object-type-count-total c: barracks g:< g-desired-num-barracks)
@@ -2889,6 +2933,9 @@
 		)
 
 		(defrule
+		(or
+			(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+			(up-compare-flag g-flag != TRUSH-DEFENSE))
 		(up-object-type-count-total c: barracks g:< g-desired-num-barracks)
 		(can-build barracks)
 		(up-pending-objects c: barracks < 1)
@@ -2989,6 +3036,9 @@
 				(or
 					(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 					(building-type-count-total archery-range == 0)))
+			(or
+				(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+				(up-compare-flag g-flag != TRUSH-DEFENSE))
 			=>
 			(set-goal g-temp5 573429)
 			(up-store-type-name c: archery-range)
@@ -3006,6 +3056,9 @@
 				(or
 					(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 					(building-type-count-total archery-range == 0)))
+			(or
+				(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+				(up-compare-flag g-flag != TRUSH-DEFENSE))
 			=>
 			(set-goal g-temp5 573429)
 			(up-store-type-name c: archery-range)
@@ -3132,6 +3185,9 @@
 
 		(defrule
 		(up-object-type-count-total c: archery-range g:< g-desired-num-archery-range)
+		(or
+			(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+			(up-compare-flag g-flag != TRUSH-DEFENSE))
 		(can-build archery-range)
 		(up-pending-objects c: archery-range < 1)
 		(up-compare-flag g-flag != PLACE-CONTROL-USED)
@@ -3195,6 +3251,9 @@
 			(or
 				(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 				(building-type-count-total stable == 0)))
+		(or
+			(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+			(up-compare-flag g-flag != TRUSH-DEFENSE))
 		(up-object-type-count-total c: stable g:< g-desired-num-stable)
 		(building-type-count-total stable < 2)
 		(can-build-with-escrow stable)
@@ -3212,6 +3271,9 @@
 		(or
 			(building-type-count archery-range > 0)
 			(up-compare-goal g-desired-num-archery-range == 0))
+		(or
+			(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+			(up-compare-flag g-flag != TRUSH-DEFENSE))
 		(can-build-with-escrow stable)
 		(up-pending-objects c: stable < 1)
 		(up-compare-flag g-flag != PLACE-CONTROL-USED)
@@ -3324,6 +3386,9 @@
 
 		(defrule
 		(up-object-type-count-total c: stable g:< g-desired-num-stable)
+		(or
+			(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+			(up-compare-flag g-flag != TRUSH-DEFENSE))
 		(can-build stable)
 		(up-pending-objects c: stable < 1)
 		(up-compare-flag g-flag != PLACE-CONTROL-USED)
@@ -3376,11 +3441,6 @@
 
 		(defrule
 		(up-object-type-count-total c: market g:< g-desired-num-market)
-		(or
-			(wood-amount g:>= g-wood-cost)	;cost of town center
-			(and
-				(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-				(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)))
 		(building-type-count-total market == 0)
 		(can-build-with-escrow market)
 		(up-pending-objects c: market < 1)
@@ -3392,11 +3452,6 @@
 
 		(defrule
 		(up-object-type-count-total c: market g:< g-desired-num-market)
-		(or
-			(wood-amount g:>= g-wood-cost)	;cost of town center
-			(and
-				(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-				(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)))
 		(building-type-count-total market == 0)
 		(can-build-with-escrow market)
 		(up-pending-objects c: market < 1)
@@ -3409,8 +3464,11 @@
 		(defrule
 		(up-object-type-count-total c: market g:< g-desired-num-market)
 		(wood-amount g:>= g-wood-cost)	;cost of town center
+		(not
+			(can-afford-building town-center))
 		(up-object-type-count-total c: archery-range g:>= g-desired-num-archery-range)
 		(up-object-type-count-total c: stable g:>= g-desired-num-stable)
+		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(building-type-count-total market == 0)
 		(can-build-with-escrow market)
 		(up-pending-objects c: market < 1)
@@ -3474,7 +3532,7 @@
 		(defrule
 		(up-object-type-count-total c: blacksmith g:< g-desired-num-blacksmith)
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+		; (up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: archery-range g:>= g-desired-num-archery-range)
 		(up-object-type-count-total c: stable g:>= g-desired-num-stable)
 		(or
@@ -3491,7 +3549,7 @@
 		(defrule
 		(up-object-type-count-total c: blacksmith g:< g-desired-num-blacksmith)
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+		; (up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: archery-range g:>= g-desired-num-archery-range)
 		(up-object-type-count-total c: stable g:>= g-desired-num-stable)
 		(or
@@ -3508,7 +3566,7 @@
 		(defrule
 		(up-object-type-count-total c: blacksmith g:< g-desired-num-blacksmith)
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+		; (up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: archery-range g:>= g-desired-num-archery-range)
 		(up-object-type-count-total c: stable g:>= g-desired-num-stable)
 		(or
@@ -3698,6 +3756,7 @@
 		;Dark Age
 		(defrule
 		(current-age == dark-age)
+		(building-type-count-total town-center > 0)
 		(or
 			(building-type-count-total lumber-camp > 0)
 			(and
@@ -3731,6 +3790,7 @@
 
 		(defrule
 		(current-age == dark-age)
+		(building-type-count-total town-center > 0)
 		(or
 			(building-type-count-total lumber-camp > 0)
 			(dropsite-min-distance wood <= 2))
@@ -3749,6 +3809,7 @@
 		;Feudal Age
 		(defrule
 		(current-age == feudal-age)
+		(building-type-count-total town-center > 0)
 		(or
 			(building-type-count-total lumber-camp > 0)
 			(dropsite-min-distance wood <= 2))
@@ -3766,6 +3827,7 @@
 
 		(defrule
 		(current-age == feudal-age)
+		(building-type-count-total town-center > 0)
 		(up-object-type-count-total c: lumber-camp g:>= g-desired-num-lumber-camp)
 		(up-object-type-count-total c: mining-camp g:>= g-desired-num-mining-camp)
 		(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
@@ -3798,6 +3860,7 @@
 		;Castle/Imperial Age
 		(defrule
 		(current-age >= castle-age)
+		(building-type-count-total town-center > 0)
 		(or
 			(building-type-count-total lumber-camp > 0)
 			(dropsite-min-distance wood <= 2))
@@ -3813,6 +3876,7 @@
 
 		(defrule
 		(current-age >= castle-age)
+		(building-type-count-total town-center > 0)
 		(or
 			(building-type-count-total lumber-camp > 0)
 			(dropsite-min-distance wood <= 2))
@@ -3822,6 +3886,9 @@
 		(or
 			(up-research-status c: ri-horse-collar > research-available)
 			(up-compare-goal g-usable-farm-count < 4))
+		(or
+			(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
+			(up-compare-flag g-flag != TRUSH-DEFENSE))
 		=>
 		(up-get-fact escrow-amount wood g-temp)
 		; (up-chat-data-to-all "Escrow wood: %d" g: g-temp)

@@ -26,6 +26,7 @@ Functions for AI scripters to use.
             2. 0 (gaia, only includes alive huntable gaia animals)
             3. 1-8, my-player-number, scenario-player-#, lobby-player-#
             4. any-ally or any-enemy (sums up object counts from all allies (not including self) or all enemies (including neutral players))
+        The amount is stored in OUTPUTGOAL.
 
     bool getPlayersObjectTypeCount - Gets the number of the given object for the given player that are in the explored objects list.
         Set PLAYERGOAL to the player you want to check.
@@ -41,29 +42,65 @@ Functions for AI scripters to use.
             3. Unit or Building line
             4. Unit or Building class
             5. Unit or Building set (can also use "spearman-set", "palisade-gate-set", or "stone-gate-set")
+        The amount is stored in OUTPUTGOAL.
 
     bool getPlayersBuildingCount - Gets the total number of buildings for the given player that are in the explored objects list. Counts building-class, farm-class, and tower-class. Doesn't include walls or towers.
         Set PLAYERGOAL to the player you want to check. See getPlayersObjectCount description above.
+        The amount is stored in OUTPUTGOAL.
     bool getPlayersBuildingTypeCount - Calls getPlayersObjectTypeCount if TYPEGOAL isn't set to -1. Calls getPlayersBuildingCount if TYPEGOAL is set to -1.
         Set PLAYERGOAL to the player you want to check. See getPlayersObjectTypeCount description above.
         Set TYPEGOAL to the object type you want to check. See getPlayersObjectTypeCount description above.
+        The amount is stored in OUTPUTGOAL.
     bool getPlayersUnitCount - Gets the total number of units for the given player that are in the explored objects list.
         Set PLAYERGOAL to the player you want to check. See getPlayersObjectCount description above.
+        The amount is stored in OUTPUTGOAL.
     bool getPlayersUnitTypeCount - Calls getPlayersObjectTypeCount if TYPEGOAL isn't set to -1. Calls getPlayersUnitCount if TYPEGOAL is set to -1.
         Set PLAYERGOAL to the player you want to check. See getPlayersObjectTypeCount description above.
         Set TYPEGOAL to the object type you want to check. See getPlayersObjectTypeCount description above.
+        The amount is stored in OUTPUTGOAL.
     bool getPlayersCivilianCount - Gets the total number of villagers, fishing ships, trade carts, and trade cogs.
         Set PLAYERGOAL to the player you want to check. See getPlayersObjectCount description above.
+        The amount is stored in OUTPUTGOAL.
     bool getPlayersMilitaryCount - Gets the total number of military units (anything that isn't a civilian unit or livestock).
         Set PLAYERGOAL to the player you want to check. See getPlayersObjectCount description above.
+        The amount is stored in OUTPUTGOAL.
     bool getPlayersSoldierCount - Gets the total number of land-based military units, including monks.
         Set PLAYERGOAL to the player you want to check. See getPlayersObjectCount description above.
+        The amount is stored in OUTPUTGOAL.
     bool getPlayersWarshipCount - Gets the total number of warships and transport ships.
         Set PLAYERGOAL to the player you want to check. See getPlayersObjectCount description above.
+        The amount is stored in OUTPUTGOAL.
     bool getPlayersHumanSoldierCount - Gets the total number of land-based non-siege military units, including monks.
         Set PLAYERGOAL to the player you want to check. See getPlayersObjectCount description above.
+        The amount is stored in OUTPUTGOAL.
     bool getPlayersSiegeCount - Gets the total number of siege weapons, including petards, organ guns, ballista elephants, hussite wagons, and armored elephants.
         Set PLAYERGOAL to the player you want to check. See getPlayersObjectCount description above.
+        The amount is stored in OUTPUTGOAL.
+
+    bool getPlayersObjectTypeCountMin - Gets player with the given stance with the lowest number of the given object that are in the explored objects list and stores the amount of the given object that has been explored for this player. Self is not included.
+        Set PLAYERGOAL to -1 (check every player), any-ally, or any-enemy. Does not work with any other player number. any-ally doesn't include the AI itself.
+        Set TYPEGOAL to the object type you want to check. See getPlayersObjectTypeCount description above.
+        The amount is stored in OUTPUTGOAL.
+        The matching player with the least number of the given object is stored in PLAYERGOAL.
+    bool getPlayersObjectTypeCountMax - Exactly the same as getPlayersObjectTypeCountMin, except it gets the player with the given stance with the highest number of the given object.
+    bool getPlayersObjectCountMin - Gets the ally or enemy with the lowest number of the given type of object that are in the explored objects list and stores the amount of the given object that has been explored for this player. Self is not included.
+        Set PLAYERGOAL to -1 (check every player), any-ally, or any-enemy. Does not work with any other player number. any-ally doesn't include the AI itself.
+        Set TYPEGOAL to the object type you want to check. See getPlayersObjectTypeCount description above.
+        The amount is stored in OUTPUTGOAL.
+        The matching player with the least number of the given object is stored in PLAYERGOAL.
+    bool getPlayersObjectCountMax - Exactly the same as getPlayersObjectCountMin, except it gets the player with the given stance with the highest number of explored objects.
+    bool getPlayersMilitaryCountMin - Gets player with the given stance with the lowest number of military units that are in the explored objects list and stores the amount of the given object that has been explored for this player. Self is not included.
+        Set PLAYERGOAL to -1 (check every player), any-ally, or any-enemy. Does not work with any other player number. any-ally doesn't include the AI itself.
+        Set TYPEGOAL to the object type you want to check. See getPlayersObjectTypeCount description above.
+        The amount is stored in OUTPUTGOAL.
+        The matching player with the least number of military units is stored in PLAYERGOAL.
+    bool getPlayersMilitaryCountMax - Exactly the same as getPlayersObjectTypeCountMin, except it gets the player with the given stance with the highest number of military units.
+    bool getPlayersCivilianCountMin - Gets player with the given stance with the lowest number of civilian units that are in the explored objects list and stores the amount of the given object that has been explored for this player. Self is not included.
+        Set PLAYERGOAL to -1 (check every player), any-ally, or any-enemy. Does not work with any other player number. any-ally doesn't include the AI itself.
+        Set TYPEGOAL to the object type you want to check. See getPlayersObjectTypeCount description above.
+        The amount is stored in OUTPUTGOAL.
+        The matching player with the least number of civilian units is stored in PLAYERGOAL.
+    bool getPlayersCivilianCountMax - Exactly the same as getPlayersObjectTypeCountMin, except it gets the player with the given stance with the highest number of civilian units.
 
     Getter Functions:
     bool getObjectsArraySize - Gets the size of the explored objects list. This list includes the explored objects of all players except Gaia.
@@ -802,10 +839,10 @@ bool getPlayersObjectTypeCountMin() {
     int minPlayer = -1;
     bool worked = false;
 
-    if (player == ANY_ALLY || player == ANY_ENEMY) {
+    if (player == -1 || player == ANY_ALLY || player == ANY_ENEMY) {
         worked = true;
         for (i = 0; < 8) {
-            if ((player == ANY_ALLY && xsArrayGetInt(stanceArray, i) == ALLY) || (player == ANY_ENEMY && xsArrayGetInt(stanceArray, i) == ENEMY)) {
+            if ((player == -1) || (player == ANY_ALLY && xsArrayGetInt(stanceArray, i) == ALLY) || (player == ANY_ENEMY && xsArrayGetInt(stanceArray, i) == ENEMY)) {
                 xsSetGoal(PLAYERGOAL, i + 1);
                 getPlayersObjectTypeCount();
                 if (xsGetGoal(OUTPUTGOAL) < count) {
@@ -832,10 +869,10 @@ bool getPlayersObjectTypeCountMax() {
     int maxPlayer = -1;
     bool worked = false;
 
-    if (player == ANY_ALLY || player == ANY_ENEMY) {
+    if (player == -1 || player == ANY_ALLY || player == ANY_ENEMY) {
         worked = true;
         for (i = 0; < 8) {
-            if ((player == ANY_ALLY && xsArrayGetInt(stanceArray, i) == ALLY) || (player == ANY_ENEMY && xsArrayGetInt(stanceArray, i) == ENEMY)) {
+            if ((player == -1) || (player == ANY_ALLY && xsArrayGetInt(stanceArray, i) == ALLY) || (player == ANY_ENEMY && xsArrayGetInt(stanceArray, i) == ENEMY)) {
                 xsSetGoal(PLAYERGOAL, i + 1);
                 getPlayersObjectTypeCount();
                 if (xsGetGoal(OUTPUTGOAL) > count) {
@@ -878,10 +915,10 @@ bool getPlayersMilitaryCountMin() {
     int minPlayer = -1;
     bool worked = false;
 
-    if (player == ANY_ALLY || player == ANY_ENEMY) {
+    if (player == -1 || player == ANY_ALLY || player == ANY_ENEMY) {
         worked = true;
         for (i = 0; < 8) {
-            if ((player == ANY_ALLY && xsArrayGetInt(stanceArray, i) == ALLY) || (player == ANY_ENEMY && xsArrayGetInt(stanceArray, i) == ENEMY)) {
+            if ((player == -1) || (player == ANY_ALLY && xsArrayGetInt(stanceArray, i) == ALLY) || (player == ANY_ENEMY && xsArrayGetInt(stanceArray, i) == ENEMY)) {
                 xsSetGoal(PLAYERGOAL, i + 1);
                 getPlayersMilitaryCount();
                 if (xsGetGoal(OUTPUTGOAL) < count) {
@@ -908,10 +945,10 @@ bool getPlayersMilitaryCountMax() {
     int maxPlayer = -1;
     bool worked = false;
 
-    if (player == ANY_ALLY || player == ANY_ENEMY) {
+    if (player == -1 || player == ANY_ALLY || player == ANY_ENEMY) {
         worked = true;
         for (i = 0; < 8) {
-            if ((player == ANY_ALLY && xsArrayGetInt(stanceArray, i) == ALLY) || (player == ANY_ENEMY && xsArrayGetInt(stanceArray, i) == ENEMY)) {
+            if ((player == -1) || (player == ANY_ALLY && xsArrayGetInt(stanceArray, i) == ALLY) || (player == ANY_ENEMY && xsArrayGetInt(stanceArray, i) == ENEMY)) {
                 xsSetGoal(PLAYERGOAL, i + 1);
                 getPlayersMilitaryCount();
                 if (xsGetGoal(OUTPUTGOAL) > count) {
@@ -938,10 +975,10 @@ bool getPlayersCivilianCountMin() {
     int minPlayer = -1;
     bool worked = false;
 
-    if (player == ANY_ALLY || player == ANY_ENEMY) {
+    if (player == -1 || player == ANY_ALLY || player == ANY_ENEMY) {
         worked = true;
         for (i = 0; < 8) {
-            if ((player == ANY_ALLY && xsArrayGetInt(stanceArray, i) == ALLY) || (player == ANY_ENEMY && xsArrayGetInt(stanceArray, i) == ENEMY)) {
+            if ((player == -1) || (player == ANY_ALLY && xsArrayGetInt(stanceArray, i) == ALLY) || (player == ANY_ENEMY && xsArrayGetInt(stanceArray, i) == ENEMY)) {
                 xsSetGoal(PLAYERGOAL, i + 1);
                 getPlayersCivilianCount();
                 if (xsGetGoal(OUTPUTGOAL) < count) {
@@ -968,10 +1005,10 @@ bool getPlayersCivilianCountMax() {
     int maxPlayer = -1;
     bool worked = false;
 
-    if (player == ANY_ALLY || player == ANY_ENEMY) {
+    if (player == -1 || player == ANY_ALLY || player == ANY_ENEMY) {
         worked = true;
         for (i = 0; < 8) {
-            if ((player == ANY_ALLY && xsArrayGetInt(stanceArray, i) == ALLY) || (player == ANY_ENEMY && xsArrayGetInt(stanceArray, i) == ENEMY)) {
+            if ((player == -1) || (player == ANY_ALLY && xsArrayGetInt(stanceArray, i) == ALLY) || (player == ANY_ENEMY && xsArrayGetInt(stanceArray, i) == ENEMY)) {
                 xsSetGoal(PLAYERGOAL, i + 1);
                 getPlayersCivilianCount();
                 if (xsGetGoal(OUTPUTGOAL) > count) {

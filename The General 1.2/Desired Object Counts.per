@@ -644,7 +644,11 @@
 			(goal g-current-strategy FC-STRONGBOW)
 			(or
 				(goal g-current-strategy FC-GENGHIS)
-				(goal g-current-strategy FC-EAGLES-REVENGE)))
+				(or
+					(goal g-current-strategy FC-EAGLES-REVENGE)
+					(or
+						(goal g-current-strategy BOOMC-KNIGHTS)
+						(goal g-current-strategy BOOMC-CAMELS)))))
 		=>
 		(up-modify-goal g-required-num-villager c:+ 3)
 		(up-modify-goal g-required-num-villager g:min g-desired-num-villager)
@@ -737,6 +741,7 @@
 	;-----------
 
 		(defrule
+		(goal g-game-focus DEFENSIVE)
 		(current-age >= castle-age)
 		(up-compare-goal g-enemy-heavy-cavalry-count >= 4)
 		(up-compare-goal g-enemy-light-cavalry-count < 4)
@@ -751,7 +756,7 @@
 		(current-age == castle-age)
 		(up-compare-goal g-age-status >= MID-CASTLE)
 		(up-compare-goal g-game-focus != DEFENSIVE)
-		(building-type-count-total town-center > 0)
+		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		=>
 		(up-modify-goal g-desired-num-monk c:max 2)
 		(up-modify-goal g-desired-num-military c:- 2)
@@ -761,7 +766,7 @@
 		(defrule
 		(current-age == imperial-age)
 		(up-compare-goal g-game-focus != DEFENSIVE)
-		(building-type-count-total town-center > 0)
+		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		=>
 		(up-modify-goal g-desired-num-monk c:max 1)
 		(up-modify-goal g-desired-num-military c:- 1)
@@ -829,6 +834,16 @@
 	;--------------------
 	;	Battering Rams
 	;--------------------
+	
+		(defrule
+		(up-compare-goal g-age-status >= TO-CASTLE)
+		(up-compare-flag g-flag == TRUSH-DEFENSE)
+		(building-type-count-total blacksmith > 0)
+		=>
+		(set-goal g-desired-num-ram-type 2)
+		(up-modify-goal g-desired-num-military c:- 2)
+		(up-modify-goal g-desired-num-military c:max 0)
+		)		
 
 		(defrule
 		(goal g-age-status MID-CASTLE)
@@ -3156,7 +3171,7 @@
 		(defrule
 		(goal g-game-focus BOOM)
 		(up-compare-goal g-difficulty >= HARD)
-		(current-age >= castle-age)
+		(up-compare-goal g-age-status >= TO-CASTLE)
 		(up-compare-goal g-desired-num-town-center < 2)
 		=>
 		(up-modify-goal g-desired-num-town-center c:max 2)
@@ -3184,9 +3199,27 @@
 		(goal g-game-focus BOOM)
 		(up-compare-goal g-difficulty >= HARDEST)
 		(current-age >= castle-age)
+		(up-compare-goal g-desired-num-food-vils >= 18)
+		(or
+			(up-compare-goal g-desired-num-military < 10)
+			(up-compare-goal g-desired-num-food-vils >= 21))
 		(up-compare-goal g-desired-num-town-center < 3)
 		=>
 		(up-modify-goal g-desired-num-town-center c:max 3)
+		)
+		(defrule
+		(goal g-game-focus BOOM)
+		(up-compare-goal g-difficulty >= HARDEST)
+		(current-age == castle-age)
+		(up-compare-goal g-desired-num-food-vils >= 24)
+		(or
+			(up-compare-goal g-desired-num-military < 10)
+			(up-compare-goal g-desired-num-food-vils >= 27))
+		(up-compare-goal g-desired-num-town-center < 4)
+		(unit-type-count-total villager < 90)
+		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+		=>
+		(up-modify-goal g-desired-num-town-center c:max 4)
 		)
 
 		; (defrule
@@ -4497,6 +4530,24 @@
 		(up-modify-goal g-desired-num-archery-range c:max 1)
 		)
 
+		(defrule
+		(up-compare-goal g-desired-num-archery-range < 1)
+		(up-compare-goal g-age-status >= TO-FEUDAL)
+		(or
+			(goal g-primary-unit archer)
+			(or
+				(goal g-primary-unit skirmisher)
+				(or
+					(goal g-primary-unit cavalry-archer)
+					(or
+						(goal g-primary-unit hand-cannoneer)
+						(or
+							(goal g-primary-unit genitour)
+							(goal g-primary-unit elephant-archer))))))
+		=>
+		(up-modify-goal g-desired-num-archery-range c:max 1)
+		)
+
 		#load-if-defined INCAN-CIV
 
 			(defrule
@@ -4564,9 +4615,6 @@
 			(goal g-primary-unit-class archery-class)
 			(goal g-primary-unit-class cavalry-archer-class))
 		(up-compare-goal g-primary-unit != my-unique-unit)
-		(or
-			(up-compare-goal g-current-strategy < BOOMC-STRATS-START)	;Not a boom strategy
-			(up-compare-goal g-current-strategy > BOOMI-STRATS-END))
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
@@ -4577,27 +4625,12 @@
 		(defrule
 		(up-compare-goal g-age-status >= MID-CASTLE)
 		(or
-			(goal g-primary-unit-class archery-class)
-			(goal g-primary-unit-class cavalry-archer-class))
-		(up-compare-goal g-primary-unit != my-unique-unit)
-		(up-compare-goal g-current-strategy >= BOOMC-STRATS-START)	;boom strategy
-		(up-compare-goal g-current-strategy <= BOOMI-STRATS-END)
-		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
-		(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
-		=>
-		(up-modify-goal g-desired-num-archery-range c:max 2)
-		)
-
-		(defrule
-		(up-compare-goal g-age-status >= MID-CASTLE)
-		(or
 			(goal g-support-unit-class archery-class)
 			(goal g-support-unit-class cavalry-archer-class))
 		(up-compare-goal g-support-unit != my-unique-unit)
 		(or
-			(up-compare-goal g-current-strategy < BOOMC-STRATS-START)	;Not a boom strategy
-			(up-compare-goal g-current-strategy > BOOMI-STRATS-END))
+			(up-compare-goal g-game-focus != BOOM)
+			(unit-type-count-total villager >= 60))
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		; (up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
@@ -4762,6 +4795,26 @@
 		(up-modify-goal g-desired-num-stable c:max 1)
 		)
 
+		(defrule
+		(up-compare-goal g-desired-num-stable < 1)
+		(up-compare-goal g-age-status >= TO-FEUDAL)
+		(or
+			(goal g-primary-unit scout-cavalry)
+			(or
+				(goal g-primary-unit knight)
+				(or
+					(goal g-primary-unit camel)
+					(or
+						(goal g-primary-unit battle-elephant)
+						(or
+							(goal g-primary-unit steppe-lancer)
+							(and
+								(goal g-primary-unit my-unique-unit)
+								(research-completed ri-marauders)))))))
+		=>
+		(up-modify-goal g-desired-num-stable c:max 1)
+		)
+
 		#load-if-defined GURJARAS-CIV
 
 			(defrule
@@ -4777,8 +4830,8 @@
 		(up-compare-goal g-age-status >= TO-CASTLE)
 		(goal g-primary-unit-class cavalry-class)
 		(or
-			(up-compare-goal g-current-strategy < BOOMC-STRATS-START)	;Not a boom strategy
-			(up-compare-goal g-current-strategy > BOOMI-STRATS-END))
+			(up-compare-goal g-game-focus != BOOM)
+			(unit-type-count-total villager >= 60))
 		(up-compare-goal g-primary-unit != my-unique-unit)
 		(up-compare-goal g-current-strategy != FC-MORLEY)
 		=>
@@ -4799,9 +4852,6 @@
 		(up-compare-goal g-age-status >= MID-CASTLE)
 		(goal g-primary-unit-class cavalry-class)
 		(up-compare-goal g-primary-unit != my-unique-unit)
-		(or
-			(up-compare-goal g-current-strategy < BOOMC-STRATS-START)	;Not a boom strategy
-			(up-compare-goal g-current-strategy > BOOMI-STRATS-END))
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
@@ -4811,24 +4861,11 @@
 
 		(defrule
 		(up-compare-goal g-age-status >= MID-CASTLE)
-		(goal g-primary-unit-class cavalry-class)
-		(up-compare-goal g-primary-unit != my-unique-unit)
-		(up-compare-goal g-current-strategy >= BOOMC-STRATS-START)	;boom strategy
-		(up-compare-goal g-current-strategy <= BOOMI-STRATS-END)
-		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
-		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
-		(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
-		=>
-		(up-modify-goal g-desired-num-stable c:max 2)
-		)
-
-		(defrule
-		(up-compare-goal g-age-status >= MID-CASTLE)
 		(goal g-support-unit-class cavalry-class)
 		(up-compare-goal g-support-unit != my-unique-unit)
 		(or
-			(up-compare-goal g-current-strategy < BOOMC-STRATS-START)	;Not a boom strategy
-			(up-compare-goal g-current-strategy > BOOMI-STRATS-END))
+			(up-compare-goal g-game-focus != BOOM)
+			(unit-type-count-total villager >= 60))
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
