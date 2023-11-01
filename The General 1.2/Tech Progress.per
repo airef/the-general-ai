@@ -4654,7 +4654,6 @@
 		(or
 			(research-completed ri-plate-barding)
 			(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
-		(research-completed ri-corvinian-army)
 		(or
 			(up-research-status c: ri-husbandry >= research-pending)
 			(up-compare-const HUSBANDRY-AVAILABLE == NO))
@@ -4665,9 +4664,18 @@
 		(defrule
 		(current-age == imperial-age)
 		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(research-completed ri-corvinian-army)
 		(or
 			(research-completed ri-blast-furnace)
 			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed my-unique-unit-upgrade)
 		=>
 		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
 		)

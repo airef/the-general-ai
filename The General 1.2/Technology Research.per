@@ -4,9 +4,9 @@
 ;				      ECO TECHS
 ;=========================<>=========================
 			
-	;--------------------
-	;	Double-Bit Axe
-	;--------------------
+	;--------------------------------------------
+	;	Double-Bit Axe - Secondary Feudal Tech
+	;--------------------------------------------
 
 		#load-if-not-defined BURGUNDIANS-CIV
 
@@ -71,9 +71,9 @@
 		(research ri-double-bit-axe)
 		)
 
-    ;-------------
-    ;   Bow Saw
-    ;-------------
+    ;------------------------------------
+    ;   Bow Saw - Priority Castle Tech
+    ;------------------------------------
 
 		(defrule
 		(up-compare-goal g-difficulty > STANDARD)
@@ -93,9 +93,9 @@
 		(research ri-bow-saw)
 		)
 
-    ;-----------------
-    ;   Two-Man Saw
-    ;-----------------
+    ;-------------------------------------------
+    ;   Two-Man Saw - Secondary Imperial Tech
+    ;-------------------------------------------
 
 		(defrule
 		(can-research ri-two-man-saw)
@@ -106,9 +106,9 @@
 		(research ri-two-man-saw)
 		)
 
-	;--------------------
-	;	Horse Collar
-	;--------------------
+	;-----------------------------------------
+	;	Horse Collar - Priority Castle Tech
+	;-----------------------------------------
 
 		(defrule
 		(up-compare-goal g-difficulty > EASIEST)
@@ -350,7 +350,7 @@
 
 		(defrule
 		(current-age == imperial-age)
-		(up-compare-goal g-eco-tech-progress >= ALL-IMPERIAL-COMPLETE)
+		(up-compare-goal g-eco-tech-progress >= SECONDARY-IMPERIAL-COMPLETE)
 		(up-compare-goal g-game-focus != DEFENSIVE)
 		(population >= NINETY-FIVE-PERCENT-POP)
 		(unit-type-count villager-stone > 6)
@@ -2886,22 +2886,6 @@
 
 	#load-if-defined MONGOL-CIV
 
-		;------------
-		;	Nomads
-		;------------
-
-			(defrule
-			(or
-				(goal g-game-focus DEFENSIVE)
-				(or
-					(goal g-game-focus REBUILD)
-					(players-military-population any-enemy >= 40)))
-			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-			(can-research ri-nomads)
-			=>
-			(research ri-nomads)
-			)
-
 		;-----------
 		;	Drill
 		;-----------
@@ -4132,7 +4116,9 @@
 		(defrule
 		(or
 			(up-compare-goal g-game-focus != BOOM)
-			(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
+			(or
+				(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+				(goal g-primary-unit scout-cavalry)))
 		(up-compare-goal g-desired-num-scout-cavalry > 0)
 		(can-research-with-escrow ri-light-cavalry)
 		=>

@@ -353,6 +353,25 @@
         (set-goal g-stone-escrow-type ACCUMULATED)
         )
 
+        (defrule
+        (up-compare-goal g-game-focus != DEFENSIVE)
+        (up-compare-goal g-desired-num-siege >= 2)
+        (up-compare-goal g-siege-class < 2)
+        =>
+        (set-goal g-wood-escrow-type ACCUMULATED)
+        (set-goal g-gold-escrow-type ACCUMULATED)
+        )
+
+        (defrule
+        (up-compare-goal g-game-focus != DEFENSIVE)
+        (up-compare-const my-ram-type == armored-elephant)
+        (up-compare-goal g-desired-num-ram-type >= 2)
+        (unit-type-count-total armored-elephant-line < 2)
+        =>
+        (set-goal g-food-escrow-type ACCUMULATED)
+        (set-goal g-gold-escrow-type ACCUMULATED)
+        )
+
     ;----------------------
     ;   Immediate Escrow
     ;----------------------
