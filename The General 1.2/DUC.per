@@ -920,8 +920,10 @@
                     (up-object-data object-data-class == villager-class)
                     (up-object-data object-data-class == livestock-class))
                 =>
-                (up-copy-point g-point4-x g-position-self-x)
-                (set-goal g-scout-best-score 1)
+                ; (up-copy-point g-point4-x g-position-self-x)
+                ; (set-goal g-scout-best-score 1)
+                ; (chat-to-all "position self")
+                (do-nothing)
                 )
 
                 ;Claim Sheep
@@ -1248,14 +1250,17 @@
             (building-type-count-total town-center == 0))
         (up-compare-goal g-current-sheep-count > 0)
         =>
-        (up-set-target-point g-position-self-x)	;search from sheep near sheep gather point
+        (up-copy-point g-point-x g-position-self-x)
+        (up-modify-goal g-point-x c:+ 2)
+        (up-modify-goal g-point-y c:+ 2)
+        (up-set-target-point g-point-x)	;search from right corner of TC
         (up-full-reset-search)
         (up-find-local c: livestock-class c: 20)
-        (up-clean-search search-local object-data-distance search-order-asc)
+        (up-clean-search search-local object-data-precise-distance search-order-asc)
         (up-remove-objects search-local object-data-player != my-player-number)
-        (up-remove-objects search-local object-data-id g:== g-current-sheep-id)
-        (up-remove-objects search-local object-data-id g:== g-next-sheep-id)
-        (up-remove-objects search-local object-data-id g:== g-backup-sheep-id)
+        ; (up-remove-objects search-local object-data-id g:== g-current-sheep-id)
+        ; (up-remove-objects search-local object-data-id g:== g-next-sheep-id)
+        ; (up-remove-objects search-local object-data-id g:== g-backup-sheep-id)
         (set-strategic-number sn-focus-player-number my-player-number)
         (up-filter-status c: status-pending c: list-active)
         (up-find-status-remote c: town-center-foundation c: 1)
@@ -1271,8 +1276,12 @@
             (and
                 (up-set-target-object search-remote c: 0)
                 (up-object-data object-data-hitpoints >= 1200)))
-        (not
-            (up-set-target-by-id g: g-current-sheep-id))
+        (or
+            (and
+                (up-set-target-by-id g: g-current-sheep-id)
+                (up-object-data object-data-hitpoints > 0))
+            (not
+                (up-set-target-by-id g: g-current-sheep-id)))
         (up-set-target-object search-local c: 0)
         =>
         (up-get-object-data object-data-id g-current-sheep-id)
@@ -1283,9 +1292,17 @@
         (or
             (up-compare-goal g-difficulty >= HARDEST)
             (building-type-count-total town-center == 0))
+        (up-compare-goal g-current-sheep-count > 0)
+        =>
+        (up-remove-objects search-local object-data-id g:== g-current-sheep-id)
+        )
+        (defrule
+        (or
+            (up-compare-goal g-difficulty >= HARDEST)
+            (building-type-count-total town-center == 0))
         (building-type-count town-center >= 1)
-        (not
-            (up-set-target-by-id g: g-next-sheep-id))
+        ; (not
+        ;     (up-set-target-by-id g: g-next-sheep-id))
         (up-set-target-object search-local c: 0)
         =>
         (up-get-object-data object-data-id g-next-sheep-id)
@@ -1296,9 +1313,18 @@
         (or
             (up-compare-goal g-difficulty >= HARDEST)
             (building-type-count-total town-center == 0))
+        (up-compare-goal g-current-sheep-count > 0)
+        =>
+        (up-remove-objects search-local object-data-id g:== g-current-sheep-id)
+        (up-remove-objects search-local object-data-id g:== g-next-sheep-id)
+        )
+        (defrule
+        (or
+            (up-compare-goal g-difficulty >= HARDEST)
+            (building-type-count-total town-center == 0))
         (unit-type-count villager-shepherd >= 6)
-        (not
-            (up-set-target-by-id g: g-backup-sheep-id))
+        ; (not
+        ;     (up-set-target-by-id g: g-backup-sheep-id))
         (up-set-target-object search-local c: 0)
         =>
         (up-get-object-data object-data-id g-backup-sheep-id)
@@ -1526,6 +1552,8 @@
         (up-object-data object-data-player == my-player-number)
         =>
         (up-target-point g-point-x action-default -1 -1)
+        ; (up-send-flare g-point-x)
+        ; (chat-to-all "send next sheep")
         )
 
         (load "The General 1.2/Functions/Reset Mini")

@@ -3749,6 +3749,9 @@
 		(unit-type-count villager >= 22)
 		(building-type-count-total mill == 1)
 		(up-compare-goal g-desired-num-mill < 2)
+		(or
+			(dropsite-min-distance food > 2)
+			(unit-type-count villager-forager >= 6))
 		=>
 		(set-strategic-number sn-focus-player-number 0)
 		(up-full-reset-search)
@@ -3763,7 +3766,19 @@
 		(unit-type-count villager >= 22)
 		(building-type-count-total mill == 1)
 		(up-compare-goal g-desired-num-mill < 2)
-		(up-compare-goal g-remote-total > 6)	;more than standard berries
+		(dropsite-min-distance food > 2)
+		(up-compare-goal g-remote-total >= 3)
+		=>
+		(set-goal g-desired-num-mill 2)
+		)
+
+		(defrule
+		(unit-type-count villager-forager > 0)
+		(unit-type-count villager >= 22)
+		(building-type-count-total mill == 1)
+		(up-compare-goal g-desired-num-mill < 2)
+		(unit-type-count villager-forager >= 6)
+		(up-compare-goal g-remote-total >= 6)	;more than standard berries
 		=>
 		(set-goal g-desired-num-mill 2)
 		)
@@ -4287,35 +4302,107 @@
 		(up-modify-goal g-desired-num-farm g:= g-desired-num-food-vils)
 		)
 
-		;Subtract needed farms if we have shepherds
+		;Subtract needed farms if we have dead boar, sheep, or deer
 		(defrule
 		(up-compare-goal g-desired-num-farm > 0)
 		(building-available farm)
-		(or
-			(and
-				(up-set-target-by-id g: g-current-sheep-id)
-				(up-object-data object-data-class == livestock-class))
-			(unit-type-count villager-shepherd > 0))
-		(up-compare-goal g-current-sheep-count > 0)
+		=>
+		(up-full-reset-search)
+		(up-set-target-point g-position-self-x)
+		(up-filter-distance c: -1 c: 25)
+		(up-filter-status c: status-gather c: list-inactive)
+		(up-find-resource c: livestock-class c: 20)
+		(up-find-resource c: boar-class c: 20)
+		(up-find-resource c: deer-class c: 20)
+		(up-filter-status c: status-down c: list-active)
+		(up-find-resource c: livestock-class c: 20)
+		(up-find-resource c: boar-class c: 20)
+		(up-find-resource c: deer-class c: 20)
+		(up-remove-objects search-remote object-data-carry <= 0)
+		(up-clean-search search-remote -1 search-order-asc)	;remove duplicates
+		(up-get-search-state g-local-total)
+		)
+
+		(defrule
+		(up-compare-goal g-desired-num-farm > 0)
+		(building-available farm)
+		(up-compare-goal g-remote-total > 0)
+		=>
+		; (up-chat-data-to-all "Dead animals: %d" g: g-remote-total)
+		(up-modify-goal g-remote-total c:* 6)
+		(up-modify-goal g-desired-num-farm g:- g-remote-total)
+		(up-modify-goal g-desired-num-farm c:max 0)
+		; (up-chat-data-to-all "Desired farms: %d" g: g-desired-num-farm)
+		)
+
+		(defrule
+		(up-compare-goal g-desired-num-farm > 0)
+		(building-available farm)
+		(up-set-target-by-id g: g-next-sheep-id)
+		(up-get-object-data object-data-point-x g-point-x)
+		(up-get-object-data object-data-point-y g-point-y)
+		(up-point-distance g-position-self-x g-point-x <= 2)
 		=>
 		(up-modify-goal g-desired-num-farm c:- 6)
 		(up-modify-goal g-desired-num-farm c:max 0)
-		; (chat-to-all "reduce for sheep")
+		)
+
+		(defrule
+		(up-compare-goal g-desired-num-farm > 0)
+		(building-available farm)
+		(goal g-scouting-status PUSH-DEER)
+		=>
+		(up-modify-goal g-desired-num-farm c:- 6)
+		(up-modify-goal g-desired-num-farm c:max 0)
+		)
+
+		(defrule
+		(up-compare-goal g-desired-num-farm > 0)
+		(building-available farm)
+		(up-compare-goal g-remote-total > 0)
+		(up-compare-goal g-current-sheep-count <= 0)
+		=>
+		(up-modify-goal g-desired-num-farm c:+ 4)
 		)
 		(defrule
 		(up-compare-goal g-desired-num-farm > 0)
 		(building-available farm)
-		(or
-			(and
-				(up-set-target-by-id g: g-current-sheep-id)
-				(up-object-data object-data-class == livestock-class))
-			(unit-type-count villager-shepherd > 0))
-		(up-compare-goal g-current-sheep-count <= 0)
+		(up-compare-goal g-remote-total > 0)
+		(up-compare-goal g-current-deer-count <= 0)
+		(up-compare-goal g-current-boar-count <= 0)
 		=>
-		(up-modify-goal g-desired-num-farm c:- 2)
-		(up-modify-goal g-desired-num-farm c:max 0)
-		; (chat-to-all "reduce a little for sheep")
+		(up-modify-goal g-desired-num-farm c:+ 4)
 		)
+
+		; ;Subtract needed farms if we have shepherds
+		; (defrule
+		; (up-compare-goal g-desired-num-farm > 0)
+		; (building-available farm)
+		; (or
+		; 	(and
+		; 		(up-set-target-by-id g: g-current-sheep-id)
+		; 		(up-object-data object-data-class == livestock-class))
+		; 	(unit-type-count villager-shepherd > 0))
+		; (up-compare-goal g-current-sheep-count > 0)
+		; =>
+		; (up-modify-goal g-desired-num-farm c:- 6)
+		; (up-modify-goal g-desired-num-farm c:max 0)
+		; ; (chat-to-all "reduce for sheep")
+		; )
+		; (defrule
+		; (up-compare-goal g-desired-num-farm > 0)
+		; (building-available farm)
+		; (or
+		; 	(and
+		; 		(up-set-target-by-id g: g-current-sheep-id)
+		; 		(up-object-data object-data-class == livestock-class))
+		; 	(unit-type-count villager-shepherd > 0))
+		; (up-compare-goal g-current-sheep-count <= 0)
+		; =>
+		; (up-modify-goal g-desired-num-farm c:- 2)
+		; (up-modify-goal g-desired-num-farm c:max 0)
+		; ; (chat-to-all "reduce a little for sheep")
+		; )
 
 		;Subtract needed farms if we have forage bushes near mill or have foragers
 		(load "The General 1.2/Functions/Reset Mini")
@@ -4358,70 +4445,82 @@
 		=>
 		(up-modify-goal g-desired-num-farm c:- 2)
 		(up-modify-goal g-desired-num-farm c:max 0)
-		; (chat-to-all "reduce littel for forage")
+		; (chat-to-all "reduce little for forage")
 		)
+		#load-if-defined YUCATAN-MAP
+		(defrule
+		(up-compare-goal g-desired-num-farm > 0)
+		(building-available farm)
+		(up-compare-goal g-remote-total > 1)
+		(building-type-count mill >= 2)
+		=>
+		(up-modify-goal g-desired-num-farm c:- 5)
+		(up-modify-goal g-desired-num-farm c:max 0)
+		; (chat-to-all "reduce for forage")
+		)
+		#end-if
 
-		;Subtract needed farms if we are gathering boar
-		(defrule
-		(up-compare-goal g-desired-num-farm > 0)
-		(building-available farm)
-		(up-set-target-by-id g: g-current-boar-id)
-		(or
-			(up-object-data object-data-hitpoints <= 0)
-			(up-compare-goal g-boar-hunt-status >= TARGET-BOAR))
-		(up-object-data object-data-class == boar-class)
-		(or
-			(up-object-data object-data-carry >= 60)
-			(up-compare-goal g-current-boar-count > 0))
-		=>
-		(up-modify-goal g-desired-num-farm c:- 6)
-		(up-modify-goal g-desired-num-farm c:max 0)
-		; (chat-to-all "reduce for boar")
-		)
-		(defrule
-		(up-compare-goal g-desired-num-farm > 0)
-		(building-available farm)
-		(up-set-target-by-id g: g-current-boar-id)
-		(or
-			(up-object-data object-data-hitpoints <= 0)
-			(up-compare-goal g-boar-hunt-status >= TARGET-BOAR))
-		(up-object-data object-data-class == boar-class)
-		(up-object-data object-data-carry < 60)
-		(up-compare-goal g-current-boar-count <= 0)
-		=>
-		(up-modify-goal g-desired-num-farm c:- 2)
-		(up-modify-goal g-desired-num-farm c:max 0)
-		; (chat-to-all "reduce for a little boar")
-		)
+		; ;Subtract needed farms if we are gathering boar
+		; (defrule
+		; (up-compare-goal g-desired-num-farm > 0)
+		; (building-available farm)
+		; (up-set-target-by-id g: g-current-boar-id)
+		; (or
+		; 	(up-object-data object-data-hitpoints <= 0)
+		; 	(up-compare-goal g-boar-hunt-status >= TARGET-BOAR))
+		; (up-object-data object-data-class == boar-class)
+		; (or
+		; 	(up-object-data object-data-carry >= 60)
+		; 	(up-compare-goal g-current-boar-count > 0))
+		; =>
+		; (up-modify-goal g-desired-num-farm c:- 6)
+		; (up-modify-goal g-desired-num-farm c:max 0)
+		; ; (chat-to-all "reduce for boar")
+		; )
+		; (defrule
+		; (up-compare-goal g-desired-num-farm > 0)
+		; (building-available farm)
+		; (up-set-target-by-id g: g-current-boar-id)
+		; (or
+		; 	(up-object-data object-data-hitpoints <= 0)
+		; 	(up-compare-goal g-boar-hunt-status >= TARGET-BOAR))
+		; (up-object-data object-data-class == boar-class)
+		; (up-object-data object-data-carry < 60)
+		; (up-compare-goal g-current-boar-count <= 0)
+		; =>
+		; (up-modify-goal g-desired-num-farm c:- 2)
+		; (up-modify-goal g-desired-num-farm c:max 0)
+		; ; (chat-to-all "reduce for a little boar")
+		; )
 
-		;Subtract needed farms if we are gathering deer
-		(defrule
-		(up-compare-goal g-desired-num-farm > 0)
-		(building-available farm)
-		(unit-type-count villager-hunter > 0)
-		(or
-			(and
-				(up-set-target-by-id g: g-current-deer-id)
-				(up-object-data object-data-hitpoints <= 0))
-			(dropsite-min-distance deer-hunting < 4))
-		(up-compare-goal g-total-decaying-hunt-food >= 30)
-		=>
-		(up-modify-goal g-desired-num-farm c:- 3)
-		(up-modify-goal g-desired-num-farm c:max 0)
-		; (chat-to-all "reduce for deer")
-		)
+		; ;Subtract needed farms if we are gathering deer
 		; (defrule
 		; (up-compare-goal g-desired-num-farm > 0)
 		; (building-available farm)
 		; (unit-type-count villager-hunter > 0)
 		; (or
-		; 	(up-set-target-by-id g: g-current-deer-id)
+		; 	(and
+		; 		(up-set-target-by-id g: g-current-deer-id)
+		; 		(up-object-data object-data-hitpoints <= 0))
 		; 	(dropsite-min-distance deer-hunting < 4))
-		; (up-compare-goal g-total-decaying-hunt-food < 30)
+		; (up-compare-goal g-total-decaying-hunt-food >= 30)
 		; =>
-		; (up-modify-goal g-desired-num-farm c:- 1)
+		; (up-modify-goal g-desired-num-farm c:- 3)
 		; (up-modify-goal g-desired-num-farm c:max 0)
+		; ; (chat-to-all "reduce for deer")
 		; )
+		; ; (defrule
+		; ; (up-compare-goal g-desired-num-farm > 0)
+		; ; (building-available farm)
+		; ; (unit-type-count villager-hunter > 0)
+		; ; (or
+		; ; 	(up-set-target-by-id g: g-current-deer-id)
+		; ; 	(dropsite-min-distance deer-hunting < 4))
+		; ; (up-compare-goal g-total-decaying-hunt-food < 30)
+		; ; =>
+		; ; (up-modify-goal g-desired-num-farm c:- 1)
+		; ; (up-modify-goal g-desired-num-farm c:max 0)
+		; ; )
 
 		(defrule
 		(goal g-map-style NOMAD)
