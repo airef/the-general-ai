@@ -521,21 +521,21 @@
 		(defrule
 		(goal g-difficulty MODERATE)
 		=>
-		(set-goal g-desired-num-villager 65)
+		(set-goal g-desired-num-villager 50)
 		(up-modify-goal g-desired-num-villager g:- g-desired-num-trade-cart)
 		)
 
 		(defrule
 		(goal g-difficulty STANDARD)
 		=>
-		(set-goal g-desired-num-villager 50)
+		(set-goal g-desired-num-villager 35)
 		(up-modify-goal g-desired-num-villager g:- g-desired-num-trade-cart)
 		)
 
 		(defrule
 		(goal g-difficulty EASIEST)
 		=>
-		(set-goal g-desired-num-villager 40)
+		(set-goal g-desired-num-villager 20)
 		(up-modify-goal g-desired-num-villager g:- g-desired-num-trade-cart)
 		)
 
@@ -607,7 +607,6 @@
 		; (goal g-strategy-type FAST-CASTLE)
 		=>
 		(set-goal g-required-num-villager 25)
-		(up-modify-goal g-required-num-villager g:min g-desired-num-villager)
 		)
 
 		(defrule
@@ -615,7 +614,6 @@
 		; (goal g-strategy-type FAST-CASTLE)
 		=>
 		(set-goal g-required-num-villager 27)
-		(up-modify-goal g-required-num-villager g:min g-desired-num-villager)
 		)
 
 		; (defrule
@@ -623,7 +621,6 @@
 		; (goal g-current-strategy FC-MORLEY)
 		; =>
 		; (up-modify-goal g-required-num-villager c:+ 0)
-		; (up-modify-goal g-required-num-villager g:min g-desired-num-villager)
 		; )
 
 		#load-if-defined KHMER-CIV
@@ -633,13 +630,13 @@
 			(goal g-strategy-type FAST-CASTLE)
 			=>
 			(up-modify-goal g-required-num-villager c:+ 2)
-			(up-modify-goal g-required-num-villager g:min g-desired-num-villager)
 			)
 
 		#end-if
 
 		(defrule
 		(current-age <= feudal-age)
+		(up-compare-goal g-difficulty >= HARD)
 		(or
 			(goal g-current-strategy FC-STRONGBOW)
 			(or
@@ -648,28 +645,29 @@
 					(goal g-current-strategy FC-EAGLES-REVENGE)
 					(or
 						(goal g-current-strategy BOOMC-KNIGHTS)
-						(goal g-current-strategy BOOMC-CAMELS)))))
+						(or
+							(goal g-current-strategy BOOMC-CAMELS)
+							(goal g-current-strategy BOOMC-XBOWS))))))
 		=>
 		(up-modify-goal g-required-num-villager c:+ 3)
-		(up-modify-goal g-required-num-villager g:min g-desired-num-villager)
 		)
 
 		(defrule
 		(current-age <= feudal-age)
+		(up-compare-goal g-difficulty >= HARD)
 		(or
 			(goal g-current-strategy FC-KRUSH)
 			(goal g-current-strategy FC-CRUSH))
 		=>
 		(up-modify-goal g-required-num-villager c:+ 4)
-		(up-modify-goal g-required-num-villager g:min g-desired-num-villager)
 		)
 
 		(defrule
 		(current-age <= feudal-age)
+		(up-compare-goal g-difficulty >= HARD)
 		(goal g-current-strategy FC-CASTLE-DROP)
 		=>
 		(up-modify-goal g-required-num-villager c:+ 5)
-		(up-modify-goal g-required-num-villager g:min g-desired-num-villager)
 		)
 
 		;Lower Difficulties
@@ -677,43 +675,44 @@
 		(goal g-difficulty HARDEST)
 		=>
 		(up-modify-goal g-required-num-villager c:+ 1)
-		(up-modify-goal g-required-num-villager g:min g-desired-num-villager)
 		)
 
 		(defrule
-		(up-compare-goal g-difficulty <= HARD)
-		(or
-			(goal g-difficulty HARD)
-			(current-age >= feudal-age))
+		(goal g-difficulty HARD)
+		(current-age <= feudal-age)
+		; (up-compare-goal g-difficulty <= HARD)
+		; (or
+		; 	(goal g-difficulty HARD)
+		; 	(current-age >= feudal-age))
 		=>
 		(up-modify-goal g-required-num-villager c:+ 2)
-		(up-modify-goal g-required-num-villager g:min g-desired-num-villager)
 		)
 
 		(defrule
 		(goal g-difficulty MODERATE)
-		(current-age == dark-age)
+		(current-age <= dark-age)
 		=>
-		(up-modify-goal g-required-num-villager c:- 2)
-		(up-modify-goal g-required-num-villager g:min g-desired-num-villager)
+		(up-modify-goal g-required-num-villager c:- 1)
 		)
 
 		(defrule
 		(goal g-difficulty STANDARD)
-		(current-age == dark-age)
+		(current-age <= feudal-age)
 		=>
-		(up-modify-goal g-required-num-villager c:- 5)
-		(up-modify-goal g-required-num-villager c:max 18)
-		(up-modify-goal g-required-num-villager g:min g-desired-num-villager)
+		(up-modify-goal g-required-num-villager c:- 8)
 		)
 
 		(defrule
 		(goal g-difficulty EASIEST)
-		(current-age == dark-age)
+		(current-age <= feudal-age)
 		=>
-		(up-modify-goal g-required-num-villager c:- 10)
-		(up-modify-goal g-required-num-villager c:max 13)
-		(up-modify-goal g-required-num-villager g:min g-desired-num-villager)
+		(up-modify-goal g-required-num-villager c:- 15)
+		)
+
+		(defrule
+		(up-compare-goal g-required-num-villager > g-desired-num-villager)
+		=>
+		(up-modify-goal g-required-num-villager g:= g-desired-num-villager)
 		)
 
 ;=========================<>=========================
@@ -4950,7 +4949,9 @@
 		(defrule
 		(up-compare-goal g-age-status >= MID-CASTLE)
 		(goal g-primary-unit-class cavalry-class)
-		(up-compare-goal g-primary-unit != my-unique-unit)
+		(or
+			(up-compare-goal g-primary-unit != my-unique-unit)
+			(research-completed ri-marauders))
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
@@ -4961,7 +4962,9 @@
 		(defrule
 		(up-compare-goal g-age-status >= MID-CASTLE)
 		(goal g-support-unit-class cavalry-class)
-		(up-compare-goal g-support-unit != my-unique-unit)
+		(or
+			(up-compare-goal g-support-unit != my-unique-unit)
+			(research-completed ri-marauders))
 		(or
 			(up-compare-goal g-game-focus != BOOM)
 			(unit-type-count-total villager >= 60))
@@ -4982,7 +4985,9 @@
 		(up-compare-goal g-difficulty >= HARD)
 		(up-compare-goal g-age-status >= TO-IMPERIAL)
 		(goal g-primary-unit-class cavalry-class)
-		(up-compare-goal g-primary-unit != my-unique-unit)
+		(or
+			(up-compare-goal g-primary-unit != my-unique-unit)
+			(research-completed ri-marauders))
 		(civilian-population >= 90)
 		=>
 		(up-modify-goal g-desired-num-stable c:max 4)
@@ -4992,7 +4997,9 @@
 		(up-compare-goal g-difficulty >= HARD)
 		(up-compare-goal g-age-status >= TO-IMPERIAL)
 		(goal g-support-unit-class cavalry-class)
-		(up-compare-goal g-support-unit != my-unique-unit)
+		(or
+			(up-compare-goal g-support-unit != my-unique-unit)
+			(research-completed ri-marauders))
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
@@ -5011,7 +5018,9 @@
 		(up-compare-goal g-difficulty >= HARD)
 		(current-age == imperial-age)
 		(goal g-primary-unit-class cavalry-class)
-		(up-compare-goal g-primary-unit != my-unique-unit)
+		(or
+			(up-compare-goal g-primary-unit != my-unique-unit)
+			(research-completed ri-marauders))
 		(civilian-population >= 90)
 		=>
 		(up-modify-goal g-desired-num-stable c:max 6)
@@ -5021,7 +5030,9 @@
 		(up-compare-goal g-difficulty >= HARD)
 		(current-age == imperial-age)
 		(goal g-support-unit-class cavalry-class)
-		(up-compare-goal g-support-unit != my-unique-unit)
+		(or
+			(up-compare-goal g-support-unit != my-unique-unit)
+			(research-completed ri-marauders))
 		(civilian-population >= 90)
 		=>
 		(up-modify-goal g-desired-num-stable c:max 3)
@@ -5031,7 +5042,9 @@
 		(up-compare-goal g-difficulty >= HARD)
 		(up-compare-goal g-age-status >= MID-IMPERIAL)
 		(goal g-primary-unit-class cavalry-class)
-		(up-compare-goal g-primary-unit != my-unique-unit)
+		(or
+			(up-compare-goal g-primary-unit != my-unique-unit)
+			(research-completed ri-marauders))
 		(civilian-population >= 90)
 		=>
 		(up-modify-goal g-desired-num-stable c:max 10)
@@ -5041,7 +5054,9 @@
 		(up-compare-goal g-difficulty >= HARD)
 		(up-compare-goal g-age-status >= MID-IMPERIAL)
 		(goal g-support-unit-class cavalry-class)
-		(up-compare-goal g-support-unit != my-unique-unit)
+		(or
+			(up-compare-goal g-support-unit != my-unique-unit)
+			(research-completed ri-marauders))
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
@@ -5111,7 +5126,9 @@
 		(or
 			(up-compare-goal g-current-strategy < BOOMC-STRATS-START)	;Not a boom strategy
 			(up-compare-goal g-current-strategy > BOOMI-STRATS-END))
-		(up-compare-goal g-primary-unit != my-unique-unit)
+		(or
+			(up-compare-goal g-primary-unit != my-unique-unit)
+			(research-completed ri-anarchy))
 		=>
 		(up-modify-goal g-desired-num-barracks c:max 2)
 		)
@@ -5139,7 +5156,9 @@
 		(defrule
 		(up-compare-goal g-age-status >= MID-CASTLE)
 		(goal g-primary-unit-class infantry-class)
-		(up-compare-goal g-primary-unit != my-unique-unit)
+		(or
+			(up-compare-goal g-primary-unit != my-unique-unit)
+			(research-completed ri-anarchy))
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
@@ -5150,7 +5169,9 @@
 		(defrule
 		(up-compare-goal g-age-status >= MID-CASTLE)
 		(goal g-support-unit-class infantry-class)
-		(up-compare-goal g-support-unit != my-unique-unit)
+		(or
+			(up-compare-goal g-support-unit != my-unique-unit)
+			(research-completed ri-anarchy))
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
@@ -5168,7 +5189,9 @@
 		(up-compare-goal g-difficulty >= HARD)
 		(up-compare-goal g-age-status >= TO-IMPERIAL)
 		(goal g-primary-unit-class infantry-class)
-		(up-compare-goal g-primary-unit != my-unique-unit)
+		(or
+			(up-compare-goal g-primary-unit != my-unique-unit)
+			(research-completed ri-anarchy))
 		(civilian-population >= 90)
 		=>
 		(up-modify-goal g-desired-num-barracks c:max 5)
@@ -5178,7 +5201,9 @@
 		(up-compare-goal g-difficulty >= HARD)
 		(up-compare-goal g-age-status >= TO-IMPERIAL)
 		(goal g-support-unit-class infantry-class)
-		(up-compare-goal g-support-unit != my-unique-unit)
+		(or
+			(up-compare-goal g-support-unit != my-unique-unit)
+			(research-completed ri-anarchy))
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)
@@ -5197,7 +5222,9 @@
 		(up-compare-goal g-difficulty >= HARD)
 		(current-age == imperial-age)
 		(goal g-primary-unit-class infantry-class)
-		(up-compare-goal g-primary-unit != my-unique-unit)
+		(or
+			(up-compare-goal g-primary-unit != my-unique-unit)
+			(research-completed ri-anarchy))
 		(civilian-population >= 90)
 		=>
 		(up-modify-goal g-desired-num-barracks c:max 8)
@@ -5207,7 +5234,9 @@
 		(up-compare-goal g-difficulty >= HARD)
 		(current-age == imperial-age)
 		(goal g-support-unit-class infantry-class)
-		(up-compare-goal g-support-unit != my-unique-unit)
+		(or
+			(up-compare-goal g-support-unit != my-unique-unit)
+			(research-completed ri-anarchy))
 		(civilian-population >= 90)
 		=>
 		(up-modify-goal g-desired-num-barracks c:max 3)
@@ -5217,7 +5246,9 @@
 		(up-compare-goal g-difficulty >= HARD)
 		(up-compare-goal g-age-status >= MID-IMPERIAL)
 		(goal g-primary-unit-class infantry-class)
-		(up-compare-goal g-primary-unit != my-unique-unit)
+		(or
+			(up-compare-goal g-primary-unit != my-unique-unit)
+			(research-completed ri-anarchy))
 		(civilian-population >= 90)
 		=>
 		(up-modify-goal g-desired-num-barracks c:max 12)
@@ -5227,7 +5258,9 @@
 		(up-compare-goal g-difficulty >= HARD)
 		(up-compare-goal g-age-status >= MID-IMPERIAL)
 		(goal g-support-unit-class infantry-class)
-		(up-compare-goal g-support-unit != my-unique-unit)
+		(or
+			(up-compare-goal g-support-unit != my-unique-unit)
+			(research-completed ri-anarchy))
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: siege-workshop g:>= g-desired-num-siege-workshop)
 		(up-object-type-count-total c: monastery g:>= g-desired-num-monastery)

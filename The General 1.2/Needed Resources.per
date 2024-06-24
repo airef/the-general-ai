@@ -4404,7 +4404,9 @@
 					(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
 					(goal g-town-under-attack YES)))
 			(goal g-primary-unit-class cavalry-class)
-			(unit-type-count cavalry-class >= 3)
+			(or
+				(unit-type-count cavalry-class >= 3)
+				(unit-type-count scout-cavalry-line >= 3))
 			(up-research-status c: ri-scale-barding == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -4443,7 +4445,9 @@
 					(goal g-town-under-attack YES)))
 			(goal g-support-unit-class cavalry-class)
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
-			(unit-type-count cavalry-class >= 3)
+			(or
+				(unit-type-count cavalry-class >= 3)
+				(unit-type-count scout-cavalry-line >= 3))
 			(up-research-status c: ri-scale-barding == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -4482,8 +4486,10 @@
 			(or
 				(unit-type-count cavalry-class >= 3)
 				(or
-					(goal g-primary-unit scout-cavalry)
-					(goal g-primary-unit camel)))
+					(unit-type-count scout-cavalry-line >= 3)
+					(or
+						(goal g-primary-unit scout-cavalry)
+						(goal g-primary-unit camel))))
 			(up-research-status c: ri-scale-barding == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -4501,7 +4507,9 @@
 					(goal g-town-under-attack YES)))
 			(goal g-support-unit-class cavalry-class)
 			(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
-			(unit-type-count cavalry-class >= 3)
+			(or
+				(unit-type-count cavalry-class >= 3)
+				(unit-type-count scout-cavalry-line >= 3))
 			(up-research-status c: ri-scale-barding == research-available)
 			(building-type-count blacksmith > 0)
 			=>
@@ -4518,10 +4526,12 @@
 		(or
 			(unit-type-count cavalry-class >= 12)
 			(or
-				(up-compare-goal g-camel-line >= 8)
+				(unit-type-count scout-cavalry-line >= 12)
 				(or
-					(up-compare-goal g-age-status >= TO-IMPERIAL)
-					(unit-type-count cavalry-class g:>= g-desired-num-cavalry))))
+					(up-compare-goal g-camel-line >= 8)
+					(or
+						(up-compare-goal g-age-status >= TO-IMPERIAL)
+						(unit-type-count cavalry-class g:>= g-desired-num-cavalry)))))
 		(or
 			(goal g-town-under-attack NO)
 			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
@@ -4541,10 +4551,12 @@
 		(or
 			(unit-type-count cavalry-class >= 12)
 			(or
-				(up-compare-goal g-camel-line >= 8)
+				(unit-type-count scout-cavalry-line >= 12)
 				(or
-					(up-compare-goal g-age-status >= TO-IMPERIAL)
-					(unit-type-count cavalry-class g:>= g-desired-num-cavalry))))
+					(up-compare-goal g-camel-line >= 8)
+					(or
+						(up-compare-goal g-age-status >= TO-IMPERIAL)
+						(unit-type-count cavalry-class g:>= g-desired-num-cavalry)))))
 		(or
 			(goal g-town-under-attack NO)
 			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
@@ -4561,10 +4573,12 @@
 		(or
 			(unit-type-count cavalry-class >= 15)
 			(or
-				(up-compare-goal g-camel-line >= 10)
+				(unit-type-count scout-cavalry-line >= 15)
 				(or
-					(up-compare-goal g-age-status >= TO-IMPERIAL)
-					(unit-type-count cavalry-class g:>= g-desired-num-cavalry))))
+					(up-compare-goal g-camel-line >= 10)
+					(or
+						(up-compare-goal g-age-status >= TO-IMPERIAL)
+						(unit-type-count cavalry-class g:>= g-desired-num-cavalry)))))
 		(or
 			(goal g-town-under-attack NO)
 			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
@@ -4583,10 +4597,12 @@
 		(or
 			(unit-type-count cavalry-class >= 12)
 			(or
-				(up-compare-goal g-camel-line >= 8)
+				(unit-type-count scout-cavalry-line >= 12)
 				(or
-					(up-compare-goal g-age-status >= TO-IMPERIAL)
-					(unit-type-count cavalry-class g:>= g-desired-num-cavalry))))
+					(up-compare-goal g-camel-line >= 8)
+					(or
+						(up-compare-goal g-age-status >= TO-IMPERIAL)
+						(unit-type-count cavalry-class g:>= g-desired-num-cavalry)))))
 		(or
 			(goal g-town-under-attack NO)
 			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
@@ -4681,9 +4697,11 @@
 		(defrule
 		(or
 			(unit-type-count cavalry-class < 4)
-			(and
-				(current-age >= castle-age)
-				(unit-type-count cavalry-class < 6)))
+			(or
+				(unit-type-count scout-cavalry-line < 4)
+				(and
+					(current-age >= castle-age)
+					(unit-type-count cavalry-class < 6))))
 		(unit-type-count cavalry-class g:< g-desired-num-cavalry)
 		=>
 		(up-jump-rule 4)
@@ -4778,8 +4796,12 @@
     ;----------------------------------------
 		
 		(defrule
-		(unit-type-count cavalry-class < 6)
-		(unit-type-count cavalry-class g:< g-desired-num-cavalry)
+		(or
+			(unit-type-count cavalry-class < 6)
+			(unit-type-count scout-cavalry-line < 6))
+		(or
+			(unit-type-count cavalry-class g:< g-desired-num-cavalry)
+			(unit-type-count scout-cavalry-line g:< g-desired-num-cavalry))
 		=>
 		(up-jump-rule 4)
 		)
@@ -7515,7 +7537,9 @@
 				(goal g-support-unit-class cavalry-class))
 			(or
 				(unit-type-count cavalry-class >= 12)
-				(unit-type-count steppe-lancer-line >= 8))
+				(or
+					(unit-type-count scout-cavalry-line >= 12)
+					(unit-type-count steppe-lancer-line >= 8)))
 			(or
 				(goal g-town-under-attack NO)
 				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
@@ -7535,7 +7559,9 @@
 				(goal g-support-unit-class cavalry-class))
 			(or
 				(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
-				(up-compare-goal g-age-status >= TO-IMPERIAL))
+				(or
+					(unit-type-count scout-cavalry-line g:>= g-desired-num-cavalry)
+					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(or
 				(goal g-town-under-attack NO)
 				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
@@ -7577,7 +7603,9 @@
 				(goal g-support-unit-class cavalry-class))
 			(or
 				(unit-type-count cavalry-class >= 12)
-				(unit-type-count steppe-lancer-line >= 8))
+				(or
+					(unit-type-count scout-cavalry-line >= 12)
+					(unit-type-count steppe-lancer-line >= 8)))
 			(or
 				(goal g-town-under-attack NO)
 				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
@@ -7596,7 +7624,9 @@
 				(goal g-support-unit-class cavalry-class))
 			(or
 				(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
-				(up-compare-goal g-age-status >= TO-IMPERIAL))
+				(or
+					(unit-type-count scout-cavalry-line g:>= g-desired-num-cavalry)
+					(up-compare-goal g-age-status >= TO-IMPERIAL)))
 			(or
 				(goal g-town-under-attack NO)
 				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
@@ -7694,10 +7724,12 @@
 		(or
 			(unit-type-count cavalry-class >= 15)
 			(or
-				(unit-type-count steppe-lancer-line >= 12)
+				(unit-type-count scout-cavalry-line >= 15)
 				(or
-					(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
-					(up-compare-goal g-age-status >= TO-IMPERIAL))))
+					(unit-type-count steppe-lancer-line >= 12)
+					(or
+						(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
+						(up-compare-goal g-age-status >= TO-IMPERIAL)))))
 		(or
 			(goal g-town-under-attack NO)
 			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
@@ -7716,10 +7748,12 @@
 			(or
 				(unit-type-count cavalry-class >= 15)
 				(or
-					(unit-type-count steppe-lancer-line >= 12)
+					(unit-type-count scout-cavalry-line >= 15)
 					(or
-						(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
-						(up-compare-goal g-age-status >= TO-IMPERIAL))))
+						(unit-type-count steppe-lancer-line >= 12)
+						(or
+							(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
+							(up-compare-goal g-age-status >= TO-IMPERIAL)))))
 			(or
 				(goal g-town-under-attack NO)
 				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
@@ -7738,10 +7772,12 @@
 		(or
 			(unit-type-count cavalry-class >= 15)
 			(or
-				(unit-type-count steppe-lancer-line >= 12)
+				(unit-type-count scout-cavalry-line >= 15)
 				(or
-					(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
-					(up-compare-goal g-age-status >= TO-IMPERIAL))))
+					(unit-type-count steppe-lancer-line >= 12)
+					(or
+						(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
+						(up-compare-goal g-age-status >= TO-IMPERIAL)))))
 		(or
 			(goal g-town-under-attack NO)
 			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
@@ -7759,10 +7795,12 @@
 			(or
 				(unit-type-count cavalry-class >= 15)
 				(or
-					(unit-type-count steppe-lancer-line >= 12)
+					(unit-type-count scout-cavalry-line >= 15)
 					(or
-						(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
-						(up-compare-goal g-age-status >= TO-IMPERIAL))))
+						(unit-type-count steppe-lancer-line >= 12)
+						(or
+							(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
+							(up-compare-goal g-age-status >= TO-IMPERIAL)))))
 			(or
 				(goal g-town-under-attack NO)
 				(up-compare-goal g-human-military-count g:>= g-min-military-pop))

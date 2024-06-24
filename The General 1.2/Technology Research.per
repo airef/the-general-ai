@@ -375,7 +375,7 @@
 			(cc-players-unit-type-count 0 rhino > 0))
 		(unit-type-count villager >= 10)
 		(up-compare-goal g-current-boar-count > 0)
-		(up-timer-status t-villager-training-delay != timer-running)
+		; (up-timer-status t-villager-training-delay != timer-running)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
 		(up-add-research-cost c: ri-loom c: 1)
@@ -406,7 +406,7 @@
 		(not
 			(can-train villager))
 		(unit-type-count villager >= 7)
-		(up-timer-status t-villager-training-delay != timer-running)
+		; (up-timer-status t-villager-training-delay != timer-running)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
 		(up-add-research-cost c: ri-loom c: 1)
@@ -1129,7 +1129,9 @@
 			(defrule
 			(or
 				(up-compare-goal g-desired-num-cavalry > 6)
-				(unit-type-count cavalry-class > 10))
+				(or
+					(unit-type-count cavalry-class > 10)
+					(unit-type-count scout-cavalry-line > 10)))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 			(can-research ri-stirrups)
 			=>
@@ -1249,8 +1251,10 @@
 				(or
 					(unit-type-count cavalry-class > 15)
 					(or
-						(up-compare-goal g-desired-num-unique-unit > 10)
-						(up-compare-goal g-unique-unit-line > 15))))
+						(unit-type-count scout-cavalry-line > 15)
+						(or
+							(up-compare-goal g-desired-num-unique-unit > 10)
+							(up-compare-goal g-unique-unit-line > 15)))))
 			(can-research ri-manipur-cavalry)
 			=>
 			(research ri-manipur-cavalry)
@@ -2751,7 +2755,9 @@
 			(defrule
 			(or
 				(up-compare-goal g-desired-num-cavalry > 10)
-				(unit-type-count cavalry-class > 15))
+				(or
+					(unit-type-count cavalry-class > 15)
+					(unit-type-count scout-cavalry-line > 15)))
 			(can-research ri-farimba)
 			=>
 			(research ri-farimba)
@@ -4203,10 +4209,12 @@
 		(or
 			(unit-type-count cavalry-class >= 3)
 			(or
-				(goal g-primary-unit scout-cavalry)
+				(unit-type-count scout-cavalry-line >= 3)
 				(or
-					(goal g-primary-unit camel)
-					(up-compare-goal g-age-status >= TO-IMPERIAL))))
+					(goal g-primary-unit scout-cavalry)
+					(or
+						(goal g-primary-unit camel)
+						(up-compare-goal g-age-status >= TO-IMPERIAL)))))
 		(can-research-with-escrow ri-scale-barding)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
@@ -4221,7 +4229,9 @@
 			(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
 		(goal g-support-unit-class cavalry-class)
 		(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
-		(unit-type-count cavalry-class >= 3)
+		(or
+			(unit-type-count cavalry-class >= 3)
+			(unit-type-count scout-cavalry-line >= 3))
 		(can-research-with-escrow ri-scale-barding)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
@@ -4232,7 +4242,9 @@
 
 		(defrule
 		(up-compare-goal g-desired-num-cavalry > 5)
-		(unit-type-count cavalry-class >= 5)
+		(or
+			(unit-type-count cavalry-class >= 5)
+			(unit-type-count scout-cavalry-line >= 5))
 		(or
 			(and
 				(up-compare-goal g-age-status >= TO-CASTLE)
@@ -4246,7 +4258,9 @@
 		)
 		(defrule
 		(up-compare-goal g-desired-num-cavalry > 0)
-		(unit-type-count cavalry-class > 0)
+		(or
+			(unit-type-count cavalry-class > 0)
+			(unit-type-count scout-cavalry-line > 0))
 		(or
 			(up-compare-goal g-age-status >= TO-IMPERIAL)
 			(population >= EIGHTY-PERCENT-POP))
@@ -4264,10 +4278,12 @@
 		(or
 			(unit-type-count cavalry-class >= 12)
 			(or
-				(up-compare-goal g-camel-line >= 8)
+				(unit-type-count scout-cavalry-line >= 12)
 				(or
-					(up-compare-goal g-age-status >= TO-IMPERIAL)
-					(unit-type-count cavalry-class g:>= g-desired-num-cavalry))))
+					(up-compare-goal g-camel-line >= 8)
+					(or
+						(up-compare-goal g-age-status >= TO-IMPERIAL)
+						(unit-type-count cavalry-class g:>= g-desired-num-cavalry)))))
 		(can-research-with-escrow ri-chain-barding)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
@@ -4282,10 +4298,12 @@
 		(or
 			(unit-type-count cavalry-class >= 15)
 			(or
-				(up-compare-goal g-camel-line >= 10)
+				(unit-type-count scout-cavalry-line >= 15)
 				(or
-					(up-compare-goal g-age-status >= TO-IMPERIAL)
-					(unit-type-count cavalry-class g:>= g-desired-num-cavalry))))
+					(up-compare-goal g-camel-line >= 10)
+					(or
+						(up-compare-goal g-age-status >= TO-IMPERIAL)
+						(unit-type-count cavalry-class g:>= g-desired-num-cavalry)))))
 		(can-research-with-escrow ri-chain-barding)
 		=>
 		(up-setup-cost-data 1 g-food-cost)
@@ -4299,7 +4317,9 @@
 		(unit-type-count cavalry-class >= 12)
 		(or
 			(unit-type-count cavalry-class >= 18)
-			(up-compare-goal g-age-status >= TO-IMPERIAL))
+			(or
+				(unit-type-count scout-cavalry-line >= 18)
+				(up-compare-goal g-age-status >= TO-IMPERIAL)))
 		(can-research ri-chain-barding)
 		=>
 		(research ri-chain-barding)
@@ -4360,7 +4380,9 @@
 			(up-compare-goal g-desired-num-cavalry > 10)
 			(or
 				(unit-type-count cavalry-class >= 20)
-				(population >= NINETY-FIVE-PERCENT-POP))
+				(or
+					(unit-type-count scout-cavalry-line >= 20)
+					(population >= NINETY-FIVE-PERCENT-POP)))
 			(can-research ri-plate-barding)
 			=>
 			(research ri-plate-barding)
@@ -4373,9 +4395,11 @@
 		(defrule
 		(or
 			(unit-type-count cavalry-class < 4)
-			(and
-				(current-age >= castle-age)
-				(unit-type-count cavalry-class < 6)))
+			(or
+				(unit-type-count scout-cavalry-line < 4)
+				(and
+					(current-age >= castle-age)
+					(unit-type-count cavalry-class < 6))))
 		(unit-type-count cavalry-class g:< g-desired-num-cavalry)
 		=>
 		(up-jump-rule 2)
@@ -4425,7 +4449,9 @@
 				(food-amount >= 950)
 				(up-compare-goal g-strategy-type < FAST-CASTLE)))
 		(up-compare-goal g-desired-num-cavalry > 6)
-		(unit-type-count cavalry-class > 10)
+		(or
+			(unit-type-count cavalry-class > 10)
+			(unit-type-count scout-cavalry-line > 10))
 		(can-research ri-bloodlines)
 		=>
 		(research ri-bloodlines)
@@ -4437,7 +4463,9 @@
 			(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE))
 		(up-compare-goal g-age-status >= TO-CASTLE)
 		(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
-		(unit-type-count cavalry-class > 5)
+		(or
+			(unit-type-count cavalry-class > 5)
+			(unit-type-count scout-cavalry-line > 5))
 		(can-research ri-bloodlines)
 		=>
 		(research ri-bloodlines)
@@ -4448,8 +4476,12 @@
     ;---------------------------------------
 		
 		(defrule
-		(unit-type-count cavalry-class < 6)
-		(unit-type-count cavalry-class g:< g-desired-num-cavalry)
+		(or
+			(unit-type-count cavalry-class < 6)
+			(unit-type-count scout-cavalry-line < 6))
+		(or
+			(unit-type-count cavalry-class g:< g-desired-num-cavalry)
+			(unit-type-count scout-cavalry-line g:< g-desired-num-cavalry))
 		=>
 		(up-jump-rule 2)
 		)
@@ -4497,7 +4529,9 @@
 			(up-research-status c: ri-bloodlines >= research-pending)
 			(up-compare-const BLOODLINES-AVAILABLE == NO))
 		(up-compare-goal g-desired-num-cavalry >= 10)
-		(unit-type-count cavalry-class >= 15)
+		(or
+			(unit-type-count cavalry-class >= 15)
+			(unit-type-count scout-cavalry-line >= 15))
 		(or
 			(up-compare-goal g-strategy-type < FAST-CASTLE)
 			(military-population > 12))
@@ -6515,10 +6549,12 @@
 			(or
 				(unit-type-count cavalry-class >= 12)
 				(or
-					(unit-type-count steppe-lancer-line >= 8)
+					(unit-type-count scout-cavalry-line >= 12)
 					(or
-						(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
-						(up-compare-goal g-age-status >= TO-IMPERIAL))))
+						(unit-type-count steppe-lancer-line >= 8)
+						(or
+							(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
+							(up-compare-goal g-age-status >= TO-IMPERIAL)))))
 			=>
 			(up-setup-cost-data 1 g-food-cost)
 			(up-add-research-cost c: ri-forging c: 1)
@@ -6530,8 +6566,10 @@
 			(or
 				(unit-type-count infantry-class > 12)
 				(or
-					(unit-type-count cavalry-class >= 15)
-					(unit-type-count steppe-lancer-line >= 10)))
+					(unit-type-count cavalry-class >= 12)
+					(or
+						(unit-type-count scout-cavalry-line >= 12)
+						(unit-type-count steppe-lancer-line >= 10))))
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 			(can-research ri-forging)
 			=>
@@ -6591,10 +6629,12 @@
 			(or
 				(unit-type-count cavalry-class >= 15)
 				(or
-					(unit-type-count steppe-lancer-line >= 12)
+					(unit-type-count scout-cavalry-line >= 15)
 					(or
-						(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
-						(up-compare-goal g-age-status >= TO-IMPERIAL))))
+						(unit-type-count steppe-lancer-line >= 12)
+						(or
+							(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
+							(up-compare-goal g-age-status >= TO-IMPERIAL)))))
 			(up-compare-goal g-age-status >= MID-CASTLE)
 			(can-research-with-escrow ri-iron-casting)
 			=>
@@ -6625,10 +6665,12 @@
 			(or
 				(unit-type-count cavalry-class >= 15)
 				(or
-					(unit-type-count steppe-lancer-line >= 12)
+					(unit-type-count scout-cavalry-line >= 15)
 					(or
-						(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
-						(up-compare-goal g-age-status >= TO-IMPERIAL))))
+						(unit-type-count steppe-lancer-line >= 12)
+						(or
+							(unit-type-count cavalry-class g:>= g-desired-num-cavalry)
+							(up-compare-goal g-age-status >= TO-IMPERIAL)))))
 			(up-compare-goal g-age-status >= MID-CASTLE)
 			(can-research-with-escrow ri-iron-casting)
 			=>
@@ -6648,8 +6690,10 @@
 				(or
 					(unit-type-count cavalry-class >= 24)
 					(or
-						(unit-type-count steppe-lancer-line >= 16)
-						(population >= EIGHTY-FIVE-PERCENT-POP))))
+						(unit-type-count scout-cavalry-line >= 24)
+						(or
+							(unit-type-count steppe-lancer-line >= 16)
+							(population >= EIGHTY-FIVE-PERCENT-POP)))))
 			(up-compare-goal g-age-status >= MID-CASTLE)
 			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
 			(can-research ri-iron-casting)
@@ -6742,7 +6786,9 @@
 				(unit-type-count infantry-class >= 24)
 				(or
 					(unit-type-count cavalry-class >= 24)
-					(unit-type-count steppe-lancer-line >= 16)))
+					(or
+						(unit-type-count scout-cavalry-line >= 24)
+						(unit-type-count steppe-lancer-line >= 16))))
 			(can-research ri-blast-furnace)
 			=>
 			(research ri-blast-furnace)
@@ -6753,7 +6799,9 @@
 				(unit-type-count infantry-class >= 12)
 				(or
 					(unit-type-count cavalry-class >= 12)
-					(unit-type-count steppe-lancer-line >= 8)))
+					(or
+						(unit-type-count scout-cavalry-line >= 12)
+						(unit-type-count steppe-lancer-line >= 8))))
 			(can-research ri-blast-furnace)
 			=>
 			(research ri-blast-furnace)

@@ -322,6 +322,14 @@
 		(set-goal g-game-focus BOOM)
 		)
 
+		;Boom if we're playing a walled map
+		(defrule
+		(goal g-game-focus PENDING)
+		(goal g-map-style WALLED-LAND)
+		=>
+		(set-goal g-game-focus BOOM)
+		)
+
 		;Boom if we fell behind in population and we have a strong ally
 		(defrule
 		(goal g-game-focus PENDING)
@@ -2262,7 +2270,6 @@
 		=>
 		(up-modify-flag g-flag c:- ALLOW-QUEUED-VILLAGERS)
 		)
-
 		;Loom
 		(defrule
 		(up-research-status c: ri-loom < research-complete)
@@ -2338,7 +2345,7 @@
 			(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 		(up-research-status c: ri-wheel-barrow == research-available)
 		=>
-		(up-modify-goal g-flag c:- ALLOW-QUEUED-VILLAGERS)
+		(up-modify-flag g-flag c:- ALLOW-QUEUED-VILLAGERS)
 		)
 
 		;Hand Cart
@@ -2353,7 +2360,7 @@
 		(up-research-status c: ri-heavy-plow >= research-pending)
 		(up-research-status c: ri-hand-cart == research-available)
 		=>
-		(up-modify-goal g-flag c:- ALLOW-QUEUED-VILLAGERS)
+		(up-modify-flag g-flag c:- ALLOW-QUEUED-VILLAGERS)
 		)
 
 		;Priority Castle Eco Techs
@@ -2361,7 +2368,7 @@
 		(current-age >= castle-age)
 		(up-compare-goal g-eco-tech-progress < PRIORITY-CASTLE-COMPLETE)
 		=>
-		(up-modify-goal g-flag c:- ALLOW-QUEUED-VILLAGERS)
+		(up-modify-flag g-flag c:- ALLOW-QUEUED-VILLAGERS)
 		)
 		
 	;-----------------------

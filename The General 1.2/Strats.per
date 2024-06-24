@@ -1162,6 +1162,7 @@
 		(unit-type-count villager >= 20)
 		(dropsite-min-distance stone >= 30)
 		(building-type-count-total castle == 0)
+		(up-compare-goal g-map-style != WALLED-LAND)
 		=>
 		(set-goal g-initial-strategy FC-KRUSH)
 		(up-get-fact dropsite-min-distance stone g-temp)
@@ -1175,6 +1176,7 @@
 		(unit-type-count villager >= 20)
 		(current-age == feudal-age)
 		(dropsite-min-distance stone >= 5)
+		(up-compare-goal g-map-style != WALLED-LAND)
 		=>
 		(set-goal g-initial-strategy FC-KRUSH)
 		(disable-self)
@@ -1291,6 +1293,7 @@
 		(unit-type-count villager >= 15)
 		(dropsite-min-distance stone >= 20)
 		(building-type-count-total castle == 0)
+		(up-compare-goal g-map-style != WALLED-LAND)
 		=>
 		(set-goal g-initial-strategy FC-KRUSH)
 		(disable-self)
@@ -1302,6 +1305,7 @@
 		(unit-type-count villager >= 15)
 		(current-age == feudal-age)
 		(dropsite-min-distance stone >= 5)
+		(up-compare-goal g-map-style != WALLED-LAND)
 		=>
 		(set-goal g-initial-strategy FC-KRUSH)
 		(disable-self)
@@ -1406,6 +1410,22 @@
 		(defconst LATE-UU-PRIORITY 1200)
 
 	#end-if
+
+;-------------------------------------------------
+;	Select Castle Drop Strategy for Walled Maps
+;-------------------------------------------------
+
+	(defrule
+	(up-compare-goal g-map-style == WALLED-LAND)
+	=>
+	(set-goal g-dark-strategy FC-CASTLE-DROP)
+	(set-goal g-early-feudal-strategy FC-CASTLE-DROP)
+	(set-goal g-mid-feudal-strategy FC-CASTLE-DROP)
+	(set-goal g-early-castle-strategy FC-CASTLE-DROP)
+	(set-goal g-mid-castle-strategy MIDC-UNIQUE)
+	(set-goal g-early-imperial-strategy EARLYI-UNIQUE)
+	(set-goal g-mid-imperial-strategy MIDI-UNIQUE)
+	)
 
 ;-----------------------------------
 ;	Late Imperial Strat Switching

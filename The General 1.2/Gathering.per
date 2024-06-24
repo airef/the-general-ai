@@ -28,13 +28,381 @@
         (disable-self)
         )
 
-    ;----------------------
-    ;   Default Dark Age
-    ;----------------------
+    ;-------------------------------
+    ;   Set Gatherer Number Goals
+    ;-------------------------------
 
-        ;VILS-FOR-LUMBER-CAMP is the villager mark when The General will try to build a lumber camp
-        ;For most civs, this is 7 villagers, but Britons and Chinese are different.
+		#load-if-defined BRITON-CIV
 
+            (defrule
+            (true)
+            =>
+            (set-goal gt-initial-dark-wood-gatherers 4)
+            (set-goal gt-initial-dark-food-gatherers 5)
+            )
+
+		#end-if
+
+		#load-if-defined CHINESE-CIV
+
+            (defrule
+            (true)
+            =>
+            (set-goal gt-initial-dark-wood-gatherers 4)
+            (set-goal gt-initial-dark-food-gatherers 7)
+            )
+
+		#end-if
+
+		#load-if-not-defined BRITON-CIV
+		#load-if-not-defined CHINESE-CIV
+
+            (defrule
+            (true)
+            =>
+            (set-goal gt-initial-dark-wood-gatherers 4)
+            (set-goal gt-initial-dark-food-gatherers 6)
+            )
+            
+		#end-if
+		#end-if
+
+        (defrule
+        (building-type-count-total mill > 0)
+        (unit-type-count villager <= 9)
+        =>
+        (up-modify-goal gt-initial-dark-food-gatherers c:+ 1)
+        (up-modify-goal gt-initial-dark-wood-gatherers c:- 1)
+        )
+
+        (defrule
+        (up-compare-goal g-difficulty <= MODERATE)
+        =>
+        (up-modify-goal gt-initial-dark-wood-gatherers c:+ 2)
+        )
+
+        (defrule
+        (goal g-current-strategy FC-MORLEY)
+        =>
+        (set-goal gt-total-dark-wood-gatherers 10)
+        (set-goal gt-total-dark-food-gatherers 12)
+        (set-goal gt-total-dark-gold-gatherers 3)
+        (set-goal gt-total-dark-stone-gatherers 0)
+        (set-goal gt-to-feudal-wood-gatherers 10)
+        (set-goal gt-to-feudal-food-gatherers 12)
+        (set-goal gt-to-feudal-gold-gatherers 3)
+        (set-goal gt-to-feudal-stone-gatherers 0)
+        (set-goal gt-total-feudal-wood-gatherers 12)
+        (set-goal gt-total-feudal-food-gatherers 11)
+        (set-goal gt-total-feudal-gold-gatherers 4)
+        (set-goal gt-total-feudal-stone-gatherers 0)
+        )
+
+        (defrule
+        (or
+            (goal g-current-strategy FC-STRONGBOW)
+            (goal g-current-strategy FC-GENGHIS))
+        =>
+        (set-goal gt-total-dark-wood-gatherers 10)
+        (set-goal gt-total-dark-food-gatherers 13)
+        (set-goal gt-total-dark-gold-gatherers 5)
+        (set-goal gt-total-dark-stone-gatherers 0)
+        (set-goal gt-to-feudal-wood-gatherers 10)
+        (set-goal gt-to-feudal-food-gatherers 13)
+        (set-goal gt-to-feudal-gold-gatherers 5)
+        (set-goal gt-to-feudal-stone-gatherers 0)
+        (set-goal gt-total-feudal-wood-gatherers 11)
+        (set-goal gt-total-feudal-food-gatherers 13)
+        (set-goal gt-total-feudal-gold-gatherers 6)
+        (set-goal gt-total-feudal-stone-gatherers 0)
+        )
+
+        (defrule
+        (goal g-current-strategy FC-EAGLES-REVENGE)
+        =>
+        (set-goal gt-total-dark-wood-gatherers 10)
+        (set-goal gt-total-dark-food-gatherers 14)
+        (set-goal gt-total-dark-gold-gatherers 4)
+        (set-goal gt-total-dark-stone-gatherers 0)
+        (set-goal gt-to-feudal-wood-gatherers 10)
+        (set-goal gt-to-feudal-food-gatherers 14)
+        (set-goal gt-to-feudal-gold-gatherers 4)
+        (set-goal gt-to-feudal-stone-gatherers 0)
+        (set-goal gt-total-feudal-wood-gatherers 11)
+        (set-goal gt-total-feudal-food-gatherers 14)
+        (set-goal gt-total-feudal-gold-gatherers 5)
+        (set-goal gt-total-feudal-stone-gatherers 0)
+        )
+
+        (defrule
+        (goal g-current-strategy FC-KRUSH)
+        =>
+        (set-goal gt-total-dark-wood-gatherers 11)
+        (set-goal gt-total-dark-food-gatherers 15)
+        (set-goal gt-total-dark-gold-gatherers 3)
+        (set-goal gt-total-dark-stone-gatherers 0)
+        (set-goal gt-to-feudal-wood-gatherers 11)
+        (set-goal gt-to-feudal-food-gatherers 15)
+        (set-goal gt-to-feudal-gold-gatherers 3)
+        (set-goal gt-to-feudal-stone-gatherers 0)
+        (set-goal gt-total-feudal-wood-gatherers 11)
+        (set-goal gt-total-feudal-food-gatherers 15)
+        (set-goal gt-total-feudal-gold-gatherers 5)
+        (set-goal gt-total-feudal-stone-gatherers 0)
+        )
+
+        (defrule
+        (goal g-current-strategy FC-CRUSH)
+        =>
+        (set-goal gt-total-dark-wood-gatherers 11)
+        (set-goal gt-total-dark-food-gatherers 15)
+        (set-goal gt-total-dark-gold-gatherers 3)
+        (set-goal gt-total-dark-stone-gatherers 0)
+        (set-goal gt-to-feudal-wood-gatherers 11)
+        (set-goal gt-to-feudal-food-gatherers 15)
+        (set-goal gt-to-feudal-gold-gatherers 3)
+        (set-goal gt-to-feudal-stone-gatherers 0)
+        (set-goal gt-total-feudal-wood-gatherers 9)
+        (set-goal gt-total-feudal-food-gatherers 16)
+        (set-goal gt-total-feudal-gold-gatherers 6)
+        (set-goal gt-total-feudal-stone-gatherers 0)
+        )
+
+        (defrule
+        (goal g-current-strategy FC-CASTLE-DROP)
+        =>
+        (set-goal gt-total-dark-wood-gatherers 9)
+        (set-goal gt-total-dark-food-gatherers 15)
+        (set-goal gt-total-dark-gold-gatherers 2)
+        (set-goal gt-total-dark-stone-gatherers 4)
+        (set-goal gt-to-feudal-wood-gatherers 9)
+        (set-goal gt-to-feudal-food-gatherers 15)
+        (set-goal gt-to-feudal-gold-gatherers 2)
+        (set-goal gt-to-feudal-stone-gatherers 4)
+        (set-goal gt-total-feudal-wood-gatherers 10)
+        (set-goal gt-total-feudal-food-gatherers 15)
+        (set-goal gt-total-feudal-gold-gatherers 2)
+        (set-goal gt-total-feudal-stone-gatherers 5)
+        )
+
+        (defrule
+        (or
+            (goal g-current-strategy BOOMC-KNIGHTS)
+            (goal g-current-strategy BOOMC-CAMELS))
+        =>
+        (set-goal gt-total-dark-wood-gatherers 10)
+        (set-goal gt-total-dark-food-gatherers 15)
+        (set-goal gt-total-dark-gold-gatherers 3)
+        (set-goal gt-total-dark-stone-gatherers 0)
+        (set-goal gt-to-feudal-wood-gatherers 10)
+        (set-goal gt-to-feudal-food-gatherers 15)
+        (set-goal gt-to-feudal-gold-gatherers 3)
+        (set-goal gt-to-feudal-stone-gatherers 0)
+        (set-goal gt-total-feudal-wood-gatherers 11)
+        (set-goal gt-total-feudal-food-gatherers 15)
+        (set-goal gt-total-feudal-gold-gatherers 4)
+        (set-goal gt-total-feudal-stone-gatherers 0)
+        )
+
+        (defrule
+        (goal g-current-strategy BOOMC-XBOWS)
+        =>
+        (set-goal gt-total-dark-wood-gatherers 11)
+        (set-goal gt-total-dark-food-gatherers 14)
+        (set-goal gt-total-dark-gold-gatherers 3)
+        (set-goal gt-total-dark-stone-gatherers 0)
+        (set-goal gt-to-feudal-wood-gatherers 11)
+        (set-goal gt-to-feudal-food-gatherers 14)
+        (set-goal gt-to-feudal-gold-gatherers 3)
+        (set-goal gt-to-feudal-stone-gatherers 0)
+        (set-goal gt-total-feudal-wood-gatherers 11)
+        (set-goal gt-total-feudal-food-gatherers 15)
+        (set-goal gt-total-feudal-gold-gatherers 4)
+        (set-goal gt-total-feudal-stone-gatherers 0)
+        )
+
+        ;Adjust number of gatherers if g-required-num-villager is different than the default
+        (defrule
+        (up-compare-goal g-age-status < TO-FEUDAL)
+        =>
+        (up-modify-goal g-temp g:= gt-total-dark-wood-gatherers)
+        (up-modify-goal g-temp g:+ gt-total-dark-food-gatherers)
+        (up-modify-goal g-temp g:+ gt-total-dark-gold-gatherers)
+        (up-modify-goal g-temp g:+ gt-total-dark-stone-gatherers)
+        (up-modify-goal gt-total-dark-wood-gatherers g:* g-required-num-villager)
+        (up-modify-goal gt-total-dark-wood-gatherers g:/ g-temp)
+        (up-modify-goal gt-total-dark-food-gatherers g:* g-required-num-villager)
+        (up-modify-goal gt-total-dark-food-gatherers g:/ g-temp)
+        (up-modify-goal gt-total-dark-gold-gatherers g:* g-required-num-villager)
+        (up-modify-goal gt-total-dark-gold-gatherers g:/ g-temp)
+        (up-modify-goal gt-total-dark-stone-gatherers g:* g-required-num-villager)
+        (up-modify-goal gt-total-dark-stone-gatherers g:/ g-temp)
+        )
+        (defrule
+        (up-compare-goal g-age-status < TO-FEUDAL)
+        (up-modify-goal g-temp g:= gt-total-dark-wood-gatherers)
+        (up-modify-goal g-temp g:+ gt-total-dark-food-gatherers)
+        (up-modify-goal g-temp g:+ gt-total-dark-gold-gatherers)
+        (up-modify-goal g-temp g:+ gt-total-dark-stone-gatherers)
+        (up-modify-goal g-temp g:- g-required-num-villager)
+        =>
+        (up-modify-goal gt-total-dark-food-gatherers g:- g-temp)
+        )
+
+        (defrule
+        (up-compare-goal g-age-status == TO-FEUDAL)
+        =>
+        (up-modify-goal g-temp g:= gt-to-feudal-wood-gatherers)
+        (up-modify-goal g-temp g:+ gt-to-feudal-food-gatherers)
+        (up-modify-goal g-temp g:+ gt-to-feudal-gold-gatherers)
+        (up-modify-goal g-temp g:+ gt-to-feudal-stone-gatherers)
+        (up-modify-goal gt-to-feudal-wood-gatherers g:* g-required-num-villager)
+        (up-modify-goal gt-to-feudal-wood-gatherers g:/ g-temp)
+        (up-modify-goal gt-to-feudal-food-gatherers g:* g-required-num-villager)
+        (up-modify-goal gt-to-feudal-food-gatherers g:/ g-temp)
+        (up-modify-goal gt-to-feudal-gold-gatherers g:* g-required-num-villager)
+        (up-modify-goal gt-to-feudal-gold-gatherers g:/ g-temp)
+        (up-modify-goal gt-to-feudal-stone-gatherers g:* g-required-num-villager)
+        (up-modify-goal gt-to-feudal-stone-gatherers g:/ g-temp)
+        )
+        (defrule
+        (up-compare-goal g-age-status == TO-FEUDAL)
+        (up-modify-goal g-temp g:= gt-to-feudal-wood-gatherers)
+        (up-modify-goal g-temp g:+ gt-to-feudal-food-gatherers)
+        (up-modify-goal g-temp g:+ gt-to-feudal-gold-gatherers)
+        (up-modify-goal g-temp g:+ gt-to-feudal-stone-gatherers)
+        (up-modify-goal g-temp g:- g-required-num-villager)
+        =>
+        (up-modify-goal gt-to-feudal-food-gatherers g:+ g-temp)
+        )
+
+        (defrule
+        (current-age == feudal-age)
+        (up-compare-goal g-age-status < TO-CASTLE)
+        =>
+        (up-modify-goal g-temp g:= gt-total-feudal-wood-gatherers)
+        (up-modify-goal g-temp g:+ gt-total-feudal-food-gatherers)
+        (up-modify-goal g-temp g:+ gt-total-feudal-gold-gatherers)
+        (up-modify-goal g-temp g:+ gt-total-feudal-stone-gatherers)
+        (up-modify-goal gt-total-feudal-wood-gatherers g:* g-required-num-villager)
+        (up-modify-goal gt-total-feudal-wood-gatherers g:/ g-temp)
+        (up-modify-goal gt-total-feudal-food-gatherers g:* g-required-num-villager)
+        (up-modify-goal gt-total-feudal-food-gatherers g:/ g-temp)
+        (up-modify-goal gt-total-feudal-gold-gatherers g:* g-required-num-villager)
+        (up-modify-goal gt-total-feudal-gold-gatherers g:/ g-temp)
+        (up-modify-goal gt-total-feudal-stone-gatherers g:* g-required-num-villager)
+        (up-modify-goal gt-total-feudal-stone-gatherers g:/ g-temp)
+        )
+        (defrule
+        (current-age == feudal-age)
+        (up-compare-goal g-age-status < TO-CASTLE)
+        (up-modify-goal g-temp g:= gt-total-feudal-wood-gatherers)
+        (up-modify-goal g-temp g:+ gt-total-feudal-food-gatherers)
+        (up-modify-goal g-temp g:+ gt-total-feudal-gold-gatherers)
+        (up-modify-goal g-temp g:+ gt-total-feudal-stone-gatherers)
+        (up-modify-goal g-temp g:- g-required-num-villager)
+        =>
+        (up-modify-goal gt-total-feudal-food-gatherers g:+ g-temp)
+        )
+
+        (defrule
+        (up-compare-goal g-difficulty == MODERATE)
+        =>
+        (up-modify-goal gt-total-feudal-wood-gatherers c:+ 1)
+        (up-modify-goal gt-total-feudal-food-gatherers c:- 1)
+        )
+
+        (defrule
+        (up-compare-goal g-difficulty <= STANDARD)
+        =>
+        (up-modify-goal gt-total-feudal-wood-gatherers c:+ 2)
+        (up-modify-goal gt-total-feudal-food-gatherers c:- 1)
+        (up-modify-goal gt-total-feudal-gold-gatherers c:- 1)
+        )
+
+    ;--------------
+    ;   Dark Age
+    ;--------------
+
+        (defrule
+        (up-compare-goal g-age-status < TO-FEUDAL)
+        (goal g-desired-future-food-vils 0)
+        (up-modify-goal g-temp g:= g-required-num-villager)
+        (up-modify-goal g-temp g:- gt-total-dark-stone-gatherers)
+        (unit-type-count villager g:> g-temp)
+        =>
+        (up-modify-goal g-desired-future-wood-vils g:= gt-total-dark-wood-gatherers)
+        (up-modify-goal g-desired-future-food-vils g:= gt-total-dark-food-gatherers)
+        (up-modify-goal g-desired-future-gold-vils g:= gt-total-dark-gold-gatherers)
+        (up-modify-goal g-desired-future-stone-vils g:= gt-total-dark-stone-gatherers)
+        )
+
+        (defrule
+        (up-compare-goal g-age-status < TO-FEUDAL)
+        (goal g-desired-future-food-vils 0)
+        (up-modify-goal g-temp g:= g-required-num-villager)
+        (up-modify-goal g-temp g:- gt-total-dark-stone-gatherers)
+        (up-modify-goal g-temp g:- gt-total-dark-gold-gatherers)
+        (unit-type-count villager g:> g-temp)
+        =>
+        (up-modify-goal g-desired-future-wood-vils g:= gt-total-dark-wood-gatherers)
+        (up-modify-goal g-desired-future-food-vils g:= gt-total-dark-food-gatherers)
+        (up-modify-goal g-desired-future-gold-vils g:= gt-total-dark-gold-gatherers)
+        (set-goal g-desired-future-stone-vils 0)
+        )
+
+        (defrule
+        (up-compare-goal g-age-status < TO-FEUDAL)
+        (goal g-desired-future-food-vils 0)
+        (up-modify-goal g-temp g:= gt-total-dark-food-gatherers)
+        (up-modify-goal g-temp c:min 13)
+        (up-modify-goal g-temp g:+ gt-initial-dark-wood-gatherers)
+        (unit-type-count villager g:> g-temp)
+        =>
+        (up-modify-goal g-desired-future-wood-vils g:= gt-total-dark-wood-gatherers)
+        (up-modify-goal g-desired-future-food-vils g:= gt-total-dark-food-gatherers)
+        (set-goal g-desired-future-gold-vils 0)
+        (set-goal g-desired-future-stone-vils 0)
+        )
+
+        (defrule
+        (up-compare-goal g-age-status < TO-FEUDAL)
+        (goal g-desired-future-food-vils 0)
+        (up-modify-goal g-temp g:= gt-initial-dark-food-gatherers)
+        (up-modify-goal g-temp g:+ gt-initial-dark-wood-gatherers)
+        (unit-type-count villager g:> g-temp)
+        =>
+        (up-modify-goal g-desired-future-wood-vils g:= gt-initial-dark-wood-gatherers)
+        (up-modify-goal g-desired-future-food-vils g:= gt-total-dark-food-gatherers)
+        (up-modify-goal g-desired-future-food-vils c:min 13)
+        (set-goal g-desired-future-gold-vils 0)
+        (set-goal g-desired-future-stone-vils 0)
+        )
+
+        (defrule
+        (up-compare-goal g-age-status < TO-FEUDAL)
+        (goal g-desired-future-food-vils 0)
+        (up-modify-goal g-temp2 g:= gt-initial-dark-food-gatherers)
+        (up-modify-goal g-temp2 c:+ 1)
+        (unit-type-count villager g:> g-temp2)
+        =>
+        (up-modify-goal g-desired-future-food-vils g:= gt-initial-dark-food-gatherers)
+        (up-modify-goal g-desired-future-wood-vils g:= gt-initial-dark-wood-gatherers)
+        (set-goal g-desired-future-gold-vils 0)
+        (set-goal g-desired-future-stone-vils 0)
+        )
+
+        (defrule
+        (up-compare-goal g-age-status < TO-FEUDAL)
+        (goal g-desired-future-food-vils 0)
+        =>
+        (up-modify-goal g-desired-future-food-vils g:= gt-initial-dark-food-gatherers)
+        (set-goal g-desired-future-wood-vils 0)
+        (set-goal g-desired-future-gold-vils 0)
+        (set-goal g-desired-future-stone-vils 0)
+        )
+
+        ;Nomad
         (defrule
         (goal g-map-style NOMAD)
         (or
@@ -43,97 +411,16 @@
                 (building-type-count-total house >= 1)
                 (civ-selected hun)))
         =>
-        (set-goal g-desired-future-wood-vils 6)
-        )
-
-        (defrule
-        (or
-            (up-compare-goal g-map-style != NOMAD)
-            (and
-                (building-type-count-total town-center >= 1)
-                (or
-                    (building-type-count-total house >= 1)
-                    (civ-selected hun))))
-        (unit-type-count villager <= VILS-FOR-LUMBER-CAMP)          ;usually 7
-        (building-type-count-total mill == 0)
-        =>
-        (set-goal g-desired-future-food-vils VILS-FOR-LUMBER-CAMP)  ;usually 7
-        )
-        (defrule
-        (or
-            (up-compare-goal g-map-style != NOMAD)
-            (and
-                (building-type-count-total town-center >= 1)
-                (or
-                    (building-type-count-total house >= 1)
-                    (civ-selected hun))))
-        (up-modify-goal g-temp c:= VILS-FOR-LUMBER-CAMP)            ;usually 7
-        (up-modify-goal g-temp c:+ 1)                               ;usually 8
-        (unit-type-count villager g:<= g-temp)                      ;usually 8
-        (building-type-count-total mill > 0)
-        =>
-        (set-goal g-desired-future-food-vils VILS-FOR-LUMBER-CAMP)  ;usually 8
-        )
-
-        (defrule
-        (or
-            (up-compare-goal g-map-style != NOMAD)
-            (and
-                (building-type-count-total town-center >= 1)
-                (or
-                    (building-type-count-total house >= 1)
-                    (civ-selected hun))))
-        (up-modify-goal g-temp c:= VILS-FOR-LUMBER-CAMP)            ;usually 7
-        (up-modify-goal g-temp c:+ 1)                               ;usually 8
-        (unit-type-count villager g:>= g-temp)                      ;usually 8
-        (unit-type-count villager <= 10)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        (building-type-count-total mill == 0)
-        =>
-        (up-modify-goal g-temp c:- 2)
-        (up-modify-goal g-desired-future-food-vils g:= g-temp)      ;usually 6
-        (set-goal g-desired-future-wood-vils 4)
-        )
-        (defrule
-        (or
-            (up-compare-goal g-map-style != NOMAD)
-            (and
-                (building-type-count-total town-center >= 1)
-                (or
-                    (building-type-count-total house >= 1)
-                    (civ-selected hun))))
-        (up-modify-goal g-temp c:= VILS-FOR-LUMBER-CAMP)            ;usually 7
-        (up-modify-goal g-temp c:+ 2)                               ;usually 9
-        (unit-type-count villager g:>= g-temp)                      ;usually 9
-        (unit-type-count villager <= 10)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        (building-type-count-total mill > 0)
-        =>
-        (up-modify-goal g-temp c:- 2)
-        (up-modify-goal g-desired-future-food-vils g:= g-temp)      ;usually 7
-        (set-goal g-desired-future-wood-vils 3)
-        )
-
-        (defrule
-        (or
-            (up-compare-goal g-map-style != NOMAD)
-            (and
-                (building-type-count-total town-center >= 1)
-                (or
-                    (building-type-count-total house >= 1)
-                    (civ-selected hun))))
-        (up-modify-goal g-temp c:= VILS-FOR-LUMBER-CAMP)            ;usually 7
-        (up-modify-goal g-temp c:+ 4)                               ;usually 11
-        (unit-type-count villager g:>= g-temp)                      ;usually 11
-        (unit-type-count villager <= 17)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 13)
-        (set-goal g-desired-future-wood-vils 4)
+        (up-get-fact unit-type-count villager g-desired-future-wood-vils)
+        (up-modify-goal g-desired-future-wood-vils c:max 6)
+        (set-goal g-desired-future-food-vils 0)
+        (set-goal g-desired-future-gold-vils 0)
+        (set-goal g-desired-future-stone-vils 0)
         )
 
         (defrule
         (goal g-map-style NOMAD)
+        (up-compare-goal g-desired-future-food-vils > 0)
         (unit-type-count villager <= 5)
         (wood-amount < 25)
         =>
@@ -143,6 +430,7 @@
 
         (defrule
         (goal g-map-style NOMAD)
+        (up-compare-goal g-desired-future-food-vils > 0)
         (unit-type-count villager >= 6)
         (unit-type-count villager <= 17)
         (or
@@ -153,30 +441,109 @@
         (up-modify-goal g-desired-future-wood-vils c:+ 1)
         )
 
-    ;-------------------
-    ;   25-vil Morley
-    ;-------------------
-        
         (defrule
-        (goal g-current-strategy FC-MORLEY)
-        (unit-type-count villager >= 18)
-        (unit-type-count villager <= 22)
-        (up-compare-goal g-age-status < TO-CASTLE)
+        (game-time > 3)
+        (up-object-type-count-total c: villager g:>= g-required-num-villager)
+        (up-compare-goal g-age-status < TO-FEUDAL)
+        (building-type-count-total lumber-camp > 0)
+        (or
+            (building-type-count-total mill > 0)
+            (building-type-count-total mining-camp > 0))
         =>
-        (set-goal g-desired-future-food-vils 12)
-        (set-goal g-desired-future-wood-vils 10)
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-research-cost c: feudal-age c: 1)
         )
 
         (defrule
-        (goal g-current-strategy FC-MORLEY)
-        (unit-type-count villager >= 23)
-        ; (unit-type-count villager <= 25)
+        (game-time > 3)
+        (up-object-type-count-total c: villager g:>= g-required-num-villager)
+        (up-compare-goal g-age-status < TO-FEUDAL)
+        (building-type-count-total lumber-camp > 0)
+        (or
+            (building-type-count-total mill > 0)
+            (building-type-count-total mining-camp > 0))
+        (food-amount g:< g-food-cost)
+        =>
+        (up-modify-goal g-desired-future-food-vils c:+ 10)
+        )
+
+    ;-------------------
+    ;   To Feudal Age
+    ;-------------------
+
+        (defrule
+        (goal g-age-status TO-FEUDAL)
+        =>
+        (up-modify-goal g-desired-future-wood-vils g:= gt-to-feudal-wood-gatherers)
+        (up-modify-goal g-desired-future-food-vils g:= gt-to-feudal-food-gatherers)
+        (up-modify-goal g-desired-future-gold-vils g:= gt-to-feudal-gold-gatherers)
+        (up-modify-goal g-desired-future-stone-vils g:= gt-to-feudal-stone-gatherers)
+        )
+
+    ;----------------
+    ;   Feudal Age
+    ;----------------
+
+        (defrule
+        (current-age == feudal-age)
         (up-compare-goal g-age-status < TO-CASTLE)
         =>
-        (set-goal g-desired-future-food-vils 12)
-        (set-goal g-desired-future-wood-vils 10)
-        (set-goal g-desired-future-gold-vils 3)
+        (up-modify-goal g-desired-future-wood-vils g:= gt-total-feudal-wood-gatherers)
+        (up-modify-goal g-desired-future-food-vils g:= gt-total-feudal-food-gatherers)
+        (up-modify-goal g-desired-future-gold-vils g:= gt-total-feudal-gold-gatherers)
+        (up-modify-goal g-desired-future-stone-vils g:= gt-total-feudal-stone-gatherers)
         )
+
+        (defrule
+        (up-object-type-count-total c: villager g:>= g-required-num-villager)
+        (current-age == feudal-age)
+        (up-compare-goal g-age-status < TO-CASTLE)
+        =>
+        (up-get-fact building-type-count blacksmith g-temp)
+        (up-get-fact building-type-count market g-temp2)
+        (up-modify-goal g-temp2 c:min 1)
+        (up-modify-goal g-temp g:+ g-temp2)
+        (up-get-fact building-type-count archery-range g-temp2)
+        (up-modify-goal g-temp2 c:min 1)
+        (up-modify-goal g-temp g:+ g-temp2)
+        (up-get-fact building-type-count stable g-temp2)
+        (up-modify-goal g-temp2 c:min 1)
+        (up-modify-goal g-temp g:+ g-temp2)
+        )
+
+        (defrule
+        (up-object-type-count-total c: villager g:>= g-required-num-villager)
+        (current-age == feudal-age)
+        (up-compare-goal g-age-status < TO-CASTLE)
+        (up-compare-goal g-temp >= 2)
+        =>
+        (up-setup-cost-data 1 g-food-cost)
+        (up-add-research-cost c: castle-age c: 1)
+        )
+
+        (defrule
+        (up-object-type-count-total c: villager g:>= g-required-num-villager)
+        (current-age == feudal-age)
+        (up-compare-goal g-age-status < TO-CASTLE)
+        (up-compare-goal g-temp >= 2)
+        (food-amount g:< g-food-cost)
+        =>
+        (up-modify-goal g-desired-future-food-vils c:+ 10)
+        )
+
+        (defrule
+        (up-object-type-count-total c: villager g:>= g-required-num-villager)
+        (current-age == feudal-age)
+        (up-compare-goal g-age-status < TO-CASTLE)
+        (up-compare-goal g-temp >= 2)
+        (gold-amount g:< g-gold-cost)
+        =>
+        (up-modify-goal g-desired-future-gold-vils c:+ 10)
+        )
+
+    ;-------------------
+    ;   25-vil Morley
+    ;-------------------
 
         (defrule
         (goal g-current-strategy FC-MORLEY)
@@ -227,41 +594,7 @@
     ;-----------------
     ;   Castle Drop
     ;-----------------
-        
-        (defrule
-        (goal g-current-strategy FC-CASTLE-DROP)
-        (unit-type-count villager >= 18)
-        (unit-type-count villager <= 25)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 15)
-        (set-goal g-desired-future-wood-vils 10)
-        )
 
-        (defrule
-        (goal g-current-strategy FC-CASTLE-DROP)
-        (unit-type-count villager >= 26)
-        (unit-type-count villager <= 27)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 15)
-        (set-goal g-desired-future-wood-vils 10)
-        (set-goal g-desired-future-gold-vils 2)
-        )
-
-        (defrule
-        (goal g-current-strategy FC-CASTLE-DROP)
-        (unit-type-count villager >= 28)
-        ; (unit-type-count villager <= 32)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 15)
-        (set-goal g-desired-future-wood-vils 10)
-        (set-goal g-desired-future-gold-vils 2)
-        (set-goal g-desired-future-stone-vils 5)
-        )
-
-        ;Switch to using gathering percentages (out of 1000 villagers)
         (defrule
         (goal g-current-strategy FC-CASTLE-DROP)
         (up-compare-goal g-age-status >= TO-CASTLE)
@@ -301,46 +634,7 @@
     ;------------------
     ;   29-vil Krush
     ;------------------
-        
-        (defrule
-        (or
-            (goal g-current-strategy FC-KRUSH)
-            (goal g-current-strategy EARLYC-KNIGHTS))
-        (unit-type-count villager >= 18)
-        (unit-type-count villager <= 26)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 15)
-        (set-goal g-desired-future-wood-vils 11)
-        )
 
-        (defrule
-        (or
-            (goal g-current-strategy FC-KRUSH)
-            (goal g-current-strategy EARLYC-KNIGHTS))
-        (unit-type-count villager >= 27)
-        (unit-type-count villager <= 29)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 15)
-        (set-goal g-desired-future-wood-vils 11)
-        (set-goal g-desired-future-gold-vils 3)
-        )
-
-        (defrule
-        (or
-            (goal g-current-strategy FC-KRUSH)
-            (goal g-current-strategy EARLYC-KNIGHTS))
-        (unit-type-count villager >= 30)
-        ; (unit-type-count villager <= 31)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 15)
-        (set-goal g-desired-future-wood-vils 11)
-        (set-goal g-desired-future-gold-vils 5)
-        )
-
-        ;Switch to using gathering percentages (out of 1000 villagers)
         (defrule
         (or
             (goal g-current-strategy FC-KRUSH)
@@ -381,59 +675,7 @@
     ;-----------
     ;   Crush
     ;-----------
-        
-        (defrule
-        (or
-            (goal g-current-strategy FC-CRUSH)
-            (goal g-current-strategy EARLYC-CAMELS))
-        (unit-type-count villager >= 18)
-        (unit-type-count villager <= 26)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 15)
-        (set-goal g-desired-future-wood-vils 11)
-        )
 
-        (defrule
-        (or
-            (goal g-current-strategy FC-CRUSH)
-            (goal g-current-strategy EARLYC-CAMELS))
-        (unit-type-count villager >= 27)
-        (unit-type-count villager <= 29)
-        (up-compare-goal g-age-status < EARLY-FEUDAL)
-        =>
-        (set-goal g-desired-future-food-vils 15)
-        (set-goal g-desired-future-wood-vils 11)
-        (set-goal g-desired-future-gold-vils 3)
-        )
-
-        (defrule
-        (or
-            (goal g-current-strategy FC-CRUSH)
-            (goal g-current-strategy EARLYC-CAMELS))
-        (unit-type-count villager == 29)
-        (current-age == feudal-age)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 14)
-        (set-goal g-desired-future-wood-vils 9)
-        (set-goal g-desired-future-gold-vils 6)
-        )
-
-        (defrule
-        (or
-            (goal g-current-strategy FC-CRUSH)
-            (goal g-current-strategy EARLYC-CAMELS))
-        (unit-type-count villager >= 30)
-        ; (unit-type-count villager <= 31)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 16)
-        (set-goal g-desired-future-wood-vils 9)
-        (set-goal g-desired-future-gold-vils 6)
-        )
-
-        ;Switch to using gathering percentages (out of 1000 villagers)
         (defrule
         (or
             (goal g-current-strategy FC-CRUSH)
@@ -475,38 +717,6 @@
     ;   Boom Knights
     ;------------------
     
-        (defrule
-        (goal g-current-strategy BOOMC-KNIGHTS)
-        (unit-type-count villager >= 18)
-        (unit-type-count villager <= 25)
-        (up-compare-goal g-age-status < TO-FEUDAL)
-        =>
-        (set-goal g-desired-future-food-vils 15)
-        (set-goal g-desired-future-wood-vils 10)
-        )
-
-        (defrule
-        (goal g-current-strategy BOOMC-KNIGHTS)
-        (unit-type-count villager >= 26)
-        (unit-type-count villager <= 28)
-        =>
-        (set-goal g-desired-future-food-vils 15)
-        (set-goal g-desired-future-wood-vils 10)
-        (set-goal g-desired-future-gold-vils 3)
-        )
-
-        (defrule
-        (goal g-current-strategy BOOMC-KNIGHTS)
-        (unit-type-count villager >= 29)
-        ; (unit-type-count villager <= 30)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 15)
-        (set-goal g-desired-future-wood-vils 11)
-        (set-goal g-desired-future-gold-vils 4)
-        )
-
-        ;Switch to using gathering percentages (out of 1000 villagers)
         (defrule
         (goal g-current-strategy BOOMC-KNIGHTS)
         (goal g-age-status TO-CASTLE)
@@ -558,49 +768,7 @@
     ;-----------------
     ;   Boom Camels
     ;-----------------
-    
-        (defrule
-        (goal g-current-strategy BOOMC-CAMELS)
-        (unit-type-count villager >= 18)
-        (unit-type-count villager <= 25)
-        (up-compare-goal g-age-status < TO-FEUDAL)
-        =>
-        (set-goal g-desired-future-food-vils 16)
-        (set-goal g-desired-future-wood-vils 9)
-        )
 
-        (defrule
-        (goal g-current-strategy BOOMC-CAMELS)
-        (unit-type-count villager >= 26)
-        (unit-type-count villager <= 28)
-        (up-compare-goal g-age-status < TO-FEUDAL)
-        =>
-        (set-goal g-desired-future-food-vils 16)
-        (set-goal g-desired-future-wood-vils 9)
-        (set-goal g-desired-future-gold-vils 3)
-        )
-
-        (defrule
-        (goal g-current-strategy BOOMC-CAMELS)
-        (goal g-age-status TO-FEUDAL)
-        =>
-        (set-goal g-desired-future-food-vils 11)
-        (set-goal g-desired-future-wood-vils 13)
-        (set-goal g-desired-future-gold-vils 4)
-        )
-
-        (defrule
-        (goal g-current-strategy BOOMC-CAMELS)
-        (unit-type-count villager >= 28)
-        ; (unit-type-count villager <= 30)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 13)
-        (set-goal g-desired-future-wood-vils 13)
-        (set-goal g-desired-future-gold-vils 4)
-        )
-
-        ;Switch to using gathering percentages (out of 1000 villagers)
         (defrule
         (goal g-current-strategy BOOMC-CAMELS)
         (goal g-age-status TO-CASTLE)
@@ -625,33 +793,7 @@
     ;--------------------
     ;   Eagles Revenge
     ;--------------------
-        
-        (defrule
-        (or
-            (goal g-current-strategy FC-EAGLES-REVENGE)
-            (goal g-current-strategy EARLYC-EAGLES))
-        (unit-type-count villager >= 18)
-        (unit-type-count villager <= 25)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 14)
-        (set-goal g-desired-future-wood-vils 11)
-        )
-
-        (defrule
-        (or
-            (goal g-current-strategy FC-EAGLES-REVENGE)
-            (goal g-current-strategy EARLYC-EAGLES))
-        (unit-type-count villager >= 26)
-        ; (unit-type-count villager <= 30)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 14)
-        (set-goal g-desired-future-wood-vils 11)
-        (set-goal g-desired-future-gold-vils 5)
-        )
-
-        ;Switch to using gathering percentages (out of 1000 villagers)
+    
         (defrule
         (or
             (goal g-current-strategy FC-EAGLES-REVENGE)
@@ -692,33 +834,7 @@
     ;---------------
     ;   Strongbow
     ;---------------
-        
-        (defrule
-        (or
-            (goal g-current-strategy FC-STRONGBOW)
-            (goal g-current-strategy EARLYC-XBOWS))
-        (unit-type-count villager >= 18)
-        (unit-type-count villager <= 24)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 13)
-        (set-goal g-desired-future-wood-vils 11)
-        )
-
-        (defrule
-        (or
-            (goal g-current-strategy FC-STRONGBOW)
-            (goal g-current-strategy EARLYC-XBOWS))
-        (unit-type-count villager >= 25)
-        ; (unit-type-count villager <= 30)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 13)
-        (set-goal g-desired-future-wood-vils 11)
-        (set-goal g-desired-future-gold-vils 6)
-        )
-
-        ;Switch to using gather percentages (out of 1000 villagers)
+    
         (defrule
         (or
             (goal g-current-strategy FC-STRONGBOW)
@@ -758,29 +874,7 @@
     ;-------------
     ;   Genghis
     ;-------------
-        
-        (defrule
-        (goal g-current-strategy FC-GENGHIS)
-        (unit-type-count villager >= 18)
-        (unit-type-count villager <= 24)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 13)
-        (set-goal g-desired-future-wood-vils 11)
-        )
-
-        (defrule
-        (goal g-current-strategy FC-GENGHIS)
-        (unit-type-count villager >= 25)
-        ; (unit-type-count villager <= 30)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 13)
-        (set-goal g-desired-future-wood-vils 11)
-        (set-goal g-desired-future-gold-vils 6)
-        )
-
-        ;Switch to using gather percentages (out of 1000 villagers)
+    
         (defrule
         (goal g-current-strategy FC-GENGHIS)
         (goal g-age-status TO-CASTLE)
@@ -814,29 +908,7 @@
     ;---------------
     ;   Boom Xbows
     ;---------------
-        
-        (defrule
-        (goal g-current-strategy BOOMC-XBOWS)
-        (unit-type-count villager >= 18)
-        (unit-type-count villager <= 25)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 14)
-        (set-goal g-desired-future-wood-vils 11)
-        )
-
-        (defrule
-        (goal g-current-strategy BOOMC-XBOWS)
-        (unit-type-count villager >= 26)
-        ; (unit-type-count villager <= 30)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (set-goal g-desired-future-food-vils 15)
-        (set-goal g-desired-future-wood-vils 11)
-        (set-goal g-desired-future-gold-vils 4)
-        )
-
-        ;Switch to using gathering percentages (out of 1000 villagers)
+    
         (defrule
         (goal g-current-strategy BOOMC-XBOWS)
         (goal g-age-status TO-CASTLE)
@@ -855,53 +927,6 @@
         (set-goal g-desired-future-wood-vils 220)   ;24%
         (set-goal g-desired-future-gold-vils 210)   ;23%
         (set-goal g-desired-future-stone-vils 80)
-        )
-
-    ;-----------------------------
-    ;   Build Order Adjustments
-    ;-----------------------------
-
-        (defrule
-        (up-object-type-count-total c: villager g:>= g-required-num-villager)
-        (up-compare-goal g-age-status < TO-FEUDAL)
-        =>
-        (up-setup-cost-data 1 g-food-cost)
-        (up-add-research-cost c: feudal-age c: 1)
-        )
-
-        (defrule
-        (up-object-type-count-total c: villager g:>= g-required-num-villager)
-        (up-compare-goal g-age-status < TO-FEUDAL)
-        (food-amount g:< g-food-cost)
-        =>
-        (up-modify-goal g-desired-future-food-vils c:+ 10)
-        )
-
-        (defrule
-        (up-object-type-count-total c: villager g:>= g-required-num-villager)
-        (current-age == feudal-age)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        =>
-        (up-setup-cost-data 1 g-food-cost)
-        (up-add-research-cost c: castle-age c: 1)
-        )
-
-        (defrule
-        (up-object-type-count-total c: villager g:>= g-required-num-villager)
-        (current-age == feudal-age)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        (food-amount g:< g-food-cost)
-        =>
-        (up-modify-goal g-desired-future-food-vils c:+ 10)
-        )
-
-        (defrule
-        (up-object-type-count-total c: villager g:>= g-required-num-villager)
-        (current-age == feudal-age)
-        (up-compare-goal g-age-status < TO-CASTLE)
-        (gold-amount g:< g-gold-cost)
-        =>
-        (up-modify-goal g-desired-future-gold-vils c:+ 10)
         )
 
     ;-------------------------------
@@ -979,6 +1004,33 @@
         (set-goal g-desired-future-wood-vils 270)
         (set-goal g-desired-future-gold-vils 295)
         (set-goal g-desired-future-stone-vils 35)
+        )
+
+        (defrule
+        (goal g-difficulty MODERATE)
+        (up-compare-goal g-age-status >= TO-CASTLE)
+        =>
+        (up-modify-goal g-desired-future-wood-vils c:+ 40)
+        (up-modify-goal g-desired-future-food-vils c:- 25)
+        (up-modify-goal g-desired-future-gold-vils c:- 15)
+        )
+
+        (defrule
+        (goal g-difficulty STANDARD)
+        (up-compare-goal g-age-status >= TO-CASTLE)
+        =>
+        (up-modify-goal g-desired-future-wood-vils c:+ 70)
+        (up-modify-goal g-desired-future-food-vils c:- 45)
+        (up-modify-goal g-desired-future-gold-vils c:- 25)
+        )
+
+        (defrule
+        (goal g-difficulty EASIEST)
+        (up-compare-goal g-age-status >= TO-CASTLE)
+        =>
+        (up-modify-goal g-desired-future-wood-vils c:+ 100)
+        (up-modify-goal g-desired-future-food-vils c:- 65)
+        (up-modify-goal g-desired-future-gold-vils c:- 35)
         )
 
     ;-----------------------------------------------

@@ -2510,6 +2510,7 @@
 		(up-pending-objects c: castle < 1)
 		(building-type-count-total castle == 0)
 		(goal g-current-strategy FC-CASTLE-DROP)
+		(up-compare-goal g-map-style != WALLED-LAND)
 		(up-compare-flag g-flag != PLACE-CONTROL-USED)
 		=>
 		(up-set-placement-data my-player-number -1 c: 8)
@@ -2528,6 +2529,7 @@
 		(up-pending-objects c: castle < 1)
 		(building-type-count-total castle == 0)
 		(up-compare-goal g-current-strategy != FC-CASTLE-DROP)
+		(up-compare-goal g-map-style != WALLED-LAND)
 		(up-compare-flag g-flag != PLACE-CONTROL-USED)
 		=>
 		(up-set-placement-data my-player-number -1 c: 13)
@@ -2544,7 +2546,25 @@
 		(up-object-type-count-total c: castle g:< g-desired-num-castle)
 		(can-build-with-escrow castle)
 		(up-pending-objects c: castle < 2)
+		(goal g-map-style WALLED-LAND)
+		(up-compare-flag g-flag != PLACE-CONTROL-USED)
+		=>
+		(up-set-placement-data my-player-number -1 c: 15)
+		(set-strategic-number sn-placement-zone-size 3)
+		(set-strategic-number sn-placement-fail-delta 0)
+		(up-assign-builders c: castle c: 4)
+		(up-build place-control g-escrow c: castle)
+		(up-modify-flag g-flag c:+ PLACE-CONTROL-USED)
+		(up-store-type-name c: castle)
+		; (up-chat-data-to-player my-player-number CHAT-BUILD-BACKUP-BUILDING c: 7031232)
+		)
+
+		(defrule
+		(up-object-type-count-total c: castle g:< g-desired-num-castle)
+		(can-build-with-escrow castle)
+		(up-pending-objects c: castle < 2)
 		(building-type-count-total castle > 0)
+		(up-compare-goal g-map-style != WALLED-LAND)
 		(up-compare-flag g-flag != PLACE-CONTROL-USED)
 		=>
 		(up-set-placement-data my-player-number -1 s: csn-peaceful-town-size)

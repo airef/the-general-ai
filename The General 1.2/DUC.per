@@ -2686,12 +2686,44 @@
 
         (load "The General 1.2/Functions/Reset Mini")
 
+		#load-if-defined BRITON-CIV
+
+            (defrule
+            (true)
+            =>
+            (set-goal g-temp 6)
+            )
+
+		#end-if
+
+		#load-if-defined CHINESE-CIV
+
+            (defrule
+            (true)
+            =>
+            (set-goal g-temp 7)
+            )
+
+		#end-if
+
+		#load-if-not-defined BRITON-CIV
+		#load-if-not-defined CHINESE-CIV
+
+            (defrule
+            (true)
+            =>
+            (set-goal g-temp 6)
+            )
+            
+		#end-if
+		#end-if
+
         (defrule
         (up-compare-goal g-difficulty >= EXTREME)
         (building-type-count town-center > 0)
         (unit-type-count villager-wood > 0)
         (current-age == dark-age)
-        (unit-type-count villager <= VILS-FOR-LUMBER-CAMP)
+        (unit-type-count villager g:<= g-temp)
         (strategic-number sn-wood-gatherer-percentage == 0)
         (or
             (dropsite-min-distance food < 4)
@@ -2709,7 +2741,7 @@
         (building-type-count town-center > 0)
         (unit-type-count villager-wood > 0)
         (current-age == dark-age)
-        (unit-type-count villager <= VILS-FOR-LUMBER-CAMP)
+        (unit-type-count villager g:<= g-temp)
         (strategic-number sn-wood-gatherer-percentage == 0)
         (or
             (dropsite-min-distance food < 4)
@@ -2730,7 +2762,7 @@
         (building-type-count town-center > 0)
         (unit-type-count villager-wood > 0)
         (current-age == dark-age)
-        (unit-type-count villager <= VILS-FOR-LUMBER-CAMP)
+        (unit-type-count villager g:<= g-temp)
         (strategic-number sn-wood-gatherer-percentage == 0)
         (or
             (dropsite-min-distance food < 4)

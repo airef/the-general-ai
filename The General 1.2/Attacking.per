@@ -541,6 +541,23 @@
 			(up-modify-goal g-required-attack-num c:+ 5)
 			)
 
+			;Adjust numbers for difficulty
+			(defrule
+			(goal g-difficulty MODERATE)
+			=>
+			(up-modify-goal g-required-attack-num c:+ 5)
+			)
+			(defrule
+			(goal g-difficulty STANDARD)
+			=>
+			(up-modify-goal g-required-attack-num c:+ 12)
+			)
+			(defrule
+			(goal g-difficulty EASIEST)
+			=>
+			(up-modify-goal g-required-attack-num c:+ 25)
+			)
+
 			;Adjust stop attack numbers based on required attack numbers
 			(defrule
 			(current-age == castle-age)
@@ -555,7 +572,7 @@
 			(defrule
 			(current-age == castle-age)
 			(up-compare-goal g-attack-status <= FIRST-CASTLE-ATTACK)
-			(goal g-target-age-parity WE-ARE-AHEAD)
+			(up-compare-goal g-target-age-parity != WE-ARE-AHEAD)
 			=>
 			(up-modify-goal g-stop-attack-num g:= g-required-attack-num)
 			(up-modify-goal g-stop-attack-num c:%* 70)
@@ -744,6 +761,7 @@
 			(current-age == imperial-age)
 			(players-current-age any-enemy == imperial-age)
 			(population < NINETY-PERCENT-POP)
+			(up-compare-const RANK != THE-SERGEANT)
 			=>
 			(up-modify-goal g-required-attack-num c:+ 10)
 			)
@@ -754,6 +772,17 @@
 			(goal g-town-under-attack YES)
 			=>
 			(up-modify-goal g-required-attack-num c:+ 10)
+			)
+
+			;Adjust numbers for max villager pop
+			(defrule
+			(up-compare-goal g-attack-status > FIRST-CASTLE-ATTACK)
+			=>
+			(up-modify-goal g-temp g:= g-desired-num-villager)
+			(up-modify-goal g-temp g:+ g-desired-num-trade-cart)
+			(up-modify-goal g-temp g:+ g-desired-num-trade-cog)
+			(up-modify-goal g-temp c:%* 75)
+			(up-modify-goal g-required-attack-num g:min g-temp)
 			)
 
 			;Set required/stop attack numbers
@@ -989,6 +1018,7 @@
 		(defrule
 		(up-compare-goal g-difficulty >= EXTREME)
 		(current-age <= castle-age)
+		(up-compare-goal g-map-style != WALLED-LAND)
 		=>
 		(up-modify-flag g-attack-method-flag c:+ USE-DUC)
 		)
@@ -996,7 +1026,9 @@
 		(defrule
 		(or
 			(current-age == imperial-age)
-			(up-compare-goal g-difficulty < EXTREME))
+			(or
+				(up-compare-goal g-difficulty < EXTREME)
+				(goal g-map-style WALLED-LAND)))
 		(up-compare-goal g-attack-objective != HELP-ALLY-DEFEND)
 		=>
 		(up-modify-flag g-attack-method-flag c:+ USE-TSA)
