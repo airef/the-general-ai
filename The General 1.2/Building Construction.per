@@ -538,7 +538,8 @@
 			(building-type-count-total town-center == 0)
 			(can-build-with-escrow town-center)
 			(up-compare-goal g-loop-counter g:< g-id-loop-max-objects)
-			(up-can-search search-remote)
+			(up-modify-sn sn-focus-player-number c:= 0)
+			(up-compare-goal g-remote-total < 40)
 			=>
 			(up-modify-goal g-loop-counter c:+ 1)
 			(up-jump-rule -2)
@@ -2511,6 +2512,7 @@
 		(building-type-count-total castle == 0)
 		(goal g-current-strategy FC-CASTLE-DROP)
 		(up-compare-goal g-map-style != WALLED-LAND)
+		(up-compare-goal g-map-style != SEMI-WALLED-LAND)
 		(up-compare-flag g-flag != PLACE-CONTROL-USED)
 		=>
 		(up-set-placement-data my-player-number -1 c: 8)
@@ -2530,6 +2532,7 @@
 		(building-type-count-total castle == 0)
 		(up-compare-goal g-current-strategy != FC-CASTLE-DROP)
 		(up-compare-goal g-map-style != WALLED-LAND)
+		(up-compare-goal g-map-style != SEMI-WALLED-LAND)
 		(up-compare-flag g-flag != PLACE-CONTROL-USED)
 		=>
 		(up-set-placement-data my-player-number -1 c: 13)
@@ -2546,7 +2549,9 @@
 		(up-object-type-count-total c: castle g:< g-desired-num-castle)
 		(can-build-with-escrow castle)
 		(up-pending-objects c: castle < 2)
-		(goal g-map-style WALLED-LAND)
+		(or
+			(goal g-map-style WALLED-LAND)
+			(goal g-map-style SEMI-WALLED-LAND))
 		(up-compare-flag g-flag != PLACE-CONTROL-USED)
 		=>
 		(up-set-placement-data my-player-number -1 c: 15)
@@ -2565,6 +2570,7 @@
 		(up-pending-objects c: castle < 2)
 		(building-type-count-total castle > 0)
 		(up-compare-goal g-map-style != WALLED-LAND)
+		(up-compare-goal g-map-style != SEMI-WALLED-LAND)
 		(up-compare-flag g-flag != PLACE-CONTROL-USED)
 		=>
 		(up-set-placement-data my-player-number -1 s: csn-peaceful-town-size)

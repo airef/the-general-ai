@@ -912,7 +912,9 @@
 
 		(defrule
 		(current-age == imperial-age)
-		(up-compare-goal g-target-military-parity > 0)
+		(or
+			(up-compare-goal g-target-military-parity > 0)
+			(military-population >= 30))
 		(or
 			(building-type-count castle < 2)
 			(unit-type-count trebuchet-set < 2))
@@ -930,7 +932,9 @@
 		)
 		(defrule
 		(current-age == imperial-age)
-		(up-compare-goal g-target-military-parity > 0)
+		(or
+			(up-compare-goal g-target-military-parity > 0)
+			(military-population >= 30))
 		(goal g-age-status LATE-IMPERIAL)
 		(or
 			(up-compare-goal g-target-pop-parity >= 5)
@@ -4533,10 +4537,10 @@
 		;cap dark age farms
 		(defrule
 		(or
-			(up-compare-const MIN-SHEEP > 0)
+			(up-compare-goal g-num-starting-sheep > 0)
 			(or
-				(up-compare-const FORAGE-PILE-1 > 0)
-				(up-compare-const MIN-BOAR > 0)))
+				(up-compare-goal g-size-forage-pile1 > 0)
+				(up-compare-goal g-num-starting-boar > 0)))
 		(up-compare-goal g-map-style != NOMAD)
 		(up-compare-goal g-age-status <= TO-FEUDAL)
 		(goal g-current-strategy FC-MORLEY)
@@ -4548,10 +4552,10 @@
 
 			(defrule
 			(or
-				(up-compare-const MIN-SHEEP > 0)
+				(up-compare-goal g-num-starting-sheep > 0)
 				(or
-					(up-compare-const FORAGE-PILE-1 > 0)
-					(up-compare-const MIN-BOAR > 0)))
+					(up-compare-goal g-size-forage-pile1 > 0)
+					(up-compare-goal g-num-starting-boar > 0)))
 			(up-compare-goal g-map-style != NOMAD)
 			(goal g-age-status TO-FEUDAL)
 			=>
@@ -4560,10 +4564,10 @@
 
 			(defrule
 			(or
-				(up-compare-const MIN-SHEEP > 0)
+				(up-compare-goal g-num-starting-sheep > 0)
 				(or
-					(up-compare-const FORAGE-PILE-1 > 0)
-					(up-compare-const MIN-BOAR > 0)))
+					(up-compare-goal g-size-forage-pile1 > 0)
+					(up-compare-goal g-num-starting-boar > 0)))
 			(up-compare-goal g-age-status <= TO-FEUDAL)
 			(wood-amount < 385)
 			=>

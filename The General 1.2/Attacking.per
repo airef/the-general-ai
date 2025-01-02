@@ -761,7 +761,7 @@
 			(current-age == imperial-age)
 			(players-current-age any-enemy == imperial-age)
 			(population < NINETY-PERCENT-POP)
-			(up-compare-const RANK != THE-SERGEANT)
+			(up-compare-goal g-difficulty < HARDEST)
 			=>
 			(up-modify-goal g-required-attack-num c:+ 10)
 			)
@@ -1019,6 +1019,7 @@
 		(up-compare-goal g-difficulty >= EXTREME)
 		(current-age <= castle-age)
 		(up-compare-goal g-map-style != WALLED-LAND)
+		(up-compare-goal g-map-style != SEMI-WALLED-LAND)
 		=>
 		(up-modify-flag g-attack-method-flag c:+ USE-DUC)
 		)
@@ -1028,7 +1029,9 @@
 			(current-age == imperial-age)
 			(or
 				(up-compare-goal g-difficulty < EXTREME)
-				(goal g-map-style WALLED-LAND)))
+				(or
+					(goal g-map-style WALLED-LAND)
+					(goal g-map-style SEMI-WALLED-LAND))))
 		(up-compare-goal g-attack-objective != HELP-ALLY-DEFEND)
 		=>
 		(up-modify-flag g-attack-method-flag c:+ USE-TSA)
@@ -1206,6 +1209,14 @@
 		(up-set-defense-priority c: palisade-wall c: 1000)
 		(up-set-defense-priority c: stone-wall c: 1000)
 		(up-set-defense-priority c: fortified-wall c: 1000)
+		(disable-self)
+		)
+
+		(defrule
+		(goal g-map-style SEMI-WALLED-LAND)
+		=>
+		(up-set-defense-priority c: palisade-wall c: 2000)
+		(set-strategic-number sn-wall-targeting-mode 1)
 		(disable-self)
 		)
 

@@ -1834,7 +1834,8 @@
 			(defconst OPEN-LAND 1)			;Arabia, etc.
 			(defconst CLOSED-LAND 2)		;Black Forest, etc.
 			(defconst WALLED-LAND 3)		;Arena, etc.
-			(defconst MICHI 4)				;Michi (cannot reach players at beginning of the game)
+			(defconst SEMI-WALLED-LAND 4)	;Hideout (palisade wall start)
+			(defconst MICHI 5)				;Michi (cannot reach players at beginning of the game)
 			(defconst RIVERS 11)			;Rivers, Highland, etc.
 			(defconst LAKES 12)				;Mediterranean, etc.
 			(defconst NOMAD 21)				;Nomad (no starting TC)
@@ -2956,6 +2957,17 @@
 		; (defconst 511)
 		; (defconst 512)
 
+		(defconst g-num-starting-boar 701)
+		(defconst g-num-starting-deer 702)
+		(defconst g-num-starting-sheep 703)
+		(defconst g-size-forage-pile1 704)
+		(defconst g-size-forage-pile2 705)
+		(defconst g-size-gold-pile1 706)
+		(defconst g-size-gold-pile2 707)
+		(defconst g-size-gold-pile3 708)
+		(defconst g-size-stone-pile1 709)
+		(defconst g-size-stone-pile2 710)
+
 	;--------------------------------
 	;	Map Type Loading Constants
 	;		And Goal 7
@@ -2969,50 +2981,29 @@
 		(defrule
 		(true)
 		=>
-		(set-goal g-map-style PENDING)
+		(set-goal g-num-starting-boar 2)
+		(set-goal g-num-starting-deer 3)
+		(set-goal g-num-starting-sheep 8)
+		(set-goal g-size-forage-pile1 6)
+		(set-goal g-size-forage-pile2 0)
+		(set-goal g-size-gold-pile1 7)
+		(set-goal g-size-gold-pile2 4)
+		(set-goal g-size-gold-pile3 4)
+		(set-goal g-size-stone-pile1 5)
+		(set-goal g-size-stone-pile2 4)
+		(set-goal g-map-style OPEN-LAND)
 		(disable-self)
 		)
 
-		#load-if-defined ARABIA-MAP
-
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
-
-			(defrule
-			(true)
-			=>
-			(set-goal g-map-style OPEN-LAND)
-			(disable-self)
-			)
-
-		#end-if
-
 		#load-if-defined ARCHIPELAGO-MAP
 
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 7)
-			(defconst GOLD-PILE-3 0)
-			(defconst STONE-PILE-1 6)
-			(defconst STONE-PILE-2 6)
-
 			(defrule
 			(true)
 			=>
+			(set-goal g-size-gold-pile2 7)
+			(set-goal g-size-gold-pile3 0)
+			(set-goal g-size-stone-pile1 6)
+			(set-goal g-size-stone-pile2 6)
 			(set-goal g-map-style ISLANDS)
 			(disable-self)
 			)
@@ -3020,18 +3011,6 @@
 		#end-if
 
 		#load-if-defined ARENA-MAP
-
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
 
 			(defrule
 			(true)
@@ -3044,18 +3023,6 @@
 
 		#load-if-defined BALTIC-MAP
 
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
-
 			(defrule
 			(true)
 			=>
@@ -3066,18 +3033,6 @@
 		#end-if
 
 		#load-if-defined BLACK-FOREST-MAP
-
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
 
 			(defrule
 			(true)
@@ -3090,18 +3045,6 @@
 
 		#load-if-defined COASTAL-MAP
 
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
-
 			(defrule
 			(true)
 			=>
@@ -3112,18 +3055,6 @@
 		#end-if
 
 		#load-if-defined CONTINENTAL-MAP
-
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
 
 			(defrule
 			(true)
@@ -3136,21 +3067,12 @@
 
 		#load-if-defined CRATER-LAKE-MAP
 
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 4)
-			(defconst GOLD-PILE-2 3)
-			(defconst GOLD-PILE-3 0)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
-
 			(defrule
 			(true)
 			=>
+			(set-goal g-size-gold-pile1 4)
+			(set-goal g-size-gold-pile2 3)
+			(set-goal g-size-gold-pile3 0)
 			(set-goal g-map-style LAKES)
 			(disable-self)
 			)
@@ -3158,18 +3080,6 @@
 		#end-if
 
 		#load-if-defined FORTRESS-MAP
-
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
 
 			(defrule
 			(true)
@@ -3182,18 +3092,6 @@
 
 		#load-if-defined GHOST-LAKE-MAP
 
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
-
 			(defrule
 			(true)
 			=>
@@ -3205,40 +3103,29 @@
 
 		#load-if-defined GOLD-RUSH-MAP
 
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 4)
-			(defconst GOLD-PILE-2 3)
-			(defconst GOLD-PILE-3 0)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
-
 			(defrule
 			(true)
 			=>
+			(set-goal g-size-gold-pile1 4)
+			(set-goal g-size-gold-pile2 3)
 			(set-goal g-map-style OPEN-LAND)
 			(disable-self)
 			)
 
 		#end-if
 
-		#load-if-defined HIGHLAND-MAP
+		#load-if-defined HIDEOUT-MAP
 
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style SEMI-WALLED-LAND)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined HIGHLAND-MAP
 
 			(defrule
 			(true)
@@ -3251,21 +3138,14 @@
 
 		#load-if-defined ISLANDS-MAP
 
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 7)
-			(defconst GOLD-PILE-3 0)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 5)
-
 			(defrule
 			(true)
 			=>
+			(set-goal g-size-gold-pile1 7)
+			(set-goal g-size-gold-pile2 7)
+			(set-goal g-size-gold-pile3 0)
+			(set-goal g-size-stone-pile1 5)
+			(set-goal g-size-stone-pile2 5)
 			(set-goal g-map-style TEAM-ISLANDS)
 			(disable-self)
 			)
@@ -3274,21 +3154,19 @@
 
 		#load-if-defined LAND-NOMAD-MAP
 
-			(defconst MIN-BOAR 0)
-			(defconst MIN-DEER 0)
-			(defconst MIN-SHEEP 0)
-			(defconst MIN-STRAGGLERS 0)
-			(defconst FORAGE-PILE-1 0)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 0)
-			(defconst GOLD-PILE-2 0)
-			(defconst GOLD-PILE-3 0)
-			(defconst STONE-PILE-1 0)
-			(defconst STONE-PILE-2 0)
-
 			(defrule
 			(true)
 			=>
+			(set-goal g-num-starting-boar 0)
+			(set-goal g-num-starting-deer 0)
+			(set-goal g-num-starting-sheep 0)
+			(set-goal g-size-forage-pile1 0)
+			(set-goal g-size-forage-pile2 0)
+			(set-goal g-size-gold-pile1 0)
+			(set-goal g-size-gold-pile2 0)
+			(set-goal g-size-gold-pile3 0)
+			(set-goal g-size-stone-pile1 0)
+			(set-goal g-size-stone-pile2 0)
 			(set-goal g-map-style NOMAD)
 			(disable-self)
 			)
@@ -3296,18 +3174,6 @@
 		#end-if
 
 		#load-if-defined MEDITERRANEAN-MAP
-
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
 
 			(defrule
 			(true)
@@ -3320,21 +3186,19 @@
 
 		#load-if-defined MIGRATION-MAP
 
-			(defconst MIN-BOAR 0)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 6)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 7)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 8)
-			(defconst GOLD-PILE-2 0)
-			(defconst GOLD-PILE-3 0)
-			(defconst STONE-PILE-1 6)
-			(defconst STONE-PILE-2 0)
-
 			(defrule
 			(true)
 			=>
+			(set-goal g-num-starting-boar 0)
+			(set-goal g-num-starting-deer 3)
+			(set-goal g-num-starting-sheep 6)
+			(set-goal g-size-forage-pile1 7)
+			(set-goal g-size-forage-pile2 0)
+			(set-goal g-size-gold-pile1 8)
+			(set-goal g-size-gold-pile2 0)
+			(set-goal g-size-gold-pile3 0)
+			(set-goal g-size-stone-pile1 6)
+			(set-goal g-size-stone-pile2 0)
 			(set-goal g-map-style MIGRATION)
 			(disable-self)
 			)
@@ -3342,18 +3206,6 @@
 		#end-if
 
 		#load-if-defined MONGOLIA-MAP
-
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
 
 			(defrule
 			(true)
@@ -3366,21 +3218,19 @@
 
 		#load-if-defined NOMAD-MAP
 
-			(defconst MIN-BOAR 0)
-			(defconst MIN-DEER 0)
-			(defconst MIN-SHEEP 0)
-			(defconst MIN-STRAGGLERS 0)
-			(defconst FORAGE-PILE-1 0)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 0)
-			(defconst GOLD-PILE-2 0)
-			(defconst GOLD-PILE-3 0)
-			(defconst STONE-PILE-1 0)
-			(defconst STONE-PILE-2 0)
-
 			(defrule
 			(true)
 			=>
+			(set-goal g-num-starting-boar 0)
+			(set-goal g-num-starting-deer 0)
+			(set-goal g-num-starting-sheep 0)
+			(set-goal g-size-forage-pile1 0)
+			(set-goal g-size-forage-pile2 0)
+			(set-goal g-size-gold-pile1 0)
+			(set-goal g-size-gold-pile2 0)
+			(set-goal g-size-gold-pile3 0)
+			(set-goal g-size-stone-pile1 0)
+			(set-goal g-size-stone-pile2 0)
 			(set-goal g-map-style NOMAD)
 			(disable-self)
 			)
@@ -3388,18 +3238,6 @@
 		#end-if
 
 		#load-if-defined OASIS-MAP
-
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
 
 			(defrule
 			(true)
@@ -3412,18 +3250,6 @@
 
 		#load-if-defined RIVERS-MAP
 
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
-
 			(defrule
 			(true)
 			=>
@@ -3435,21 +3261,10 @@
 
 		#load-if-defined SALT-MARSH-MAP
 
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 9)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
-
 			(defrule
 			(true)
 			=>
+			(set-goal g-size-forage-pile1 9)
 			(set-goal g-map-style OPEN-LAND)
 			(disable-self)
 			)
@@ -3458,21 +3273,19 @@
 
 		#load-if-defined SCANDANAVIA-MAP
 
-			(defconst MIN-BOAR 3)
-			(defconst MIN-DEER 7)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 0)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
-
 			(defrule
 			(true)
 			=>
+			(set-goal g-num-starting-boar 3)
+			(set-goal g-num-starting-deer 7)
+			(set-goal g-num-starting-sheep 8)
+			(set-goal g-size-forage-pile1 0)
+			(set-goal g-size-forage-pile2 0)
+			(set-goal g-size-gold-pile1 7)
+			(set-goal g-size-gold-pile2 4)
+			(set-goal g-size-gold-pile3 4)
+			(set-goal g-size-stone-pile1 5)
+			(set-goal g-size-stone-pile2 4)
 			(set-goal g-map-style LAKES)
 			(disable-self)
 			)
@@ -3480,18 +3293,6 @@
 		#end-if
 
 		#load-if-defined TEAM-ISLANDS-MAP
-
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
 
 			(defrule
 			(true)
@@ -3504,21 +3305,19 @@
 
 		#load-if-defined YUCATAN-MAP
 
-			(defconst MIN-BOAR 3)
-			(defconst MIN-DEER 7)
-			(defconst MIN-SHEEP 12)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 6)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
-
 			(defrule
 			(true)
 			=>
+			(set-goal g-num-starting-boar 3)
+			(set-goal g-num-starting-deer 7)
+			(set-goal g-num-starting-sheep 12)
+			(set-goal g-size-forage-pile1 6)
+			(set-goal g-size-forage-pile2 6)
+			(set-goal g-size-gold-pile1 7)
+			(set-goal g-size-gold-pile2 4)
+			(set-goal g-size-gold-pile3 4)
+			(set-goal g-size-stone-pile1 5)
+			(set-goal g-size-stone-pile2 4)
 			(set-goal g-map-style CLOSED-LAND)
 			(disable-self)
 			)
@@ -3526,18 +3325,6 @@
 		#end-if
 
 		#load-if-defined REAL-WORLD-BYZANTIUM-MAP
-
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
 
 			(defrule
 			(true)
@@ -3550,18 +3337,6 @@
 
 		#load-if-defined REAL-WORLD-CARIBBEAN-MAP
 
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
-
 			(defrule
 			(true)
 			=>
@@ -3572,18 +3347,6 @@
 		#end-if
 
 		#load-if-defined REAL-WORLD-ENGLAND-MAP
-
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
 
 			(defrule
 			(true)
@@ -3596,18 +3359,6 @@
 
 		#load-if-defined REAL-WORLD-FRANCE-MAP
 
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
-
 			(defrule
 			(true)
 			=>
@@ -3618,18 +3369,6 @@
 		#end-if
 
 		#load-if-defined REAL-WORLD-ITALY-MAP
-
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
 
 			(defrule
 			(true)
@@ -3642,18 +3381,6 @@
 
 		#load-if-defined REAL-WORLD-JUTLAND-MAP
 
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
-
 			(defrule
 			(true)
 			=>
@@ -3664,18 +3391,6 @@
 		#end-if
 
 		#load-if-defined REAL-WORLD-MIDEAST-MAP
-
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
 
 			(defrule
 			(true)
@@ -3688,18 +3403,6 @@
 
 		#load-if-defined REAL-WORLD-NIPPON-MAP
 
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
-
 			(defrule
 			(true)
 			=>
@@ -3710,18 +3413,6 @@
 		#end-if
 
 		#load-if-defined REAL-WORLD-SPAIN-MAP
-
-			(defconst MIN-BOAR 2)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
 
 			(defrule
 			(true)
@@ -3734,21 +3425,10 @@
 
 		#load-if-defined REAL-WORLD-TEXAS-MAP
 
-			(defconst MIN-BOAR 5)
-			(defconst MIN-DEER 3)
-			(defconst MIN-SHEEP 8)
-			(defconst MIN-STRAGGLERS 5)
-			(defconst FORAGE-PILE-1 6)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 7)
-			(defconst GOLD-PILE-2 4)
-			(defconst GOLD-PILE-3 4)
-			(defconst STONE-PILE-1 5)
-			(defconst STONE-PILE-2 4)
-
 			(defrule
 			(true)
 			=>
+			(set-goal g-num-starting-boar 5)
 			(set-goal g-map-style LAKES)
 			(disable-self)
 			)
@@ -3757,17 +3437,21 @@
 
 		#load-if-defined CUSTOM-MAP
 
-			(defconst MIN-BOAR 0)
-			(defconst MIN-DEER 0)
-			(defconst MIN-SHEEP 0)
-			(defconst MIN-STRAGGLERS 0)
-			(defconst FORAGE-PILE-1 0)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 0)
-			(defconst GOLD-PILE-2 0)
-			(defconst GOLD-PILE-3 0)
-			(defconst STONE-PILE-1 0)
-			(defconst STONE-PILE-2 0)
+			(defrule
+			(true)
+			=>
+			(set-goal g-num-starting-boar 0)
+			(set-goal g-num-starting-deer 0)
+			(set-goal g-num-starting-sheep 0)
+			(set-goal g-size-forage-pile1 0)
+			(set-goal g-size-forage-pile2 0)
+			(set-goal g-size-gold-pile1 0)
+			(set-goal g-size-gold-pile2 0)
+			(set-goal g-size-gold-pile3 0)
+			(set-goal g-size-stone-pile1 0)
+			(set-goal g-size-stone-pile2 0)
+			(disable-self)
+			)
 
 			(defrule
 			(game-time < 5)
@@ -3828,17 +3512,21 @@
 
 		#load-if-defined SCENARIO-MAP
 
-			(defconst MIN-BOAR 0)
-			(defconst MIN-DEER 0)
-			(defconst MIN-SHEEP 0)
-			(defconst MIN-STRAGGLERS 0)
-			(defconst FORAGE-PILE-1 0)
-			(defconst FORAGE-PILE-2 0)
-			(defconst GOLD-PILE-1 0)
-			(defconst GOLD-PILE-2 0)
-			(defconst GOLD-PILE-3 0)
-			(defconst STONE-PILE-1 0)
-			(defconst STONE-PILE-2 0)
+			(defrule
+			(true)
+			=>
+			(set-goal g-num-starting-boar 0)
+			(set-goal g-num-starting-deer 0)
+			(set-goal g-num-starting-sheep 0)
+			(set-goal g-size-forage-pile1 0)
+			(set-goal g-size-forage-pile2 0)
+			(set-goal g-size-gold-pile1 0)
+			(set-goal g-size-gold-pile2 0)
+			(set-goal g-size-gold-pile3 0)
+			(set-goal g-size-stone-pile1 0)
+			(set-goal g-size-stone-pile2 0)
+			(disable-self)
+			)
 
 			(defrule
 			(game-time < 5)
