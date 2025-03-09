@@ -31,18 +31,46 @@
 	(up-modify-sn sn-target-player-number g:= g-temp)
 	)
 
-	;If enemy building found, set target to be closest enemy
+	(load "The General 1.2/Functions/Reset Mini")
+
+	;If were in imperial and pocket and have highest score on our team, set target to highest score enemy
 	(defrule
 	(goal g-attack-objective ATTACK-TARGET-ENEMY)
+	; (goal g-position POCKET)
+	(player-in-game any-ally)
+	(up-players-in-game ally >= 3)
+	(population >= 110)
+	(or
+		(current-age == imperial-age)
+		(and
+			(military-population >= 30)
+			(players-current-age every-enemy < imperial-age)))
 	(players-building-count any-enemy > 0)
-	(up-compare-goal g-closest-enemy > 0)
 	(or
 		(up-compare-goal g-game-focus != DEFENSIVE)
-		(goal g-enemy-units-in-town 0))
-	(up-compare-sn sn-target-player-number g:!= g-closest-enemy)
+		(up-compare-goal g-enemy-units-in-town <= 0))
+	(up-get-fact current-score 0 g-temp)
+	(players-score every-ally g:< g-temp)
 	=>
-	(up-modify-sn sn-target-player-number g:= g-closest-enemy)
+	(up-get-fact-max any-enemy current-score 0 g-temp2)
+	(up-get-player-fact this-any-enemy player-number 0 g-temp2)
+	(up-modify-sn sn-target-player-number g:= g-temp2)
+	(up-jump-rule 1)
 	)
+
+		;If enemy building found, set target to be closest enemy
+		(defrule
+		(goal g-attack-objective ATTACK-TARGET-ENEMY)
+		(players-building-count any-enemy > 0)
+		(up-compare-goal g-closest-enemy > 0)
+		(or
+			(up-compare-goal g-game-focus != DEFENSIVE)
+			(goal g-enemy-units-in-town 0))
+		(up-compare-sn sn-target-player-number g:!= g-closest-enemy)
+		=>
+		(up-modify-sn sn-target-player-number g:= g-closest-enemy)
+		)
+
 
 	(load "The General 1.2/Functions/Reset Mini")
 

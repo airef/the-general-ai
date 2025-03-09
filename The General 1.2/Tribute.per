@@ -171,13 +171,16 @@
 		    (player-in-game focus-player)
             (stance-toward focus-player ally)
             (strategic-number sn-focus-player-number != my-player-number)
+            (up-allied-resource-amount focus-player food < 200)
             (players-population focus-player <= SIXTY-PERCENT-POP)
             (players-building-type-count focus-player town-center > 0)
             (or
                 (and
                     (up-allied-goal focus-player g-identity != THE-GENERAL)
                     (players-population focus-player > TEN-PERCENT-POP))
-                (up-allied-goal focus-player g-enemy-units-in-town < 4))
+                (or
+                    (up-allied-goal focus-player g-enemy-units-in-town < 4)
+                    (population > NINETY-FIVE-PERCENT-POP)))
             =>
             (tribute-to-player focus-player food 100)
             (enable-timer t-tribute 30)

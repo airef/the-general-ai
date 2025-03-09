@@ -3990,6 +3990,41 @@
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 		)
 
+	;---------------------------------------
+	;	Savar - Secondary Imperial Tech
+	;---------------------------------------
+
+		(defrule
+		(or
+			(goal g-primary-unit knight)
+			(and
+				(goal g-support-unit knight)
+				(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
+		(player-in-game any-ally)
+		(up-research-status c: ri-savar == research-available)
+		(building-type-count stable > 0)
+		=>
+		(up-setup-cost-data 1 g-food-cost)
+		(up-add-research-cost c: ri-savar c: 1)
+		(up-modify-goal g-max-food-needed g:max g-food-cost)
+		(up-modify-goal g-max-gold-needed g:max g-gold-cost)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 246)
+		(or
+			(goal g-primary-unit knight)
+			(and
+				(goal g-support-unit knight)
+				(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)))
+		(player-in-game any-ally)
+		(up-research-status c: ri-savar == research-available)
+		(building-type-count stable > 0)
+		=>
+		(up-store-tech-name c: ri-savar)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
+		)
+
 	;-----------------------------------------------------
 	;	Elite Shrivamsha Rider - Priority Imperial Tech
 	;-----------------------------------------------------

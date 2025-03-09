@@ -3977,6 +3977,40 @@
 		(research ri-paladin)
 		)
 
+	;---------------------------------------
+	;	Savar - Secondary Imperial Tech
+	;---------------------------------------
+
+		(defrule
+		(or
+			(goal g-primary-unit knight)
+			(goal g-support-unit knight))
+		(player-in-game any-ally)
+		(can-research-with-escrow ri-savar)
+		=>
+		(up-setup-cost-data 1 g-food-cost)
+		(up-add-research-cost c: ri-savar c: 1)
+		(up-modify-escrow food g:- g-food-cost)
+		(up-modify-escrow gold g:- g-gold-cost)
+		(research ri-savar)
+		)
+
+		(defrule
+		(up-compare-goal g-desired-num-knight > 10)
+		(unit-type-count knight-line >= 25)
+		(can-research ri-savar)
+		=>
+		(research ri-savar)
+		)
+		(defrule
+		(population >= NINETY-FIVE-PERCENT-POP)
+		(player-in-game any-ally)
+		(unit-type-count knight-line >= 10)
+		(can-research ri-savar)
+		=>
+		(research ri-savar)
+		)
+
 	;-----------------------------------------------------
 	;	Elite Shrivamsha Rider - Priority Imperial Tech
 	;-----------------------------------------------------

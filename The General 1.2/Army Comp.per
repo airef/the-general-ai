@@ -3157,7 +3157,9 @@
         )
         (defrule
         (goal g-current-unit-type SUPPORT-KNIGHT)
-        (research-completed ri-paladin)
+        (or
+            (research-completed ri-paladin)
+            (research-completed ri-savar))
         =>
         (up-modify-goal g-current-unit-score c:+ 100)
         ; (up-log-data 0 CHAT-ADJUST-FOR-TECHS-COMPLETE c: 100)
@@ -3656,6 +3658,7 @@
         (up-log-data 0 CHAT-COUNTER-TYPE c: 10)
         (up-log-data 0 CHAT-COUNTER-AMOUNT c: -400)
         )
+        #load-if-not-defined PERSIAN-CIV
         (defrule
         (goal g-current-unit-type SUPPORT-KNIGHT)
         (up-compare-const PALADIN-AVAILABLE == NO)
@@ -3676,6 +3679,7 @@
         (up-log-data 0 CHAT-COUNTER-TYPE c: 10)
         (up-log-data 0 CHAT-COUNTER-AMOUNT c: -200)
         )
+        #end-if
         (defrule
         (goal g-current-unit-type SUPPORT-CAMEL)
         (up-compare-const HEAVY-CAMEL-AVAILABLE == NO)

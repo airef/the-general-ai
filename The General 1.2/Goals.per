@@ -714,13 +714,46 @@
 	)
 
 	(defrule
+	(true)
+	=>
+	(up-full-reset-search)
+	(up-filter-distance c: -1 s: csn-peaceful-town-size)
+	(set-strategic-number sn-focus-player-number 1)
+	)
+
+	(defrule
+	(nand
+		(player-in-game focus-player)
+		(stance-toward focus-player enemy))
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
+	=>
+	(up-jump-rule -1)
+	)
+
+	(defrule
+	(true)
+	=>
+	(up-find-remote c: castle c: 1)
+	(up-get-search-state g-local-total)
+	)
+
+	(defrule
+	(up-compare-sn sn-focus-player-number < MAX-PLAYERS)
+	(up-compare-goal g-remote-total == 0)
+	=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -3)
+	)
+
+	(defrule
 	(or
 		(town-under-attack)
 		(up-compare-goal g-enemy-units-in-town >= 7))
 	; (goal g-attacking NO)
 	(up-compare-goal g-town-under-attack != YES)
 	(or
-		(up-building-type-in-town c: castle > 0)
+		(up-compare-goal g-remote-total > 0)	;castles in town
 		(or
 			(up-compare-goal g-enemy-units-in-town >= 5)
 			(and
@@ -737,7 +770,7 @@
 	(up-timer-status t-town-under-attack != timer-running)
 	(not
 		(town-under-attack))
-	(up-building-type-in-town c: castle == 0)
+	(goal g-remote-total 0)
 	(up-compare-goal g-enemy-units-in-town < 5)
 	(or
 		(current-age > feudal-age)
@@ -753,7 +786,7 @@
 	(up-timer-status t-town-under-attack != timer-running)
 	(not
 		(town-under-attack))
-	(up-building-type-in-town c: castle == 0)
+	(goal g-remote-total 0)
 	(up-compare-goal g-enemy-units-in-town < 5)
 	(or
 		(current-age > feudal-age)

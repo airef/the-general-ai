@@ -303,13 +303,21 @@
 			)
 
 			(defrule
+			(true)
+			=>
+			(up-get-fact unit-type-count-total trebuchet g-temp)
+			(up-get-fact unit-type-count 42 g-temp2)
+			(up-modify-goal g-temp g:+ g-temp2)
+			)
+
+			(defrule
 			(or
 				(and
 					(goal g-town-under-attack NO)
 					(up-compare-goal g-human-military-count g:>= g-min-military-pop))
 				(players-unit-type-count any-enemy unpacked-trebuchet-class >= 2))
 			; (up-object-type-count-total c: trebuchet-set g:< g-desired-num-trebuchet)	;bugged in DE
-			(up-object-type-count c: trebuchet-set g:< g-desired-num-trebuchet)
+			(up-compare-goal g-temp g:< g-desired-num-trebuchet)
 			(can-train-with-escrow trebuchet)
 			=>
 			(up-train g-escrow c: trebuchet)
