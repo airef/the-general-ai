@@ -54,13 +54,13 @@
 	(set-goal g-desired-num-condottiero 0)
 	(set-goal g-desired-num-battle-elephant 0)
 	(set-goal g-desired-num-steppe-lancer 0)
-	(set-goal g-desired-num-infantry 0)
-	(set-goal g-desired-num-foot-archers 0)
-	(set-goal g-desired-num-cavalry-archers 0)
-	(set-goal g-desired-num-cavalry 0)
-	(set-goal g-desired-num-siege 0)
-	(set-goal g-desired-num-hand-cannoneers 0)
-	(set-goal g-desired-num-monks 0)
+	(set-goal g-desired-num-infantry-class 0)
+	(set-goal g-desired-num-archery-class 0)
+	(set-goal g-desired-num-cavalry-archer-class 0)
+	(set-goal g-desired-num-cavalry-class 0)
+	(set-goal g-desired-num-siege-classes 0)
+	(set-goal g-desired-num-cannoneer-classes 0)
+	(set-goal g-desired-num-monastery-class 0)
 	(set-goal g-desired-num-town-center 0)
 	(set-goal g-desired-num-house 0)
 	(set-goal g-desired-num-mill 0)
@@ -488,8 +488,8 @@
 		; (up-get-fact population-cap 0 g-desired-num-villager)
 		; (up-modify-goal g-desired-num-villager g:- g-desired-num-military)
 		; (up-modify-goal g-desired-num-villager g:- g-desired-num-trade-cart)
-		; (up-modify-goal g-desired-num-villager g:- g-desired-num-monks)
-		; (up-modify-goal g-desired-num-villager g:- g-desired-num-siege)
+		; (up-modify-goal g-desired-num-villager g:- g-desired-num-monastery-class)
+		; (up-modify-goal g-desired-num-villager g:- g-desired-num-siege-classes)
 		; (up-modify-goal g-desired-num-villager c:min SEVENTY-PERCENT-POP)
 		)
 
@@ -1036,7 +1036,7 @@
 		(up-get-fact population-cap 0 g-desired-num-military)
 		(up-modify-goal g-desired-num-military g:- g-desired-num-villager)
 		(up-modify-goal g-desired-num-military g:- g-desired-num-trade-cart)
-		(up-modify-goal g-desired-num-military g:- g-desired-num-monks)
+		(up-modify-goal g-desired-num-military g:- g-desired-num-monastery-class)
 		(up-modify-goal g-desired-num-military g:- g-desired-num-trebuchet)
 		(up-modify-goal g-desired-num-military g:- g-desired-num-bombard-cannon)
 		(up-modify-goal g-desired-num-military g:- g-desired-num-ram-type)
@@ -2778,73 +2778,39 @@
 ;=========================<>=========================
 
 	;----------------------------------
-	;	GOAL: g-desired-num-infantry
+	;	GOAL: g-desired-num-infantry-class
 	;----------------------------------
 
 		(defrule
 		(true)
 		=>
-		(up-modify-goal g-desired-num-infantry g:= g-desired-num-militia)
-		(up-modify-goal g-desired-num-infantry g:+ g-desired-num-spearman)
-		(up-modify-goal g-desired-num-infantry g:+ g-desired-num-eagle-warrior)
-		(up-modify-goal g-desired-num-infantry g:+ g-desired-num-condottiero)
+		(up-modify-goal g-desired-num-infantry-class g:= g-desired-num-militia)
+		(up-modify-goal g-desired-num-infantry-class g:+ g-desired-num-spearman)
+		(up-modify-goal g-desired-num-infantry-class g:+ g-desired-num-eagle-warrior)
+		(up-modify-goal g-desired-num-infantry-class g:+ g-desired-num-condottiero)
 		)
 
 		(defrule
-		(or
-			(civ-selected aztec)
-			(or
-				(civ-selected celtic)
-				(or
-					(civ-selected frankish)
-					(or
-						(civ-selected gothic)
-						(or
-							(civ-selected japanese)
-							(civ-selected teutonic))))))
+		(up-compare-const UNIQUE-UNIT-CLASS == infantry-class)
 		=>
-		(up-modify-goal g-desired-num-infantry g:+ g-desired-num-unique-unit)
-		)
-
-		(defrule
-		(or
-			(civ-selected viking)
-			(or
-				(civ-selected incan)
-				(or
-					(civ-selected ethiopian)
-					(or
-						(civ-selected malian)
-						(or
-							(civ-selected malay)
-							(civ-selected sicilians))))))
-		=>
-		(up-modify-goal g-desired-num-infantry g:+ g-desired-num-unique-unit)
+		(up-modify-goal g-desired-num-infantry-class g:+ g-desired-num-unique-unit)
 		)
 
 	;----------------------------------
-	;	GOAL: g-desired-num-foot-archers
+	;	GOAL: g-desired-num-archery-class
 	;----------------------------------
 
 		(defrule
 		(true)
 		=>
-		(up-modify-goal g-desired-num-foot-archers g:= g-desired-num-archer)
-		(up-modify-goal g-desired-num-foot-archers g:+ g-desired-num-skirmisher)
+		(up-modify-goal g-desired-num-archery-class g:= g-desired-num-archer)
+		(up-modify-goal g-desired-num-archery-class g:+ g-desired-num-skirmisher)
 		)
 
 		(defrule
-		(or
-			(civ-selected briton)
-			(or
-				(civ-selected chinese)
-				(or
-					(civ-selected mayan)
-					(or
-						(civ-selected italian)
-						(civ-selected vietnamese)))))
+		(up-compare-const UNIQUE-UNIT-CLASS == archery-class)
 		=>
-		(up-modify-goal g-desired-num-foot-archers g:+ g-desired-num-unique-unit)
+		(up-modify-goal g-desired-num-archery-class g:+ g-desired-num-unique-unit)
 		)
 
 		#load-if-defined INCAN-CIV
@@ -2852,64 +2818,42 @@
 			(defrule
 			(true)
 			=>
-			(up-modify-goal g-desired-num-foot-archers g:+ g-desired-num-second-unique-unit)
+			(up-modify-goal g-desired-num-archery-class g:+ g-desired-num-second-unique-unit)
 			)
 		
 		#end-if
 
 	;-----------------------------------------
-	;	GOAL: g-desired-num-cavalry-archers
+	;	GOAL: g-desired-num-cavalry-archer-class
 	;-----------------------------------------
 
 		(defrule
 		(true)
 		=>
-		(up-modify-goal g-desired-num-cavalry-archers g:= g-desired-num-cavalry-archer)
-		(up-modify-goal g-desired-num-cavalry-archers g:+ g-desired-num-genitour)
-		(up-modify-goal g-desired-num-cavalry-archers g:+ g-desired-num-elephant-archer)
+		(up-modify-goal g-desired-num-cavalry-archer-class g:= g-desired-num-cavalry-archer)
+		(up-modify-goal g-desired-num-cavalry-archer-class g:+ g-desired-num-genitour)
+		(up-modify-goal g-desired-num-cavalry-archer-class g:+ g-desired-num-elephant-archer)
 		)
 
 		(defrule
-		(or
-			(civ-selected korean)
-			(or
-				(civ-selected mongol)
-				(or
-					(civ-selected spanish)
-					(or
-						(civ-selected berbers)
-						(or
-							(civ-selected burmese)
-							(civ-selected cumans))))))
+		(up-compare-const UNIQUE-UNIT-CLASS == cavalry-archer-class)
 		=>
-		(up-modify-goal g-desired-num-cavalry-archers g:+ g-desired-num-unique-unit)
+		(up-modify-goal g-desired-num-cavalry-archer-class g:+ g-desired-num-unique-unit)
 		)
-
-		#load-if-not-defined DE-AVAILABLE
-		#load-if-defined INDIAN-CIV
-
-			(defrule
-			(true)
-			=>
-			(up-modify-goal g-desired-num-cavalry-archers g:+ g-desired-num-unique-unit)
-			)
-
-		#end-if
-		#end-if
 		
 
 	;----------------------------------
-	;	GOAL: g-desired-num-cavalry
+	;	GOAL: g-desired-num-cavalry-class
 	;----------------------------------
 
 		(defrule
 		(true)
 		=>
-		(up-modify-goal g-desired-num-cavalry g:= g-desired-num-scout-cavalry)
-		(up-modify-goal g-desired-num-cavalry g:+ g-desired-num-knight)
-		(up-modify-goal g-desired-num-cavalry g:+ g-desired-num-camel)
-		(up-modify-goal g-desired-num-cavalry g:+ g-desired-num-battle-elephant)
-		(up-modify-goal g-desired-num-cavalry g:+ g-desired-num-steppe-lancer)
+		(up-modify-goal g-desired-num-cavalry-class g:= g-desired-num-scout-cavalry)
+		(up-modify-goal g-desired-num-cavalry-class g:+ g-desired-num-knight)
+		(up-modify-goal g-desired-num-cavalry-class g:+ g-desired-num-camel)
+		(up-modify-goal g-desired-num-cavalry-class g:+ g-desired-num-battle-elephant)
+		(up-modify-goal g-desired-num-cavalry-class g:+ g-desired-num-steppe-lancer)
 		)
 
 		#load-if-defined GURJARAS-CIV
@@ -2917,89 +2861,65 @@
 			(defrule
 			(true)
 			=>
-			(up-modify-goal g-desired-num-cavalry g:= g-desired-num-second-unique-unit)
+			(up-modify-goal g-desired-num-cavalry-class g:= g-desired-num-second-unique-unit)
 			)
 
 		#end-if
 
 		(defrule
-		(or
-			(civ-selected byzantine)
-			(or
-				(civ-selected hun)
-				(or
-					(civ-selected persian)
-					(or
-						(civ-selected romans)
-						(or
-							(civ-selected saracen)
-							(or
-								(civ-selected magyar)
-								(civ-selected slavic)))))))
+		(up-compare-const UNIQUE-UNIT-CLASS == cavalry-class)
 		=>
-		(up-modify-goal g-desired-num-cavalry g:+ g-desired-num-unique-unit)
-		)
-
-		(defrule
-		(or
-			(civ-selected bulgarians)
-			(or
-				(civ-selected lithuanians)
-				(or
-					(civ-selected tatars)
-					(civ-selected burgundians))))
-		=>
-		(up-modify-goal g-desired-num-cavalry g:+ g-desired-num-unique-unit)
+		(up-modify-goal g-desired-num-cavalry-class g:+ g-desired-num-unique-unit)
 		)
 
 	;----------------------------------
-	;	GOAL: g-desired-num-siege
+	;	GOAL: g-desired-num-siege-classes
 	;----------------------------------
 
 		(defrule
 		(true)
 		=>
-		(up-modify-goal g-desired-num-siege g:= g-desired-num-ram-type)
-		(up-modify-goal g-desired-num-siege g:+ g-desired-num-mangonel)
-		(up-modify-goal g-desired-num-siege g:+ g-desired-num-scorpion)
-		(up-modify-goal g-desired-num-siege g:+ g-desired-num-bombard-cannon)
-		(up-modify-goal g-desired-num-siege g:+ g-desired-num-trebuchet)
-		)
-
-		(defrule
-		(civ-selected portuguese)
-		=>
-		(up-modify-goal g-desired-num-siege g:+ g-desired-num-unique-unit)
-		)
-
-	;-----------------------------------------
-	;	GOAL: g-desired-num-hand-cannoneers
-	;-----------------------------------------
-
-		(defrule
-		(true)
-		=>
-		(up-modify-goal g-desired-num-hand-cannoneers g:= g-desired-num-hand-cannoneer)
+		(up-modify-goal g-desired-num-siege-classes g:= g-desired-num-ram-type)
+		(up-modify-goal g-desired-num-siege-classes g:+ g-desired-num-mangonel)
+		(up-modify-goal g-desired-num-siege-classes g:+ g-desired-num-scorpion)
+		(up-modify-goal g-desired-num-siege-classes g:+ g-desired-num-bombard-cannon)
+		(up-modify-goal g-desired-num-siege-classes g:+ g-desired-num-trebuchet)
 		)
 
 		(defrule
 		(or
-			(civ-selected turkish)
-			(or
-				(civ-selected spanish)
-				(civ-selected burmese)))
+			(up-compare-const UNIQUE-UNIT-CLASS == siege-weapon-class)
+			(up-compare-const UNIQUE-UNIT-CLASS == scorpion-class))
 		=>
-		(up-modify-goal g-desired-num-hand-cannoneers g:+ g-desired-num-unique-unit)
+		(up-modify-goal g-desired-num-siege-classes g:+ g-desired-num-unique-unit)
+		)
+
+	;-----------------------------------------
+	;	GOAL: g-desired-num-cannoneer-classes
+	;-----------------------------------------
+
+		(defrule
+		(true)
+		=>
+		(up-modify-goal g-desired-num-cannoneer-classes g:= g-desired-num-hand-cannoneer)
+		)
+
+		(defrule
+		(or
+			(up-compare-const UNIQUE-UNIT-CLASS == archery-cannon-class)
+			(up-compare-const UNIQUE-UNIT-CLASS == cavalry-cannon-class))
+		=>
+		(up-modify-goal g-desired-num-cannoneer-classes g:+ g-desired-num-unique-unit)
 		)
 
 	;-------------------------------
-	;	GOAL: g-desired-num-monks
+	;	GOAL: g-desired-num-monastery-class
 	;-------------------------------
 
 		(defrule
 		(true)
 		=>
-		(up-modify-goal g-desired-num-monks g:= g-desired-num-monk)
+		(up-modify-goal g-desired-num-monastery-class g:= g-desired-num-monk)
 		)
 
 		#load-if-defined SPANISH-CIV
@@ -3007,7 +2927,7 @@
 			(defrule
 			(true)
 			=>
-			(up-modify-goal g-desired-num-monks g:+ g-desired-num-second-unique-unit)
+			(up-modify-goal g-desired-num-monastery-class g:+ g-desired-num-second-unique-unit)
 			)
 
 		#end-if
@@ -5558,7 +5478,7 @@
 		)
 
 	;-----------------------------------
-	;	GOAL 126: g-desired-num-monks
+	;	GOAL 126: g-desired-num-monastery-class
 	;-----------------------------------
 
 		;Get number of monks and missionaries wanted
@@ -5566,7 +5486,7 @@
 		(defrule
 		(true)
 		=>
-		(up-modify-goal g-desired-num-monks g:= g-desired-num-monk)
+		(up-modify-goal g-desired-num-monastery-class g:= g-desired-num-monk)
 		)
 		#load-if-defined SPANISH-CIV
 		(defrule
@@ -5597,7 +5517,7 @@
 
 		(defrule
 		(up-compare-goal g-age-status >= TO-CASTLE)
-		(up-compare-goal g-desired-num-monks > 0)
+		(up-compare-goal g-desired-num-monastery-class > 0)
 		(goal g-town-under-attack NO)
 		(building-type-count-total town-center >= 3)
 		(or
@@ -5615,7 +5535,7 @@
 
 		(defrule
 		(up-compare-goal g-age-status >= TO-CASTLE)
-		(up-compare-goal g-desired-num-monks > 0)
+		(up-compare-goal g-desired-num-monastery-class > 0)
 		(goal g-town-under-attack NO)
 		(building-type-count-total town-center >= 2)
 		(up-compare-goal g-target-pop-parity > 0)
@@ -5855,7 +5775,7 @@
 		(defrule
 		(up-compare-goal g-game-focus > DEFENSIVE)	;Not REBUILD or DEFENSIVE
 		(up-compare-goal g-primary-unit-tech-progress >= SECONDARY-IMPERIAL-COMPLETE)
-		(up-compare-goal g-desired-num-siege > 0)
+		(up-compare-goal g-desired-num-siege-classes > 0)
 		(up-research-status c: ri-siege-engineers == research-available)
 		(building-type-count-total university == 0)
 		=>
