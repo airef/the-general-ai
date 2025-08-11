@@ -1,0 +1,227 @@
+;-------------------
+;	Enable Timers
+;-------------------
+
+	(defrule
+	(up-timer-status t-5-sec != timer-running)
+	=>
+	(disable-timer t-5-sec)
+	(enable-timer t-5-sec 5)
+	)
+
+	(defrule
+	(up-timer-status t-10-sec != timer-running)
+	=>
+	(disable-timer t-10-sec)
+	(enable-timer t-10-sec 10)
+	)
+
+	(defrule
+	(up-timer-status t-15-sec != timer-running)
+	=>
+	(disable-timer t-15-sec)
+	(enable-timer t-15-sec 15)
+	)
+
+	(defrule
+	(up-timer-status t-30-sec != timer-running)
+	=>
+	(disable-timer t-30-sec)
+	(enable-timer t-30-sec 30)
+	)
+
+	(defrule
+	(up-timer-status t-60-sec != timer-running)
+	=>
+	(disable-timer t-60-sec)
+	(enable-timer t-60-sec 60)
+	)
+
+	(defrule
+	(up-timer-status t-120-sec != timer-running)
+	=>
+	(disable-timer t-120-sec)
+	(enable-timer t-120-sec 120)
+	)
+
+    (defrule
+    (up-compare-goal g-difficulty >= HARDEST)
+    (up-timer-status t-training-delay != timer-disabled)
+    =>
+    (disable-timer t-training-delay)
+    )
+
+    (defrule
+    (up-compare-goal g-difficulty == HARD)
+    (up-timer-status t-training-delay != timer-running)
+    =>
+    (set-goal g-temp 4)
+    )
+
+    (defrule
+    (up-compare-goal g-difficulty == MODERATE)
+    (up-timer-status t-training-delay != timer-running)
+    =>
+    (set-goal g-temp 8)
+    )
+
+    (defrule
+    (up-compare-goal g-difficulty == STANDARD)
+    (up-timer-status t-training-delay != timer-running)
+    =>
+    (set-goal g-temp 20)
+    )
+
+    (defrule
+    (up-compare-goal g-difficulty == EASIEST)
+    (up-timer-status t-training-delay != timer-running)
+    =>
+    (set-goal g-temp 50)
+    )
+
+	(defrule
+	(up-timer-status t-training-delay != timer-running)
+	(goal g-difficulty HARD)
+	=>
+	(up-get-fact population 0 g-temp2)
+	(up-modify-goal g-temp2 c:+ 100)
+	(up-modify-goal g-temp g:%* g-temp2)
+	(generate-random-number 99)
+	(up-get-fact random-number 0 g-temp2)
+	(up-modify-goal g-temp2 c:mod 3)
+	(up-modify-goal g-temp2 c:- 1)
+	(up-modify-goal g-temp g:+ g-temp2)
+	(up-modify-goal g-temp c:max 0)
+	(up-set-timer c: t-training-delay g: g-temp)
+	; (up-chat-data-to-all "Set timer for %d" g: g-temp)
+	)
+
+	(defrule
+	(up-timer-status t-training-delay != timer-running)
+	(goal g-difficulty MODERATE)
+	=>
+	(up-get-fact population 0 g-temp2)
+	(up-modify-goal g-temp2 c:* 2)
+	(up-modify-goal g-temp2 c:+ 100)
+	(up-modify-goal g-temp g:%* g-temp2)
+	(generate-random-number 99)
+	(up-get-fact random-number 0 g-temp2)
+	(up-modify-goal g-temp2 c:mod 3)
+	(up-modify-goal g-temp2 c:- 1)
+	(up-modify-goal g-temp g:+ g-temp2)
+	(up-modify-goal g-temp c:max 0)
+	(up-set-timer c: t-training-delay g: g-temp)
+	; (up-chat-data-to-all "Set timer for %d" g: g-temp)
+	)
+
+	(defrule
+	(up-timer-status t-training-delay != timer-running)
+	(goal g-difficulty STANDARD)
+	=>
+	(up-get-fact population 0 g-temp2)
+	(up-modify-goal g-temp2 c:* 3)
+	(up-modify-goal g-temp2 c:+ 100)
+	(up-modify-goal g-temp g:%* g-temp2)
+	(generate-random-number 99)
+	(up-get-fact random-number 0 g-temp2)
+	(up-modify-goal g-temp2 c:mod 3)
+	(up-modify-goal g-temp2 c:- 1)
+	(up-modify-goal g-temp g:+ g-temp2)
+	(up-modify-goal g-temp c:max 0)
+	(up-set-timer c: t-training-delay g: g-temp)
+	; (up-chat-data-to-all "Set timer for %d" g: g-temp)
+	)
+
+	(defrule
+	(up-timer-status t-training-delay != timer-running)
+	(goal g-difficulty EASIEST)
+	=>
+	(up-get-fact population 0 g-temp2)
+	(up-modify-goal g-temp2 c:* 4)
+	(up-modify-goal g-temp2 c:+ 100)
+	(up-modify-goal g-temp g:%* g-temp2)
+	(generate-random-number 99)
+	(up-get-fact random-number 0 g-temp2)
+	(up-modify-goal g-temp2 c:mod 3)
+	(up-modify-goal g-temp2 c:- 1)
+	(up-modify-goal g-temp g:+ g-temp2)
+	(up-modify-goal g-temp c:max 0)
+	(up-set-timer c: t-training-delay g: g-temp)
+	; (up-chat-data-to-all "Set timer for %d" g: g-temp)
+	)
+
+;---------------
+;	Misc Code
+;---------------
+
+	(defrule
+	(strategic-number sn-allow-adjacent-dropsites == 1)
+	(or
+		(up-pending-placement c: mill)
+		(up-pending-placement c: mining-camp))
+	=>
+	(set-strategic-number sn-allow-adjacent-dropsites 0)
+	)
+
+	(defrule
+	(strategic-number sn-allow-adjacent-dropsites == 0)
+	(nor
+		(up-pending-placement c: mill)
+		(up-pending-placement c: mining-camp))
+	=>
+	(set-strategic-number sn-allow-adjacent-dropsites 1)
+	)
+
+	(defrule
+	(up-pending-placement c: town-center)
+	(building-type-count town-center == 1)
+	(up-compare-goal g-current-gold-camp-total < 2)
+	=>
+	(up-modify-sn sn-stone-dropsite-distance c:= 200)
+	(up-modify-sn sn-gold-dropsite-distance c:= 8)
+	(set-strategic-number sn-town-center-placement mining-camp)
+	; (up-modify-sn sn-mining-camp-max-distance s:= custom-sn-safe-town-size)
+	(set-strategic-number sn-dropsite-separation-distance 8)
+	)
+
+	(defrule
+	(up-pending-placement c: town-center)
+	(or
+		(building-type-count town-center != 1)
+		(up-compare-goal g-current-gold-camp-total >= 2))
+	=>
+	(set-strategic-number sn-town-center-placement lumber-camp)
+	; (up-modify-sn sn-lumber-camp-max-distance s:= sn-safe-town-size)
+	(set-strategic-number sn-dropsite-separation-distance 8)
+	)
+
+	(defrule
+	(not
+		(up-pending-placement c: town-center))
+	(strategic-number sn-dropsite-separation-distance != 5)
+	=>
+	(set-strategic-number sn-dropsite-separation-distance 5)
+	)
+
+	(defrule
+	(up-compare-flag g-flag == PLACE-POINT-USED)
+	(up-compare-goal g-place-point-x >= 0)
+	=>
+	(up-set-target-point g-place-point-x)
+	)
+
+	(defrule
+	(up-compare-goal g-rule-pass-count >= 0)
+	=>
+	(up-get-fact game-time 0 g-temp5)
+	(up-get-fact player-number 0 g-temp6)
+	(up-log-data 0 CHAT-LOG-TIME g: g-temp5)
+	(up-log-data 0 CHAT-LOG-PLAYER g: g-temp6)
+	(up-log-data 0 "End Pass %d" g: g-rule-pass-count)
+	)
+
+	(defrule
+	(true)
+	=>
+	(up-modify-goal g-rule-pass-count c:+ 1)
+	)

@@ -1,0 +1,1242 @@
+;=========================<>=========================
+;				  CONSTANT TRAIN UNIT
+;=========================<>=========================
+
+	;AI will try to train this unit constantly
+
+	(defrule
+	(up-compare-goal g-difficulty >= HARDEST)
+	(up-compare-goal g-desired-num-constant-train-unit-goal > 0)
+	=>
+	(up-get-indirect-goal g: g-desired-num-constant-train-unit-goal g-desired-num-constant-train-unit)
+	(set-strategic-number sn-enable-training-queue 1)
+	)
+
+	(defrule
+	(up-compare-goal g-difficulty >= HARDEST)
+	(up-compare-goal g-desired-num-constant-train-unit-goal <= 0)
+	=>
+	(set-goal g-desired-num-constant-train-unit 0)
+	)
+
+	(defrule
+	(up-compare-goal g-difficulty >= HARDEST)
+	(up-compare-goal g-constant-train-unit != 0)
+	(up-object-type-count-total g: g-constant-train-unit g:< g-desired-num-constant-train-unit)
+	(up-can-train g-escrow g: g-constant-train-unit)
+	(up-compare-goal g-age-status < MID-IMPERIAL)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
+	=>
+	(up-train g-escrow g: g-constant-train-unit)
+	)
+
+	(defrule
+	(true)
+	=>
+	(set-strategic-number sn-enable-training-queue 0)
+	)
+
+;=========================<>=========================
+;				      CIVILIANS
+;=========================<>=========================
+
+	;---------------
+	;	Villagers
+	;---------------
+
+		;Training queue
+		(defrule
+		(up-compare-flag g-flag == ALLOW-QUEUED-VILLAGERS)
+		(strategic-number sn-enable-training-queue != 1)
+		=>
+		(set-strategic-number sn-enable-training-queue 1)
+		)
+
+		(defrule
+		(up-compare-flag g-flag != ALLOW-QUEUED-VILLAGERS)
+		(strategic-number sn-enable-training-queue != 0)
+		=>
+		(set-strategic-number sn-enable-training-queue 0)
+		)
+
+		(load "The General 1.3/Functions/Reset Mini")
+
+		;Training delay for lower difficulties
+		; (defrule
+		; (game-time > 5)
+		; (goal g-difficulty HARD)
+		; (building-type-count town-center == 1)
+		; =>
+		; (up-get-precise-time 0 g-temp)
+		; (up-modify-goal g-temp c:mod 35)	;up to 5 (30 minus 25) seconds of time between training villagers
+		; )
+		; (defrule
+		; (game-time > 5)
+		; (goal g-difficulty MODERATE)
+		; (building-type-count town-center == 1)
+		; =>
+		; (up-get-precise-time 0 g-temp)
+		; (up-modify-goal g-temp c:mod 42)
+		; )
+		; (defrule
+		; (game-time > 5)
+		; (goal g-difficulty STANDARD)
+		; (building-type-count town-center == 1)
+		; =>
+		; (up-get-precise-time 0 g-temp)
+		; (up-modify-goal g-temp c:mod 50)
+		; )
+		; (defrule
+		; (game-time > 5)
+		; (goal g-difficulty EASIEST)
+		; (building-type-count town-center == 1)
+		; =>
+		; (up-get-precise-time 0 g-temp)
+		; (up-modify-goal g-temp c:mod 65)
+		; )
+
+		;Train villagers
+		(defrule
+		(up-compare-goal g-villager-training != OFF)
+		(can-train-with-escrow villager)
+		(up-timer-status t-training-delay != timer-running)
+		=>
+		(set-goal g-food-cost 0)
+		)
+		(defrule
+		(up-compare-goal g-villager-training != OFF)
+		(can-train-with-escrow villager)
+		(up-timer-status t-training-delay != timer-running)
+		(or
+			(goal g-villager-training TRAIN-WITH-ESCROW)
+			(and
+				(goal g-villager-training LIMITED-TRAIN-WITH-ESCROW)
+				(food-amount >= 100)))
+		=>
+		(up-setup-cost-data 1 g-food-cost)
+		(up-add-object-cost c: villager c: 1)
+		)
+
+		;Check if any available TCs, first check for idle TCs
+		(defrule
+		(up-compare-goal g-villager-training != OFF)
+		(can-train-with-escrow villager)
+		(up-timer-status t-training-delay != timer-running)
+		=>
+		(up-full-reset-search)
+		(up-find-local c: town-center c: 20)
+		(up-set-target-point g-target-enemy-x)
+		(up-clean-search search-local object-data-full-distance search-order-desc)
+		(up-get-search-state g-local-total)
+		(set-goal g-loop-counter 0)
+		)
+
+			(defrule
+			(true)
+			=>
+			(up-get-rule-id g-start-loop)
+			)
+
+			(defrule
+			(up-compare-goal g-villager-training != OFF)
+			(can-train-with-escrow villager)
+			(up-timer-status t-training-delay != timer-running)
+			(up-compare-goal g-loop-counter g:< g-local-total)
+			(up-set-target-object search-local g: g-loop-counter)
+			(up-object-data object-data-progress-type < 100)
+			(or
+				(can-train villager)
+				(or
+					(goal g-villager-training TRAIN-WITH-ESCROW)
+					(and
+						(goal g-villager-training LIMITED-TRAIN-WITH-ESCROW)
+						(food-amount >= 100))))
+			=>
+			(up-remove-objects search-local -1 g:!= g-loop-counter)
+			(up-modify-escrow food g:- g-food-cost)
+			(up-target-point 0 action-train c: villager)
+			; (chat-to-all "train villager A")
+			(up-modify-goal g-loop-counter g:= g-local-total)
+			)
+			(defrule
+			(up-compare-goal g-villager-training != OFF)
+			(unit-type-count-total villager g:< g-required-num-villager)
+			(can-train-with-escrow villager)
+			(up-timer-status t-training-delay != timer-running)
+			(up-compare-goal g-loop-counter g:< g-local-total)
+			(up-set-target-object search-local g: g-loop-counter)
+			(up-compare-flag g-flag == ALLOW-QUEUED-VILLAGERS)
+			(up-object-data object-data-progress-value >= 85)
+			(or
+				(can-train villager)
+				(or
+					(goal g-villager-training TRAIN-WITH-ESCROW)
+					(and
+						(goal g-villager-training LIMITED-TRAIN-WITH-ESCROW)
+						(food-amount >= 100))))
+			=>
+			(up-remove-objects search-local -1 g:!= g-loop-counter)
+			(up-modify-escrow food g:- g-food-cost)
+			(up-target-point 0 action-train c: villager)
+			; (chat-to-all "train villager B")
+			(up-modify-goal g-loop-counter g:= g-local-total)
+			)
+
+			(defrule
+			(up-compare-goal g-villager-training != OFF)
+			(can-train-with-escrow villager)
+			(up-timer-status t-training-delay != timer-running)
+			(up-modify-goal g-loop-counter c:+ 1)
+			(up-compare-goal g-loop-counter g:< g-local-total)
+			(up-set-target-object search-local g: g-loop-counter)
+			=>
+			(up-jump-direct g: g-start-loop)
+			)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 111)
+		(can-train-with-escrow villager)
+		=>
+		(up-chat-data-to-all "Vil training: %d" g: g-villager-training)
+		(up-get-timer c: t-training-delay g-temp)
+		(up-chat-data-to-all "Timer: %d" g: g-temp)
+		(up-chat-data-to-all "TCs avail: %d" g: g-local-total)
+		(up-chat-data-to-all "Flag: %d" g: g-flag)
+		(acknowledge-taunt THIS-ANY-TAUNT-PLAYER 111)
+		)
+
+		; (defrule
+		; (goal g-villager-training TRAIN-WITHOUT-ESCROW)
+		; (can-train villager)
+		; (up-timer-status t-training-delay != timer-running)
+		; =>
+		; (train villager)
+		; )
+
+		; (defrule
+		; (goal g-villager-training LIMITED-TRAINING)
+		; (food-amount > 100)
+		; (can-train villager)
+		; (up-timer-status t-training-delay != timer-running)
+		; =>
+		; (train villager)
+		; )
+
+		; ;Start new villager training delay timer
+		; (defrule
+		; (game-time > 5)
+		; (up-compare-goal g-difficulty <= HARD)
+		; (building-type-count town-center == 1)
+		; (goal g-temp2 98032)	;just trained a villager
+		; (up-compare-goal g-temp > 0)
+		; =>
+		; (up-set-timer c: t-training-delay g: g-temp)
+		; ; (up-chat-data-to-all "Set vil timer for %d sec" g: g-temp)
+		; )
+
+	;-------------------
+	;	Fishing Ships
+	;-------------------
+
+		(defrule
+		(up-object-type-count-total c: fishing-ship g:< g-desired-num-fishing-ship)
+		(can-train-with-escrow fishing-ship)
+		=>
+		(up-train g-escrow c: fishing-ship)
+		)
+
+	;-----------------
+	;	Trade Units
+	;-----------------
+
+		;----------------
+		;	Trade Cogs
+		;----------------
+
+			(defrule
+			(goal g-game-focus BOOM)
+			(up-object-type-count-total c: trade-cog g:< g-desired-num-trade-cog)
+			(up-research-status c: ri-caravan >= research-pending)
+			(or
+				(not
+					(civ-selected italian))
+				(or
+					(up-research-status c: ri-silk-road >= research-pending)
+					(building-type-count castle == 0)))
+			(can-train-with-escrow trade-cog)
+			=>
+			(up-train g-escrow c: trade-cog)
+			)
+
+			(defrule
+			(up-compare-goal g-game-focus != BOOM)
+			(up-object-type-count-total c: trade-cog g:< g-desired-num-trade-cog)
+			(up-research-status c: ri-caravan >= research-pending)
+			(or
+				(not
+					(civ-selected italian))
+				(or
+					(up-research-status c: ri-silk-road >= research-pending)
+					(building-type-count castle == 0)))
+			(can-train trade-cog)
+			=>
+			(train trade-cog)
+			)
+
+		;-----------------
+		;	Trade Carts
+		;-----------------
+
+			(defrule
+			(goal g-game-focus BOOM)
+			(up-object-type-count-total c: trade-cart g:< g-desired-num-trade-cart)
+			(can-train-with-escrow trade-cart)
+			(up-compare-goal g-enemy-units-in-town < 10)
+			(up-research-status c: ri-caravan >= research-pending)
+			(or
+				(not
+					(civ-selected italian))
+				(or
+					(up-research-status c: ri-silk-road >= research-pending)
+					(building-type-count castle == 0)))
+			=>
+			(up-train g-escrow c: trade-cart)
+			)
+
+			(defrule
+			(up-compare-goal g-game-focus != BOOM)
+			(up-object-type-count-total c: trade-cart g:< g-desired-num-trade-cart)
+			(can-train trade-cart)
+			(up-compare-goal g-enemy-units-in-town < 10)
+			(up-research-status c: ri-caravan >= research-pending)
+			(or
+				(not
+					(civ-selected italian))
+				(or
+					(up-research-status c: ri-silk-road >= research-pending)
+					(building-type-count castle == 0)))
+			=>
+			(train trade-cart)
+			)
+
+;=========================<>=========================
+;				       MILITARY
+;=========================<>=========================
+
+	;-----------------------
+	;	Difficulty Delays
+	;-----------------------
+
+		(load "The General 1.3/Functions/Reset Mini")
+
+		(defrule
+		; (goal g-difficulty HARD)
+		; (up-get-fact game-time 0 g-temp)
+		; (up-modify-goal g-temp c:mod 5)
+		; (up-compare-goal g-temp != 0)
+		(up-timer-status t-training-delay == timer-running)
+		=>
+		(set-goal g-barracks-next-unit 0)
+		(set-goal g-archery-range-next-unit 0)
+		(set-goal g-stable-next-unit 0)
+		(set-goal g-siege-workshop-next-unit 0)
+		(set-goal g-dock-next-unit 0)
+		)
+		; (defrule
+		; (goal g-difficulty MODERATE)
+		; (up-get-fact game-time 0 g-temp)
+		; (up-modify-goal g-temp c:mod 8)
+		; (up-compare-goal g-temp != 0)
+		; =>
+		; (set-goal g-barracks-next-unit 0)
+		; (set-goal g-archery-range-next-unit 0)
+		; (set-goal g-stable-next-unit 0)
+		; (set-goal g-siege-workshop-next-unit 0)
+		; (set-goal g-dock-next-unit 0)
+		; )
+		; (defrule
+		; (goal g-difficulty STANDARD)
+		; (up-get-fact game-time 0 g-temp)
+		; (up-modify-goal g-temp c:mod 12)
+		; (up-compare-goal g-temp != 0)
+		; =>
+		; (set-goal g-barracks-next-unit 0)
+		; (set-goal g-archery-range-next-unit 0)
+		; (set-goal g-stable-next-unit 0)
+		; (set-goal g-siege-workshop-next-unit 0)
+		; (set-goal g-dock-next-unit 0)
+		; )
+		; (defrule
+		; (goal g-difficulty EASIEST)
+		; (up-get-fact game-time 0 g-temp)
+		; (up-modify-goal g-temp c:mod 18)
+		; (up-compare-goal g-temp != 0)
+		; =>
+		; (set-goal g-barracks-next-unit 0)
+		; (set-goal g-archery-range-next-unit 0)
+		; (set-goal g-stable-next-unit 0)
+		; (set-goal g-siege-workshop-next-unit 0)
+		; (set-goal g-dock-next-unit 0)
+		; )
+
+	;-------------------
+	;	Siege Weapons
+	;-------------------
+
+		(defrule
+		(goal g-siege-workshop-next-unit my-cannon-type)
+		(goal g-town-under-attack NO)
+		(up-object-type-count-total c: my-cannon-line g:< g-desired-num-cannon-type)
+		(can-train-with-escrow my-cannon-line)
+		=>
+		(up-train g-escrow c: my-cannon-line)
+		)
+
+		(defrule
+		(true)
+		=>
+		(up-get-fact unit-type-count-total trebuchet g-temp)
+		(up-get-fact unit-type-count 42 g-temp2)
+		(up-modify-goal g-temp g:+ g-temp2)
+		)
+
+		(defrule
+		(or
+			(and
+				(goal g-town-under-attack NO)
+				(up-compare-goal g-human-military-count g:>= g-min-military-pop))
+			(players-unit-type-count any-enemy unpacked-trebuchet-class >= 2))
+		; (up-object-type-count-total c: trebuchet-set g:< g-desired-num-trebuchet)	;bugged in DE
+		(up-compare-goal g-temp g:< g-desired-num-trebuchet)
+		(can-train-with-escrow trebuchet)
+		=>
+		(up-train g-escrow c: trebuchet)
+		)
+
+		(defrule
+		(up-compare-goal g-siege-workshop-next-unit != 0)
+		(or
+			(goal g-siege-workshop-next-unit battering-ram-line)
+			(not
+				(up-can-train g-escrow g: g-siege-workshop-next-unit)))
+		(up-compare-flag g-flag == TRUSH-DEFENSE)
+		(up-object-type-count-total c: battering-ram-line g:< g-desired-num-ram-type)
+		(can-train-with-escrow battering-ram-line)
+		=>
+		(up-train g-escrow c: battering-ram-line)
+		)
+
+		(defrule
+		(up-compare-goal g-siege-workshop-next-unit != 0)
+		(or
+			(goal g-siege-workshop-next-unit battering-ram-line)
+			(not
+				(up-can-train g-escrow g: g-siege-workshop-next-unit)))
+		(or
+			(players-unit-type-count any-enemy unpacked-trebuchet-class >= 2)
+			(goal g-attacking YES))
+		(up-object-type-count-total c: battering-ram-line g:< g-desired-num-ram-type)
+		(can-train-with-escrow battering-ram-line)
+		=>
+		(up-train g-escrow c: battering-ram-line)
+		)
+
+		(defrule
+		(up-compare-goal g-siege-workshop-next-unit != 0)
+		(or
+			(goal g-siege-workshop-next-unit battering-ram-line)
+			(not
+				(up-can-train g-escrow g: g-siege-workshop-next-unit)))
+		(up-compare-goal g-enemy-units-in-town < 15)
+		(up-compare-goal g-human-military-count g:>= g-min-military-pop)
+		(up-object-type-count-total c: battering-ram-line g:< g-desired-num-ram-type)
+		(can-train-with-escrow battering-ram-line)
+		=>
+		(up-train g-escrow c: battering-ram-line)
+		)
+
+		(defrule
+		(goal g-siege-workshop-next-unit my-mangonel-type)
+		(unit-type-count-total my-mangonel-line g:< g-desired-num-mangonel-type)
+		(can-train-with-escrow my-mangonel-type)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
+		=>
+		(up-train g-escrow c: my-mangonel-type)
+		)
+
+		(defrule
+		(goal g-siege-workshop-next-unit my-scorpion-line)
+		(goal g-town-under-attack NO)
+		(up-get-fact unit-type-count-total scorpion-line g-temp)
+		(up-get-fact unit-type-count-total war-chariot-focus-fire g-temp2)
+		(up-modify-goal g-temp g:+ g-temp2)
+		(up-get-fact unit-type-count-total war-chariot-barrage g-temp2)
+		(up-modify-goal g-temp g:+ g-temp2)
+		(up-compare-goal g-temp g:< g-desired-num-scorpion-type)
+		(can-train-with-escrow my-scorpion-type)
+		(goal g-temp 0)
+		=>
+		(up-train g-escrow c: my-scorpion-type)
+		)
+
+		(defrule
+		(goal g-siege-workshop-next-unit my-scorpion-line)
+		(goal g-town-under-attack NO)
+		(up-get-fact unit-type-count-total scorpion-line g-temp)
+		(up-get-fact unit-type-count-total war-chariot-focus-fire g-temp2)
+		(up-modify-goal g-temp g:+ g-temp2)
+		(up-get-fact unit-type-count-total war-chariot-barrage g-temp2)
+		(up-modify-goal g-temp g:+ g-temp2)
+		(up-compare-goal g-temp g:< g-desired-num-scorpion-type)
+		(can-train my-scorpion-type)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
+		=>
+		(train my-scorpion-type)
+		)
+
+	;----------
+	;	Navy
+	;----------
+	
+		(defrule
+		(goal g-dock-next-unit cannon-galleon-line)
+		(up-object-type-count-total c: cannon-galleon-line g:< g-desired-num-cannon-galleon)
+		(can-train cannon-galleon-line)
+		=>
+		(train cannon-galleon-line)
+		)
+
+		(defrule
+		(goal g-dock-next-unit demolition-ship-line)
+		(unit-type-count-total demolition-ship-line g:< g-desired-num-demolition-ship)
+		(can-train demolition-ship)
+		=>
+		(train demolition-ship)
+		)
+
+		(defrule
+		(goal g-dock-next-unit fire-ship-line)
+		(unit-type-count-total fire-ship-line g:< g-desired-num-fire-ship)
+		(can-train fire-ship)
+		=>
+		(train fire-ship)
+		)
+
+		(defrule
+		(goal g-dock-next-unit galley-line)
+		(up-object-type-count-total c: galley-line g:< g-desired-num-galley)
+		(can-train galley-line)
+		=>
+		(train galley-line)
+		)
+
+		(defrule
+		(goal g-dock-next-unit transport-ship)
+		(up-object-type-count-total c: transport-ship g:< g-desired-num-transport-ship)
+		(can-train transport-ship)
+		=>
+		(train transport-ship)
+		)
+
+		(defrule
+		(goal g-dock-next-unit my-unique-ship-line)
+		(up-object-type-count-total c: my-unique-ship-line g:< g-desired-num-unique-ship)
+		(can-train my-unique-ship-line)
+		=>
+		(train my-unique-ship-line)
+		)
+
+	;------------------
+	;	Unique Units
+	;------------------
+
+		#load-if-not-defined GOTHIC-CIV
+			#load-if-not-defined HUN-CIV
+
+				(defrule
+				(unit-type-count-total my-unique-unit-line g:< g-desired-num-unique-unit)
+				(unit-type-count-total my-unique-unit-line == 0)
+				(can-train-with-escrow my-unique-unit)
+				(or
+					(up-compare-flag g-flag != TRUSH-DEFENSE)
+					(or
+						(unit-type-count-total battering-ram-line > 0)
+						(unit-type-count-total armored-elephant-line > 0)))
+				=>
+				(up-train g-escrow c: my-unique-unit)
+				)
+
+				(defrule
+				(unit-type-count-total my-unique-unit-line g:< g-desired-num-unique-unit)
+				(can-train my-unique-unit)
+				(or
+					(up-timer-status t-training-delay != timer-running)
+					(up-compare-goal g-difficulty >= HARDEST))
+				(or
+					(up-compare-flag g-flag != TRUSH-DEFENSE)
+					(or
+						(unit-type-count-total battering-ram-line > 0)
+						(unit-type-count-total armored-elephant-line > 0)))
+				=>
+				(train my-unique-unit)
+				)
+				
+			#end-if
+		#end-if
+
+		#load-if-defined GOTHIC-CIV
+
+			(defrule
+			(up-compare-goal g-desired-num-unique-unit > 0)
+			(unit-type-count-total huskarl-set == 0)
+			(can-train-with-escrow barracks-huskarl)
+			=>
+			(up-train g-escrow c: barracks-huskarl)
+			)
+
+			(defrule
+			(up-compare-goal g-desired-num-unique-unit > 0)
+			(unit-type-count-total huskarl-set == 0)
+			(can-train-with-escrow huskarl-line)
+			=>
+			(up-train g-escrow c: huskarl-line)
+			)
+
+			(defrule
+			(up-object-type-count-total c: huskarl-set g:< g-desired-num-unique-unit)
+			(can-train barracks-huskarl)
+			(or
+				(up-timer-status t-training-delay != timer-running)
+				(up-compare-goal g-difficulty >= HARDEST))
+			=>
+			(train barracks-huskarl)
+			)
+
+			(defrule
+			(up-object-type-count-total c: huskarl-set g:< g-desired-num-unique-unit)
+			(up-train-site-ready c: huskarl)
+			(can-train huskarl-line)
+			(or
+				(up-timer-status t-training-delay != timer-running)
+				(up-compare-goal g-difficulty >= HARDEST))
+			=>
+			(train huskarl-line)
+			)
+
+		#end-if
+
+		#load-if-defined HUN-CIV
+			#load-if-defined UP-GAME-WK
+
+				(defrule
+				(up-compare-goal g-desired-num-unique-unit > 0)
+				(unit-type-count-total tarkan-line == 0)
+				(unit-type-count-total stable-tarkan == 0)
+				(unit-type-count-total stable-elite-tarkan == 0)
+				(can-train-with-escrow stable-tarkan)
+				=>
+				(up-train g-escrow c: stable-tarkan)
+				)
+
+				(defrule
+				(up-compare-goal g-desired-num-unique-unit > 0)
+				(unit-type-count-total tarkan-line == 0)
+				(unit-type-count-total stable-tarkan == 0)
+				(unit-type-count-total stable-elite-tarkan == 0)
+				(can-train-with-escrow tarkan-line)
+				=>
+				(up-train g-escrow c: tarkan-line)
+				)
+
+				(defrule
+				(up-compare-goal g-tarkan-line g:< g-desired-num-unique-unit)
+				(up-train-site-ready c: tarkan)
+				(can-train tarkan-line)
+				(or
+					(up-timer-status t-training-delay != timer-running)
+					(up-compare-goal g-difficulty >= HARDEST))
+				=>
+				(train tarkan-line)
+				)
+
+				(defrule
+				(up-compare-goal g-tarkan-line g:< g-desired-num-unique-unit)
+				(not
+					(up-train-site-ready c: tarkan))
+				(can-train stable-tarkan)
+				(or
+					(up-timer-status t-training-delay != timer-running)
+					(up-compare-goal g-difficulty >= HARDEST))
+				=>
+				(train stable-tarkan)
+				)
+
+			#else
+
+				(defrule
+				(up-compare-goal g-desired-num-unique-unit > 0)
+				(unit-type-count-total tarkan-line == 0)
+				(can-train-with-escrow tarkan-line)
+				=>
+				(up-train g-escrow c: tarkan-line)
+				)
+			
+				(defrule
+				(up-compare-goal g-tarkan-line g:< g-desired-num-unique-unit)
+				(up-train-site-ready c: tarkan)
+				(can-train tarkan-line)
+				(or
+					(up-timer-status t-training-delay != timer-running)
+					(up-compare-goal g-difficulty >= HARDEST))
+				=>
+				(train tarkan-line)
+				)
+
+			#end-if
+		#end-if
+
+		#load-if-not-defined CUMANS-CIV
+
+			(defrule
+			(can-train mercenary-kipchak)
+			=>
+			(train mercenary-kipchak)
+			)
+
+		#end-if
+
+	;-------------
+	;	Cavalry
+	;-------------
+
+		(defrule
+		(up-compare-goal g-desired-num-battle-elephant > 0)
+		(unit-type-count-total battle-elephant-line == 0)
+		(can-train-with-escrow battle-elephant)
+		=>
+		(up-train g-escrow c: battle-elephant)
+		)
+
+		(defrule
+		(goal g-stable-next-unit battle-elephant)
+		(unit-type-count-total battle-elephant-line g:< g-desired-num-battle-elephant)
+		(can-train battle-elephant)
+		=>
+		(train battle-elephant)
+		)
+
+		(defrule
+		(up-compare-goal g-desired-num-knight > 0)
+		(unit-type-count-total knight-line == 0)
+		(can-train-with-escrow knight-line)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
+		=>
+		(up-train g-escrow c: knight-line)
+		)
+
+		(defrule
+		(goal g-stable-next-unit knight-line)
+		(up-object-type-count-total c: knight-line g:< g-desired-num-knight)
+		(can-train knight-line)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
+		=>
+		(train knight-line)
+		)
+
+		(defrule
+		(up-compare-goal g-desired-num-camel > 0)
+		(unit-type-count-total camel-line == 0)
+		(can-train-with-escrow camel)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
+		=>
+		(up-train g-escrow c: camel)
+		)
+
+		(defrule
+		(goal g-stable-next-unit camel)
+		(unit-type-count-total camel-line g:< g-desired-num-camel)
+		(can-train camel)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
+		=>
+		(train camel)
+		)
+
+		(defrule
+		(up-compare-goal g-desired-num-steppe-lancer > 0)
+		(unit-type-count-total steppe-lancer-line == 0)
+		(can-train-with-escrow steppe-lancer-line)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
+		=>
+		(up-train g-escrow c: steppe-lancer-line)
+		)
+
+		(defrule
+		(goal g-stable-next-unit steppe-lancer-line)
+		(up-object-type-count-total c: steppe-lancer-line g:< g-desired-num-steppe-lancer)
+		(can-train steppe-lancer-line)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
+		=>
+		(train steppe-lancer-line)
+		)
+
+		#load-if-defined GURJARAS-CIV
+
+			(defrule
+			(up-compare-goal g-desired-num-second-unique-unit > 0)
+			(unit-type-count-total shrivamsha-rider == 0)
+			(can-train-with-escrow shrivamsha-rider)
+			=>
+			(up-train g-escrow c: shrivamsha-rider)
+			)
+
+			(defrule
+			(goal g-stable-next-unit shrivamsha-rider)
+			(up-object-type-count-total c: shrivamsha-rider-line g:< g-desired-num-second-unique-unit)
+			(can-train shrivamsha-rider)
+			=>
+			(train shrivamsha-rider)
+			)
+
+		#end-if
+
+		(defrule
+		(up-compare-goal g-desired-num-scout-cavalry > 0)
+		(unit-type-count-total scout-cavalry-line == 0)
+		(can-train-with-escrow scout-cavalry-line)
+		(or
+			(current-age < imperial-age)
+			(or
+				(up-research-status c: ri-light-cavalry >= research-pending)
+				(up-compare-const LIGHT-CAVALRY-AVAILABLE == NO)))
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
+		=>
+		(up-train g-escrow c: scout-cavalry-line)
+		)
+
+		(defrule
+		(goal g-stable-next-unit scout-cavalry-line)
+		(up-object-type-count-total c: scout-cavalry-line g:< g-desired-num-scout-cavalry)
+		(can-train scout-cavalry-line)
+		(or
+			(current-age < imperial-age)
+			(or
+				(up-research-status c: ri-light-cavalry >= research-pending)
+				(up-compare-const LIGHT-CAVALRY-AVAILABLE == NO)))
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
+		=>
+		(train scout-cavalry-line)
+		)
+
+	;-----------
+	;	Monks
+	;-----------
+
+		(defrule
+		(up-compare-goal g-desired-num-monk > 0)
+		(unit-type-count-total monk == 0)
+		(can-train-with-escrow monk)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
+		=>
+		(up-train g-escrow c: monk)
+		)
+
+		(defrule
+		(up-object-type-count-total c: monk-set g:< g-desired-num-monk)
+		(can-train monk)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
+		=>
+		(train monk)
+		)
+
+		#load-if-defined SPANISH-CIV
+
+			(defrule
+			(up-compare-goal g-desired-num-second-unique-unit > 0)
+			(unit-type-count-total missionary == 0)
+			(can-train-with-escrow missionary)
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			=>
+			(up-train g-escrow c: missionary)
+			)
+
+			(defrule
+			(up-object-type-count-total c: missionary g:< g-desired-num-second-unique-unit)
+			(can-train missionary)
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			=>
+			(train missionary)
+			)
+			
+		#end-if
+
+	;-------------
+	;	Archers
+	;-------------
+
+		(defrule
+		(up-compare-goal g-desired-num-elephant-archer > 0)
+		(unit-type-count-total elephant-archer-line == 0)
+		(can-train-with-escrow elephant-archer-line)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
+		=>
+		(up-train g-escrow c: elephant-archer-line)
+		)
+
+		(defrule
+		(up-compare-goal g-archery-range-next-unit != 0)
+		(or
+			(goal g-archery-range-next-unit elephant-archer-line)
+			(not
+				(up-can-train 0 g: g-archery-range-next-unit)))
+		(up-object-type-count-total c: elephant-archer-line g:< g-desired-num-elephant-archer)
+		(can-train elephant-archer-line)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
+		=>
+		(train elephant-archer-line)
+		)
+
+		(defrule
+		(up-compare-goal g-desired-num-cavalry-archer > 0)
+		(unit-type-count-total cavalry-archer-line == 0)
+		(can-train-with-escrow cavalry-archer-line)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
+		=>
+		(up-train g-escrow c: cavalry-archer-line)
+		)
+
+		(defrule
+		(up-compare-goal g-archery-range-next-unit != 0)
+		(or
+			(goal g-archery-range-next-unit cavalry-archer-line)
+			(not
+				(up-can-train 0 g: g-archery-range-next-unit)))
+		(up-object-type-count-total c: cavalry-archer-line g:< g-desired-num-cavalry-archer)
+		(can-train cavalry-archer-line)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
+		=>
+		(train cavalry-archer-line)
+		)
+
+		(defrule
+		(up-compare-goal g-desired-num-hand-cannoneer > 0)
+		(unit-type-count-total hand-cannoneer == 0)
+		(can-train-with-escrow hand-cannoneer)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
+		=>
+		(up-train g-escrow c: hand-cannoneer)
+		)
+
+		(defrule
+		(up-compare-goal g-archery-range-next-unit != 0)
+		(or
+			(goal g-archery-range-next-unit hand-cannoneer)
+			(not
+				(up-can-train 0 g: g-archery-range-next-unit)))
+		(up-object-type-count-total c: hand-cannoneer g:< g-desired-num-hand-cannoneer)
+		(can-train hand-cannoneer)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
+		=>
+		(train hand-cannoneer)
+		)
+
+		#load-if-defined INCAN-CIV
+
+			(defrule
+			(up-compare-goal g-desired-num-second-unique-unit > 0)
+			(unit-type-count-total slinger == 0)
+			(can-train-with-escrow slinger)
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			=>
+			(up-train g-escrow c: slinger)
+			)
+
+			(defrule
+			(up-compare-goal g-archery-range-next-unit != 0)
+			(or
+				(goal g-archery-range-next-unit slinger)
+				(not
+					(up-can-train 0 g: g-archery-range-next-unit)))
+			(up-object-type-count-total c: slinger g:< g-desired-num-second-unique-unit)
+			(can-train slinger)
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			=>
+			(train slinger)
+			)
+
+		#end-if
+
+		(defrule
+		(up-compare-goal g-desired-num-archer > 0)
+		(unit-type-count-total archer-line == 0)
+		(can-train-with-escrow archer-line)
+		(or
+			(current-age < imperial-age)
+			(or
+				(up-research-status c: ri-crossbow >= research-pending)
+				(up-compare-const CROSSBOWMAN-AVAILABLE == NO)))
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
+		=>
+		(up-train g-escrow c: archer-line)
+		)
+
+		(defrule
+		(up-compare-goal g-archery-range-next-unit != 0)
+		(or
+			(goal g-archery-range-next-unit archer-line)
+			(not
+				(up-can-train 0 g: g-archery-range-next-unit)))
+		(up-object-type-count-total c: archer-line g:< g-desired-num-archer)
+		(can-train archer-line)
+		(or
+			(current-age < imperial-age)
+			(or
+				(up-research-status c: ri-crossbow >= research-pending)
+				(up-compare-const CROSSBOWMAN-AVAILABLE == NO)))
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
+		=>
+		(train archer-line)
+		)
+
+		(defrule
+		(up-compare-goal g-desired-num-genitour > 0)
+		(unit-type-count-total genitour-line == 0)
+		(can-train-with-escrow genitour-placeholder)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
+		=>
+		(up-train g-escrow c: genitour-placeholder)
+		)
+		
+		(defrule
+		(up-compare-goal g-archery-range-next-unit != 0)
+		(or
+			(goal g-archery-range-next-unit genitour-placeholder)
+			(not
+				(up-can-train 0 g: g-archery-range-next-unit)))
+		(unit-type-count-total genitour-line g:< g-desired-num-genitour)
+		(can-train genitour-placeholder)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
+		=>
+		(train genitour-placeholder)
+		)
+
+		(defrule
+		(up-compare-goal g-desired-num-skirmisher > 0)
+		(unit-type-count-total skirmisher-line == 0)
+		(can-train-with-escrow skirmisher-line)
+		(or
+			(current-age < imperial-age)
+			(or
+				(up-research-status c: ri-elite-skirmisher >= research-pending)
+				(up-compare-const ELITE-SKIRMISHER-AVAILABLE == NO)))
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
+		=>
+		(up-train g-escrow c: skirmisher-line)
+		)
+
+		(defrule
+		(up-compare-goal g-archery-range-next-unit != 0)
+		(or
+			(goal g-archery-range-next-unit skirmisher)
+			(not
+				(up-can-train 0 g: g-archery-range-next-unit)))
+		(unit-type-count-total skirmisher-line g:< g-desired-num-skirmisher)
+		(can-train skirmisher)
+		(or
+			(current-age < imperial-age)
+			(or
+				(up-research-status c: ri-elite-skirmisher >= research-pending)
+				(up-compare-const ELITE-SKIRMISHER-AVAILABLE == NO)))
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
+		=>
+		(train skirmisher)
+		)
+
+	;--------------
+	;	Infantry
+	;--------------
+
+		(defrule
+		(up-compare-goal g-desired-num-condottiero > 0)
+		(unit-type-count-total condottiero == 0)
+		(can-train-with-escrow condottiero)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
+		=>
+		(up-train g-escrow c: condottiero)
+		)
+
+		(defrule
+		(up-compare-goal g-barracks-next-unit != 0)
+		(or
+			(goal g-barracks-next-unit condottiero-placeholder)
+			(not
+				(up-can-train 0 g: g-barracks-next-unit)))
+		(up-object-type-count-total c: condottiero g:< g-desired-num-condottiero)
+		(can-train condottiero-placeholder)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
+		=>
+		(train condottiero-placeholder)
+		)
+
+		(defrule
+		(up-compare-goal g-desired-num-eagle-warrior > 0)
+		(unit-type-count-total eagle-warrior-line == 0)
+		(can-train-with-escrow eagle-warrior)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
+		=>
+		(up-train g-escrow c: eagle-warrior)
+		)
+
+		(defrule
+		(up-compare-goal g-barracks-next-unit != 0)
+		(or
+			(goal g-barracks-next-unit eagle-warrior)
+			(not
+				(up-can-train 0 g: g-barracks-next-unit)))
+		(unit-type-count-total eagle-warrior-line g:< g-desired-num-eagle-warrior)
+		(can-train eagle-warrior)
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
+		=>
+		(train eagle-warrior)
+		)
+
+		(defrule
+		(up-compare-goal g-desired-num-militia > 0)
+		(unit-type-count-total militiaman-line == 0)
+		(can-train-with-escrow militiaman-line)
+		(or
+			(current-age < imperial-age)
+			(or
+				(up-research-status c: ri-long-swordsman >= research-pending)
+				(up-compare-const LONG-SWORDSMAN-AVAILABLE == NO)))
+		(or
+			(current-age < castle-age)
+			(up-research-status c: ri-man-at-arms >= research-pending))
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
+		=>
+		(up-train g-escrow c: militiaman-line)
+		)
+
+		(defrule
+		(up-compare-goal g-barracks-next-unit != 0)
+		(or
+			(goal g-barracks-next-unit militiaman-line)
+			(not
+				(up-can-train 0 g: g-barracks-next-unit)))
+		(up-object-type-count-total c: militiaman-line g:< g-desired-num-militia)
+		(can-train militiaman-line)
+		(or
+			(current-age < imperial-age)
+			(or
+				(up-research-status c: ri-long-swordsman >= research-pending)
+				(up-compare-const LONG-SWORDSMAN-AVAILABLE == NO)))
+		(or
+			(current-age < castle-age)
+			(up-research-status c: ri-man-at-arms >= research-pending))
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
+		=>
+		(train militiaman-line)
+		)
+
+		(defrule
+		(up-compare-goal g-desired-num-spearman > 0)
+		(unit-type-count-total spearman-line == 0)
+		(can-train-with-escrow spearman-line)
+		(or
+			(current-age < imperial-age)
+			(or
+				(up-research-status c: ri-pikeman >= research-pending)
+				(up-compare-const PIKEMAN-AVAILABLE == NO)))
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
+		=>
+		(up-train g-escrow c: spearman-line)
+		)
+
+		(defrule
+		(up-compare-goal g-barracks-next-unit != 0)
+		(or
+			(goal g-barracks-next-unit spearman-line)
+			(not
+				(up-can-train 0 g: g-barracks-next-unit)))
+		(up-object-type-count-total c: spearman-line g:< g-desired-num-spearman)
+		(can-train spearman-line)
+		(or
+			(current-age < imperial-age)
+			(or
+				(up-research-status c: ri-pikeman >= research-pending)
+				(up-compare-const PIKEMAN-AVAILABLE == NO)))
+		(or
+			(up-compare-flag g-flag != TRUSH-DEFENSE)
+			(or
+				(unit-type-count-total battering-ram-line > 0)
+				(unit-type-count-total armored-elephant-line > 0)))
+		=>
+		(train spearman-line)
+		)

@@ -1,0 +1,732 @@
+(defrule
+(true)
+=>
+(set-goal g-arena-group1-size 0)
+; (set-goal g-arena-group2-size 0)
+; (set-goal g-arena-group1-monk-id PENDING)
+; (set-goal g-arena-group2-monk-id PENDING)
+(set-goal g-arena-group1-x PENDING)
+(set-goal g-arena-group1-y PENDING)
+; (set-goal g-arena-group2-x PENDING)
+; (set-goal g-arena-group2-y PENDING)
+(set-goal g-arena-group1-target PENDING)
+; (set-goal g-arena-group2-target PENDING)
+(set-goal g-current-relic-target-number PENDING)
+(set-goal g-current-relic-target-id PENDING)
+(disable-self)
+)
+
+(defrule
+(current-age >= castle-age)
+(goal g-initial-strategy BOOMC-ARENA-LIGHT-MONK)
+(goal g-current-relic-count 0)
+=>
+(up-full-reset-search)
+(up-filter-exclude -1 actionid-explore orderid-explore -1)
+(up-find-local c: scout-cavalry-line c: 20)
+(up-target-point g-position-self-x action-move -1 stance-no-attack)
+(disable-self)
+)
+
+(defrule
+(up-compare-flag g-attack-method-flag != USE-ARENA-DUC)
+(up-compare-goal g-arena-duc-micro-end-rule-id > 0)
+=>
+; (chat-to-all "skip arena")
+(up-jump-direct g: g-arena-duc-micro-end-rule-id)
+)
+
+;--------------------
+;   Get Group Info
+;--------------------
+
+    ; (defrule
+    ; (unit-type-count scout-cavalry-line > 1)
+    ; =>
+    ; (up-full-reset-search)
+    ; (set-goal g-arena-group1-size 0)
+    ; (up-set-group search-local c: 1)
+    ; (up-get-search-state g-local-total)
+    ; (up-modify-goal g-arena-group1-size g:= g-local-total)
+    ; )
+
+    ; (defrule
+    ; (unit-type-count scout-cavalry-line > 1)
+    ; (up-compare-goal g-arena-group1-size >= 2)
+    ; (up-set-target-object search-local c: 0)
+    ; =>
+    ; (up-get-point position-object g-arena-group1-x)
+    ; )
+
+    ; (defrule
+    ; (unit-type-count scout-cavalry-line > 1)
+    ; =>
+    ; (up-full-reset-search)
+    ; (set-goal g-arena-group2-size 0)
+    ; (up-set-group search-local c: 2)
+    ; (up-get-search-state g-local-total)
+    ; (up-modify-goal g-arena-group2-size g:= g-local-total)
+    ; )
+
+    ; (defrule
+    ; (unit-type-count scout-cavalry-line > 1)
+    ; (up-compare-goal g-arena-group2-size > 0)
+    ; (up-set-target-object search-local c: 0)
+    ; =>
+    ; (up-get-point position-object g-arena-group2-x)
+    ; )
+
+;--------------------------
+;   Add Scouts to groups
+;--------------------------
+
+    (defrule
+    (unit-type-count scout-cavalry-line > 1)
+    =>
+    (up-full-reset-search)
+    (up-filter-exclude -1 actionid-explore orderid-explore -1)
+    (up-find-local c: scout-cavalry-line c: 10)
+    (up-get-search-state g-local-total)
+    (up-modify-goal g-arena-group1-size g:= g-local-total)
+    (up-modify-group-flag 0 c: 1)
+    (up-reset-group c: 1)
+    (up-create-group 0 0 c: 1)
+    (up-modify-group-flag 1 c: 1)
+    (up-set-target-object search-local c: 0)
+    (up-get-point position-object g-arena-group1-x)
+    )
+
+    ; (defrule
+    ; (unit-type-count scout-cavalry-line > 1)
+    ; (or
+    ;     (unit-type-count monastery-class > 0)
+    ;     (unit-type-count monk-with-relic-class > 0))
+    ; =>
+    ; (up-set-group search-local c: 1)
+    ; (up-get-search-state g-local-total)
+    ; (up-modify-goal g-arena-group1-size g:= g-local-total)
+    ; (up-set-group search-local c: 2)
+    ; (up-get-search-state g-local-total)
+    ; (up-modify-goal g-arena-group2-size g:= g-local-total)
+    ; (up-full-reset-search)
+    ; (set-strategic-number sn-focus-player-number my-player-number)
+    ; (up-filter-exclude -1 actionid-explore orderid-explore -1)
+    ; (up-find-remote c: scout-cavalry-class c: 10)
+    ; (up-remove-objects search-remote object-data-group-flag >= 1)
+    ; (up-get-search-state g-local-total)
+    ; )
+
+    ; (defrule
+    ; (unit-type-count scout-cavalry-line > 1)
+    ; (or
+    ;     (unit-type-count monastery-class > 0)
+    ;     (unit-type-count monk-with-relic-class > 0))
+    ; (up-compare-goal g-remote-total > 0)
+    ; (up-set-target-object search-remote c: 0)
+    ; (up-compare-goal g-arena-group1-size g:<= g-arena-group2-size)
+    ; (up-get-object-data object-data-id g-temp)
+    ; =>
+    ; (up-set-group search-local c: 1)
+    ; (up-modify-group-flag 0 c: 1)
+    ; (up-reset-group c: 1)
+    ; (up-add-object-by-id search-local g: g-temp)
+    ; (up-create-group 0 0 c: 1)
+    ; (up-modify-group-flag 1 c: 1)
+    ; (up-modify-goal g-arena-group1-size c:+ 1)
+    ; (chat-to-all "add scout to group 1")
+    ; (up-full-reset-search)
+    ; (up-set-group search-local c: 1)
+    ; (up-get-search-state g-local-total)
+    ; ; (up-chat-data-to-all "Group 1 size: %d" g: g-local-total)
+    ; (up-remove-objects search-local object-data-group-flag == 1)
+    ; ; (up-chat-data-to-all "Group 1 size without flags: %d" g: g-local-total)
+    ; (up-jump-rule 1)
+    ; )
+    ;     (defrule
+    ;     (unit-type-count scout-cavalry-line > 1)
+    ;     (or
+    ;         (unit-type-count monastery-class > 0)
+    ;         (unit-type-count monk-with-relic-class > 0))
+    ;     (up-compare-goal g-remote-total > 0)
+    ;     (up-set-target-object search-remote c: 0)
+    ;     (up-compare-goal g-arena-group1-size g:> g-arena-group2-size)
+    ;     (up-get-object-data object-data-id g-temp3)
+    ;     =>
+    ;     (up-set-group search-local c: 2)
+    ;     (up-modify-group-flag 0 c: 2)
+    ;     (up-reset-group c: 2)
+    ;     (up-add-object-by-id search-local g: g-temp3)
+    ;     (up-create-group 0 0 c: 2)
+    ;     (up-modify-group-flag 1 c: 2)
+    ;     (up-modify-goal g-arena-group2-size c:+ 1)
+    ;     (chat-to-all "add scout to group 2")
+    ;     )
+
+;------------------
+;   Group 1 Monk
+;------------------
+
+    ; (defrule
+    ; (not
+    ;     (up-set-target-by-id g: g-arena-group1-monk-id))
+    ; =>
+    ; (set-goal g-arena-group1-monk-id PENDING)
+    ; )
+
+    ; (defrule
+    ; (up-set-target-by-id g: g-arena-group1-monk-id)
+    ; (up-object-data object-data-action != actionid-relic)
+    ; (up-object-data object-data-order != orderid-relic)
+    ; =>
+    ; (set-goal g-arena-group1-monk-id PENDING)
+    ; )
+
+    ; (defrule
+    ; (up-compare-goal g-arena-group1-size >= 2)
+    ; (goal g-arena-group1-monk-id PENDING)
+    ; =>
+    ; (up-set-target-point g-arena-group1-x)
+    ; (up-full-reset-search)
+    ; (up-filter-include -1 actionid-relic orderid-relic -1)
+    ; (up-find-local c: -1 c: 5)
+    ; (up-remove-objects search-local object-data-id g:== g-arena-group2-monk-id)
+    ; (up-get-search-state g-local-total)
+    ; (up-chat-data-to-all "Monks: %d" g: g-local-total)
+    ; (up-clean-search search-local object-data-full-distance search-order-asc)
+    ; )
+
+    ; (defrule
+    ; (up-compare-goal g-arena-group1-size >= 2)
+    ; (goal g-arena-group1-monk-id PENDING)
+    ; (up-set-target-object search-local c: 0)
+    ; =>
+    ; (up-get-object-data object-data-id g-arena-group1-monk-id)
+    ; (up-chat-data-to-all "New Group 1 monk ID: %d" g: g-arena-group1-monk-id)
+    ; )
+
+; ;------------------
+; ;   Group 2 Monk
+; ;------------------
+
+;     (defrule
+;     (not
+;         (up-set-target-by-id g: g-arena-group2-monk-id))
+;     =>
+;     (set-goal g-arena-group2-monk-id PENDING)
+;     )
+
+;     (defrule
+;     (up-set-target-by-id g: g-arena-group2-monk-id)
+;     (up-object-data object-data-action != actionid-relic)
+;     (up-object-data object-data-order != orderid-relic)
+;     =>
+;     (set-goal g-arena-group2-monk-id PENDING)
+;     )
+
+;     (defrule
+;     (up-compare-goal g-arena-group2-size > 0)
+;     (goal g-arena-group2-monk-id PENDING)
+;     =>
+;     (up-set-target-point g-arena-group2-x)
+;     (up-full-reset-search)
+;     (up-filter-include -1 actionid-relic orderid-relic -1)
+;     (up-find-local c: -1 c: 5)
+;     (up-remove-objects search-local object-data-id g:== g-arena-group1-monk-id)
+;     (up-clean-search search-local object-data-full-distance search-order-asc)
+;     )
+
+;     (defrule
+;     (up-compare-goal g-arena-group2-size > 0)
+;     (goal g-arena-group2-monk-id PENDING)
+;     (up-set-target-object search-local c: 0)
+;     =>
+;     (up-get-object-data object-data-id g-arena-group2-monk-id)
+;     (up-chat-data-to-all "New Group 2 monk ID: %d" g: g-arena-group2-monk-id)
+;     )
+
+;--------------------
+;   Group 1 Attack
+;--------------------
+
+    (defrule
+    (up-compare-goal g-arena-group1-size < 2)
+    (up-compare-goal g-arena-group1-target != PENDING)
+    =>
+    (set-goal g-arena-group1-target PENDING)
+    (up-target-point 0 action-none formation-box stance-aggressive)
+    )
+
+    (defrule
+    (up-compare-goal g-arena-group1-size >= 2)
+    (up-compare-goal g-arena-group1-target != PENDING)
+    (not
+        (up-set-target-by-id g: g-arena-group1-target))
+    =>
+    (set-goal g-arena-group1-target PENDING)
+    )
+
+    (defrule
+    (up-compare-goal g-arena-group1-size >= 2)
+    (up-compare-goal g-arena-group1-target != PENDING)
+    (timer-triggered t-15-sec)
+    =>
+    (set-goal g-arena-group1-target PENDING)
+    )
+
+    (defrule
+    (up-compare-goal g-arena-group1-size >= 2)
+    (up-compare-goal g-arena-group1-target != PENDING)
+    =>
+    (up-full-reset-search)
+    (up-filter-distance c: -1 c: 5)
+    (up-set-target-point g-arena-group1-x)
+    (set-strategic-number sn-focus-player-number 1)
+    )
+
+        (defrule
+        (true)
+        =>
+        (up-get-rule-id g-start-loop)
+        )
+
+        (defrule
+        (up-compare-goal g-arena-group1-size >= 2)
+        (up-compare-goal g-arena-group1-target != PENDING)
+        (nand
+            (player-in-game focus-player)
+            (stance-toward focus-player enemy))
+        (strategic-number sn-focus-player-number <= MAX-PLAYERS)
+        =>
+        (up-modify-sn sn-focus-player-number c:+ 1)
+        (up-jump-rule -1)
+        )
+
+        (defrule
+        (up-compare-goal g-arena-group1-size >= 2)
+        (up-compare-goal g-arena-group1-target != PENDING)
+        (strategic-number sn-focus-player-number <= MAX-PLAYERS)
+        =>
+        (up-find-remote c: gate-class c: 1)
+        )
+
+        (defrule
+        (up-compare-goal g-arena-group1-size >= 2)
+        (up-compare-goal g-arena-group1-target != PENDING)
+        (up-set-target-object search-remote c: 0)
+        (strategic-number sn-focus-player-number <= MAX-PLAYERS)
+        =>
+        (set-goal g-arena-group1-target PENDING)
+        (up-set-group search-local c: 1)
+        (up-get-point position-center g-point-x)
+        (up-target-point g-point-x action-move formation-box stance-no-attack)
+        (enable-timer t-arena-gate-retreat-timer 10)
+        )
+
+        (defrule
+        (up-compare-goal g-arena-group1-size >= 2)
+        (up-compare-goal g-arena-group1-target != PENDING)
+        (up-modify-sn sn-focus-player-number c:+ 1)
+        (strategic-number sn-focus-player-number <= MAX-PLAYERS)
+        =>
+        (up-jump-direct g: g-start-loop)
+        )
+
+    (defrule
+    (up-compare-goal g-arena-group1-size >= 2)
+    (up-compare-goal g-arena-group1-target != PENDING)
+    (up-set-target-by-id g: g-arena-group1-target)
+    (up-get-object-data object-data-point-x g-point-x)
+    (up-get-object-data object-data-point-y g-point-y)
+    (up-point-explored g-point-x != explored-active)
+    =>
+    (set-goal g-arena-group1-target PENDING)
+    )
+
+    (defrule
+    (up-compare-goal g-arena-group1-size >= 2)
+    (goal g-arena-group1-target PENDING)
+    (up-timer-status t-arena-gate-retreat-timer != timer-running)
+    =>
+    (up-set-target-point g-arena-group1-x)
+    (up-full-reset-search)
+    (up-filter-distance c: -1 c: 10)
+    (set-strategic-number sn-focus-player-number 0)
+    )
+
+        (defrule
+        (true)
+        =>
+        (up-get-rule-id g-start-loop)
+        )
+
+        (defrule
+        (up-compare-goal g-arena-group1-size >= 2)
+        (goal g-arena-group1-target PENDING)
+        (up-timer-status t-arena-gate-retreat-timer != timer-running)
+        (nand
+            (player-in-game focus-player)
+            (stance-toward focus-player enemy))
+        (strategic-number sn-focus-player-number <= MAX-PLAYERS)
+        =>
+        (up-modify-sn sn-focus-player-number c:+ 1)
+        (up-jump-rule -1)
+        )
+
+        (defrule
+        (up-compare-goal g-arena-group1-size >= 2)
+        (goal g-arena-group1-target PENDING)   
+        (up-timer-status t-arena-gate-retreat-timer != timer-running)
+        =>
+        (up-filter-exclude -1 actionid-explore orderid-explore -1)
+        (up-find-remote c: -1 c: 40)
+        (up-remove-objects search-remote object-data-speed < 60)
+        (up-clean-search search-remote object-data-full-distance search-order-asc)
+        )
+
+        (defrule
+        (up-compare-goal g-arena-group1-size >= 2)
+        (goal g-arena-group1-target PENDING)
+        (up-timer-status t-arena-gate-retreat-timer != timer-running)
+        (up-modify-sn sn-focus-player-number c:+ 1)
+        (strategic-number sn-focus-player-number <= MAX-PLAYERS)
+        =>
+        (up-jump-direct g: g-start-loop)
+        )
+
+    (defrule
+    (up-compare-goal g-arena-group1-size >= 2)
+    (goal g-arena-group1-target PENDING)
+    (up-timer-status t-arena-gate-retreat-timer != timer-running)
+    (up-set-target-object search-remote c: 0)
+    =>
+    (up-get-object-data object-data-id g-arena-group1-target)
+    (up-set-group search-local c: 1)
+    (up-target-objects 1 action-default formation-box stance-no-attack)
+    )
+
+; ;--------------------
+; ;   Group 2 Attack
+; ;--------------------
+
+;     (defrule
+;     (up-compare-goal g-arena-group2-size > 0)
+;     (up-compare-goal g-arena-group2-target != PENDING)
+;     (not
+;         (up-set-target-by-id g: g-arena-group2-target))
+;     =>
+;     (set-goal g-arena-group2-target PENDING)
+;     )
+
+;     (defrule
+;     (up-compare-goal g-arena-group2-size > 0)
+;     (goal g-arena-group2-target PENDING)
+;     =>
+;     (up-set-target-point g-arena-group2-x)
+;     (up-full-reset-search)
+;     (up-filter-distance c: -1 c: 10)
+;     (set-strategic-number sn-focus-player-number 1)
+;     )
+
+;         (defrule
+;         (true)
+;         =>
+;         (up-get-rule-id g-start-loop)
+;         )
+
+;         (defrule
+;         (up-compare-goal g-arena-group2-size > 0)
+;         (goal g-arena-group2-target PENDING)
+;         (nand
+;             (player-in-game focus-player)
+;             (stance-toward focus-player enemy))
+;         (strategic-number sn-focus-player-number <= MAX-PLAYERS)
+;         =>
+;         (up-modify-sn sn-focus-player-number c:+ 1)
+;         (up-jump-rule -1)
+;         )
+
+;         (defrule
+;         (up-compare-goal g-arena-group2-size > 0)
+;         (goal g-arena-group2-target PENDING)   
+;         =>
+;         (up-find-remote c: -1 c: 40)
+;         (up-remove-objects search-remote object-data-speed < 60)
+;         (up-clean-search search-remote object-data-full-distance search-order-asc)
+;         )
+
+;         (defrule
+;         (up-compare-goal g-arena-group2-size > 0)
+;         (goal g-arena-group2-target PENDING)
+;         (up-modify-sn sn-focus-player-number c:+ 1)
+;         (strategic-number sn-focus-player-number <= MAX-PLAYERS)
+;         =>
+;         (up-jump-direct g: g-start-loop)
+;         )
+
+;     (defrule
+;     (up-compare-goal g-arena-group2-size > 0)
+;     (goal g-arena-group2-target PENDING)
+;     (up-set-target-object search-remote c: 0)
+;     =>
+;     (up-get-object-data object-data-id g-arena-group2-target)
+;     (up-set-group search-local c: 1)
+;     (up-target-objects 1 action-default formation-box stance-no-attack)
+;     )
+
+;--------------------------
+;   Group 1 Choose Relic
+;--------------------------
+
+    ;Protect relic our monk is gathering
+    (defrule
+    (timer-triggered t-5-sec)
+    (up-compare-goal g-arena-group1-size >= 2)
+    (goal g-arena-group1-target PENDING)
+    (up-compare-goal g-current-relic-count > 0)
+    =>
+    (set-goal g-monk-near-relic 0)
+    (up-filter-include -1 actionid-relic orderid-relic -1)
+    (up-find-local c: monastery-class c: 5)
+    (up-find-local c: warrior-priest c: 5)
+    (set-goal g-loop-counter 0)
+    (up-get-search-state g-local-total)
+    )
+
+        (defrule
+        (true)
+        =>
+        (up-get-rule-id g-start-loop)
+        )
+
+        (defrule
+        (timer-triggered t-5-sec)
+        (up-compare-goal g-arena-group1-size >= 2)
+        (goal g-arena-group1-target PENDING)
+        (up-compare-goal g-current-relic-count > 0)
+        (up-compare-goal g-loop-counter g:< g-local-total)
+        (up-set-target-object search-local g: g-loop-counter)
+        =>
+        (up-get-object-data object-data-target-id g-temp)
+        (up-get-point position-object g-point-x)
+        (up-set-target-point g-point-x)
+        )
+
+        (defrule
+        (timer-triggered t-5-sec)
+        (up-compare-goal g-arena-group1-size >= 2)
+        (goal g-arena-group1-target PENDING)
+        (up-compare-goal g-current-relic-count > 0)
+        (up-compare-goal g-loop-counter g:< g-local-total)
+        (up-set-target-object search-local g: g-loop-counter)
+        (up-set-target-by-id g: g-temp)
+        (up-get-object-data object-data-point-x g-point-x)
+        (up-get-object-data object-data-point-y g-point-y)
+        (up-object-data object-data-distance < 15)
+        =>
+        (set-goal g-monk-near-relic YES)
+        (up-set-group search-local c: 1)
+        (up-target-point g-point-x action-move formation-box stance-no-attack)
+        ; (chat-to-all "monk near relic")
+        )
+
+        (defrule
+        (timer-triggered t-5-sec)
+        (up-compare-goal g-arena-group1-size >= 2)
+        (goal g-arena-group1-target PENDING)
+        (up-compare-goal g-current-relic-count > 0)
+        (up-compare-goal g-loop-counter g:< g-local-total)
+        (up-set-target-object search-local g: g-loop-counter)
+        (up-set-target-by-id g: g-temp)
+        (up-get-object-data object-data-point-x g-point-x)
+        (up-get-object-data object-data-point-y g-point-y)
+        (goal g-monk-near-relic YES)
+        (up-point-distance g-point-x g-arena-group1-x > 4)
+        =>
+        (up-set-group search-local c: 1)
+        (up-target-point g-point-x action-move formation-box stance-no-attack)
+        ; (chat-to-all "send troops to defend relic for monk")
+        )
+
+        (defrule
+        (timer-triggered t-5-sec)
+        (up-compare-goal g-arena-group1-size >= 2)
+        (goal g-arena-group1-target PENDING)
+        (up-compare-goal g-current-relic-count > 0)
+        (up-compare-goal g-loop-counter g:< g-local-total)
+        (up-set-target-object search-local g: g-loop-counter)
+        (goal g-monk-near-relic NO)
+        (up-modify-goal g-loop-counter c:+ 1)
+        (up-compare-goal g-loop-counter g:< g-local-total)
+        =>
+        (up-jump-direct g: g-start-loop)
+        )
+
+    ;Target different relics to kill enemy monks
+    (defrule
+    (timer-triggered t-5-sec)
+    (up-compare-goal g-arena-group1-size >= 2)
+    (goal g-arena-group1-target PENDING)
+    (up-compare-goal g-current-relic-count > 0)
+    (goal g-monk-near-relic NO)
+    =>
+    (up-set-target-point g-position-self-x)
+	(up-full-reset-search)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-find-remote c: relic c: 10)
+    (up-clean-search search-remote object-data-full-distance search-order-desc)
+    (set-goal g-point-x PENDING)
+    (set-goal g-point-y PENDING)
+    (set-goal g-loop-counter 0)
+    (set-goal g-temp NO)
+    (up-set-target-point g-arena-group1-x)
+    )
+
+    (defrule
+    (timer-triggered t-5-sec)
+    (up-compare-goal g-arena-group1-size >= 2)
+    (goal g-arena-group1-target PENDING)
+    (up-compare-goal g-current-relic-count > 0)
+    (goal g-monk-near-relic NO)
+    (up-set-target-by-id g: g-current-relic-target-id)
+    (up-get-object-data object-data-point-x g-point-x)
+    (up-get-object-data object-data-point-y g-point-y)
+    (up-point-distance g-point-x g-arena-group1-x >= 4)
+    =>
+    (up-set-group search-local c: 1)
+    (up-target-point g-point-x action-move formation-box stance-no-attack)
+    ; (up-chat-data-to-all "Target Relic Normal %d" g: g-current-relic-target-id)
+    (up-jump-rule 5)
+    )
+
+        (defrule
+        (timer-triggered t-5-sec)
+        (up-compare-goal g-arena-group1-size >= 2)
+        (goal g-arena-group1-target PENDING)
+        (up-compare-goal g-current-relic-count > 0)
+        (goal g-monk-near-relic NO)
+        (or
+            (not
+                (up-set-target-by-id g: g-current-relic-target-id))
+            (goal g-current-relic-target-number PENDING))
+        =>
+        (up-modify-goal g-current-relic-target-number c:+ 1)
+        ; (up-chat-data-to-all "relic invalid, target relic %d" g: g-current-relic-target-number)
+        )
+
+        (defrule
+        (timer-triggered t-5-sec)
+        (up-compare-goal g-arena-group1-size >= 2)
+        (goal g-arena-group1-target PENDING)
+        (up-compare-goal g-current-relic-count > 0)
+        (goal g-monk-near-relic NO)
+        (up-set-target-by-id g: g-current-relic-target-id)
+        (up-get-object-data object-data-point-x g-point-x)
+        (up-get-object-data object-data-point-y g-point-y)
+        (up-point-distance g-point-x g-arena-group1-x < 4)
+        =>
+        (up-modify-goal g-current-relic-target-number c:+ 1)
+        ; (up-chat-data-to-all "Next relic number, %d" g: g-current-relic-target-number)
+        )
+
+        (defrule
+        (timer-triggered t-5-sec)
+        (up-compare-goal g-arena-group1-size >= 2)
+        (goal g-arena-group1-target PENDING)
+        (up-compare-goal g-current-relic-count > 0)
+        (goal g-monk-near-relic NO)
+        (up-compare-goal g-current-relic-target-number g:>= g-current-relic-count)
+        =>
+        (set-goal g-current-relic-target-number 0)
+        ; (up-chat-data-to-all "Restart relic number, %d" g: g-current-relic-target-number)
+        )
+
+        (defrule
+        (timer-triggered t-5-sec)
+        (up-compare-goal g-arena-group1-size >= 2)
+        (goal g-arena-group1-target PENDING)
+        (up-compare-goal g-current-relic-count > 0)
+        (goal g-monk-near-relic NO)
+        (up-set-target-object search-remote g: g-current-relic-target-number)
+        =>
+        (up-get-object-data object-data-id g-current-relic-target-id)
+        ; (up-chat-data-to-all "New relic ID, %d" g: g-current-relic-target-id)
+        (set-goal g-temp YES)
+        )
+
+        (defrule
+        (timer-triggered t-5-sec)
+        (up-compare-goal g-arena-group1-size >= 2)
+        (goal g-arena-group1-target PENDING)
+        (up-compare-goal g-current-relic-count > 0)
+        (goal g-monk-near-relic NO)
+        (up-set-target-by-id g: g-current-relic-target-id)
+        (up-get-object-data object-data-point-x g-point-x)
+        (up-get-object-data object-data-point-y g-point-y)
+        (up-point-distance g-point-x g-arena-group1-x >= 4)
+        (goal g-temp YES)
+        =>
+        (up-set-group search-local c: 1)
+        (up-target-point g-point-x action-move formation-box stance-no-attack)
+        ; (up-chat-data-to-all "Target Relic New %d" g: g-current-relic-target-id)
+        )
+
+; ;--------------------
+; ;   Group 1 Follow
+; ;--------------------
+
+;     (defrule
+;     (timer-triggered t-5-sec)
+;     (up-compare-goal g-arena-group1-size >= 2)
+;     (goal g-arena-group1-target PENDING)
+;     (up-set-target-by-id g: g-arena-group1-monk-id)
+;     =>
+;     (up-get-point position-object g-point-x)
+;     )
+
+;     (defrule
+;     (timer-triggered t-5-sec)
+;     (up-compare-goal g-arena-group1-size >= 2)
+;     (goal g-arena-group1-target PENDING)
+;     (up-set-target-by-id g: g-arena-group1-monk-id)
+;     (up-point-distance g-point-x g-arena-group1-x > 4)
+;     =>
+;     (up-lerp-tiles g-point-x g-arena-group1-monk-id c: 2)
+;     (up-set-group search-local c: 1)
+;     (up-target-point g-point-x action-move formation-box stance-no-attack)
+;     )
+
+; ;--------------------
+; ;   Group 2 Follow
+; ;--------------------
+
+;     (defrule
+;     (timer-triggered t-5-sec)
+;     (up-compare-goal g-arena-group2-size > 0)
+;     (goal g-arena-group2-target PENDING)
+;     (up-set-target-by-id g: g-arena-group2-monk-id)
+;     =>
+;     (up-get-point position-object g-point-x)
+;     )
+
+;     (defrule
+;     (timer-triggered t-5-sec)
+;     (up-compare-goal g-arena-group2-size > 0)
+;     (goal g-arena-group2-target PENDING)
+;     (up-set-target-by-id g: g-arena-group2-monk-id)
+;     (up-point-distance g-point-x g-arena-group2-x > 4)
+;     =>
+;     (up-lerp-tiles g-point-x g-arena-group2-monk-id c: 2)
+;     (up-set-group search-local c: 2)
+;     (up-target-point g-point-x action-move formation-box stance-no-attack)
+;     )
+
+;-------------
+;   End DUC
+;-------------
+
+    (defrule
+    (true)
+    =>
+    (up-get-rule-id g-arena-duc-micro-end-rule-id)
+    (disable-self)
+    )

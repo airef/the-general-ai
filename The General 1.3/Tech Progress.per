@@ -1,0 +1,6536 @@
+;--------------------------------------------------
+;	RESET Tech Progress (Goals 237-239, 242-257)
+;--------------------------------------------------
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-primary-unit-tech-progress 0)
+	(set-goal g-support-unit-tech-progress 0)
+	(set-goal g-eco-tech-progress 0)
+	(set-goal g-militia-tech-progress 0)
+	(set-goal g-spearman-tech-progress 0)
+	(set-goal g-eagle-warrior-tech-progress 0)
+	(set-goal g-condottiero-tech-progress 0)
+	)
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-archer-tech-progress 0)
+	(set-goal g-skirmisher-tech-progress 0)
+	(set-goal g-cavalry-archer-tech-progress 0)
+	(set-goal g-hand-cannoneer-tech-progress 0)
+	(set-goal g-genitour-tech-progress 0)
+	(set-goal g-scout-cavalry-tech-progress 0)
+	(set-goal g-knight-tech-progress 0)
+	(set-goal g-camel-tech-progress 0)
+	(set-goal g-battle-elephant-tech-progress 0)
+	(set-goal g-steppe-lancer-tech-progress 0)
+	(set-goal g-unique-unit-tech-progress 0)
+	(set-goal g-second-unique-unit-tech-progress 0)
+	)
+
+;-------------------------------
+;	GOAL: g-eco-tech-progress
+;-------------------------------
+
+	;----------------
+	;	Feudal Age
+	;----------------
+
+		(defrule
+		(current-age >= feudal-age)
+		=>
+		(set-goal g-eco-tech-progress PRIORITY-FEUDAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= feudal-age)
+		(goal g-eco-tech-progress PRIORITY-FEUDAL-COMPLETE)
+		(up-research-status c: ri-double-bit-axe >= research-pending)
+		(or
+			(up-research-status c: ri-horse-collar >= research-pending)
+			(up-research-status c: ri-domestication >= research-pending))
+		=>
+		(set-goal g-eco-tech-progress SECONDARY-FEUDAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= feudal-age)
+		(goal g-eco-tech-progress SECONDARY-FEUDAL-COMPLETE)
+		(or
+			(up-research-status c: ri-gold-mining >= research-pending)
+			(up-compare-goal g-desired-num-gold-vils < 6))
+		(or
+			(up-research-status c: ri-stone-mining >= research-pending)
+			(up-compare-goal g-desired-num-stone-vils < 8))
+		(up-research-status c: ri-wheel-barrow >= research-pending)
+		=>
+		(set-goal g-eco-tech-progress ALL-FEUDAL-COMPLETE)
+		)
+
+	;----------------
+	;	Castle Age
+	;----------------
+
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-eco-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-bow-saw >= research-pending)
+		(or
+			(up-research-status c: ri-horse-collar >= research-pending)
+			(up-research-status c: ri-domestication >= research-pending))
+		(or
+			(goal g-desired-num-trade-cart 0)
+			(up-research-status c: ri-caravan >= research-pending))
+		=>
+		(set-goal g-eco-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= castle-age)
+		(goal g-eco-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-wheel-barrow >= research-pending)
+		(or
+			(up-research-status c: ri-gillnets >= research-pending)
+			(goal g-desired-num-fishing-ship 0))
+		=>
+		(set-goal g-eco-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= castle-age)
+		(goal g-eco-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(up-research-status c: ri-hand-cart >= research-pending)
+		(or
+			(up-research-status c: ri-heavy-plow >= research-pending)
+			(up-research-status c: ri-pastoralism >= research-pending))
+		(or
+			(up-research-status c: ri-gold-mining >= research-pending)
+			(up-compare-goal g-desired-num-gold-vils < 6))
+		(or
+			(up-research-status c: ri-stone-mining >= research-pending)
+			(up-compare-goal g-desired-num-stone-vils < 8))
+		=>
+		(set-goal g-eco-tech-progress ALL-CASTLE-COMPLETE)
+		)
+
+	;------------------
+	;	Imperial Age
+	;------------------
+		
+		(defrule
+		(goal g-eco-tech-progress ALL-CASTLE-COMPLETE)
+		(current-age == imperial-age)
+		=>
+		(set-goal g-eco-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		#load-if-defined INDIAN-CIV
+
+			(defrule
+			(current-age == imperial-age)
+			(goal g-eco-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+			(up-research-status c: ri-two-man-saw >= research-pending)
+			(up-research-status c: ri-gold-shaft-mining >= research-pending)
+			(up-research-status c: ri-grand-trunk-road >= research-pending)
+			=>
+			(set-goal g-eco-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+			)
+
+		#else
+			#load-if-defined ITALIAN-CIV
+
+				(defrule
+				(current-age == imperial-age)
+				(goal g-eco-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+				(up-research-status c: ri-two-man-saw >= research-pending)
+				(or
+					(up-research-status c: ri-silk-road >= research-pending)
+					(and
+						(goal g-desired-num-trade-cart 0)
+						(goal g-desired-num-trade-cog 0)))
+				=>
+				(set-goal g-eco-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+				)
+
+			#else
+
+				(defrule
+				(current-age == imperial-age)
+				(goal g-eco-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+				(or
+					(up-research-status c: ri-two-man-saw >= research-pending)
+					(up-compare-const TWO-MAN-SAW-AVAILABLE == NO))
+				(or
+					(up-research-status c: ri-gold-shaft-mining >= research-pending)
+					(or
+						(up-compare-goal g-desired-num-gold-vils < 6)
+						(up-compare-const GOLD-SHAFT-MINING-AVAILABLE == NO)))
+				=>
+				(set-goal g-eco-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+				)
+			#end-if
+		#end-if
+
+		#load-if-defined KHITANS-CIV
+
+			(defrule
+			(current-age == imperial-age)
+			(goal g-eco-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+			(up-research-status c: ri-transhumance >= research-pending)
+			(or
+				(up-research-status c: ri-stone-shaft-mining >= research-pending)
+				(or
+					(up-compare-const STONE-SHAFT-MINING-AVAILABLE == NO)
+					(up-compare-goal g-desired-num-stone-vils < 8)))
+			=>
+			(set-goal g-eco-tech-progress ALL-IMPERIAL-COMPLETE)
+			)
+
+		#else
+
+			(defrule
+			(current-age == imperial-age)
+			(goal g-eco-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+			(or
+				(up-research-status c: ri-crop-rotation >= research-pending)
+				(up-compare-const CROP-ROTATION-AVAILABLE == NO))
+			(or
+				(up-research-status c: ri-stone-shaft-mining >= research-pending)
+				(or
+					(up-compare-const STONE-SHAFT-MINING-AVAILABLE == NO)
+					(up-compare-goal g-desired-num-stone-vils < 8)))
+			=>
+			(set-goal g-eco-tech-progress ALL-IMPERIAL-COMPLETE)
+			)
+
+		#end-if
+
+
+
+;-----------------------------------
+;	GOAL: g-militia-tech-progress
+;-----------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	(defrule
+	(current-age >= feudal-age)
+	(up-compare-goal g-militia-tech-progress < PRIORITY-FEUDAL-COMPLETE)
+	(up-research-status c: ri-man-at-arms >= research-pending)
+	=>
+	(set-goal g-militia-tech-progress PRIORITY-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= feudal-age)
+	(goal g-militia-tech-progress PRIORITY-FEUDAL-COMPLETE)
+	(up-research-status c: ri-scale-mail >= research-pending)
+	=>
+	(set-goal g-militia-tech-progress SECONDARY-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= feudal-age)
+	(goal g-militia-tech-progress SECONDARY-FEUDAL-COMPLETE)
+	(up-research-status c: ri-forging >= research-pending)
+	=>
+	(set-goal g-militia-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-militia-tech-progress < REQUIRED-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-long-swordsman >= research-pending)
+		(up-compare-const LONG-SWORDSMAN-AVAILABLE == NO))
+	=>
+	(set-goal g-militia-tech-progress REQUIRED-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-militia-tech-progress REQUIRED-CASTLE-COMPLETE)
+	(up-research-status c: ri-scale-mail >= research-pending)
+	=>
+	(set-goal g-militia-tech-progress PRIORITY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-militia-tech-progress PRIORITY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-chain-mail >= research-pending)
+		(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-squires >= research-pending)
+		(up-compare-const SQUIRES-AVAILABLE == NO))
+	=>
+	(set-goal g-militia-tech-progress SECONDARY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-militia-tech-progress SECONDARY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-iron-casting >= research-pending)
+		(up-compare-const IRON-CASTING-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-gambesons >= research-pending)
+		(up-compare-const GAMBESONS-AVAILABLE == NO))
+	=>
+	(set-goal g-militia-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(up-compare-goal g-militia-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+	(up-research-status c: ri-scale-mail >= research-pending)
+	(or
+		(up-research-status c: ri-long-swordsman >= research-pending)
+		(up-compare-const LONG-SWORDSMAN-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-chain-mail >= research-pending)
+		(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+	(or
+		(research-completed ri-two-handed-swordsman)
+		(up-compare-const TWO-HANDED-SWORDSMAN-AVAILABLE == NO))
+	(up-research-status c: ri-forging >= research-pending)
+	=>
+	(set-goal g-militia-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	)
+
+	#load-if-not-defined ROMANS-CIV
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-militia-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(research-completed ri-champion)
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-temp 24)
+		)
+
+	#else
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-militia-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(research-completed ri-legionary)
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-temp 24)
+		)
+
+	#end-if
+	(defrule
+	(goal g-temp 24)
+	(current-age == imperial-age)
+	(goal g-militia-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(up-research-status c: ri-gambesons >= research-pending)
+		(up-compare-const GAMBESONS-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-squires >= research-pending)
+		(up-compare-const SQUIRES-AVAILABLE == NO))
+	=>
+	(set-goal g-militia-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-militia-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-blast-furnace)
+		(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+	(or
+		(research-completed ri-perfusion)
+		(not
+			(civ-selected gothic)))
+	(or
+		(research-completed ri-forced-levy)
+		(not
+			(civ-selected malay)))
+	=>
+	(set-goal g-militia-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	)
+
+	#load-if-not-defined AZTEC-CIV
+	#load-if-not-defined SLAVIC-CIV
+	#load-if-not-defined VIKING-CIV
+	#load-if-not-defined BULGARIANS-CIV
+	#load-if-not-defined DRAVIDIANS-CIV
+	#load-if-not-defined GURJARAS-CIV
+	#load-if-not-defined ROMANS-CIV
+	#load-if-not-defined ARMENIANS-CIV
+	#load-if-not-defined KHITANS-CIV
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-militia-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		=>
+		(set-goal g-militia-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-militia-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-garland-wars)
+		(or
+			(research-completed ri-druzhina)
+			(or
+				(research-completed ri-chieftains)
+				(or
+					(research-completed ri-bagains)
+					(or
+						(research-completed ri-wootz-steel)
+						(or
+							(research-completed ri-kshatriyas)
+							(or
+								(research-completed ri-comitatenses)
+								(or
+									(research-completed ri-fereters)
+									(research-completed ri-lamellar-armor)))))))))
+	=>
+	(set-goal g-militia-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == feudal-age)
+	(goal g-desired-num-militia 0)
+	=>
+	(set-goal g-militia-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == castle-age)
+	(goal g-desired-num-militia 0)
+	=>
+	(set-goal g-militia-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-desired-num-militia 0)
+	=>
+	(set-goal g-militia-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+;------------------------------------
+;	GOAL: g-spearman-tech-progress
+;------------------------------------
+
+	(defrule
+	(current-age >= feudal-age)
+	=>
+	(set-goal g-spearman-tech-progress PRIORITY-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= feudal-age)
+	(up-compare-goal g-spearman-tech-progress < SECONDARY-FEUDAL-COMPLETE)
+	(up-research-status c: ri-scale-mail >= research-pending)
+	=>
+	(set-goal g-spearman-tech-progress SECONDARY-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= feudal-age)
+	(goal g-spearman-tech-progress SECONDARY-FEUDAL-COMPLETE)
+	(up-research-status c: ri-forging >= research-pending)
+	=>
+	(set-goal g-spearman-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-spearman-tech-progress < REQUIRED-CASTLE-COMPLETE)
+	(or
+		(research-completed ri-pikeman)
+		(up-compare-const PIKEMAN-AVAILABLE == NO))
+	=>
+	(set-goal g-spearman-tech-progress REQUIRED-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-spearman-tech-progress REQUIRED-CASTLE-COMPLETE)
+	(up-research-status c: ri-scale-mail >= research-pending)
+	=>
+	(set-goal g-spearman-tech-progress PRIORITY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-spearman-tech-progress PRIORITY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-chain-mail >= research-pending)
+		(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-squires >= research-pending)
+		(up-compare-const SQUIRES-AVAILABLE == NO))
+	=>
+	(set-goal g-spearman-tech-progress SECONDARY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-spearman-tech-progress SECONDARY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-iron-casting >= research-pending)
+		(up-compare-const IRON-CASTING-AVAILABLE == NO))
+	=>
+	(set-goal g-spearman-tech-progress ALL-CASTLE-COMPLETE)
+	)
+		
+	(defrule
+	(current-age == imperial-age)
+	(up-compare-goal g-spearman-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-pikeman)
+		(up-compare-const PIKEMAN-AVAILABLE == NO))
+	(up-research-status c: ri-scale-mail >= research-pending)
+	(up-research-status c: ri-forging >= research-pending)
+	=>
+	(set-goal g-spearman-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(set-goal g-temp 0)
+	)
+		
+	(defrule
+	(current-age == imperial-age)
+	(goal g-spearman-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-halberdier)
+		(up-compare-const HALBERDIER-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-iron-casting >= research-pending)
+		(up-compare-const IRON-CASTING-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-chain-mail >= research-pending)
+		(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+	(or
+		(research-completed ri-plate-mail)
+		(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-squires >= research-pending)
+		(up-compare-const SQUIRES-AVAILABLE == NO))
+	=>
+	(set-goal g-spearman-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-spearman-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-blast-furnace)
+		(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+	(or
+		(research-completed ri-perfusion)
+		(not
+			(civ-selected gothic)))
+	=>
+	(set-goal g-spearman-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	)
+
+	#load-if-not-defined AZTEC-CIV
+	#load-if-not-defined SLAVIC-CIV
+	#load-if-not-defined VIKING-CIV
+	#load-if-not-defined LITHUANIANS-CIV
+	#load-if-not-defined DRAVIDIANS-CIV
+	#load-if-not-defined GURJARAS-CIV
+	#load-if-not-defined ROMANS-CIV
+	#load-if-not-defined KHITANS-CIV
+	#load-if-not-defined SHU-CIV
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-spearman-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		=>
+		(set-goal g-spearman-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-spearman-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-garland-wars)
+		(or
+			(research-completed ri-druzhina)
+			(or
+				(research-completed ri-chieftains)
+				(or
+					(research-completed ri-tower-shields)
+					(or
+						(research-completed ri-wootz-steel)
+						(or
+							(research-completed ri-kshatriyas)
+							(or
+								(research-completed ri-comitatenses)
+								(or
+									(research-completed ri-lamellar-armor)
+									(research-completed ri-coiled-serpent-array)))))))))
+	=>
+	(set-goal g-spearman-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == feudal-age)
+	(goal g-desired-num-spearman 0)
+	=>
+	(set-goal g-spearman-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == castle-age)
+	(goal g-desired-num-spearman 0)
+	=>
+	(set-goal g-spearman-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-desired-num-spearman 0)
+	=>
+	(set-goal g-spearman-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+;-----------------------------------------
+;	GOAL: g-eagle-warrior-tech-progress
+;-----------------------------------------
+
+	(defrule
+	(current-age >= feudal-age)
+	=>
+	(set-goal g-eagle-warrior-tech-progress PRIORITY-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= feudal-age)
+	(up-compare-goal g-eagle-warrior-tech-progress < SECONDARY-FEUDAL-COMPLETE)
+	(up-research-status c: ri-scale-mail >= research-pending)
+	=>
+	(set-goal g-eagle-warrior-tech-progress SECONDARY-FEUDAL-COMPLETE)
+	)
+	
+	(defrule
+	(current-age >= feudal-age)
+	(goal g-eagle-warrior-tech-progress SECONDARY-FEUDAL-COMPLETE)
+	(up-research-status c: ri-forging >= research-pending)
+	=>
+	(set-goal g-eagle-warrior-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-eagle-warrior-tech-progress < REQUIRED-CASTLE-COMPLETE)
+	(up-research-status c: ri-scale-mail >= research-pending)
+	(or
+		(research-completed ri-eagle-warrior)
+		(up-compare-const EAGLE-SCOUT-AVAILABLE == NO))
+	=>
+	(set-goal g-eagle-warrior-tech-progress REQUIRED-CASTLE-COMPLETE)
+	)
+	
+	(defrule
+	(current-age >= castle-age)
+	(goal g-eagle-warrior-tech-progress REQUIRED-CASTLE-COMPLETE)
+	=>
+	(set-goal g-eagle-warrior-tech-progress PRIORITY-CASTLE-COMPLETE)
+	)
+	
+	(defrule
+	(current-age >= castle-age)
+	(goal g-eagle-warrior-tech-progress PRIORITY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-chain-mail >= research-pending)
+		(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-squires >= research-pending)
+		(up-compare-const SQUIRES-AVAILABLE == NO))
+	=>
+	(set-goal g-eagle-warrior-tech-progress SECONDARY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-eagle-warrior-tech-progress SECONDARY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-iron-casting >= research-pending)
+		(up-compare-const IRON-CASTING-AVAILABLE == NO))
+	=>
+	(set-goal g-eagle-warrior-tech-progress ALL-CASTLE-COMPLETE)
+	)	
+
+	(defrule
+	(current-age == imperial-age)
+	(up-compare-goal g-eagle-warrior-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-eagle-warrior)
+		(up-compare-const EAGLE-SCOUT-AVAILABLE == NO))
+	(up-research-status c: ri-scale-mail >= research-pending)
+	(or
+		(up-research-status c: ri-chain-mail >= research-pending)
+		(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+	(up-research-status c: ri-forging >= research-pending)
+	=>
+	(set-goal g-eagle-warrior-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(set-goal g-temp 0)
+	)
+		
+	(defrule
+	(current-age == imperial-age)
+	(goal g-eagle-warrior-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(up-research-status c: ri-iron-casting >= research-pending)
+		(up-compare-const IRON-CASTING-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-elite-eagle-warrior >= research-pending)
+		(up-compare-const ELITE-EAGLE-WARRIOR-AVAILABLE == NO))
+	(or
+		(research-completed ri-plate-mail)
+		(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-squires >= research-pending)
+		(up-compare-const SQUIRES-AVAILABLE == NO))
+	=>
+	(set-goal g-eagle-warrior-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-eagle-warrior-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-el-dorado)
+		(not
+			(civ-selected mayan)))
+	(or
+		(research-completed ri-blast-furnace)
+		(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+	=>
+	(set-goal g-eagle-warrior-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-eagle-warrior-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-garland-wars)
+		(not
+			(civ-selected aztec)))
+	(or
+		(research-completed ri-fabric-shields)
+		(not
+			(civ-selected incan)))
+	=>
+	(set-goal g-eagle-warrior-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == feudal-age)
+	(goal g-desired-num-eagle-warrior 0)
+	=>
+	(set-goal g-eagle-warrior-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == castle-age)
+	(goal g-desired-num-eagle-warrior 0)
+	=>
+	(set-goal g-eagle-warrior-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-desired-num-eagle-warrior 0)
+	=>
+	(set-goal g-eagle-warrior-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+;---------------------------------------
+;	GOAL: g-condottiero-tech-progress
+;---------------------------------------
+
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-condottiero-tech-progress < REQUIRED-CASTLE-COMPLETE)
+	=>
+	(set-goal g-condottiero-tech-progress REQUIRED-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-condottiero-tech-progress REQUIRED-CASTLE-COMPLETE)
+	(up-research-status c: ri-scale-mail >= research-pending)
+	=>
+	(set-goal g-condottiero-tech-progress PRIORITY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-condottiero-tech-progress PRIORITY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-chain-mail >= research-pending)
+		(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-squires >= research-pending)
+		(up-compare-const SQUIRES-AVAILABLE == NO))
+	=>
+	(set-goal g-condottiero-tech-progress SECONDARY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-condottiero-tech-progress SECONDARY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-iron-casting >= research-pending)
+		(up-compare-const IRON-CASTING-AVAILABLE == NO))
+	=>
+	(set-goal g-condottiero-tech-progress ALL-CASTLE-COMPLETE)
+	)
+		
+	(defrule
+	(current-age == imperial-age)
+	(up-compare-goal g-condottiero-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+	(up-research-status c: ri-scale-mail >= research-pending)
+	(or
+		(up-research-status c: ri-chain-mail >= research-pending)
+		(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+	(up-research-status c: ri-forging >= research-pending)
+	=>
+	(set-goal g-condottiero-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	)
+		
+	(defrule
+	(current-age == imperial-age)
+	(goal g-condottiero-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(up-research-status c: ri-iron-casting >= research-pending)
+		(up-compare-const IRON-CASTING-AVAILABLE == NO))
+	(or
+		(research-completed ri-plate-mail)
+		(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-squires >= research-pending)
+		(up-compare-const SQUIRES-AVAILABLE == NO))
+	=>
+	(set-goal g-condottiero-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-condottiero-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-blast-furnace)
+		(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+	(or
+		(research-completed ri-perfusion)
+		(not
+			(civ-selected gothic)))
+	=>
+	(set-goal g-condottiero-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	)
+
+	#load-if-not-defined AZTEC-CIV
+	#load-if-not-defined SLAVIC-CIV
+	#load-if-not-defined VIKING-CIV
+	#load-if-not-defined ITALIAN-CIV
+	#load-if-not-defined DRAVIDIANS-CIV
+	#load-if-not-defined GURJARAS-CIV
+	#load-if-not-defined ROMANS-CIV
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-condottiero-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		=>
+		(set-goal g-condottiero-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-condottiero-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-garland-wars)
+		(or
+			(research-completed ri-druzhina)
+			(or
+				(research-completed ri-chieftains)
+				(or
+					(research-completed ri-pavise)
+					(or
+						(research-completed ri-wootz-steel)
+						(or
+							(research-completed ri-kshatriyas)
+							(research-completed ri-comitatenses)))))))
+	=>
+	(set-goal g-condottiero-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == feudal-age)
+	(goal g-desired-num-condottiero 0)
+	=>
+	(set-goal g-condottiero-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == castle-age)
+	(goal g-desired-num-condottiero 0)
+	=>
+	(set-goal g-condottiero-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-desired-num-condottiero 0)
+	=>
+	(set-goal g-condottiero-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+;----------------------------------
+;	GOAL: g-archer-tech-progress
+;----------------------------------
+
+	(defrule
+	(current-age >= feudal-age)
+	=>
+	(set-goal g-archer-tech-progress PRIORITY-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= feudal-age)
+	(up-compare-goal g-archer-tech-progress < SECONDARY-FEUDAL-COMPLETE)
+	(up-research-status c: ri-fletching >= research-pending)
+	=>
+	(set-goal g-archer-tech-progress SECONDARY-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= feudal-age)
+	(goal g-archer-tech-progress SECONDARY-FEUDAL-COMPLETE)
+	(up-research-status c: ri-padded-archer-armor >= research-pending)
+	=>
+	(set-goal g-archer-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-archer-tech-progress < REQUIRED-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-crossbow >= research-pending)
+		(up-compare-const CROSSBOWMAN-AVAILABLE == NO))
+	=>
+	(set-goal g-archer-tech-progress REQUIRED-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-archer-tech-progress REQUIRED-CASTLE-COMPLETE)
+	(up-research-status c: ri-fletching >= research-pending)
+	=>
+	(set-goal g-archer-tech-progress PRIORITY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-archer-tech-progress PRIORITY-CASTLE-COMPLETE)
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(up-research-status c: ri-padded-archer-armor >= research-pending)
+	=>
+	(set-goal g-archer-tech-progress SECONDARY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-archer-tech-progress SECONDARY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-leather-archer-armor >= research-pending)
+		(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-thumb-ring >= research-pending)
+		(up-compare-const THUMB-RING-AVAILABLE == NO))
+	(up-research-status c: ri-ballistics >= research-pending)
+	=>
+	(set-goal g-archer-tech-progress ALL-CASTLE-COMPLETE)
+	)
+		
+	(defrule
+	(current-age == imperial-age)
+	(up-compare-goal g-archer-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+	(up-research-status c: ri-padded-archer-armor >= research-pending)
+	(or
+		(up-research-status c: ri-leather-archer-armor >= research-pending)
+		(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-crossbow >= research-pending)
+		(up-compare-const CROSSBOWMAN-AVAILABLE == NO))
+	(or
+		(research-completed ri-arbalest)
+		(up-compare-const ARBALEST-AVAILABLE == NO))
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	=>
+	(set-goal g-archer-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(set-goal g-temp 0)
+	)
+		
+	(defrule
+	(current-age == imperial-age)
+	(goal g-archer-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(up-research-status c: ri-thumb-ring >= research-pending)
+		(up-compare-const THUMB-RING-AVAILABLE == NO))
+	(up-research-status c: ri-ballistics >= research-pending)
+	(or
+		(research-completed ri-bracer)
+		(up-compare-const BRACER-AVAILABLE == NO))
+	=>
+	(set-goal g-archer-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-archer-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-ring-archer-armor)
+		(up-compare-const RING-ARCHER-ARMOR-AVAILABLE == NO))
+	(or
+		(research-completed ri-kamandaran)
+		(not
+			(civ-selected persian)))
+	=>
+	(set-goal g-archer-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	)
+		
+	#load-if-not-defined BRITON-CIV
+	#load-if-not-defined ITALIAN-CIV
+	#load-if-not-defined VIKING-CIV
+	#load-if-not-defined SHU-CIV
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-archer-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed ri-chemistry)
+		=>
+		(set-goal g-archer-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+	
+	(defrule
+	(current-age == imperial-age)
+	(goal g-archer-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	(research-completed ri-chemistry)
+	(or
+		(research-completed ri-yeomen)
+		(or
+			(research-completed ri-pavise)
+			(or
+				(research-completed ri-bogsveigar)
+				(research-completed ri-bolt-magazine))))
+	=>
+	(set-goal g-archer-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == feudal-age)
+	(goal g-desired-num-archer 0)
+	=>
+	(set-goal g-archer-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == castle-age)
+	(goal g-desired-num-archer 0)
+	=>
+	(set-goal g-archer-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-desired-num-archer 0)
+	=>
+	(set-goal g-archer-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+;--------------------------------------
+;	GOAL: g-skirmisher-tech-progress
+;--------------------------------------
+
+	(defrule
+	(current-age >= feudal-age)
+	=>
+	(set-goal g-skirmisher-tech-progress PRIORITY-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= feudal-age)
+	(up-compare-goal g-skirmisher-tech-progress < SECONDARY-FEUDAL-COMPLETE)
+	(up-research-status c: ri-fletching >= research-pending)
+	=>
+	(set-goal g-skirmisher-tech-progress SECONDARY-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= feudal-age)
+	(goal g-skirmisher-tech-progress SECONDARY-FEUDAL-COMPLETE)
+	(up-research-status c: ri-padded-archer-armor >= research-pending)
+	=>
+	(set-goal g-skirmisher-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-skirmisher-tech-progress < REQUIRED-CASTLE-COMPLETE)
+	(or
+		(up-compare-goal g-enemy-foot-archers-count > 10)
+		(or
+			(up-compare-goal g-enemy-cavalry-archers-count > 10)
+			(or
+				(up-compare-goal g-enemy-hand-cannoneers-count > 10)
+				(or
+					(up-research-status c: ri-elite-skirmisher >= research-pending)
+					(up-compare-const ELITE-SKIRMISHER-AVAILABLE == NO)))))
+	=>
+	(set-goal g-skirmisher-tech-progress REQUIRED-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-skirmisher-tech-progress REQUIRED-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-elite-skirmisher >= research-pending)
+		(up-compare-const ELITE-SKIRMISHER-AVAILABLE == NO))
+	(up-research-status c: ri-fletching >= research-pending)
+	=>
+	(set-goal g-skirmisher-tech-progress PRIORITY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-skirmisher-tech-progress PRIORITY-CASTLE-COMPLETE)
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(up-research-status c: ri-padded-archer-armor >= research-pending)
+	(or
+		(up-research-status c: ri-leather-archer-armor >= research-pending)
+		(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+	=>
+	(set-goal g-skirmisher-tech-progress SECONDARY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-skirmisher-tech-progress SECONDARY-CASTLE-COMPLETE)
+	(up-research-status c: ri-ballistics >= research-pending)
+	=>
+	(set-goal g-skirmisher-tech-progress ALL-CASTLE-COMPLETE)
+	)
+		
+	(defrule
+	(current-age == imperial-age)
+	(up-compare-goal g-skirmisher-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(up-research-status c: ri-elite-skirmisher >= research-pending)
+		(up-compare-const ELITE-SKIRMISHER-AVAILABLE == NO))
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(up-research-status c: ri-padded-archer-armor >= research-pending)
+	=>
+	(set-goal g-skirmisher-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(set-goal g-temp 0)
+	)
+		
+	(defrule
+	(current-age == imperial-age)
+	(goal g-skirmisher-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(up-research-status c: ri-leather-archer-armor >= research-pending)
+		(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+	(up-research-status c: ri-ballistics >= research-pending)
+	(or
+		(research-completed ri-imperial-skirmisher)
+		(up-research-status c: ri-imperial-skirmisher == research-unavailable))
+	(or
+		(research-completed ri-bracer)
+		(up-compare-const BRACER-AVAILABLE == NO))
+	(or
+		(research-completed ri-ring-archer-armor)
+		(up-compare-const RING-ARCHER-ARMOR-AVAILABLE == NO))
+	=>
+	(set-goal g-skirmisher-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	)
+		
+	#load-if-not-defined AZTEC-CIV
+	#load-if-not-defined BRITON-CIV
+	#load-if-not-defined MAYAN-CIV
+	#load-if-not-defined INCAN-CIV
+	#load-if-not-defined LITHUANIANS-CIV
+	#load-if-not-defined GURJARAS-CIV
+	#load-if-not-defined KHITANS-CIV
+		
+		(defrule
+		(current-age == imperial-age)
+		(goal g-skirmisher-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed ri-chemistry)
+		=>
+		(set-goal g-skirmisher-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-skirmisher-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	(research-completed ri-chemistry)
+	(or
+		(research-completed ri-atlatl)
+		(or
+			(research-completed ri-yeomen)
+			(or
+				(research-completed ri-tower-shields)
+				(or
+					(research-completed ri-kshatriyas)
+					(or
+						(research-completed ri-hulche-javelineers)
+						(or
+							(research-completed ri-andean-sling)
+							(research-completed ri-lamellar-armor)))))))
+	=>
+	(set-goal g-skirmisher-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == feudal-age)
+	(goal g-desired-num-skirmisher 0)
+	=>
+	(set-goal g-skirmisher-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == castle-age)
+	(goal g-desired-num-skirmisher 0)
+	=>
+	(set-goal g-skirmisher-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-desired-num-skirmisher 0)
+	=>
+	(set-goal g-skirmisher-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+;------------------------------------------
+;	GOAL: g-cavalry-archer-tech-progress
+;------------------------------------------
+
+	(defrule
+	(current-age >= castle-age)
+	=>
+	(set-goal g-cavalry-archer-tech-progress REQUIRED-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-cavalry-archer-tech-progress < PRIORITY-CASTLE-COMPLETE)
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	=>
+	(set-goal g-cavalry-archer-tech-progress PRIORITY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-cavalry-archer-tech-progress PRIORITY-CASTLE-COMPLETE)
+	(up-research-status c: ri-padded-archer-armor >= research-pending)
+	(or
+		(up-research-status c: ri-thumb-ring >= research-pending)
+		(up-compare-const THUMB-RING-AVAILABLE == NO))
+	=>
+	(set-goal g-cavalry-archer-tech-progress SECONDARY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-cavalry-archer-tech-progress SECONDARY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-bloodlines >= research-pending)
+		(up-compare-const BLOODLINES-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-leather-archer-armor >= research-pending)
+		(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+	(up-research-status c: ri-ballistics >= research-pending)
+	=>
+	(set-goal g-cavalry-archer-tech-progress ALL-CASTLE-COMPLETE)
+	)
+		
+	(defrule
+	(current-age == imperial-age)
+	(up-compare-goal g-cavalry-archer-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(up-research-status c: ri-padded-archer-armor >= research-pending)
+	=>
+	(set-goal g-cavalry-archer-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	)
+		
+	(defrule
+	(current-age == imperial-age)
+	(goal g-cavalry-archer-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(up-research-status c: ri-thumb-ring >= research-pending)
+		(up-compare-const THUMB-RING-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-bloodlines >= research-pending)
+		(up-compare-const BLOODLINES-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-leather-archer-armor >= research-pending)
+		(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+	(up-research-status c: ri-ballistics >= research-pending)
+	(or
+		(research-completed ri-bracer)
+		(up-compare-const BRACER-AVAILABLE == NO))
+	=>
+	(set-goal g-cavalry-archer-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-cavalry-archer-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-heavy-cavalry-archer)
+		(up-compare-const HEAVY-CAVALRY-ARCHER-AVAILABLE == NO))
+	(or
+		(research-completed ri-ring-archer-armor)
+		(up-compare-const RING-ARCHER-ARMOR-AVAILABLE == NO))
+	(or
+		(not
+			(civ-selected cumans))
+		(research-completed ri-steppe-husbandry))
+	=>
+	(set-goal g-cavalry-archer-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	)
+
+	#load-if-not-defined MAGYAR-CIV
+	#load-if-not-defined TATARS-CIV
+	#load-if-not-defined TURKISH-CIV
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-cavalry-archer-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed ri-chemistry)
+		(or
+			(research-completed ri-parthian-tactics)
+			(up-compare-const PARTHIAN-TACTICS-AVAILABLE == NO))
+		=>
+		(set-goal g-cavalry-archer-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+	#end-if
+	#end-if
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-cavalry-archer-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	(research-completed ri-chemistry)
+	(or
+		(research-completed ri-parthian-tactics)
+		(up-compare-const PARTHIAN-TACTICS-AVAILABLE == NO))
+	(or
+		(research-completed ri-recurve-bow)
+		(or
+			(research-completed ri-silk-armor)
+			(research-completed ri-sipahi)))
+	=>
+	(set-goal g-cavalry-archer-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == feudal-age)
+	(goal g-desired-num-cavalry-archer 0)
+	=>
+	(set-goal g-cavalry-archer-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == castle-age)
+	(goal g-desired-num-cavalry-archer 0)
+	=>
+	(set-goal g-cavalry-archer-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-desired-num-cavalry-archer 0)
+	=>
+	(set-goal g-cavalry-archer-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+;-------------------------------------------
+;	GOAL: g-elephant-archer-tech-progress
+;-------------------------------------------
+
+	;Required Castle Age Techs
+	(defrule
+	(current-age >= castle-age)
+	=>
+	(set-goal g-elephant-archer-tech-progress REQUIRED-CASTLE-COMPLETE)
+	)
+		
+	;Priority Castle Age Techs
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-elephant-archer-tech-progress < PRIORITY-CASTLE-COMPLETE)
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	=>
+	(set-goal g-elephant-archer-tech-progress PRIORITY-CASTLE-COMPLETE)
+	)
+	
+	;Secondary Castle Age Techs
+	(defrule
+	(current-age >= castle-age)
+	(goal g-elephant-archer-tech-progress PRIORITY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-thumb-ring >= research-pending)
+		(up-compare-const THUMB-RING-AVAILABLE == NO))
+	(up-research-status c: ri-padded-archer-armor >= research-pending)
+	=>
+	(set-goal g-elephant-archer-tech-progress SECONDARY-CASTLE-COMPLETE)
+	)
+	
+	;All Castle Age Techs
+	(defrule
+	(current-age >= castle-age)
+	(goal g-elephant-archer-tech-progress SECONDARY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-bloodlines >= research-pending)
+		(up-compare-const BLOODLINES-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-leather-archer-armor >= research-pending)
+		(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+	(up-research-status c: ri-ballistics >= research-pending)
+	=>
+	(set-goal g-elephant-archer-tech-progress ALL-CASTLE-COMPLETE)
+	)
+	
+	;Required Imperial Age Techs
+	(defrule
+	(current-age == imperial-age)
+	(research-completed ri-bodkin-arrow)
+	(research-completed ri-padded-archer-armor)
+	=>
+	(set-goal g-elephant-archer-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	)
+
+	;Priority Imperial Age Techs
+	(defrule
+	(current-age == imperial-age)
+	(goal g-elephant-archer-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(up-research-status c: ri-thumb-ring >= research-pending)
+		(up-compare-const THUMB-RING-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-bloodlines >= research-pending)
+		(up-compare-const BLOODLINES-AVAILABLE == NO))
+	(research-completed ri-ballistics)
+	(or
+		(research-completed ri-bracer)
+		(up-compare-const BRACER-AVAILABLE == NO))
+	=>
+	(set-goal g-elephant-archer-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	)
+	
+	;Secondary Imperial Age Techs
+	(defrule
+	(current-age == imperial-age)
+	(goal g-elephant-archer-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-elite-elephant-archer)
+		(up-compare-const ELITE-ELEPHANT-ARCHER-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-leather-archer-armor >= research-pending)
+		(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+	(or
+		(research-completed ri-ring-archer-armor)
+		(up-compare-const RING-ARCHER-ARMOR-AVAILABLE == NO))
+	(or
+		(not
+			(civ-selected bengalis))
+		(research-completed ri-paiks))
+	=>
+	(set-goal g-elephant-archer-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	)
+	
+	;All Imperial Age Techs
+	(defrule
+	(current-age == imperial-age)
+	(goal g-elephant-archer-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-parthian-tactics)
+		(up-compare-const PARTHIAN-TACTICS-AVAILABLE == NO))
+	(research-completed ri-chemistry)
+	(or
+		(not
+			(civ-selected dravidians))
+		(research-completed ri-medical-corps))
+	(or
+		(not
+			(civ-selected gurjaras))
+		(research-completed ri-kshatriyas))
+	=>
+	(set-goal g-elephant-archer-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == feudal-age)
+	(goal g-desired-num-elephant-archer 0)
+	=>
+	(set-goal g-elephant-archer-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == castle-age)
+	(goal g-desired-num-elephant-archer 0)
+	=>
+	(set-goal g-elephant-archer-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-desired-num-elephant-archer 0)
+	=>
+	(set-goal g-elephant-archer-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+;------------------------------------------
+;	GOAL: g-hand-cannoneer-tech-progress
+;------------------------------------------
+
+	(defrule
+	(current-age >= castle-age)
+	=>
+	(set-goal g-hand-cannoneer-tech-progress PRIORITY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-hand-cannoneer-tech-progress < SECONDARY-CASTLE-COMPLETE)
+	(up-research-status c: ri-padded-archer-armor >= research-pending)
+	=>
+	(set-goal g-hand-cannoneer-tech-progress SECONDARY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-hand-cannoneer-tech-progress SECONDARY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-leather-archer-armor >= research-pending)
+		(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+	=>
+	(set-goal g-hand-cannoneer-tech-progress ALL-CASTLE-COMPLETE)
+	)
+		
+	(defrule
+	(current-age == imperial-age)
+	(up-compare-goal g-hand-cannoneer-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+	(research-completed ri-chemistry)
+	(up-research-status c: ri-padded-archer-armor >= research-pending)
+	=>
+	(set-goal g-hand-cannoneer-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	)
+		
+	(defrule
+	(current-age == imperial-age)
+	(goal g-hand-cannoneer-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(up-research-status c: ri-leather-archer-armor >= research-pending)
+		(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+	=>
+	(set-goal g-hand-cannoneer-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	)
+		
+	(defrule
+	(current-age == imperial-age)
+	(goal g-hand-cannoneer-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-ring-archer-armor)
+		(up-compare-const RING-ARCHER-ARMOR-AVAILABLE == NO))
+	=>
+	(set-goal g-hand-cannoneer-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	)
+
+	#load-if-not-defined INDIAN-CIV
+	#load-if-not-defined PORTUGUESE-CIV
+	#load-if-not-defined BOHEMIANS-CIV
+	#load-if-not-defined GURJARAS-CIV
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-hand-cannoneer-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		=>
+		(set-goal g-hand-cannoneer-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-hand-cannoneer-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-shatagni)
+		(or
+			(research-completed ri-arquebus)
+			(or
+				(research-completed ri-wagenburg-tactics)
+				(research-completed ri-kshatriyas))))
+	=>
+	(set-goal g-hand-cannoneer-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == feudal-age)
+	(goal g-desired-num-hand-cannoneer 0)
+	=>
+	(set-goal g-hand-cannoneer-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == castle-age)
+	(goal g-desired-num-hand-cannoneer 0)
+	=>
+	(set-goal g-hand-cannoneer-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-desired-num-hand-cannoneer 0)
+	=>
+	(set-goal g-hand-cannoneer-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+;------------------------------------
+;	GOAL: g-genitour-tech-progress
+;------------------------------------
+
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-genitour-tech-progress < REQUIRED-CASTLE-COMPLETE)
+	=>
+	(set-goal g-genitour-tech-progress REQUIRED-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-genitour-tech-progress < PRIORITY-CASTLE-COMPLETE)
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	=>
+	(set-goal g-genitour-tech-progress PRIORITY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-genitour-tech-progress PRIORITY-CASTLE-COMPLETE)
+	(up-research-status c: ri-padded-archer-armor >= research-pending)
+	(or
+		(up-research-status c: ri-leather-archer-armor >= research-pending)
+		(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+	=>
+	(set-goal g-genitour-tech-progress SECONDARY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-genitour-tech-progress SECONDARY-CASTLE-COMPLETE)
+	(up-research-status c: ri-ballistics >= research-pending)
+	(or
+		(up-research-status c: ri-bloodlines >= research-pending)
+		(up-compare-const BLOODLINES-AVAILABLE == NO))
+	=>
+	(set-goal g-genitour-tech-progress ALL-CASTLE-COMPLETE)
+	)
+		
+	(defrule
+	(current-age == imperial-age)
+	(up-compare-goal g-genitour-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+	(up-research-status c: ri-bodkin-arrow >= research-pending)
+	(up-research-status c: ri-padded-archer-armor >= research-pending)
+	=>
+	(set-goal g-genitour-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	)
+		
+	(defrule
+	(current-age == imperial-age)
+	(goal g-genitour-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(up-research-status c: ri-leather-archer-armor >= research-pending)
+		(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+	(up-research-status c: ri-ballistics >= research-pending)
+	(or
+		(up-research-status c: ri-bloodlines >= research-pending)
+		(up-compare-const BLOODLINES-AVAILABLE == NO))
+	=>
+	(set-goal g-temp 66532)
+	)
+		
+	(defrule
+	(goal g-temp 66532)
+	(current-age == imperial-age)
+	(goal g-genitour-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-elite-genitour)
+		(up-research-status c: ri-elite-genitour == research-unavailable))
+	(or
+		(research-completed ri-bracer)
+		(up-compare-const BRACER-AVAILABLE == NO))
+	(or
+		(research-completed ri-ring-archer-armor)
+		(up-compare-const RING-ARCHER-ARMOR-AVAILABLE == NO))
+	=>
+	(set-goal g-genitour-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	)
+	
+	(defrule
+	(current-age == imperial-age)
+	(goal g-genitour-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	(research-completed ri-chemistry)
+	(or
+		(not
+			(civ-selected gurjaras))
+		(research-completed ri-kshatriyas))
+	=>
+	(set-goal g-genitour-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == feudal-age)
+	(goal g-desired-num-genitour 0)
+	=>
+	(set-goal g-genitour-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == castle-age)
+	(goal g-desired-num-genitour 0)
+	=>
+	(set-goal g-genitour-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-desired-num-genitour 0)
+	=>
+	(set-goal g-genitour-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+;-----------------------------------------
+;	GOAL: g-scout-cavalry-tech-progress
+;-----------------------------------------
+
+	(defrule
+	(current-age >= feudal-age)
+	=>
+	(set-goal g-scout-cavalry-tech-progress PRIORITY-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= feudal-age)
+	(up-compare-goal g-scout-cavalry-tech-progress < SECONDARY-FEUDAL-COMPLETE)
+	(or
+		(up-research-status c: ri-bloodlines >= research-pending)
+		(up-compare-const BLOODLINES-AVAILABLE == NO))
+	=>
+	(set-goal g-scout-cavalry-tech-progress SECONDARY-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= feudal-age)
+	(goal g-scout-cavalry-tech-progress SECONDARY-FEUDAL-COMPLETE)
+	(or
+		(up-research-status c: ri-scale-barding >= research-pending)
+		(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+	=>
+	(set-goal g-scout-cavalry-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-scout-cavalry-tech-progress < REQUIRED-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-light-cavalry >= research-pending)
+		(up-compare-const LIGHT-CAVALRY-AVAILABLE == NO))
+	=>
+	(set-goal g-scout-cavalry-tech-progress REQUIRED-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-scout-cavalry-tech-progress REQUIRED-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-scale-barding >= research-pending)
+		(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-bloodlines >= research-pending)
+		(up-compare-const BLOODLINES-AVAILABLE == NO))
+	=>
+	(set-goal g-scout-cavalry-tech-progress PRIORITY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-scout-cavalry-tech-progress PRIORITY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-chain-barding >= research-pending)
+		(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+	(up-research-status c: ri-forging >= research-pending)
+	(or
+		(up-research-status c: ri-husbandry >= research-pending)
+		(up-compare-const HUSBANDRY-AVAILABLE == NO))
+	=>
+	(set-goal g-scout-cavalry-tech-progress SECONDARY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-scout-cavalry-tech-progress SECONDARY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-iron-casting >= research-pending)
+		(up-compare-const IRON-CASTING-AVAILABLE == NO))
+	=>
+	(set-goal g-scout-cavalry-tech-progress ALL-CASTLE-COMPLETE)
+	)
+			
+	(defrule
+	(current-age == imperial-age)
+	(up-compare-goal g-scout-cavalry-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(up-research-status c: ri-light-cavalry >= research-pending)
+		(up-compare-const LIGHT-CAVALRY-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-scale-barding >= research-pending)
+		(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-bloodlines >= research-pending)
+		(up-compare-const BLOODLINES-AVAILABLE == NO))
+	=>
+	(set-goal g-scout-cavalry-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(set-goal g-temp 0)
+	)
+
+	#load-if-defined FRANKISH-CIV
+			
+		(defrule
+		(current-age == imperial-age)
+		(goal g-scout-cavalry-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-iron-casting)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(or
+			(research-completed ri-plate-barding)
+			(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-chivalry >= research-pending)
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-scout-cavalry-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+	#else
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-scout-cavalry-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-chain-barding)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(research-completed ri-iron-casting)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		(or
+			(research-completed ri-hussar)
+			(up-compare-const HUSSAR-AVAILABLE == NO))
+		(or
+			(research-completed ri-plate-barding)
+			(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-scout-cavalry-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-not-defined BULGARIANS-CIV
+	#load-if-not-defined CUMANS-CIV
+	#load-if-not-defined POLES-CIV
+	#load-if-not-defined GURJARAS-CIV
+	
+		(defrule
+		(current-age == imperial-age)
+		(goal g-scout-cavalry-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-scout-cavalry-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+	
+	(defrule
+	(current-age == imperial-age)
+	(goal g-scout-cavalry-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-blast-furnace)
+		(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+	(or
+		(research-completed ri-stirrups)
+		(or
+			(research-completed ri-steppe-husbandry)
+			(or
+				(research-completed ri-lechitic-legacy)
+				(research-completed ri-kshatriyas))))
+	=>
+	(set-goal g-scout-cavalry-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	)
+		
+	#load-if-not-defined BURMESE-CIV
+	#load-if-not-defined MALIAN-CIV
+	#load-if-not-defined TATARS-CIV
+	#load-if-not-defined DRAVIDIANS-CIV
+	#load-if-not-defined WEI-CIV
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-scout-cavalry-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		=>
+		(set-goal g-scout-cavalry-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+	#end-if
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-scout-cavalry-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-manipur-cavalry)
+		(or
+			(research-completed ri-farimba)
+			(or
+				(research-completed ri-silk-armor)
+				(or
+					(research-completed ri-wootz-steel)
+					(research-completed ri-ming-guang-armor)))))
+	=>
+	(set-goal g-scout-cavalry-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == feudal-age)
+	(goal g-desired-num-scout-cavalry 0)
+	=>
+	(set-goal g-scout-cavalry-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == castle-age)
+	(goal g-desired-num-scout-cavalry 0)
+	=>
+	(set-goal g-scout-cavalry-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-desired-num-scout-cavalry 0)
+	=>
+	(set-goal g-scout-cavalry-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+;----------------------------------
+;	GOAL: g-knight-tech-progress
+;----------------------------------
+
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-knight-tech-progress < REQUIRED-CASTLE-COMPLETE)
+	=>
+	(set-goal g-knight-tech-progress REQUIRED-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-knight-tech-progress REQUIRED-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-scale-barding >= research-pending)
+		(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+	=>
+	(set-goal g-knight-tech-progress PRIORITY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-knight-tech-progress PRIORITY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-chain-barding >= research-pending)
+		(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-bloodlines >= research-pending)
+		(up-compare-const BLOODLINES-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-husbandry >= research-pending)
+		(up-compare-const HUSBANDRY-AVAILABLE == NO))
+	=>
+	(set-goal g-knight-tech-progress SECONDARY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-knight-tech-progress SECONDARY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-iron-casting >= research-pending)
+		(up-compare-const IRON-CASTING-AVAILABLE == NO))
+	=>
+	(set-goal g-knight-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(up-compare-goal g-knight-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(up-research-status c: ri-cavalier >= research-pending)
+		(up-compare-const CAVALIER-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-scale-barding >= research-pending)
+		(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-chain-barding >= research-pending)
+		(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+	(up-research-status c: ri-forging >= research-pending)
+	=>
+	(set-goal g-knight-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	)
+
+	#load-if-not-defined POLES-CIV
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-knight-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(or
+			(research-completed ri-plate-barding)
+			(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-knight-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+	#else
+	
+		(defrule
+		(current-age == imperial-age)
+		(goal g-knight-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(or
+			(research-completed ri-plate-barding)
+			(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-szlachta-privileges >= research-pending)
+		=>
+		(set-goal g-knight-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+		
+	#load-if-not-defined BULGARIANS-CIV
+	#load-if-not-defined FRANKISH-CIV
+	#load-if-not-defined SICILIANS-CIV
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-knight-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-knight-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+	#end-if
+	#end-if
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-knight-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-blast-furnace)
+		(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+	(or
+		(research-completed ri-stirrups)
+		(or
+			(research-completed ri-chivalry)
+			(research-completed ri-hauberk)))
+	=>
+	(set-goal g-knight-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-knight-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	(or
+		(not
+			(civ-selected burmese))
+		(research-completed ri-manipur-cavalry))
+	(or
+		(not
+			(civ-selected malian))
+		(research-completed ri-farimba))	
+	=>
+	(set-goal g-knight-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == feudal-age)
+	(goal g-desired-num-knight 0)
+	=>
+	(set-goal g-knight-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == castle-age)
+	(goal g-desired-num-knight 0)
+	=>
+	(set-goal g-knight-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-desired-num-knight 0)
+	=>
+	(set-goal g-knight-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+;---------------------------------
+;	GOAL: g-camel-tech-progress
+;---------------------------------
+
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-camel-tech-progress < REQUIRED-CASTLE-COMPLETE)
+	=>
+	(set-goal g-camel-tech-progress REQUIRED-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-camel-tech-progress REQUIRED-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-scale-barding >= research-pending)
+		(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+	=>
+	(set-goal g-camel-tech-progress PRIORITY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-camel-tech-progress PRIORITY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-chain-barding >= research-pending)
+		(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-bloodlines >= research-pending)
+		(up-compare-const BLOODLINES-AVAILABLE == NO))
+	(up-research-status c: ri-forging >= research-pending)
+	(or
+		(up-research-status c: ri-husbandry >= research-pending)
+		(up-compare-const HUSBANDRY-AVAILABLE == NO))
+	=>
+	(set-goal g-camel-tech-progress SECONDARY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-camel-tech-progress SECONDARY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-iron-casting >= research-pending)
+		(up-compare-const IRON-CASTING-AVAILABLE == NO))
+	=>
+	(set-goal g-camel-tech-progress ALL-CASTLE-COMPLETE)
+	)
+		
+	(defrule
+	(current-age == imperial-age)
+	(up-compare-goal g-camel-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-heavy-camel)
+		(up-compare-const HEAVY-CAMEL-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-scale-barding >= research-pending)
+		(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-chain-barding >= research-pending)
+		(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+	=>
+	(set-goal g-camel-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	)
+		
+	(defrule
+	(current-age == imperial-age)
+	(goal g-camel-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(up-research-status c: ri-bloodlines >= research-pending)
+		(up-compare-const BLOODLINES-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-husbandry >= research-pending)
+		(up-compare-const HUSBANDRY-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-iron-casting >= research-pending)
+		(up-compare-const IRON-CASTING-AVAILABLE == NO))
+	(or
+		(research-completed ri-plate-barding)
+		(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+	=>
+	(set-goal g-camel-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	)
+		
+	(defrule
+	(current-age == imperial-age)
+	(goal g-camel-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-blast-furnace)
+		(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+	(or
+		(not
+			(civ-selected indian))
+		(research-completed ri-imperial-camel))
+	=>
+	(set-goal g-camel-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	)
+
+	#load-if-not-defined BERBERS-CIV
+	#load-if-not-defined GURJARAS-CIV
+		
+		(defrule
+		(current-age == imperial-age)
+		(goal g-camel-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		=>
+		(set-goal g-camel-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+	
+	#end-if
+	#end-if
+		
+	(defrule
+	(current-age == imperial-age)
+	(goal g-camel-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-maghrabi-camels)
+		(research-completed ri-kshatriyas))
+	=>
+	(set-goal g-camel-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == feudal-age)
+	(goal g-desired-num-camel 0)
+	=>
+	(set-goal g-camel-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == castle-age)
+	(goal g-desired-num-camel 0)
+	=>
+	(set-goal g-camel-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-desired-num-camel 0)
+	=>
+	(set-goal g-camel-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+;-------------------------------------------
+;	GOAL: g-battle-elephant-tech-progress
+;-------------------------------------------
+
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-battle-elephant-tech-progress < REQUIRED-CASTLE-COMPLETE)
+	=>
+	(set-goal g-battle-elephant-tech-progress REQUIRED-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-battle-elephant-tech-progress REQUIRED-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-scale-barding >= research-pending)
+		(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-husbandry >= research-pending)
+		(up-compare-const HUSBANDRY-AVAILABLE == NO))
+	=>
+	(set-goal g-battle-elephant-tech-progress PRIORITY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-battle-elephant-tech-progress PRIORITY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-chain-barding >= research-pending)
+		(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+	=>
+	(set-goal g-battle-elephant-tech-progress SECONDARY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-battle-elephant-tech-progress SECONDARY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-iron-casting >= research-pending)
+		(up-compare-const IRON-CASTING-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-bloodlines >= research-pending)
+		(up-compare-const BLOODLINES-AVAILABLE == NO))
+	=>
+	(set-goal g-battle-elephant-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(up-compare-goal g-battle-elephant-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(up-research-status c: ri-scale-barding >= research-pending)
+		(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+	(research-completed ri-forging)
+	(or
+		(up-research-status c: ri-husbandry >= research-pending)
+		(up-compare-const HUSBANDRY-AVAILABLE == NO))
+	=>
+	(set-goal g-battle-elephant-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-battle-elephant-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(up-research-status c: ri-chain-barding >= research-pending)
+		(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+	(or
+		(research-completed ri-plate-barding)
+		(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-iron-casting >= research-pending)
+		(up-compare-const IRON-CASTING-AVAILABLE == NO))
+	=>
+	(set-goal g-battle-elephant-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-battle-elephant-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-elite-battle-elephant)
+		(up-compare-const ELITE-BATTLE-ELEPHANT-AVAILABLE == NO))
+	(or
+		(research-completed ri-blast-furnace)
+		(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-bloodlines >= research-pending)
+		(up-compare-const BLOODLINES-AVAILABLE == NO))
+	(or
+		(not
+			(civ-selected khmer))
+		(research-completed ri-tusk-swords))
+	=>
+	(set-goal g-battle-elephant-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	)
+		
+	#load-if-not-defined BURMESE-CIV
+	#load-if-not-defined VIETNAMESE-CIV
+	#load-if-not-defined DRAVIDIANS-CIV
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-battle-elephant-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		=>
+		(set-goal g-battle-elephant-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+	#end-if
+	#end-if
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-battle-elephant-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	(or
+		(and
+			(research-completed ri-manipur-cavalry)
+			(research-completed ri-howdah))
+		(or
+			(research-completed ri-chatras)
+			(and
+				(research-completed ri-medical-corps)
+				(research-completed ri-wootz-steel))))
+	=>
+	(set-goal g-battle-elephant-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == feudal-age)
+	(goal g-desired-num-battle-elephant 0)
+	=>
+	(set-goal g-battle-elephant-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == castle-age)
+	(goal g-desired-num-battle-elephant 0)
+	=>
+	(set-goal g-battle-elephant-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-desired-num-battle-elephant 0)
+	=>
+	(set-goal g-battle-elephant-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+;-----------------------------------------
+;	GOAL: g-steppe-lancer-tech-progress
+;-----------------------------------------
+
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-steppe-lancer-tech-progress < REQUIRED-CASTLE-COMPLETE)
+	=>
+	(set-goal g-steppe-lancer-tech-progress REQUIRED-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-steppe-lancer-tech-progress REQUIRED-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-scale-barding >= research-pending)
+		(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+	=>
+	(set-goal g-steppe-lancer-tech-progress PRIORITY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-steppe-lancer-tech-progress PRIORITY-CASTLE-COMPLETE)
+	(up-research-status c: ri-forging >= research-pending)
+	(or
+		(up-research-status c: ri-bloodlines >= research-pending)
+		(up-compare-const BLOODLINES-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-husbandry >= research-pending)
+		(up-compare-const HUSBANDRY-AVAILABLE == NO))
+	=>
+	(set-goal g-steppe-lancer-tech-progress SECONDARY-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(goal g-steppe-lancer-tech-progress SECONDARY-CASTLE-COMPLETE)
+	(or
+		(up-research-status c: ri-chain-barding >= research-pending)
+		(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-iron-casting >= research-pending)
+		(up-compare-const IRON-CASTING-AVAILABLE == NO))
+	=>
+	(set-goal g-steppe-lancer-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(up-compare-goal g-steppe-lancer-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(up-research-status c: ri-scale-barding >= research-pending)
+		(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-iron-casting >= research-pending)
+		(up-compare-const IRON-CASTING-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-chain-barding >= research-pending)
+		(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+	=>
+	(set-goal g-steppe-lancer-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-steppe-lancer-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(or
+		(up-research-status c: ri-bloodlines >= research-pending)
+		(up-compare-const BLOODLINES-AVAILABLE == NO))
+	(or
+		(up-research-status c: ri-husbandry >= research-pending)
+		(up-compare-const HUSBANDRY-AVAILABLE == NO))
+	(or
+		(research-completed ri-plate-barding)
+		(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+	(or
+		(research-completed ri-blast-furnace)
+		(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+	=>
+	(set-goal g-steppe-lancer-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-steppe-lancer-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	(or
+		(research-completed ri-elite-steppe-lancer)
+		(up-compare-const ELITE-STEPPE-LANCER-AVAILABLE == NO))
+	(or
+		(not
+			(civ-selected cumans))
+		(research-completed ri-steppe-husbandry))
+	=>
+	(set-goal g-steppe-lancer-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-steppe-lancer-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	(or
+		(not
+			(civ-selected tatars))
+		(research-completed ri-silk-armor))
+	=>
+	(set-goal g-steppe-lancer-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == feudal-age)
+	(goal g-desired-num-steppe-lancer 0)
+	=>
+	(set-goal g-steppe-lancer-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == castle-age)
+	(goal g-desired-num-steppe-lancer 0)
+	=>
+	(set-goal g-steppe-lancer-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-desired-num-steppe-lancer 0)
+	=>
+	(set-goal g-steppe-lancer-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+;---------------------------------------
+;	GOAL: g-unique-unit-tech-progress
+;---------------------------------------
+
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-unique-unit-tech-progress < REQUIRED-CASTLE-COMPLETE)
+	=>
+	(set-goal g-unique-unit-tech-progress REQUIRED-CASTLE-COMPLETE)
+	)
+
+	#load-if-defined AZTEC-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required/Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+		
+		;All Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed ri-garland-wars)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined BENGALIS-CIV
+
+		(defrule
+		(current-age >= castle-age)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-bodkin-arrow >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(up-research-status c: ri-ballistics >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+			
+		(defrule
+		(current-age == imperial-age)
+		(up-compare-goal g-unique-unit-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+		(up-research-status c: ri-bodkin-arrow >= research-pending)
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+			
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-ballistics >= research-pending)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(or
+			(research-completed ri-bracer)
+			(up-compare-const BRACER-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+			
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(research-completed ri-ring-archer-armor)
+			(up-compare-const RING-ARCHER-ARMOR-AVAILABLE == NO))
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+					
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed ri-chemistry)
+		(or
+			(research-completed ri-parthian-tactics)
+			(up-compare-const PARTHIAN-TACTICS-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined BERBERS-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-bodkin-arrow >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-thumb-ring >= research-pending)
+			(up-compare-const THUMB-RING-AVAILABLE == NO))
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-ballistics >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(research-completed ri-bodkin-arrow)
+		(research-completed ri-padded-archer-armor)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		;Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-thumb-ring >= research-pending)
+			(up-compare-const THUMB-RING-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(research-completed ri-ballistics)
+		(or
+			(research-completed ri-bracer)
+			(up-compare-const BRACER-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+		
+		;Secondary Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(research-completed ri-ring-archer-armor)
+			(up-compare-const RING-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+		
+		;All Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-parthian-tactics)
+			(up-compare-const PARTHIAN-TACTICS-AVAILABLE == NO))
+		(research-completed ri-kasbah)
+		(research-completed ri-maghrabi-camels)
+		(research-completed ri-chemistry)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined BOHEMIANS-CIV
+		
+		;Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < ALL-CASTLE-COMPLETE)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(research-completed ri-siege-engineers)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+		
+		;All Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(research-completed my-unique-unit-upgrade)
+		(research-completed ri-wagenburg-tactics)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined BRITON-CIV
+		
+		;Required/Priority Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-bodkin-arrow >= research-pending)
+		(or
+			(up-research-status c: ri-thumb-ring >= research-pending)
+			(up-compare-const THUMB-RING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-ballistics >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required/Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(up-research-status c: ri-bodkin-arrow >= research-pending)
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		;Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(research-completed ri-ballistics)
+		(or
+			(up-research-status c: ri-thumb-ring >= research-pending)
+			(up-compare-const THUMB-RING-AVAILABLE == NO))
+		(or
+			(research-completed ri-bracer)
+			(up-compare-const BRACER-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+		
+		;Secondary Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-ring-archer-armor)
+			(up-compare-const RING-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+		
+		;All Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed ri-yeomen)
+		(research-completed ri-chemistry)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined BULGARIANS-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-scale-barding >= research-pending)
+			(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(research-completed ri-forging)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-plate-barding)
+			(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+		(research-completed ri-stirrups)
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+		
+		;Secondary Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+		
+		;All Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined BURGUNDIANS-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		(or
+			(research-completed ri-iron-casting)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(or
+			(research-completed ri-plate-barding)
+			(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(research-completed my-unique-unit-upgrade)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined BURMESE-CIV
+		
+		;Required/Priority Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < SECONDARY-CASTLE-COMPLETE)
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(up-research-status c: ri-ballistics >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(up-compare-goal g-unique-unit-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+		(research-completed ri-padded-archer-armor)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(research-completed ri-ballistics)
+		(or
+			(research-completed ri-parthian-tactics)
+			(up-compare-const PARTHIAN-TACTICS-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+		
+		;Secondary Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(research-completed my-unique-unit-upgrade)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined BYZANTINE-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(research-completed ri-forging)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-iron-casting)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(or
+			(research-completed ri-plate-barding)
+			(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+		
+		;All Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(research-completed ri-logistica)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined CELTIC-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-iron-casting)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined CHINESE-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-bodkin-arrow >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-thumb-ring >= research-pending)
+			(up-compare-const THUMB-RING-AVAILABLE == NO))
+		(up-research-status c: ri-ballistics >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(up-research-status c: ri-bodkin-arrow >= research-pending)
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		;Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(research-completed ri-ballistics)
+		(or
+			(up-research-status c: ri-thumb-ring >= research-pending)
+			(up-compare-const THUMB-RING-AVAILABLE == NO))
+		(or
+			(research-completed ri-bracer)
+			(up-compare-const BRACER-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+		
+		;Secondary Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(research-completed ri-ring-archer-armor)
+			(up-compare-const RING-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+		
+		;All Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed ri-rocketry)
+		(research-completed ri-chemistry)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined CUMANS-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-bodkin-arrow >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-thumb-ring >= research-pending)
+			(up-compare-const THUMB-RING-AVAILABLE == NO))
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-ballistics >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(research-completed ri-bodkin-arrow)
+		(research-completed ri-padded-archer-armor)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		;Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-thumb-ring >= research-pending)
+			(up-compare-const THUMB-RING-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(research-completed ri-ballistics)
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+		
+		;Secondary Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-bracer)
+			(up-compare-const BRACER-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(research-completed ri-ring-archer-armor)
+			(up-compare-const RING-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+		
+		;All Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-parthian-tactics)
+			(up-compare-const PARTHIAN-TACTICS-AVAILABLE == NO))
+		(research-completed ri-chemistry)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined DRAVIDIANS-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-iron-casting)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(research-completed ri-steppe-husbandry)
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined ETHIOPIAN-CIV
+		
+		;Required/Priority Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(up-research-status c: ri-royal-heirs >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed ri-royal-heirs)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined FRANKISH-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required/Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-iron-casting)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+		
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed ri-bearded-axe)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined GOTHIC-CIV
+
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(research-completed ri-anarchy)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		(research-completed ri-perfusion)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		(research-completed ri-anarchy)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined GURJARAS-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required/Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-iron-casting)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+		
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed ri-kshatriyas)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined HUN-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-scale-barding >= research-pending)
+			(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(research-completed ri-forging)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-plate-barding)
+			(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+		
+		;Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed ri-marauders)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined INCAN-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		;Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+		
+		;All Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed ri-fabric-shields)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined INDIAN-CIV
+			
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+		(up-research-status c: ri-iron-casting >= research-pending)
+		(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required/Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-iron-casting)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+		
+	#end-if
+
+	#load-if-defined ITALIAN-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-bodkin-arrow >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-thumb-ring >= research-pending)
+			(up-compare-const THUMB-RING-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-ballistics >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(up-research-status c: ri-bodkin-arrow >= research-pending)
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		;Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(research-completed ri-ballistics)
+		(or
+			(up-research-status c: ri-thumb-ring >= research-pending)
+			(up-compare-const THUMB-RING-AVAILABLE == NO))
+		(or
+			(research-completed ri-bracer)
+			(up-compare-const BRACER-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+		
+		;Secondary Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(research-completed ri-ring-archer-armor)
+			(up-compare-const RING-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+		
+		;All Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed ri-pavise)
+		(research-completed ri-chemistry)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined JAPANESE-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined KHMER-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-scale-barding >= research-pending)
+			(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(or
+			(research-completed ri-plate-barding)
+			(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+		(research-completed ri-double-crossbow)
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+		
+		;Secondary Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(research-completed my-unique-unit-upgrade)
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+		
+		;All Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed ri-chemistry)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined KOREAN-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-bodkin-arrow >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		(or
+			(up-research-status c: ri-thumb-ring >= research-pending)
+			(up-compare-const THUMB-RING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-ballistics >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(research-completed ri-bodkin-arrow)
+		(research-completed ri-padded-archer-armor)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		;Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-thumb-ring >= research-pending)
+			(up-compare-const THUMB-RING-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(research-completed ri-ballistics)
+		(or
+			(research-completed ri-bracer)
+			(up-compare-const BRACER-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+		
+		;Secondary Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(research-completed ri-elite-war-wagon)
+		(or
+			(research-completed ri-ring-archer-armor)
+			(up-compare-const RING-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+		
+		;All Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed ri-chemistry)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined LITHUANIANS-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-scale-barding >= research-pending)
+			(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-plate-barding)
+			(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined MAGYAR-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-scale-barding >= research-pending)
+			(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(up-research-status c: ri-corvinian-army >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-plate-barding)
+			(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(research-completed ri-corvinian-army)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed my-unique-unit-upgrade)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined MALAY-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined MALIAN-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		;Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		;Secondary Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-iron-casting)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined MAYAN-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-bodkin-arrow >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-thumb-ring >= research-pending)
+			(up-compare-const THUMB-RING-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-ballistics >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(up-research-status c: ri-bodkin-arrow >= research-pending)
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		;Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(research-completed ri-ballistics)
+		(or
+			(up-research-status c: ri-thumb-ring >= research-pending)
+			(up-compare-const THUMB-RING-AVAILABLE == NO))
+		(or
+			(research-completed ri-bracer)
+			(up-compare-const BRACER-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		;Secondary Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-ring-archer-armor)
+			(up-compare-const RING-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+		
+		;All Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed ri-chemistry)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined MONGOL-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-bodkin-arrow >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-thumb-ring >= research-pending)
+			(up-compare-const THUMB-RING-AVAILABLE == NO))
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-ballistics >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(research-completed ri-bodkin-arrow)
+		(research-completed ri-padded-archer-armor)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		;Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-thumb-ring >= research-pending)
+			(up-compare-const THUMB-RING-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(research-completed ri-ballistics)
+		(or
+			(research-completed ri-bracer)
+			(up-compare-const BRACER-AVAILABLE == NO))
+		(or
+			(research-completed ri-parthian-tactics)
+			(up-compare-const PARTHIAN-TACTICS-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+		
+		;All Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(research-completed ri-chemistry)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined PERSIAN-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(or
+			(research-completed ri-iron-casting)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(or
+			(research-completed ri-plate-barding)
+			(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+		
+		;Secondary Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+		
+		;All Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed my-unique-unit-upgrade)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined POLES-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required/Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-iron-casting)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined PORTUGUESE-CIV
+		
+		;Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < ALL-CASTLE-COMPLETE)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(research-completed ri-siege-engineers)
+		(research-completed ri-arquebus)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+		
+		;All Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(research-completed my-unique-unit-upgrade)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined ROMANS-CIV
+
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < REQUIRED-CASTLE-COMPLETE)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress REQUIRED-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-scale-barding >= research-pending)
+			(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(up-compare-goal g-unique-unit-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-scale-barding >= research-pending)
+			(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(or
+			(research-completed ri-plate-barding)
+			(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed ri-comitatenses)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined SARACEN-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-scale-barding >= research-pending)
+			(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(research-completed ri-forging)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(or
+			(research-completed ri-plate-barding)
+			(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined SICILIANS-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(up-research-status c: ri-scale-mail >= research-pending)
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined SLAVIC-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-plate-barding)
+			(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined SPANISH-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(research-completed ri-padded-archer-armor)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		;Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		;Secondary Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-ring-archer-armor)
+			(up-compare-const RING-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+
+		;All Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed my-unique-unit-upgrade)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined TATARS-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-plate-barding)
+			(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined TEUTONIC-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(up-research-status c: ri-scale-mail >= research-pending)
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined TURKISH-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < ALL-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-ring-archer-armor)
+			(up-compare-const RING-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+
+		;Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed my-unique-unit-upgrade)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined VIETNAMESE-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-bodkin-arrow >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-thumb-ring >= research-pending)
+			(up-compare-const THUMB-RING-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-ballistics >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(up-research-status c: ri-bodkin-arrow >= research-pending)
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		;Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(research-completed ri-ballistics)
+		(or
+			(up-research-status c: ri-thumb-ring >= research-pending)
+			(up-compare-const THUMB-RING-AVAILABLE == NO))
+		(or
+			(research-completed ri-bracer)
+			(up-compare-const BRACER-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-ring-archer-armor)
+			(up-compare-const RING-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+		
+		;All Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed ri-chemistry)
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined VIKING-CIV
+		
+		;Required Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+		
+		;Secondary Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-forging >= research-pending)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+		
+		;All Castle Age Techs
+		(defrule
+		(current-age >= castle-age)
+		(goal g-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+		
+		;Required Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		;Priority Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		(research-completed my-unique-unit-upgrade)
+		(or
+			(up-research-status c: ri-squires >= research-pending)
+			(up-compare-const SQUIRES-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+		
+		;Secondary Imperial Age Techs
+		(defrule
+		(current-age == imperial-age)
+		(goal g-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(research-completed ri-chieftains)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	(defrule
+	(current-age == feudal-age)
+	(goal g-desired-num-unique-unit 0)
+	=>
+	(set-goal g-unique-unit-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(current-age == castle-age)
+	(goal g-desired-num-unique-unit 0)
+	=>
+	(set-goal g-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(goal g-desired-num-unique-unit 0)
+	=>
+	(set-goal g-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+;----------------------------------------------
+;	GOAL: g-second-unique-unit-tech-progress
+;----------------------------------------------
+
+	#load-if-defined INCAN-CIV
+
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-second-unique-unit-tech-progress < REQUIRED-CASTLE-COMPLETE)
+		=>
+		(set-goal g-second-unique-unit-tech-progress REQUIRED-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-second-unique-unit-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-bodkin-arrow >= research-pending)
+		=>
+		(set-goal g-second-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= castle-age)
+		(goal g-second-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		=>
+		(set-goal g-second-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= castle-age)
+		(goal g-second-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(up-research-status c: ri-ballistics >= research-pending)
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-second-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+			
+		(defrule
+		(current-age == imperial-age)
+		(up-compare-goal g-second-unique-unit-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+		(up-research-status c: ri-bodkin-arrow >= research-pending)
+		(up-research-status c: ri-padded-archer-armor >= research-pending)
+		=>
+		(set-goal g-second-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+			
+		(defrule
+		(current-age == imperial-age)
+		(goal g-second-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(up-research-status c: ri-ballistics >= research-pending)
+		(or
+			(up-research-status c: ri-leather-archer-armor >= research-pending)
+			(up-compare-const LEATHER-ARCHER-ARMOR-AVAILABLE == NO))
+		(or
+			(research-completed ri-bracer)
+			(up-compare-const BRACER-AVAILABLE == NO))
+		=>
+		(set-goal g-second-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-second-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-ring-archer-armor)
+			(up-compare-const RING-ARCHER-ARMOR-AVAILABLE == NO))
+		(research-completed ri-andean-sling)
+		=>
+		(set-goal g-second-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		)
+		
+		(defrule
+		(current-age == imperial-age)
+		(goal g-second-unique-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+		(research-completed ri-fabric-shields)
+		=>
+		(set-goal g-second-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined BURGUNDIANS-CIV
+
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-second-unique-unit-tech-progress < REQUIRED-CASTLE-COMPLETE)
+		=>
+		(set-goal g-second-unique-unit-tech-progress REQUIRED-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= castle-age)
+		(goal g-second-unique-unit-tech-progress REQUIRED-CASTLE-COMPLETE)
+		(up-research-status c: ri-scale-mail >= research-pending)
+		=>
+		(set-goal g-second-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= castle-age)
+		(goal g-second-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-squires >= research-pending)
+		=>
+		(set-goal g-second-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= castle-age)
+		(goal g-second-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-second-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+			
+		(defrule
+		(current-age == imperial-age)
+		(up-compare-goal g-second-unique-unit-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+		(up-research-status c: ri-scale-mail >= research-pending)
+		(or
+			(up-research-status c: ri-chain-mail >= research-pending)
+			(up-compare-const CHAIN-MAIL-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-second-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+			
+		(defrule
+		(current-age == imperial-age)
+		(goal g-second-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(or
+			(research-completed ri-plate-mail)
+			(up-compare-const PLATE-MAIL-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-squires >= research-pending)
+		=>
+		(set-goal g-second-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+				
+		(defrule
+		(current-age == imperial-age)
+		(goal g-second-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		=>
+		(set-goal g-second-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-defined GURJARAS-CIV
+
+		(defrule
+		(current-age >= castle-age)
+		(up-compare-goal g-second-unique-unit-tech-progress < REQUIRED-CASTLE-COMPLETE)
+		=>
+		(set-goal g-second-unique-unit-tech-progress REQUIRED-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= castle-age)
+		(goal g-second-unique-unit-tech-progress REQUIRED-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-scale-barding >= research-pending)
+			(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+		=>
+		(set-goal g-second-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= castle-age)
+		(goal g-second-unique-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-second-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age >= castle-age)
+		(goal g-second-unique-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		=>
+		(set-goal g-second-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(up-compare-goal g-second-unique-unit-tech-progress < REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-cavalier >= research-pending)
+			(up-compare-const CAVALIER-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-scale-barding >= research-pending)
+			(up-compare-const SCALE-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-chain-barding >= research-pending)
+			(up-compare-const CHAIN-BARDING-ARMOR-AVAILABLE == NO))
+		(up-research-status c: ri-forging >= research-pending)
+		=>
+		(set-goal g-second-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-second-unique-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+		(or
+			(up-research-status c: ri-bloodlines >= research-pending)
+			(up-compare-const BLOODLINES-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-iron-casting >= research-pending)
+			(up-compare-const IRON-CASTING-AVAILABLE == NO))
+		(or
+			(research-completed ri-plate-barding)
+			(up-compare-const PLATE-BARDING-ARMOR-AVAILABLE == NO))
+		(or
+			(up-research-status c: ri-husbandry >= research-pending)
+			(up-compare-const HUSBANDRY-AVAILABLE == NO))
+		=>
+		(set-goal g-second-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-second-unique-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+		(or
+			(research-completed ri-blast-furnace)
+			(up-compare-const BLAST-FURNACE-AVAILABLE == NO))
+		(up-research-status c: ri-kshatriyas >= research-pending)
+		=>
+		(set-goal g-second-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+
+	#load-if-not-defined BURGUNDIANS-CIV
+	#load-if-not-defined GURJARAS-CIV
+	#load-if-not-defined INCAN-CIV
+
+		(defrule
+		(current-age == feudal-age)
+		(goal g-desired-num-second-unique-unit 0)
+		=>
+		(set-goal g-second-unique-unit-tech-progress ALL-FEUDAL-COMPLETE)
+		)
+
+		(defrule
+		(current-age == castle-age)
+		(goal g-desired-num-second-unique-unit 0)
+		=>
+		(set-goal g-second-unique-unit-tech-progress ALL-CASTLE-COMPLETE)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-desired-num-second-unique-unit 0)
+		=>
+		(set-goal g-second-unique-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+		)
+
+	#end-if
+	#end-if
+	#end-if
+
+;----------------------------------------
+;	GOAL: g-primary-unit-tech-progress
+;----------------------------------------
+
+	(defrule
+	(goal g-primary-unit militiaman)
+	=>
+	(up-modify-goal g-primary-unit-tech-progress g:= g-militia-tech-progress)
+	)
+
+	(defrule
+	(goal g-primary-unit spearman)
+	=>
+	(up-modify-goal g-primary-unit-tech-progress g:= g-spearman-tech-progress)
+	)
+
+	(defrule
+	(goal g-primary-unit eagle-warrior)
+	=>
+	(up-modify-goal g-primary-unit-tech-progress g:= g-eagle-warrior-tech-progress)
+	)
+
+	(defrule
+	(goal g-primary-unit condottiero)
+	=>
+	(up-modify-goal g-primary-unit-tech-progress g:= g-condottiero-tech-progress)
+	)
+
+	(defrule
+	(goal g-primary-unit archer)
+	=>
+	(up-modify-goal g-primary-unit-tech-progress g:= g-archer-tech-progress)
+	)
+
+	(defrule
+	(goal g-primary-unit skirmisher)
+	=>
+	(up-modify-goal g-primary-unit-tech-progress g:= g-skirmisher-tech-progress)
+	)
+
+	(defrule
+	(goal g-primary-unit cavalry-archer)
+	=>
+	(up-modify-goal g-primary-unit-tech-progress g:= g-cavalry-archer-tech-progress)
+	)
+
+	(defrule
+	(goal g-primary-unit hand-cannoneer)
+	=>
+	(up-modify-goal g-primary-unit-tech-progress g:= g-hand-cannoneer-tech-progress)
+	)
+
+	(defrule
+	(goal g-primary-unit genitour)
+	=>
+	(up-modify-goal g-primary-unit-tech-progress g:= g-genitour-tech-progress)
+	)
+
+	(defrule
+	(goal g-primary-unit scout-cavalry)
+	=>
+	(up-modify-goal g-primary-unit-tech-progress g:= g-scout-cavalry-tech-progress)
+	)
+
+	(defrule
+	(goal g-primary-unit knight)
+	=>
+	(up-modify-goal g-primary-unit-tech-progress g:= g-knight-tech-progress)
+	)
+
+	(defrule
+	(goal g-primary-unit camel)
+	=>
+	(up-modify-goal g-primary-unit-tech-progress g:= g-camel-tech-progress)
+	)
+
+	(defrule
+	(goal g-primary-unit battle-elephant)
+	=>
+	(up-modify-goal g-primary-unit-tech-progress g:= g-battle-elephant-tech-progress)
+	)
+
+	(defrule
+	(goal g-primary-unit steppe-lancer)
+	=>
+	(up-modify-goal g-primary-unit-tech-progress g:= g-steppe-lancer-tech-progress)
+	)
+
+	(defrule
+	(goal g-primary-unit my-unique-unit)
+	=>
+	(up-modify-goal g-primary-unit-tech-progress g:= g-unique-unit-tech-progress)
+	)
+
+	(defrule
+	(goal g-primary-unit my-second-unique-unit)
+	=>
+	(up-modify-goal g-primary-unit-tech-progress g:= g-second-unique-unit-tech-progress)
+	)
+
+	(defrule
+	(goal g-primary-unit 0)
+	(current-age == feudal-age)
+	=>
+	(set-goal g-primary-unit-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(goal g-primary-unit 0)
+	(current-age == castle-age)
+	=>
+	(set-goal g-primary-unit-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(goal g-primary-unit 0)
+	(current-age == imperial-age)
+	=>
+	(set-goal g-primary-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+	)
+
+;----------------------------------------
+;	GOAL: g-support-unit-tech-progress
+;----------------------------------------
+
+	(defrule
+	(goal g-support-unit militiaman)
+	=>
+	(up-modify-goal g-support-unit-tech-progress g:= g-militia-tech-progress)
+	)
+
+	(defrule
+	(goal g-support-unit spearman)
+	=>
+	(up-modify-goal g-support-unit-tech-progress g:= g-spearman-tech-progress)
+	)
+
+	(defrule
+	(goal g-support-unit eagle-warrior)
+	=>
+	(up-modify-goal g-support-unit-tech-progress g:= g-eagle-warrior-tech-progress)
+	)
+
+	(defrule
+	(goal g-support-unit condottiero)
+	=>
+	(up-modify-goal g-support-unit-tech-progress g:= g-condottiero-tech-progress)
+	)
+
+	(defrule
+	(goal g-support-unit archer)
+	=>
+	(up-modify-goal g-support-unit-tech-progress g:= g-archer-tech-progress)
+	)
+
+	(defrule
+	(goal g-support-unit skirmisher)
+	=>
+	(up-modify-goal g-support-unit-tech-progress g:= g-skirmisher-tech-progress)
+	)
+
+	(defrule
+	(goal g-support-unit cavalry-archer)
+	=>
+	(up-modify-goal g-support-unit-tech-progress g:= g-cavalry-archer-tech-progress)
+	)
+
+	(defrule
+	(goal g-support-unit hand-cannoneer)
+	=>
+	(up-modify-goal g-support-unit-tech-progress g:= g-hand-cannoneer-tech-progress)
+	)
+
+	(defrule
+	(goal g-support-unit genitour)
+	=>
+	(up-modify-goal g-support-unit-tech-progress g:= g-genitour-tech-progress)
+	)
+
+	(defrule
+	(goal g-support-unit scout-cavalry)
+	=>
+	(up-modify-goal g-support-unit-tech-progress g:= g-scout-cavalry-tech-progress)
+	)
+
+	(defrule
+	(goal g-support-unit knight)
+	=>
+	(up-modify-goal g-support-unit-tech-progress g:= g-knight-tech-progress)
+	)
+
+	(defrule
+	(goal g-support-unit camel)
+	=>
+	(up-modify-goal g-support-unit-tech-progress g:= g-camel-tech-progress)
+	)
+
+	(defrule
+	(goal g-support-unit battle-elephant)
+	=>
+	(up-modify-goal g-support-unit-tech-progress g:= g-battle-elephant-tech-progress)
+	)
+
+	(defrule
+	(goal g-support-unit steppe-lancer)
+	=>
+	(up-modify-goal g-support-unit-tech-progress g:= g-steppe-lancer-tech-progress)
+	)
+
+	(defrule
+	(goal g-support-unit my-unique-unit)
+	=>
+	(up-modify-goal g-support-unit-tech-progress g:= g-unique-unit-tech-progress)
+	)
+
+	(defrule
+	(goal g-support-unit my-second-unique-unit)
+	=>
+	(up-modify-goal g-support-unit-tech-progress g:= g-second-unique-unit-tech-progress)
+	)
+
+	(defrule
+	(goal g-support-unit 0)
+	(current-age == feudal-age)
+	=>
+	(set-goal g-support-unit-tech-progress ALL-FEUDAL-COMPLETE)
+	)
+
+	(defrule
+	(goal g-support-unit 0)
+	(current-age == castle-age)
+	=>
+	(set-goal g-support-unit-tech-progress ALL-CASTLE-COMPLETE)
+	)
+
+	(defrule
+	(goal g-support-unit 0)
+	(current-age == imperial-age)
+	=>
+	(set-goal g-support-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+	)

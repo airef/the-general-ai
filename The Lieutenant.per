@@ -1,4 +1,4 @@
-(defconst CHAT-GENERAL-VERSION "The Lieutenant 1.2u by Leif Ericson")
+(defconst CHAT-GENERAL-VERSION "The Lieutenant 1.3 by Leif Ericson")
 (defconst THE-GENERAL 1)
 (defconst THE-CAPTAIN 2)
 (defconst THE-LIEUTENANT 3)
@@ -19,14 +19,10 @@
 	(disable-self)
 	)
 
-	(load "The General 1.2/UserPatchConst")
-	(load "The General 1.2/Game Stats")
-	#load-if-defined DE-AVAILABLE
-		(load "The General 1.2/Constants DE")
-	#else
-		(load "The General 1.2/Constants UP")
-	#end-if
-	(load "The General 1.2/Initialization")
+	(load "The General 1.3/UserPatchConst")
+	(load "The General 1.3/Game Stats")
+	(load "The General 1.3/Constants")
+	(load "The General 1.3/Initialization")
 
 	(defrule
 	(up-compare-goal g-rule-pass-count >= 0)
@@ -38,27 +34,27 @@
 	(up-log-data 0 "Begin Pass %d" g: g-rule-pass-count)
 	)
 
-	(load "The General 1.2/Strats")
-	(load "The General 1.2/Desired Object Counts")
-	(load "The General 1.2/Strategic Numbers")
-	(load "The General 1.2/Goals")
-	(load "The General 1.2/Enemy Unit Counts")
-	(load "The General 1.2/Tech Progress")
-	(load "The General 1.2/Personality")
-	(load "The General 1.2/Needed Resources")
-	(load "The General 1.2/Escrow")
-	(load "The General 1.2/Building Construction")
-	(load "The General 1.2/Technology Research")
-	(load "The General 1.2/Unit Training")
-	(load "The General 1.2/Gathering")
-	(load "The General 1.2/Market Trading")
-	(load "The General 1.2/Attacking")
-	(load "The General 1.2/Army Control")
-	(load "The General 1.2/DUC")
-	(load "The General 1.2/Tribute")
-	(load "The General 1.2/Resign")
-	(load "The General 1.2/Debug")
-	(load "The General 1.2/Final Stuff")
+	(load "The General 1.3/Strats")
+	(load "The General 1.3/Desired Object Counts")
+	(load "The General 1.3/Strategic Numbers")
+	(load "The General 1.3/Goals")
+	(load "The General 1.3/Enemy Unit Counts")
+	(load "The General 1.3/Tech Progress")
+	(load "The General 1.3/Personality")
+	(load "The General 1.3/Needed Resources")
+	(load "The General 1.3/Escrow")
+	(load "The General 1.3/Building Construction")
+	(load "The General 1.3/Technology Research")
+	(load "The General 1.3/Unit Training")
+	(load "The General 1.3/Gathering")
+	(load "The General 1.3/Market Trading")
+	(load "The General 1.3/Attacking")
+	(load "The General 1.3/Army Control")
+	(load "The General 1.3/DUC")
+	(load "The General 1.3/Tribute")
+	(load "The General 1.3/Resign")
+	(load "The General 1.3/Debug")
+	(load "The General 1.3/Final Stuff")
 
 ;--------------------
 ;	Set Difficulty
@@ -70,56 +66,6 @@
 	(set-goal g-difficulty HARD)
 	(disable-self)
 	)
-
-	#load-if-defined DIFFICULTY-HARDEST
-		#load-if-not-defined DE-AVAILABLE
-
-			;Remove Hardest resource cheats (removed in DE)
-			(defrule
-			(current-age == dark-age)
-			=>
-			(cc-add-resource wood -500)
-			(cc-add-resource food -500)
-			(cc-add-resource gold -500)
-			(cc-add-resource stone -500)
-			(disable-self)
-			)
-
-			;Remove Hardest resource cheats (removed in DE)
-			(defrule
-			(current-age == feudal-age)
-			=>
-			(cc-add-resource wood -500)
-			(cc-add-resource food -500)
-			(cc-add-resource gold -500)
-			(cc-add-resource stone -500)
-			(disable-self)
-			)
-
-			;Remove Hardest resource cheats (removed in DE)
-			(defrule
-			(current-age == castle-age)
-			=>
-			(cc-add-resource wood -500)
-			(cc-add-resource food -500)
-			(cc-add-resource gold -500)
-			(cc-add-resource stone -500)
-			(disable-self)
-			)
-
-			;Remove Hardest resource cheats (removed in DE)
-			(defrule
-			(current-age == imperial-age)
-			=>
-			(cc-add-resource wood -500)
-			(cc-add-resource food -500)
-			(cc-add-resource gold -500)
-			(cc-add-resource stone -500)
-			(disable-self)
-			)
-
-		#end-if
-	#end-if
 
 ;---------------------
 ;	GOAL: g-general
@@ -139,6 +85,50 @@
 	)
 
 	;Set the name of each general based on g-general calculated above.
+	#load-if-defined ARMENIANS-CIV
+			
+		(defrule
+		(goal g-general 0)
+		=>
+		(set-goal g-general ASHOT)
+		(up-change-name "Lieutenant Ashot")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 1)
+		=>
+		(set-goal g-general GAGIK)
+		(up-change-name "Lieutenant Gagik")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 2)
+		=>
+		(set-goal g-general LEVON-THE-MAGNIFICENT)
+		(up-change-name "Lieutenant Levon the Magnificent")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 3)
+		=>
+		(set-goal g-general THOROS)
+		(up-change-name "Lieutenant Thoros")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 4)
+		=>
+		(set-goal g-general VARDAN-MAMIKONIAN)
+		(up-change-name "Lieutenant Vardan Mamikonian")
+		(disable-self)
+		)
+
+	#end-if
+
 	#load-if-defined AZTEC-CIV
 			
 		(defrule
@@ -831,6 +821,50 @@
 
 	#end-if
 
+	#load-if-defined GEORGIANS-CIV
+			
+		(defrule
+		(goal g-general 0)
+		=>
+		(set-goal g-general BAGRAT)
+		(up-change-name "Lieutenant Bagrat")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 1)
+		=>
+		(set-goal g-general DAVID-THE-BUILDER)
+		(up-change-name "Lieutenant David the Builder")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 2)
+		=>
+		(set-goal g-general GEORGE-THE-BRILLIANT)
+		(up-change-name "Lieutenant George the Brilliant")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 3)
+		=>
+		(set-goal g-general GREGORIOS-PAKOURIANOS)
+		(up-change-name "Lieutenant Gregorios Pakourianos")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 4)
+		=>
+		(set-goal g-general TAMAR)
+		(up-change-name "Lieutenant Tamar")
+		(disable-self)
+		)
+
+	#end-if
+
 	#load-if-defined GOTHIC-CIV
 			
 		(defrule
@@ -1008,7 +1042,6 @@
 	#end-if
 
 	#load-if-defined INDIAN-CIV
-	#load-if-defined DE-AVAILABLE
 			
 		(defrule
 		(goal g-general 0)
@@ -1057,66 +1090,7 @@
 		(up-change-name "Lieutenant Qutb-ub-Din Aibak")
 		(disable-self)
 		)
-	
-	#else
-			
-		(defrule
-		(goal g-general 0)
-		=>
-		(set-goal g-general AKBAR)
-		(up-change-name "Lieutenant Akbar")
-		(disable-self)
-		)
-			
-		(defrule
-		(goal g-general 1)
-		=>
-		(set-goal g-general ALA-UD-DIN)
-		(up-change-name "Lieutenant Ala-ud-din")
-		(disable-self)
-		)
-			
-		(defrule
-		(goal g-general 2)
-		=>
-		(set-goal g-general BABUR)
-		(up-change-name "Lieutenant Babur")
-		(disable-self)
-		)
-			
-		(defrule
-		(goal g-general 3)
-		=>
-		(set-goal g-general BAPPA-RAWAL)
-		(up-change-name "Lieutenant Bappa Rawal")
-		(disable-self)
-		)
-			
-		(defrule
-		(goal g-general 4)
-		=>
-		(set-goal g-general CHANDRAGUPTA)
-		(up-change-name "Lieutenant Chandragupta")
-		(disable-self)
-		)
-			
-		(defrule
-		(goal g-general 5)
-		=>
-		(set-goal g-general PRITHVIRAJ)
-		(up-change-name "Lieutenant Prithviraj")
-		(disable-self)
-		)
-			
-		(defrule
-		(goal g-general 6)
-		=>
-		(set-goal g-general RAJENDRA)
-		(up-change-name "Lieutenant Rajendra")
-		(disable-self)
-		)
 
-	#end-if
 	#end-if
 
 	#load-if-defined ITALIAN-CIV
@@ -1221,6 +1195,94 @@
 		(disable-self)
 		)
 
+	#end-if
+
+	#load-if-defined JURCHENS-CIV
+			
+		(defrule
+		(goal g-general 0)
+		=>
+		(set-goal g-general DUDU-MENGTEMU)
+		(up-change-name "Lieutenant Dudu Mengtemu")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 1)
+		=>
+		(set-goal g-general HANPU)
+		(up-change-name "Lieutenant Hanpu")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 2)
+		=>
+		(set-goal g-general WANYAN-AYUDA)
+		(up-change-name "Lieutenant Wanyan Ayuda")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 3)
+		=>
+		(set-goal g-general WANYAN-SHENG)
+		(up-change-name "Lieutenant Wanyan Sheng")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 4)
+		=>
+		(set-goal g-general WUQIMAI-TAIZONG )
+		(up-change-name "Lieutenant Wuqimai Taizong")
+		(disable-self)
+		)
+
+	#end-if
+
+	#load-if-defined KHITANS-CIV
+			
+		(defrule
+		(goal g-general 0)
+		=>
+		(set-goal g-general ABAOJI)
+		(up-change-name "Lieutenant Abaoji")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 1)
+		=>
+		(set-goal g-general KUSHLUK)
+		(up-change-name "Lieutenant Kushluk")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 2)
+		=>
+		(set-goal g-general SHULU-PING)
+		(up-change-name "Lieutenant Shulu Ping")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 3)
+		=>
+		(set-goal g-general YELU-DASHI)
+		(up-change-name "Lieutenant Yelu Dashi")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 4)
+		=>
+		(set-goal g-general YELU-LONGXU)
+		(up-change-name "Lieutenant Yelu Longxu")
+		(disable-self)
+		)
+		
 	#end-if
 
 	#load-if-defined KHMER-CIV
@@ -1552,8 +1614,8 @@
 		(defrule
 		(goal g-general 2)
 		=>
-		(set-goal g-general KUSHLUK)
-		(up-change-name "Lieutenant Kushluk")
+		(set-goal g-general MONGKE-KHAN)
+		(up-change-name "Lieutenant Mongke Khan")
 		(disable-self)
 		)
 			
@@ -1604,8 +1666,8 @@
 		(defrule
 		(goal g-general 3)
 		=>
-		(set-goal g-general MAHMUD-GHAZNAVI)
-		(up-change-name "Lieutenant Mahmud Ghaznavi")
+		(set-goal g-general ISMAIL)
+		(up-change-name "Lieutenant Ismail")
 		(disable-self)
 		)
 			
@@ -1614,6 +1676,14 @@
 		=>
 		(set-goal g-general KHOSRAU)
 		(up-change-name "Lieutenant Khosrau I")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 5)
+		=>
+		(set-goal g-general MAHMUD-GHAZNAVI)
+		(up-change-name "Lieutenant Mahmud Ghaznavi")
 		(disable-self)
 		)
 
@@ -1811,6 +1881,64 @@
 
 	#end-if
 
+	#load-if-defined SHU-CIV
+			(defconst GUAN-YU 581)
+			(defconst HUANG-ZHONG 582)
+			(defconst MA-CHAO 583)
+			(defconst LIU-BEI 584)
+			(defconst ZHANG-FEI 585)
+			(defconst ZHAO-YUN 586)
+			
+		(defrule
+		(goal g-general 0)
+		=>
+		(set-goal g-general GUAN-YU)
+		(up-change-name "Lieutenant Guan Yu")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 1)
+		=>
+		(set-goal g-general HUANG-ZHONG)
+		(up-change-name "Lieutenant Huang Zhong")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 2)
+		=>
+		(set-goal g-general MA-CHAO)
+		(up-change-name "Lieutenant Ma Chao")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 3)
+		=>
+		(set-goal g-general LIU-BEI)
+		(up-change-name "Lieutenant Liu Bei")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 4)
+		=>
+		(set-goal g-general ZHANG-FEI)
+		(up-change-name "Lieutenant Zhang Fei")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 5)
+		=>
+		(set-goal g-general ZHAO-YUN)
+		(up-change-name "Lieutenant Zhao Yun")
+		(disable-self)
+		)
+
+	#end-if
+
 	#load-if-defined SICILIANS-CIV
 			
 		(defrule
@@ -1864,28 +1992,14 @@
 		(up-change-name "Lieutenant Alexander Nevski")
 		(disable-self)
 		)
-			
-		#load-if-not-defined DE-AVAILABLE
 
-			(defrule
-			(goal g-general 1)
-			=>
-			(set-goal g-general BOLESLAW)
-			(up-change-name "Lieutenant Boleslaw")
-			(disable-self)
-			)
-
-		#else
-
-			(defrule
-			(goal g-general 1)
-			=>
-			(set-goal g-general IVAN-III)
-			(up-change-name "Lieutenant Ivan III")
-			(disable-self)
-			)
-
-		#end-if
+		(defrule
+		(goal g-general 1)
+		=>
+		(set-goal g-general IVAN-III)
+		(up-change-name "Lieutenant Ivan III")
+		(disable-self)
+		)
 			
 		(defrule
 		(goal g-general 2)
@@ -2180,6 +2294,110 @@
 		=>
 		(set-goal g-general OLAF-HARALDSSON)
 		(up-change-name "Lieutenant Olaf Haraldsson")
+		(disable-self)
+		)
+		
+	#end-if
+
+	#load-if-defined WEI-CIV
+			
+		(defrule
+		(goal g-general 0)
+		=>
+		(set-goal g-general CAO-CAO)
+		(up-change-name "Lieutenant Cao Cao")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 1)
+		=>
+		(set-goal g-general CAO-PI)
+		(up-change-name "Lieutenant Cao Pi")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 2)
+		=>
+		(set-goal g-general CAO-REN)
+		(up-change-name "Lieutenant Cao Ren")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 3)
+		=>
+		(set-goal g-general SIMA-YI)
+		(up-change-name "Lieutenant Sima Yi")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 4)
+		=>
+		(set-goal g-general XIAHOU-DUN)
+		(up-change-name "Lieutenant Xiahou Dun")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 5)
+		=>
+		(set-goal g-general ZHANG-HE)
+		(up-change-name "Lieutenant Zhang He")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 6)
+		=>
+		(set-goal g-general ZHANG-LIAO)
+		(up-change-name "Lieutenant Zhang Liao")
+		(disable-self)
+		)
+		
+	#end-if
+
+	#load-if-defined WU-CIV
+			
+		(defrule
+		(goal g-general 0)
+		=>
+		(set-goal g-general LU-MENG)
+		(up-change-name "Lieutenant Lu Meng")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 1)
+		=>
+		(set-goal g-general LU-XUN)
+		(up-change-name "Lieutenant Lu Xun")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 2)
+		=>
+		(set-goal g-general SUN-CE)
+		(up-change-name "Lieutenant Sun Ce")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 3)
+		=>
+		(set-goal g-general SUN-JIAN)
+		(up-change-name "Lieutenant Sun Jian")
+		(disable-self)
+		)
+			
+		(defrule
+		(goal g-general 4)
+		=>
+		(set-goal g-general SUN-QUAN)
+		(up-change-name "Lieutenant Sun Quan")
 		(disable-self)
 		)
 		

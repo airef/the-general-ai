@@ -1,0 +1,724 @@
+;Attack Constants
+(defconst NONE 0)
+(defconst MELEE-ATTACK 1)
+(defconst PIERCE-ATTACK 2)
+
+;Armor Constants
+; (defconst NONE 0)
+(defconst INFANTRY-ARMOR 1)
+(defconst ARCHER-ARMOR 2)
+(defconst CAVALRY-ARMOR 3)
+
+#load-if-not-defined BENGALIS-CIV
+#load-if-not-defined BOHEMIANS-CIV
+#load-if-not-defined BYZANTINE-CIV
+#load-if-not-defined DRAVIDIANS-CIV
+#load-if-not-defined INDIAN-CIV
+#load-if-not-defined ITALIAN-CIV
+#load-if-not-defined JAPANESE-CIV
+#load-if-not-defined PERSIAN-CIV
+#load-if-not-defined SARACEN-CIV
+#load-if-not-defined SHU-CIV
+#load-if-not-defined SLAVIC-CIV
+#load-if-not-defined WEI-CIV
+	(defconst NUM-GENERALS 5)
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+#load-if-defined BENGALIS-CIV
+	(defconst NUM-GENERALS 6)
+#end-if
+#load-if-defined BOHEMIANS-CIV
+	(defconst NUM-GENERALS 6)
+#end-if
+#load-if-defined BYZANTINE-CIV
+	(defconst NUM-GENERALS 6)
+#end-if
+#load-if-defined DRAVIDIANS-CIV
+	(defconst NUM-GENERALS 6)
+#end-if
+#load-if-defined INDIAN-CIV
+	(defconst NUM-GENERALS 6)
+#end-if
+#load-if-defined ITALIAN-CIV
+	(defconst NUM-GENERALS 6)
+#end-if
+#load-if-defined JAPANESE-CIV
+	(defconst NUM-GENERALS 6)
+#end-if
+#load-if-defined PERSIAN-CIV
+	(defconst NUM-GENERALS 6)
+#end-if
+#load-if-defined SARACEN-CIV
+	(defconst NUM-GENERALS 6)
+#end-if
+#load-if-defined SHU-CIV
+	(defconst NUM-GENERALS 6)
+#end-if
+#load-if-defined SLAVIC-CIV
+	(defconst NUM-GENERALS 6)
+#end-if
+#load-if-defined WEI-CIV
+	(defconst NUM-GENERALS 7)
+#end-if
+
+#load-if-defined DRAVIDIANS-CIV
+(defconst my-unique-ship thirisadai)
+(defconst my-elite-unique-ship thirisadai)
+(defconst my-unique-ship-line thirisadai)
+#end-if
+#load-if-defined KOREAN-CIV
+(defconst my-unique-ship turtle-ship)
+(defconst my-elite-unique-ship elite-turtle-ship)
+(defconst my-unique-ship-line turtle-ship-line)
+#end-if
+#load-if-defined PORTUGUESE-CIV
+(defconst my-unique-ship caravel)
+(defconst my-elite-unique-ship elite-caravel)
+(defconst my-unique-ship-line caravel-line)
+#end-if
+#load-if-defined VIKING-CIV
+(defconst my-unique-ship longboat)
+(defconst my-elite-unique-ship elite-longboat)
+(defconst my-unique-ship-line longboat-line)
+#end-if
+#load-if-not-defined DRAVIDIANS-CIV
+#load-if-not-defined KOREAN-CIV
+#load-if-not-defined PORTUGUESE-CIV
+#load-if-not-defined VIKING-CIV
+(defconst my-unique-ship 0)
+(defconst my-elite-unique-ship 0)
+(defconst my-unique-ship-line 0)
+#end-if
+#end-if
+#end-if
+#end-if
+
+#load-if-defined ARMENIANS-CIV
+(defconst my-second-unique-unit warrior-priest)
+(defconst my-second-elite-unique-unit warrior-priest)
+(defconst my-second-unique-unit-line warrior-priest)
+#end-if
+#load-if-defined BURGUNDIANS-CIV
+(defconst my-second-unique-unit flemish-militia-trained)
+(defconst my-second-elite-unique-unit flemish-militia-trained)
+(defconst my-second-unique-unit-line flemish-militia-trained)
+#end-if
+#load-if-defined GURJARAS-CIV
+(defconst my-second-unique-unit shrivamsha-rider)
+(defconst my-second-elite-unique-unit elite-shrivamsha-rider)
+(defconst my-second-unique-unit-line shrivamsha-rider-line)
+#end-if
+#load-if-defined INCAN-CIV
+(defconst my-second-unique-unit slinger)
+(defconst my-second-elite-unique-unit slinger)
+(defconst my-second-unique-unit-line slinger)
+#end-if
+#load-if-defined JURCHENS-CIV
+(defconst my-second-unique-unit grenadier)
+(defconst my-second-elite-unique-unit grenadier)
+(defconst my-second-unique-unit-line grenadier)
+#end-if
+#load-if-defined KHITANS-CIV
+(defconst my-second-unique-unit mounted-trebuchet)
+(defconst my-second-elite-unique-unit mounted-trebuchet)
+(defconst my-second-unique-unit-line mounted-trebuchet)
+#end-if
+#load-if-defined SHU-CIV
+(defconst my-second-unique-unit war-chariot-focus-fire)
+(defconst my-second-elite-unique-unit war-chariot-focus-fire)
+(defconst my-second-unique-unit-line war-chariot-focus-fire)
+#end-if
+#load-if-defined SPANISH-CIV
+(defconst my-second-unique-unit missionary)
+(defconst my-second-elite-unique-unit missionary)
+(defconst my-second-unique-unit-line missionary)
+#end-if
+#load-if-defined TATARS-CIV
+(defconst my-second-unique-unit flaming-camel)
+(defconst my-second-elite-unique-unit flaming-camel)
+(defconst my-second-unique-unit-line flaming-camel)
+#end-if
+#load-if-defined WEI-CIV
+(defconst my-second-unique-unit xianbei-raider)
+(defconst my-second-elite-unique-unit xianbei-raider)
+(defconst my-second-unique-unit-line xianbei-raider)
+#end-if
+#load-if-defined WU-CIV
+(defconst my-second-unique-unit jian-swordsman)
+(defconst my-second-elite-unique-unit jian-swordsman)
+(defconst my-second-unique-unit-line jian-swordsman)
+#end-if
+#load-if-not-defined ARMENIANS-CIV
+#load-if-not-defined BURGUNDIANS-CIV
+#load-if-not-defined GURJARAS-CIV
+#load-if-not-defined INCAN-CIV
+#load-if-not-defined JURCHENS-CIV
+#load-if-not-defined KHITANS-CIV
+#load-if-not-defined SHU-CIV
+#load-if-not-defined SPANISH-CIV
+#load-if-not-defined TATARS-CIV
+#load-if-not-defined WEI-CIV
+#load-if-not-defined WU-CIV
+(defconst my-second-unique-unit petard)
+(defconst my-second-elite-unique-unit petard)
+(defconst my-second-unique-unit-line petard)
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+
+#load-if-defined SICILIANS-CIV
+(defconst my-tower-type donjon)
+#else
+(defconst my-tower-type watch-tower)
+#end-if
+
+#load-if-not-defined BENGALIS-CIV
+#load-if-not-defined DRAVIDIANS-CIV
+#load-if-not-defined GURJARAS-CIV
+#load-if-not-defined HINDUSTANIS-CIV
+(defconst my-ram-type feudal-battering-ram)
+(defconst my-ram-line battering-ram-line)
+#end-if
+#end-if
+#end-if
+#end-if
+#load-if-defined BENGALIS-CIV
+(defconst my-ram-type armored-elephant)
+(defconst my-ram-line armored-elephant-line)
+#end-if
+#load-if-defined DRAVIDIANS-CIV
+(defconst my-ram-type armored-elephant)
+(defconst my-ram-line armored-elephant-line)
+#end-if
+#load-if-defined GURJARAS-CIV
+(defconst my-ram-type armored-elephant)
+(defconst my-ram-line armored-elephant-line)
+#end-if
+#load-if-defined HINDUSTANIS-CIV
+(defconst my-ram-type armored-elephant)
+(defconst my-ram-line armored-elephant-line)
+#end-if
+
+#load-if-not-defined CHINESE-CIV
+#load-if-not-defined JURCHENS-CIV
+#load-if-not-defined KHITANS-CIV
+#load-if-not-defined KOREANS-CIV
+(defconst my-mangonel-type mangonel)
+(defconst my-mangonel-line mangonel-line)
+#end-if
+#end-if
+#end-if
+#end-if
+#load-if-defined CHINESE-CIV
+(defconst my-mangonel-type rocket-cart)
+(defconst my-mangonel-line rocket-cart-line)
+#end-if
+#load-if-defined JURCHENS-CIV
+(defconst my-mangonel-type rocket-cart)
+(defconst my-mangonel-line rocket-cart-line)
+#end-if
+#load-if-defined KHITANS-CIV
+(defconst my-mangonel-type rocket-cart)
+(defconst my-mangonel-line rocket-cart-line)
+#end-if
+#load-if-defined KOREANS-CIV
+(defconst my-mangonel-type rocket-cart)
+(defconst my-mangonel-line rocket-cart-line)
+#end-if
+
+#load-if-defined SHU-CIV
+(defconst my-scorpion-type war-chariot-focus-fire)
+(defconst my-scorpion-line war-chariot-focus-fire)
+#else
+(defconst my-scorpion-type scorpion)
+(defconst my-scorpion-line scorpion-line)
+#end-if
+
+#load-if-defined KHITANS-CIV
+(defconst my-cannon-type mounted-trebuchet)
+(defconst my-cannon-line mounted-trebuchet)
+#end-if
+#load-if-defined SHU-CIV
+(defconst my-cannon-type traction-trebuchet)
+(defconst my-cannon-line traction-trebuchet)
+#end-if
+#load-if-defined WEI-CIV
+(defconst my-cannon-type traction-trebuchet)
+(defconst my-cannon-line traction-trebuchet)
+#end-if
+#load-if-defined WU-CIV
+(defconst my-cannon-type traction-trebuchet)
+(defconst my-cannon-line traction-trebuchet)
+#end-if
+#load-if-not-defined KHITANS-CIV
+#load-if-not-defined SHU-CIV
+#load-if-not-defined WEI-CIV
+#load-if-not-defined WU-CIV
+(defconst my-cannon-type bombard-cannon)
+(defconst my-cannon-line bombard-cannon-line)
+#end-if
+#end-if
+#end-if
+#end-if
+
+#load-if-defined BULGARIANS-CIV
+(defconst my-unique-building krepost)
+#end-if
+#load-if-defined HINDUSTANIS-CIV
+(defconst my-unique-building caravanserai)
+#end-if
+#load-if-defined PERSIAN-CIV
+(defconst my-unique-building caravanserai)
+#end-if
+#load-if-defined PORTUGUESE-CIV
+(defconst my-unique-building feitoria)
+#end-if
+#load-if-not-defined BULGARIANS-CIV
+#load-if-not-defined HINDUSTANIS-CIV
+#load-if-not-defined PERSIAN-CIV
+#load-if-not-defined PORTUGUESE-CIV
+(defconst my-unique-building 0)
+#end-if
+#end-if
+#end-if
+#end-if
+
+#load-if-defined AZTEC-CIV
+	(defconst scout-unit eagle-warrior)
+#end-if
+#load-if-defined GURJARAS-CIV
+	(defconst scout-unit camel-scout)
+#end-if
+#load-if-defined INCAN-CIV
+	(defconst scout-unit eagle-warrior)
+#end-if
+#load-if-defined MAYAN-CIV
+	(defconst scout-unit eagle-warrior)
+#end-if
+#load-if-not-defined AZTEC-CIV
+#load-if-not-defined GURJARAS-CIV
+#load-if-not-defined INCAN-CIV
+#load-if-not-defined MAYAN-CIV
+	(defconst scout-unit scout-cavalry)
+#end-if
+#end-if
+#end-if
+#end-if
+
+#load-if-defined ARMENIANS-CIV
+
+	(defconst UNIQUE-UNIT-CLASS archery-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE PIERCE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE ARCHER-ARMOR)
+
+#end-if
+
+#load-if-defined AZTEC-CIV
+
+	(defconst UNIQUE-UNIT-CLASS infantry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE INFANTRY-ARMOR)
+
+#end-if
+
+#load-if-defined BENGALIS-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-archer-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE PIERCE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE ARCHER-ARMOR)
+
+#end-if
+
+#load-if-defined BERBERS-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-archer-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE PIERCE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE ARCHER-ARMOR)
+	
+#end-if
+
+#load-if-defined BOHEMIANS-CIV
+
+	(defconst UNIQUE-UNIT-CLASS scorpion-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE NONE)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE NONE)
+
+#end-if
+
+#load-if-defined BRITON-CIV
+
+	(defconst UNIQUE-UNIT-CLASS archery-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE PIERCE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE ARCHER-ARMOR)
+
+#end-if
+
+#load-if-defined BULGARIANS-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE CAVALRY-ARMOR)
+
+#end-if
+
+#load-if-defined BURGUNDIANS-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE CAVALRY-ARMOR)
+
+#end-if
+
+#load-if-defined BURMESE-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-cannon-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE NONE)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE ARCHER-ARMOR)
+	
+#end-if
+
+#load-if-defined BYZANTINE-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE CAVALRY-ARMOR)
+
+#end-if
+
+#load-if-defined CELTIC-CIV
+
+	(defconst UNIQUE-UNIT-CLASS infantry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE INFANTRY-ARMOR)
+
+#end-if
+
+#load-if-defined CHINESE-CIV
+
+	(defconst UNIQUE-UNIT-CLASS archery-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE PIERCE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE ARCHER-ARMOR)
+
+#end-if
+
+#load-if-defined CUMANS-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-archer-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE PIERCE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE ARCHER-ARMOR)
+
+#end-if
+
+#load-if-defined DRAVIDIANS-CIV
+
+	(defconst UNIQUE-UNIT-CLASS infantry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE INFANTRY-ARMOR)
+
+#end-if
+
+#load-if-defined ETHIOPIAN-CIV
+
+	(defconst UNIQUE-UNIT-CLASS infantry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE INFANTRY-ARMOR)
+	
+#end-if
+
+#load-if-defined FRANKISH-CIV
+
+	(defconst UNIQUE-UNIT-CLASS infantry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE INFANTRY-ARMOR)
+
+#end-if
+
+#load-if-defined GEORGIANS-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE CAVALRY-ARMOR)
+
+#end-if
+
+#load-if-defined GOTHIC-CIV
+
+	(defconst UNIQUE-UNIT-CLASS infantry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE INFANTRY-ARMOR)
+
+#end-if
+
+#load-if-defined GURJARAS-CIV
+
+	(defconst UNIQUE-UNIT-CLASS infantry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE INFANTRY-ARMOR)
+
+#end-if
+
+#load-if-defined HUN-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE CAVALRY-ARMOR)
+
+#end-if
+
+#load-if-defined INCAN-CIV
+
+	(defconst UNIQUE-UNIT-CLASS infantry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE INFANTRY-ARMOR)
+
+#end-if
+
+#load-if-defined INDIAN-CIV
+
+	(defconst UNIQUE-UNIT-CLASS infantry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE INFANTRY-ARMOR)
+	
+#end-if
+
+#load-if-defined ITALIAN-CIV
+
+	(defconst UNIQUE-UNIT-CLASS archery-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE PIERCE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE ARCHER-ARMOR)
+	
+#end-if
+
+#load-if-defined JAPANESE-CIV
+
+	(defconst UNIQUE-UNIT-CLASS infantry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE INFANTRY-ARMOR)
+
+#end-if
+
+#load-if-defined JURCHENS-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE CAVALRY-ARMOR)
+
+#end-if
+
+#load-if-defined KHITANS-CIV
+
+	(defconst UNIQUE-UNIT-CLASS infantry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE INFANTRY-ARMOR)
+
+#end-if
+
+#load-if-defined KHMER-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE NONE)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE CAVALRY-ARMOR)
+	
+#end-if
+
+#load-if-defined KOREAN-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-archer-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE PIERCE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE ARCHER-ARMOR)
+
+#end-if
+
+#load-if-defined LITHUANIANS-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE CAVALRY-ARMOR)
+
+#end-if
+
+#load-if-defined MAGYAR-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE CAVALRY-ARMOR)
+	
+#end-if
+
+#load-if-defined MALAY-CIV
+
+	(defconst UNIQUE-UNIT-CLASS infantry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE INFANTRY-ARMOR)
+	
+#end-if
+
+#load-if-defined MALIAN-CIV
+
+	(defconst UNIQUE-UNIT-CLASS infantry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE INFANTRY-ARMOR)
+	
+#end-if
+
+#load-if-defined MAYAN-CIV
+
+	(defconst UNIQUE-UNIT-CLASS archery-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE PIERCE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE ARCHER-ARMOR)
+
+#end-if
+
+#load-if-defined MONGOL-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-archer-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE PIERCE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE ARCHER-ARMOR)
+
+#end-if
+
+#load-if-defined PERSIAN-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE CAVALRY-ARMOR)
+
+#end-if
+
+#load-if-defined POLES-CIV
+
+	(defconst UNIQUE-UNIT-CLASS infantry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE INFANTRY-ARMOR)
+
+#end-if
+
+#load-if-defined PORTUGUESE-CIV
+
+	(defconst UNIQUE-UNIT-CLASS siege-weapon-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE NONE)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE NONE)
+	
+#end-if
+
+#load-if-defined ROMANS-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE CAVALRY-ARMOR)
+#end-if
+
+#load-if-defined SARACEN-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE CAVALRY-ARMOR)
+
+#end-if
+
+#load-if-defined SHU-CIV
+
+	(defconst UNIQUE-UNIT-CLASS infantry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE INFANTRY-ARMOR)
+
+#end-if
+
+#load-if-defined SICILIANS-CIV
+
+	(defconst UNIQUE-UNIT-CLASS infantry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE INFANTRY-ARMOR)
+
+#end-if
+
+#load-if-defined SLAVIC-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE CAVALRY-ARMOR)
+	
+#end-if
+
+#load-if-defined SPANISH-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-cannon-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE NONE)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE ARCHER-ARMOR)
+
+#end-if
+
+#load-if-defined TATARS-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE CAVALRY-ARMOR)
+
+#end-if
+
+#load-if-defined TEUTONIC-CIV
+
+	(defconst UNIQUE-UNIT-CLASS infantry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE INFANTRY-ARMOR)
+
+#end-if
+
+#load-if-defined TURKISH-CIV
+
+	(defconst UNIQUE-UNIT-CLASS archery-cannon-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE NONE)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE ARCHER-ARMOR)
+
+#end-if
+
+#load-if-defined VIETNAMESE-CIV
+
+	(defconst UNIQUE-UNIT-CLASS archery-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE PIERCE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE ARCHER-ARMOR)
+	
+#end-if
+
+#load-if-defined VIKING-CIV
+
+	(defconst UNIQUE-UNIT-CLASS infantry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE INFANTRY-ARMOR)
+
+#end-if
+
+#load-if-defined WEI-CIV
+
+	(defconst UNIQUE-UNIT-CLASS cavalry-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE MELEE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE CAVALRY-ARMOR)
+
+#end-if
+
+#load-if-defined WU-CIV
+
+	(defconst UNIQUE-UNIT-CLASS archery-class)
+	(defconst UNIQUE-UNIT-ATTACK-TYPE PIERCE-ATTACK)
+	(defconst UNIQUE-UNIT-ARMOR-TYPE ARCHER-ARMOR)
+	
+#end-if

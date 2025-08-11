@@ -1,0 +1,4599 @@
+;Initialization.per
+
+;=========================<>=========================
+;				     DEFINITIONS
+;=========================<>=========================
+
+	;----------------------
+	;	Custom Constants
+	;----------------------
+
+		;Generic Constants
+		(defconst NO 0)
+		(defconst YES 1)
+		(defconst OFF 0)
+		(defconst ON 1)
+		(defconst NONE 0)
+		(defconst PENDING -1)
+
+		;Attack Constants
+		; (defconst NONE 0)
+		(defconst MELEE-ATTACK 1)
+		(defconst PIERCE-ATTACK 2)
+
+		;Armor Constants
+		; (defconst NONE 0)
+		(defconst INFANTRY-ARMOR 1)
+		(defconst ARCHER-ARMOR 2)
+		(defconst CAVALRY-ARMOR 3)
+
+		;Chat Constants
+		#load-if-not-defined UP-HUMAN-IN-GAME
+		(defconst TAUNT-PLAYER any-computer)
+		(defconst THIS-ANY-TAUNT-PLAYER this-any-computer)
+		#else
+		(defconst TAUNT-PLAYER any-human-ally)
+		(defconst THIS-ANY-TAUNT-PLAYER this-any-human-ally)
+		#end-if
+
+		;Language IDs
+		(defconst lang-id-town-center 5164)
+
+		;Number of Players
+		#load-if-defined UP-1-PLAYER-GAME
+		(defconst MAX-PLAYERS 1)
+		#end-if
+		#load-if-defined UP-2-PLAYER-GAME
+		(defconst MAX-PLAYERS 2)
+		#end-if
+		#load-if-defined UP-3-PLAYER-GAME
+		(defconst MAX-PLAYERS 3)
+		#end-if
+		#load-if-defined UP-4-PLAYER-GAME
+		(defconst MAX-PLAYERS 4)
+		#end-if
+		#load-if-defined UP-5-PLAYER-GAME
+		(defconst MAX-PLAYERS 5)
+		#end-if
+		#load-if-defined UP-6-PLAYER-GAME
+		(defconst MAX-PLAYERS 6)
+		#end-if
+		#load-if-defined UP-7-PLAYER-GAME
+		(defconst MAX-PLAYERS 7)
+		#end-if
+		#load-if-defined UP-8-PLAYER-GAME
+		(defconst MAX-PLAYERS 8)
+		#end-if
+
+		(defconst NOMAD-TC-RADIUS 8)
+
+	;----------------------
+	;	String Constants
+	;----------------------
+
+		;Text Comparison	
+		(defconst TEXT-GG "gg")
+		(defconst TEXT-GG2 "gg?")
+		(defconst TEXT-WILLIAM-WALLACE "William Wallace")
+
+		;Taunts
+		(defconst TAUNT-DESIRED-OBJECT "Desire: %s")
+		(defconst TAUNT-AMOUNT "Amount: %d")
+		(defconst TAUNT-48-CANT-ASSIST-YET "Hold them off for now. I'll send aid when I can.")
+		(defconst TAUNT-48-UNDER-ATTACK "A disastrous day! I am also under attack myself.")
+		(defconst TAUNT-48-STOP-ATTACK "Halting my attack to come to your aid")
+		(defconst TAUNT-48-ASSIST "My soldiers are on their way!")
+		(defconst TAUNT-48-ALREADY-ASSISTING "I've already ordered my army to assist you or a teammate.")
+		(defconst TAUNT-48-ALLY-SAFE "I received your request for aid, but it seems your town is safe")
+		(defconst TAUNT-48-NO-DUC "My DUC micro is disabled, preventing me from defending your town")
+		(defconst TAUNT-48-TOO-WEAK "Alas, it seems your city is overrun! I must focus my soldiers elsewhere.")
+		(defconst TAUNT-238-ENEMY-MILITARY-COUNTS "Enemy has %s")
+		(defconst TAUNT-245-ATTACK-STATUS "Attack Status: %d")
+		(defconst TAUNT-245-ATTACKING "Attacking?: %d")
+		(defconst TAUNT-245-ATTACK-OBJECTIVE "Objective: %d")
+		(defconst TAUNT-246-SAVING "Saving for %s")
+
+		;Functions
+		(defconst CHAT-LOCAL-LIST-NOT-EMPTY "local list not empty")
+		(defconst CHAT-RESET-GROUP-0 "Reset Group 0")
+
+		;Army Comp
+		; (defconst CHAT-ADJUST-FOR-BUILDINGS-COMPLETE "Adjust for buildings complete: %d")
+		; (defconst CHAT-ADJUST-FOR-TECHS-COMPLETE "Adjust for techs complete: %d")
+		; (defconst CHAT-ADJUST-FOR-TECHS-NOT-AVAILABLE "Adjust for techs not available: %d")
+		(defconst CHAT-COUNTER-TYPE "Counter adj type: %d")
+		(defconst CHAT-COUNTER-ENEMY-TYPE "Counter enemy unit: %d")
+		(defconst CHAT-COUNTER-ENEMY-CAMEL-ARCHER "Counter enemy camel archers")
+		(defconst CHAT-COUNTER-SUPPORT-TYPE "Countering with: %d")
+		(defconst CHAT-COUNTER-AMOUNT "Counter score adjustment: %d")
+
+		;Army DUC
+		(defconst CHAT-LOG-ENTRY "---Log Entry---")
+		(defconst CHAT-LOG-TIME "Log Time: %d")
+		(defconst CHAT-LOG-PLAYER "Log Player: %d")
+		(defconst CHAT-LOOP-ID "Loop #%d Start")
+		(defconst CHAT-LOOP-PASS "Loop Pass %d")
+		(defconst CHAT-CREATE-GROUP "Create Group %d")
+		(defconst CHAT-COMBINE-GROUPS "Combine groups %d")
+		(defconst CHAT-EXPLORE-AROUND-TOWN "Explore around town, group %d")
+		(defconst CHAT-SET-NEW-DESTINATION "Set New Destination, ver %d")
+		(defconst CHAT-SET-NEW-DESTINATION-X "New Destination X: %d")
+		(defconst CHAT-SET-NEW-DESTINATION-Y "New Destination Y: %d")
+		(defconst CHAT-NEW-SCOUT-POINT "Group %d new scout point")
+		(defconst CHAT-NEW-SCOUT-POINT-X "New Scout Point X: %d")
+		(defconst CHAT-NEW-SCOUT-POINT-Y "New Scout Point Y: %d")
+		(defconst CHAT-GROUP-IN-RANGE "group %d in range")
+		(defconst CHAT-GROUP-DIED "Group %d died")
+		(defconst CHAT-AVOID-OBJECT "Get group %d away from scary object")
+		(defconst CHAT-AVOIDANCE-COUNTER "Avoidance counter: %d")
+		(defconst CHAT-OBJECTS-FOUND-CHECKPOINT "Objects Found Checkpoint: %d")
+		(defconst CHAT-OBJECTS-FOUND-LOCAL "Local Found: %d")
+		(defconst CHAT-OBJECTS-FOUND-REMOTE "Remote Found: %d")
+		(defconst CHAT-UNITS-FOUND "Units found: %d")
+		(defconst CHAT-UNITS-FOUND-BY-GROUP "Units found by Group: %d")
+		(defconst CHAT-NEW-TARGET "New Target, group %d")
+		(defconst CHAT-NEW-TARGET-ID "New Target ID: %d")
+		(defconst CHAT-INCREASE-DESTINATION-TIME "Increase destination time: %d")
+		(defconst CHAT-GROUP-LOCATION-INACCESSIBLE "Group %d location inaccessible")
+		(defconst CHAT-GATHER-GROUP "gather group %d")
+		(defconst CHAT-SEND-UNIT-TO-JOIN-GROUP "Send unit to join group %d")
+		(defconst CHAT-SET-MAIN-GROUP "Set main group: %d")
+        (defconst CHAT-GROUP-SIZE "Group size: %d")
+        (defconst CHAT-GROUP-SIZE-DUC "Group size from DUC search: %d")
+        (defconst CHAT-FLAG "Group flag value: %d")
+        (defconst CHAT-TYPE-FLAG "Group type flag value: %d")
+        (defconst CHAT-ACTION "Group action: %d")
+        (defconst CHAT-TARGET-OBJECT "Group target object ID: %d")
+        (defconst CHAT-DESTINATION-TIME "Group destination time: %d")
+        (defconst CHAT-AVOIDANCE-COUNTER "Group avoidance counter: %d")
+        (defconst CHAT-LOCATION-X "Group x-location: %d")
+        (defconst CHAT-LOCATION-Y "Group y-location: %d")
+        (defconst CHAT-DESTINATION-X "Group x-destination: %d")
+        (defconst CHAT-DESTINATION-Y "Group y-destination: %d")
+
+		;Building Construction
+		(defconst CHAT-BUILD-BACKUP-BUILDING "Build Backup %s")
+		(defconst CHAT-BUILD-BACKUP-TC-GOLD "Build Town Center with gold backup rules")
+		(defconst CHAT-BUILD-BACKUP-TC-WOOD "Build Town Center with wood backup rules")
+
+		;Chat
+		(defconst CHAT-DEFEATED "I'm about to be defeated. Keep on without me!")
+		(defconst CHAT-REQUEST-FOOD-FOR-VILLAGERS1 "3 No villagers to gather food, no food to train them.")
+		(defconst CHAT-REQUEST-FOOD-FOR-VILLAGERS2 "Catch-22. Food please? 11")
+		(defconst CHAT-REQUEST-WOOD-FOR-CAMP1 "4 Can't build LC or TC. Out of wood and can't gather it.")
+		(defconst CHAT-REQUEST-WOOD-FOR-CAMP2 "Catch-22. Wood please? 11")
+		(defconst CHAT-RESIGN "Well fought. We shall do battle again another day.")
+
+		;DUC
+		(defconst CHAT-BOAR-GET-ASSISTANT-HUNTERS "get assistant boar hunters")
+
+		;Nomad
+		(defconst CHAT-NOMAD-MAP-DETECTED "Nomad map detected")
+
+		;Personality
+		(defconst CHAT-GENERAL1 "")
+		(defconst CHAT-GENERAL2 "")
+		(defconst CHAT-GENERAL3 "")
+		(defconst CHAT-GENERAL4 "")
+		(defconst CHAT-GENERAL5 "")
+		(defconst CHAT-GENERAL6 "")
+		(defconst CHAT-GENERAL7 "")
+		(defconst CHAT-GENERAL8 "")
+		(defconst CHAT-GENERAL9 "")
+		(defconst CHAT-GENERAL10 "")
+		#load-if-defined AZTEC-CIV
+			(defconst CHAT-GENERAL1 "I am Cuauhtemoc.")
+			(defconst CHAT-GENERAL2 "I am Cuauhtemoc, Eagle Warrior of Tenochtitlan.")
+			(defconst CHAT-GENERAL3 "I am Cuauhtemoc, Jaguar Warrior of Tenochtitlan.")
+			(defconst CHAT-GENERAL4 "I am Cuauhtemoc, Emperor of Tenochtitlan.")
+			(defconst CHAT-GENERAL5 "My magicians have foretold it.")
+			(defconst CHAT-GENERAL6 "It is time for a garland war!")
+		#end-if
+		#load-if-defined BRITON-CIV
+			(defconst CHAT-GENERAL1 "I see you don't have William Wallace to save you.")
+			(defconst CHAT-GENERAL2 "Good.")
+			(defconst CHAT-GENERAL3 "Wallace? What are you doing here?")
+			(defconst CHAT-GENERAL4 "Your'e not going to turn traitor are you, William Wallace?")
+			(defconst CHAT-GENERAL5 "For he today that sheds his blood with me shall be my brother.")
+			(defconst CHAT-GENERAL6 "I look forward to drawing our swords together, my friend.")
+			(defconst CHAT-GENERAL7 "I am Arthur, King of the Britons.")
+		#end-if
+		#load-if-defined FRANKISH-CIV
+			(defconst CHAT-GENERAL1 "La Hire wishes to kill something!")
+		#end-if
+		#load-if-defined KOREAN-CIV
+			(defconst CHAT-GENERAL1 "Want to see the might of Goryeo today?")
+			(defconst CHAT-GENERAL2 "It would be my pleasure to show you.")
+			(defconst CHAT-GENERAL3 "No turtle ships??? Dang.")
+		#end-if
+
+	;---------------------------
+	;	Civ Loading Constants
+	;---------------------------
+
+		(load "The General 1.3/Civ Unique Constants")
+		(load "The General 1.3/Civ Tech Tree Constants")
+
+	;--------------------------------
+	;	Map Size Loading Constants
+	;--------------------------------
+
+		;Unfortunately, Archipelago, Fortress, Islands, Migration, and Team Islands maps are larger than usual maps.
+		;So we have to define the map sizes separately for each of these maps.
+		#load-if-defined TINY-MAP
+			#load-if-defined ARCHIPELAGO-MAP
+			(defconst TEN-PERCENT-MAP-SIZE 14)
+			(defconst TWENTY-PERCENT-MAP-SIZE 29)
+			(defconst THIRTY-PERCENT-MAP-SIZE 43)
+			(defconst FORTY-PERCENT-MAP-SIZE 58)
+			(defconst FIFTY-PERCENT-MAP-SIZE 72)
+			(defconst SIXTY-PERCENT-MAP-SIZE 86)
+			(defconst SEVENTY-PERCENT-MAP-SIZE 101)
+			(defconst EIGHTY-PERCENT-MAP-SIZE 115)
+			(defconst NINETY-PERCENT-MAP-SIZE 130)
+			(defconst HUNDRED-PERCENT-MAP-SIZE 144)
+			(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 143)
+			(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 216)
+			#else
+				#load-if-defined FORTRESS-MAP
+				(defconst TEN-PERCENT-MAP-SIZE 14)
+				(defconst TWENTY-PERCENT-MAP-SIZE 29)
+				(defconst THIRTY-PERCENT-MAP-SIZE 43)
+				(defconst FORTY-PERCENT-MAP-SIZE 58)
+				(defconst FIFTY-PERCENT-MAP-SIZE 72)
+				(defconst SIXTY-PERCENT-MAP-SIZE 86)
+				(defconst SEVENTY-PERCENT-MAP-SIZE 101)
+				(defconst EIGHTY-PERCENT-MAP-SIZE 115)
+				(defconst NINETY-PERCENT-MAP-SIZE 130)
+				(defconst HUNDRED-PERCENT-MAP-SIZE 144)
+				(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 143)
+				(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 216)
+				#else
+					#load-if-defined ISLANDS-MAP
+					(defconst TEN-PERCENT-MAP-SIZE 14)
+					(defconst TWENTY-PERCENT-MAP-SIZE 29)
+					(defconst THIRTY-PERCENT-MAP-SIZE 43)
+					(defconst FORTY-PERCENT-MAP-SIZE 58)
+					(defconst FIFTY-PERCENT-MAP-SIZE 72)
+					(defconst SIXTY-PERCENT-MAP-SIZE 86)
+					(defconst SEVENTY-PERCENT-MAP-SIZE 101)
+					(defconst EIGHTY-PERCENT-MAP-SIZE 115)
+					(defconst NINETY-PERCENT-MAP-SIZE 130)
+					(defconst HUNDRED-PERCENT-MAP-SIZE 144)
+					(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 143)
+					(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 216)
+					#else
+						#load-if-defined MIGRATION-MAP
+						(defconst TEN-PERCENT-MAP-SIZE 14)
+						(defconst TWENTY-PERCENT-MAP-SIZE 29)
+						(defconst THIRTY-PERCENT-MAP-SIZE 43)
+						(defconst FORTY-PERCENT-MAP-SIZE 58)
+						(defconst FIFTY-PERCENT-MAP-SIZE 72)
+						(defconst SIXTY-PERCENT-MAP-SIZE 86)
+						(defconst SEVENTY-PERCENT-MAP-SIZE 101)
+						(defconst EIGHTY-PERCENT-MAP-SIZE 115)
+						(defconst NINETY-PERCENT-MAP-SIZE 130)
+						(defconst HUNDRED-PERCENT-MAP-SIZE 144)
+						(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 143)
+						(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 216)
+						#else
+							#load-if-defined TEAM-ISLANDS-MAP
+							(defconst TEN-PERCENT-MAP-SIZE 14)
+							(defconst TWENTY-PERCENT-MAP-SIZE 29)
+							(defconst THIRTY-PERCENT-MAP-SIZE 43)
+							(defconst FORTY-PERCENT-MAP-SIZE 58)
+							(defconst FIFTY-PERCENT-MAP-SIZE 72)
+							(defconst SIXTY-PERCENT-MAP-SIZE 86)
+							(defconst SEVENTY-PERCENT-MAP-SIZE 101)
+							(defconst EIGHTY-PERCENT-MAP-SIZE 115)
+							(defconst NINETY-PERCENT-MAP-SIZE 130)
+							(defconst HUNDRED-PERCENT-MAP-SIZE 144)
+							(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 143)
+							(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 216)
+							#else
+								(defconst TEN-PERCENT-MAP-SIZE 12)
+								(defconst TWENTY-PERCENT-MAP-SIZE 24)
+								(defconst THIRTY-PERCENT-MAP-SIZE 36)
+								(defconst FORTY-PERCENT-MAP-SIZE 48)
+								(defconst FIFTY-PERCENT-MAP-SIZE 60)
+								(defconst SIXTY-PERCENT-MAP-SIZE 72)
+								(defconst SEVENTY-PERCENT-MAP-SIZE 84)
+								(defconst EIGHTY-PERCENT-MAP-SIZE 96)
+								(defconst NINETY-PERCENT-MAP-SIZE 108)
+								(defconst HUNDRED-PERCENT-MAP-SIZE 120)
+								(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 119)
+								(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 180)
+							#end-if
+						#end-if
+					#end-if
+				#end-if
+			#end-if
+		#end-if
+
+		#load-if-defined SMALL-MAP
+			#load-if-defined ARCHIPELAGO-MAP
+			(defconst TEN-PERCENT-MAP-SIZE 17)
+			(defconst TWENTY-PERCENT-MAP-SIZE 34)
+			(defconst THIRTY-PERCENT-MAP-SIZE 50)
+			(defconst FORTY-PERCENT-MAP-SIZE 67)
+			(defconst FIFTY-PERCENT-MAP-SIZE 84)
+			(defconst SIXTY-PERCENT-MAP-SIZE 101)
+			(defconst SEVENTY-PERCENT-MAP-SIZE 118)
+			(defconst EIGHTY-PERCENT-MAP-SIZE 134)
+			(defconst NINETY-PERCENT-MAP-SIZE 151)
+			(defconst HUNDRED-PERCENT-MAP-SIZE 168)
+			(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 167)
+			(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 252)
+			#else
+				#load-if-defined FORTRESS-MAP
+				(defconst TEN-PERCENT-MAP-SIZE 17)
+				(defconst TWENTY-PERCENT-MAP-SIZE 34)
+				(defconst THIRTY-PERCENT-MAP-SIZE 50)
+				(defconst FORTY-PERCENT-MAP-SIZE 67)
+				(defconst FIFTY-PERCENT-MAP-SIZE 84)
+				(defconst SIXTY-PERCENT-MAP-SIZE 101)
+				(defconst SEVENTY-PERCENT-MAP-SIZE 118)
+				(defconst EIGHTY-PERCENT-MAP-SIZE 134)
+				(defconst NINETY-PERCENT-MAP-SIZE 151)
+				(defconst HUNDRED-PERCENT-MAP-SIZE 168)
+				(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 167)
+				(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 252)
+				#else
+					#load-if-defined ISLANDS-MAP
+					(defconst TEN-PERCENT-MAP-SIZE 17)
+					(defconst TWENTY-PERCENT-MAP-SIZE 34)
+					(defconst THIRTY-PERCENT-MAP-SIZE 50)
+					(defconst FORTY-PERCENT-MAP-SIZE 67)
+					(defconst FIFTY-PERCENT-MAP-SIZE 84)
+					(defconst SIXTY-PERCENT-MAP-SIZE 101)
+					(defconst SEVENTY-PERCENT-MAP-SIZE 118)
+					(defconst EIGHTY-PERCENT-MAP-SIZE 134)
+					(defconst NINETY-PERCENT-MAP-SIZE 151)
+					(defconst HUNDRED-PERCENT-MAP-SIZE 168)
+					(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 167)
+					(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 252)
+					#else
+						#load-if-defined MIGRATION-MAP
+						(defconst TEN-PERCENT-MAP-SIZE 17)
+						(defconst TWENTY-PERCENT-MAP-SIZE 34)
+						(defconst THIRTY-PERCENT-MAP-SIZE 50)
+						(defconst FORTY-PERCENT-MAP-SIZE 67)
+						(defconst FIFTY-PERCENT-MAP-SIZE 84)
+						(defconst SIXTY-PERCENT-MAP-SIZE 101)
+						(defconst SEVENTY-PERCENT-MAP-SIZE 118)
+						(defconst EIGHTY-PERCENT-MAP-SIZE 134)
+						(defconst NINETY-PERCENT-MAP-SIZE 151)
+						(defconst HUNDRED-PERCENT-MAP-SIZE 168)
+						(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 167)
+						(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 252)
+						#else
+							#load-if-defined TEAM-ISLANDS-MAP
+							(defconst TEN-PERCENT-MAP-SIZE 17)
+							(defconst TWENTY-PERCENT-MAP-SIZE 34)
+							(defconst THIRTY-PERCENT-MAP-SIZE 50)
+							(defconst FORTY-PERCENT-MAP-SIZE 67)
+							(defconst FIFTY-PERCENT-MAP-SIZE 84)
+							(defconst SIXTY-PERCENT-MAP-SIZE 101)
+							(defconst SEVENTY-PERCENT-MAP-SIZE 118)
+							(defconst EIGHTY-PERCENT-MAP-SIZE 134)
+							(defconst NINETY-PERCENT-MAP-SIZE 151)
+							(defconst HUNDRED-PERCENT-MAP-SIZE 168)
+							(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 167)
+							(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 252)
+							#else
+								(defconst TEN-PERCENT-MAP-SIZE 14)
+								(defconst TWENTY-PERCENT-MAP-SIZE 29)
+								(defconst THIRTY-PERCENT-MAP-SIZE 43)
+								(defconst FORTY-PERCENT-MAP-SIZE 58)
+								(defconst FIFTY-PERCENT-MAP-SIZE 72)
+								(defconst SIXTY-PERCENT-MAP-SIZE 86)
+								(defconst SEVENTY-PERCENT-MAP-SIZE 101)
+								(defconst EIGHTY-PERCENT-MAP-SIZE 115)
+								(defconst NINETY-PERCENT-MAP-SIZE 130)
+								(defconst HUNDRED-PERCENT-MAP-SIZE 144)
+								(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 143)
+								(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 216)
+							#end-if
+						#end-if
+					#end-if
+				#end-if
+			#end-if
+		#end-if
+		
+		#load-if-defined MEDIUM-MAP
+			#load-if-defined ARCHIPELAGO-MAP
+			(defconst TEN-PERCENT-MAP-SIZE 20)
+			(defconst TWENTY-PERCENT-MAP-SIZE 40)
+			(defconst THIRTY-PERCENT-MAP-SIZE 60)
+			(defconst FORTY-PERCENT-MAP-SIZE 80)
+			(defconst FIFTY-PERCENT-MAP-SIZE 100)
+			(defconst SIXTY-PERCENT-MAP-SIZE 120)
+			(defconst SEVENTY-PERCENT-MAP-SIZE 140)
+			(defconst EIGHTY-PERCENT-MAP-SIZE 160)
+			(defconst NINETY-PERCENT-MAP-SIZE 180)
+			(defconst HUNDRED-PERCENT-MAP-SIZE 200)
+			(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 199)
+			(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 300)
+			#else
+				#load-if-defined FORTRESS-MAP
+				(defconst TEN-PERCENT-MAP-SIZE 20)
+				(defconst TWENTY-PERCENT-MAP-SIZE 40)
+				(defconst THIRTY-PERCENT-MAP-SIZE 60)
+				(defconst FORTY-PERCENT-MAP-SIZE 80)
+				(defconst FIFTY-PERCENT-MAP-SIZE 100)
+				(defconst SIXTY-PERCENT-MAP-SIZE 120)
+				(defconst SEVENTY-PERCENT-MAP-SIZE 140)
+				(defconst EIGHTY-PERCENT-MAP-SIZE 160)
+				(defconst NINETY-PERCENT-MAP-SIZE 180)
+				(defconst HUNDRED-PERCENT-MAP-SIZE 200)
+				(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 199)
+				(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 300)
+				#else
+					#load-if-defined ISLANDS-MAP
+					(defconst TEN-PERCENT-MAP-SIZE 20)
+					(defconst TWENTY-PERCENT-MAP-SIZE 40)
+					(defconst THIRTY-PERCENT-MAP-SIZE 60)
+					(defconst FORTY-PERCENT-MAP-SIZE 80)
+					(defconst FIFTY-PERCENT-MAP-SIZE 100)
+					(defconst SIXTY-PERCENT-MAP-SIZE 120)
+					(defconst SEVENTY-PERCENT-MAP-SIZE 140)
+					(defconst EIGHTY-PERCENT-MAP-SIZE 160)
+					(defconst NINETY-PERCENT-MAP-SIZE 180)
+					(defconst HUNDRED-PERCENT-MAP-SIZE 200)
+					(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 199)
+					(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 300)
+					#else
+						#load-if-defined MIGRATION-MAP
+						(defconst TEN-PERCENT-MAP-SIZE 20)
+						(defconst TWENTY-PERCENT-MAP-SIZE 40)
+						(defconst THIRTY-PERCENT-MAP-SIZE 60)
+						(defconst FORTY-PERCENT-MAP-SIZE 80)
+						(defconst FIFTY-PERCENT-MAP-SIZE 100)
+						(defconst SIXTY-PERCENT-MAP-SIZE 120)
+						(defconst SEVENTY-PERCENT-MAP-SIZE 140)
+						(defconst EIGHTY-PERCENT-MAP-SIZE 160)
+						(defconst NINETY-PERCENT-MAP-SIZE 180)
+						(defconst HUNDRED-PERCENT-MAP-SIZE 200)
+						(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 199)
+						(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 300)
+						#else
+							#load-if-defined TEAM-ISLANDS-MAP
+							(defconst TEN-PERCENT-MAP-SIZE 20)
+							(defconst TWENTY-PERCENT-MAP-SIZE 40)
+							(defconst THIRTY-PERCENT-MAP-SIZE 60)
+							(defconst FORTY-PERCENT-MAP-SIZE 80)
+							(defconst FIFTY-PERCENT-MAP-SIZE 100)
+							(defconst SIXTY-PERCENT-MAP-SIZE 120)
+							(defconst SEVENTY-PERCENT-MAP-SIZE 140)
+							(defconst EIGHTY-PERCENT-MAP-SIZE 160)
+							(defconst NINETY-PERCENT-MAP-SIZE 180)
+							(defconst HUNDRED-PERCENT-MAP-SIZE 200)
+							(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 199)
+							(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 300)
+							#else
+								(defconst TEN-PERCENT-MAP-SIZE 17)
+								(defconst TWENTY-PERCENT-MAP-SIZE 34)
+								(defconst THIRTY-PERCENT-MAP-SIZE 50)
+								(defconst FORTY-PERCENT-MAP-SIZE 67)
+								(defconst FIFTY-PERCENT-MAP-SIZE 84)
+								(defconst SIXTY-PERCENT-MAP-SIZE 101)
+								(defconst SEVENTY-PERCENT-MAP-SIZE 118)
+								(defconst EIGHTY-PERCENT-MAP-SIZE 134)
+								(defconst NINETY-PERCENT-MAP-SIZE 151)
+								(defconst HUNDRED-PERCENT-MAP-SIZE 168)
+								(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 167)
+								(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 252)
+							#end-if
+						#end-if
+					#end-if
+				#end-if
+			#end-if
+		#end-if
+		
+		#load-if-defined NORMAL-MAP
+			#load-if-defined ARCHIPELAGO-MAP
+			(defconst TEN-PERCENT-MAP-SIZE 22)
+			(defconst TWENTY-PERCENT-MAP-SIZE 44)
+			(defconst THIRTY-PERCENT-MAP-SIZE 66)
+			(defconst FORTY-PERCENT-MAP-SIZE 88)
+			(defconst FIFTY-PERCENT-MAP-SIZE 110)
+			(defconst SIXTY-PERCENT-MAP-SIZE 132)
+			(defconst SEVENTY-PERCENT-MAP-SIZE 154)
+			(defconst EIGHTY-PERCENT-MAP-SIZE 176)
+			(defconst NINETY-PERCENT-MAP-SIZE 198)
+			(defconst HUNDRED-PERCENT-MAP-SIZE 220)
+			(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 219)
+			(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 330)
+			#else
+				#load-if-defined FORTRESS-MAP
+				(defconst TEN-PERCENT-MAP-SIZE 22)
+				(defconst TWENTY-PERCENT-MAP-SIZE 44)
+				(defconst THIRTY-PERCENT-MAP-SIZE 66)
+				(defconst FORTY-PERCENT-MAP-SIZE 88)
+				(defconst FIFTY-PERCENT-MAP-SIZE 110)
+				(defconst SIXTY-PERCENT-MAP-SIZE 132)
+				(defconst SEVENTY-PERCENT-MAP-SIZE 154)
+				(defconst EIGHTY-PERCENT-MAP-SIZE 176)
+				(defconst NINETY-PERCENT-MAP-SIZE 198)
+				(defconst HUNDRED-PERCENT-MAP-SIZE 220)
+				(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 219)
+				(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 330)
+				#else
+					#load-if-defined ISLANDS-MAP
+					(defconst TEN-PERCENT-MAP-SIZE 22)
+					(defconst TWENTY-PERCENT-MAP-SIZE 44)
+					(defconst THIRTY-PERCENT-MAP-SIZE 66)
+					(defconst FORTY-PERCENT-MAP-SIZE 88)
+					(defconst FIFTY-PERCENT-MAP-SIZE 110)
+					(defconst SIXTY-PERCENT-MAP-SIZE 132)
+					(defconst SEVENTY-PERCENT-MAP-SIZE 154)
+					(defconst EIGHTY-PERCENT-MAP-SIZE 176)
+					(defconst NINETY-PERCENT-MAP-SIZE 198)
+					(defconst HUNDRED-PERCENT-MAP-SIZE 220)
+					(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 219)
+					(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 330)
+					#else
+						#load-if-defined MIGRATION-MAP
+						(defconst TEN-PERCENT-MAP-SIZE 22)
+						(defconst TWENTY-PERCENT-MAP-SIZE 44)
+						(defconst THIRTY-PERCENT-MAP-SIZE 66)
+						(defconst FORTY-PERCENT-MAP-SIZE 88)
+						(defconst FIFTY-PERCENT-MAP-SIZE 110)
+						(defconst SIXTY-PERCENT-MAP-SIZE 132)
+						(defconst SEVENTY-PERCENT-MAP-SIZE 154)
+						(defconst EIGHTY-PERCENT-MAP-SIZE 176)
+						(defconst NINETY-PERCENT-MAP-SIZE 198)
+						(defconst HUNDRED-PERCENT-MAP-SIZE 220)
+						(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 219)
+						(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 330)
+						#else
+							#load-if-defined TEAM-ISLANDS-MAP
+							(defconst TEN-PERCENT-MAP-SIZE 22)
+							(defconst TWENTY-PERCENT-MAP-SIZE 44)
+							(defconst THIRTY-PERCENT-MAP-SIZE 66)
+							(defconst FORTY-PERCENT-MAP-SIZE 88)
+							(defconst FIFTY-PERCENT-MAP-SIZE 110)
+							(defconst SIXTY-PERCENT-MAP-SIZE 132)
+							(defconst SEVENTY-PERCENT-MAP-SIZE 154)
+							(defconst EIGHTY-PERCENT-MAP-SIZE 176)
+							(defconst NINETY-PERCENT-MAP-SIZE 198)
+							(defconst HUNDRED-PERCENT-MAP-SIZE 220)
+							(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 219)
+							(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 330)
+							#else
+								(defconst TEN-PERCENT-MAP-SIZE 20)
+								(defconst TWENTY-PERCENT-MAP-SIZE 40)
+								(defconst THIRTY-PERCENT-MAP-SIZE 60)
+								(defconst FORTY-PERCENT-MAP-SIZE 80)
+								(defconst FIFTY-PERCENT-MAP-SIZE 100)
+								(defconst SIXTY-PERCENT-MAP-SIZE 120)
+								(defconst SEVENTY-PERCENT-MAP-SIZE 140)
+								(defconst EIGHTY-PERCENT-MAP-SIZE 160)
+								(defconst NINETY-PERCENT-MAP-SIZE 180)
+								(defconst HUNDRED-PERCENT-MAP-SIZE 200)
+								(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 199)
+								(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 300)
+							#end-if
+						#end-if
+					#end-if
+				#end-if
+			#end-if
+		#end-if
+		
+		#load-if-defined LARGE-MAP
+			#load-if-defined ARCHIPELAGO-MAP
+			(defconst TEN-PERCENT-MAP-SIZE 24)
+			(defconst TWENTY-PERCENT-MAP-SIZE 48)
+			(defconst THIRTY-PERCENT-MAP-SIZE 72)
+			(defconst FORTY-PERCENT-MAP-SIZE 96)
+			(defconst FIFTY-PERCENT-MAP-SIZE 120)
+			(defconst SIXTY-PERCENT-MAP-SIZE 144)
+			(defconst SEVENTY-PERCENT-MAP-SIZE 168)
+			(defconst EIGHTY-PERCENT-MAP-SIZE 192)
+			(defconst NINETY-PERCENT-MAP-SIZE 216)
+			(defconst HUNDRED-PERCENT-MAP-SIZE 240)
+			(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 239)
+			(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 360)
+			#else
+				#load-if-defined FORTRESS-MAP
+				(defconst TEN-PERCENT-MAP-SIZE 24)
+				(defconst TWENTY-PERCENT-MAP-SIZE 48)
+				(defconst THIRTY-PERCENT-MAP-SIZE 72)
+				(defconst FORTY-PERCENT-MAP-SIZE 96)
+				(defconst FIFTY-PERCENT-MAP-SIZE 120)
+				(defconst SIXTY-PERCENT-MAP-SIZE 144)
+				(defconst SEVENTY-PERCENT-MAP-SIZE 168)
+				(defconst EIGHTY-PERCENT-MAP-SIZE 192)
+				(defconst NINETY-PERCENT-MAP-SIZE 216)
+				(defconst HUNDRED-PERCENT-MAP-SIZE 240)
+				(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 239)
+				(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 360)
+				#else
+					#load-if-defined ISLANDS-MAP
+					(defconst TEN-PERCENT-MAP-SIZE 24)
+					(defconst TWENTY-PERCENT-MAP-SIZE 48)
+					(defconst THIRTY-PERCENT-MAP-SIZE 72)
+					(defconst FORTY-PERCENT-MAP-SIZE 96)
+					(defconst FIFTY-PERCENT-MAP-SIZE 120)
+					(defconst SIXTY-PERCENT-MAP-SIZE 144)
+					(defconst SEVENTY-PERCENT-MAP-SIZE 168)
+					(defconst EIGHTY-PERCENT-MAP-SIZE 192)
+					(defconst NINETY-PERCENT-MAP-SIZE 216)
+					(defconst HUNDRED-PERCENT-MAP-SIZE 240)
+					(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 239)
+					(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 360)
+					#else
+						#load-if-defined MIGRATION-MAP
+						(defconst TEN-PERCENT-MAP-SIZE 24)
+						(defconst TWENTY-PERCENT-MAP-SIZE 48)
+						(defconst THIRTY-PERCENT-MAP-SIZE 72)
+						(defconst FORTY-PERCENT-MAP-SIZE 96)
+						(defconst FIFTY-PERCENT-MAP-SIZE 120)
+						(defconst SIXTY-PERCENT-MAP-SIZE 144)
+						(defconst SEVENTY-PERCENT-MAP-SIZE 168)
+						(defconst EIGHTY-PERCENT-MAP-SIZE 192)
+						(defconst NINETY-PERCENT-MAP-SIZE 216)
+						(defconst HUNDRED-PERCENT-MAP-SIZE 240)
+						(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 239)
+						(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 360)
+						#else
+							#load-if-defined TEAM-ISLANDS-MAP
+							(defconst TEN-PERCENT-MAP-SIZE 24)
+							(defconst TWENTY-PERCENT-MAP-SIZE 48)
+							(defconst THIRTY-PERCENT-MAP-SIZE 72)
+							(defconst FORTY-PERCENT-MAP-SIZE 96)
+							(defconst FIFTY-PERCENT-MAP-SIZE 120)
+							(defconst SIXTY-PERCENT-MAP-SIZE 144)
+							(defconst SEVENTY-PERCENT-MAP-SIZE 168)
+							(defconst EIGHTY-PERCENT-MAP-SIZE 192)
+							(defconst NINETY-PERCENT-MAP-SIZE 216)
+							(defconst HUNDRED-PERCENT-MAP-SIZE 240)
+							(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 239)
+							(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 360)
+							#else
+								(defconst TEN-PERCENT-MAP-SIZE 22)
+								(defconst TWENTY-PERCENT-MAP-SIZE 44)
+								(defconst THIRTY-PERCENT-MAP-SIZE 66)
+								(defconst FORTY-PERCENT-MAP-SIZE 88)
+								(defconst FIFTY-PERCENT-MAP-SIZE 110)
+								(defconst SIXTY-PERCENT-MAP-SIZE 132)
+								(defconst SEVENTY-PERCENT-MAP-SIZE 154)
+								(defconst EIGHTY-PERCENT-MAP-SIZE 176)
+								(defconst NINETY-PERCENT-MAP-SIZE 198)
+								(defconst HUNDRED-PERCENT-MAP-SIZE 220)
+								(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 219)
+								(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 330)
+							#end-if
+						#end-if
+					#end-if
+				#end-if
+			#end-if
+		#end-if
+		
+		#load-if-defined GIANT-MAP
+			#load-if-defined ARCHIPELAGO-MAP
+			(defconst TEN-PERCENT-MAP-SIZE 26)
+			(defconst TWENTY-PERCENT-MAP-SIZE 51)
+			(defconst THIRTY-PERCENT-MAP-SIZE 77)
+			(defconst FORTY-PERCENT-MAP-SIZE 102)
+			(defconst FIFTY-PERCENT-MAP-SIZE 128)
+			(defconst SIXTY-PERCENT-MAP-SIZE 153)
+			(defconst SEVENTY-PERCENT-MAP-SIZE 179)
+			(defconst EIGHTY-PERCENT-MAP-SIZE 204)
+			(defconst NINETY-PERCENT-MAP-SIZE 230)
+			(defconst HUNDRED-PERCENT-MAP-SIZE 255)
+			(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 254)
+			(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 383)
+			#else
+				#load-if-defined FORTRESS-MAP
+				(defconst TEN-PERCENT-MAP-SIZE 26)
+				(defconst TWENTY-PERCENT-MAP-SIZE 51)
+				(defconst THIRTY-PERCENT-MAP-SIZE 77)
+				(defconst FORTY-PERCENT-MAP-SIZE 102)
+				(defconst FIFTY-PERCENT-MAP-SIZE 128)
+				(defconst SIXTY-PERCENT-MAP-SIZE 153)
+				(defconst SEVENTY-PERCENT-MAP-SIZE 179)
+				(defconst EIGHTY-PERCENT-MAP-SIZE 204)
+				(defconst NINETY-PERCENT-MAP-SIZE 230)
+				(defconst HUNDRED-PERCENT-MAP-SIZE 255)
+				(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 254)
+				(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 383)
+				#else
+					#load-if-defined ISLANDS-MAP
+					(defconst TEN-PERCENT-MAP-SIZE 26)
+					(defconst TWENTY-PERCENT-MAP-SIZE 51)
+					(defconst THIRTY-PERCENT-MAP-SIZE 77)
+					(defconst FORTY-PERCENT-MAP-SIZE 102)
+					(defconst FIFTY-PERCENT-MAP-SIZE 128)
+					(defconst SIXTY-PERCENT-MAP-SIZE 153)
+					(defconst SEVENTY-PERCENT-MAP-SIZE 179)
+					(defconst EIGHTY-PERCENT-MAP-SIZE 204)
+					(defconst NINETY-PERCENT-MAP-SIZE 230)
+					(defconst HUNDRED-PERCENT-MAP-SIZE 255)
+					(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 254)
+					(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 383)
+					#else
+						#load-if-defined MIGRATION-MAP
+						(defconst TEN-PERCENT-MAP-SIZE 26)
+						(defconst TWENTY-PERCENT-MAP-SIZE 51)
+						(defconst THIRTY-PERCENT-MAP-SIZE 77)
+						(defconst FORTY-PERCENT-MAP-SIZE 102)
+						(defconst FIFTY-PERCENT-MAP-SIZE 128)
+						(defconst SIXTY-PERCENT-MAP-SIZE 153)
+						(defconst SEVENTY-PERCENT-MAP-SIZE 179)
+						(defconst EIGHTY-PERCENT-MAP-SIZE 204)
+						(defconst NINETY-PERCENT-MAP-SIZE 230)
+						(defconst HUNDRED-PERCENT-MAP-SIZE 255)
+						(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 254)
+						(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 383)
+						#else
+							#load-if-defined TEAM-ISLANDS-MAP
+							(defconst TEN-PERCENT-MAP-SIZE 26)
+							(defconst TWENTY-PERCENT-MAP-SIZE 51)
+							(defconst THIRTY-PERCENT-MAP-SIZE 77)
+							(defconst FORTY-PERCENT-MAP-SIZE 102)
+							(defconst FIFTY-PERCENT-MAP-SIZE 128)
+							(defconst SIXTY-PERCENT-MAP-SIZE 153)
+							(defconst SEVENTY-PERCENT-MAP-SIZE 179)
+							(defconst EIGHTY-PERCENT-MAP-SIZE 204)
+							(defconst NINETY-PERCENT-MAP-SIZE 230)
+							(defconst HUNDRED-PERCENT-MAP-SIZE 255)
+							(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 254)
+							(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 383)
+							#else
+								(defconst TEN-PERCENT-MAP-SIZE 24)
+								(defconst TWENTY-PERCENT-MAP-SIZE 48)
+								(defconst THIRTY-PERCENT-MAP-SIZE 72)
+								(defconst FORTY-PERCENT-MAP-SIZE 96)
+								(defconst FIFTY-PERCENT-MAP-SIZE 120)
+								(defconst SIXTY-PERCENT-MAP-SIZE 144)
+								(defconst SEVENTY-PERCENT-MAP-SIZE 168)
+								(defconst EIGHTY-PERCENT-MAP-SIZE 192)
+								(defconst NINETY-PERCENT-MAP-SIZE 216)
+								(defconst HUNDRED-PERCENT-MAP-SIZE 240)
+								(defconst HUNDRED-PERCENT-MAP-SIZE-MINUS-ONE 239)
+								(defconst HUNDRED-FIFTY-PERCENT-MAP-SIZE 360)
+							#end-if
+						#end-if
+					#end-if
+				#end-if
+			#end-if
+		#end-if
+
+	;-------------------------------
+	;	Pop Cap Loading Constants
+	;-------------------------------
+
+		#load-if-defined POPULATION-CAP-500
+
+			(defconst HUNDRED-PERCENT-POP 500)
+			(defconst NINETY-FIVE-PERCENT-POP 475)
+			(defconst NINETY-PERCENT-POP 450)
+			(defconst EIGHTY-FIVE-PERCENT-POP 425)
+			(defconst EIGHTY-PERCENT-POP 400)
+			(defconst SEVENTY-FIVE-PERCENT-POP 375)
+			(defconst SEVENTY-PERCENT-POP 350)
+			(defconst SIXTY-FIVE-PERCENT-POP 325)
+			(defconst SIXTY-PERCENT-POP 300)
+			(defconst FIFTY-FIVE-PERCENT-POP 275)
+			(defconst FIFTY-PERCENT-POP 250)
+			(defconst FORTY-FIVE-PERCENT-POP 225)
+			(defconst FORTY-PERCENT-POP 200)
+			(defconst THIRTY-FIVE-PERCENT-POP 175)
+			(defconst THIRTY-PERCENT-POP 150)
+			(defconst TWENTY-FIVE-PERCENT-POP 125)
+			(defconst TWENTY-PERCENT-POP 100)
+			(defconst FIFTEEN-PERCENT-POP 75)
+			(defconst TEN-PERCENT-POP 50)
+			(defconst FIVE-PERCENT-POP 25)
+
+		#end-if
+
+		#load-if-defined POPULATION-CAP-400
+
+			(defconst HUNDRED-PERCENT-POP 400)
+			(defconst NINETY-FIVE-PERCENT-POP 380)
+			(defconst NINETY-PERCENT-POP 360)
+			(defconst EIGHTY-FIVE-PERCENT-POP 340)
+			(defconst EIGHTY-PERCENT-POP 320)
+			(defconst SEVENTY-FIVE-PERCENT-POP 300)
+			(defconst SEVENTY-PERCENT-POP 280)
+			(defconst SIXTY-FIVE-PERCENT-POP 260)
+			(defconst SIXTY-PERCENT-POP 240)
+			(defconst FIFTY-FIVE-PERCENT-POP 220)
+			(defconst FIFTY-PERCENT-POP 200)
+			(defconst FORTY-FIVE-PERCENT-POP 180)
+			(defconst FORTY-PERCENT-POP 160)
+			(defconst THIRTY-FIVE-PERCENT-POP 140)
+			(defconst THIRTY-PERCENT-POP 120)
+			(defconst TWENTY-FIVE-PERCENT-POP 100)
+			(defconst TWENTY-PERCENT-POP 80)
+			(defconst FIFTEEN-PERCENT-POP 60)
+			(defconst TEN-PERCENT-POP 40)
+			(defconst FIVE-PERCENT-POP 20)
+
+		#end-if
+
+		#load-if-defined POPULATION-CAP-300
+
+			(defconst HUNDRED-PERCENT-POP 300)
+			(defconst NINETY-FIVE-PERCENT-POP 285)
+			(defconst NINETY-PERCENT-POP 270)
+			(defconst EIGHTY-FIVE-PERCENT-POP 255)
+			(defconst EIGHTY-PERCENT-POP 240)
+			(defconst SEVENTY-FIVE-PERCENT-POP 225)
+			(defconst SEVENTY-PERCENT-POP 210)
+			(defconst SIXTY-FIVE-PERCENT-POP 195)
+			(defconst SIXTY-PERCENT-POP 180)
+			(defconst FIFTY-FIVE-PERCENT-POP 165)
+			(defconst FIFTY-PERCENT-POP 150)
+			(defconst FORTY-FIVE-PERCENT-POP 135)
+			(defconst FORTY-PERCENT-POP 120)
+			(defconst THIRTY-FIVE-PERCENT-POP 105)
+			(defconst THIRTY-PERCENT-POP 90)
+			(defconst TWENTY-FIVE-PERCENT-POP 75)
+			(defconst TWENTY-PERCENT-POP 60)
+			(defconst FIFTEEN-PERCENT-POP 45)
+			(defconst TEN-PERCENT-POP 30)
+			(defconst FIVE-PERCENT-POP 15)
+
+		#end-if
+
+		#load-if-defined POPULATION-CAP-250
+
+			(defconst HUNDRED-PERCENT-POP 250)
+			(defconst NINETY-FIVE-PERCENT-POP 238)
+			(defconst NINETY-PERCENT-POP 225)
+			(defconst EIGHTY-FIVE-PERCENT-POP 213)
+			(defconst EIGHTY-PERCENT-POP 200)
+			(defconst SEVENTY-FIVE-PERCENT-POP 188)
+			(defconst SEVENTY-PERCENT-POP 175)
+			(defconst SIXTY-FIVE-PERCENT-POP 163)
+			(defconst SIXTY-PERCENT-POP 150)
+			(defconst FIFTY-FIVE-PERCENT-POP 138)
+			(defconst FIFTY-PERCENT-POP 125)
+			(defconst FORTY-FIVE-PERCENT-POP 113)
+			(defconst FORTY-PERCENT-POP 100)
+			(defconst THIRTY-FIVE-PERCENT-POP 88)
+			(defconst THIRTY-PERCENT-POP 75)
+			(defconst TWENTY-FIVE-PERCENT-POP 63)
+			(defconst TWENTY-PERCENT-POP 50)
+			(defconst FIFTEEN-PERCENT-POP 38)
+			(defconst TEN-PERCENT-POP 25)
+			(defconst FIVE-PERCENT-POP 13)
+
+		#end-if
+
+		#load-if-defined POPULATION-CAP-225
+
+			(defconst HUNDRED-PERCENT-POP 225)
+			(defconst NINETY-FIVE-PERCENT-POP 214)
+			(defconst NINETY-PERCENT-POP 203)
+			(defconst EIGHTY-FIVE-PERCENT-POP 191)
+			(defconst EIGHTY-PERCENT-POP 180)
+			(defconst SEVENTY-FIVE-PERCENT-POP 169)
+			(defconst SEVENTY-PERCENT-POP 158)
+			(defconst SIXTY-FIVE-PERCENT-POP 146)
+			(defconst SIXTY-PERCENT-POP 135)
+			(defconst FIFTY-FIVE-PERCENT-POP 124)
+			(defconst FIFTY-PERCENT-POP 113)
+			(defconst FORTY-FIVE-PERCENT-POP 101)
+			(defconst FORTY-PERCENT-POP 90)
+			(defconst THIRTY-FIVE-PERCENT-POP 79)
+			(defconst THIRTY-PERCENT-POP 68)
+			(defconst TWENTY-FIVE-PERCENT-POP 56)
+			(defconst TWENTY-PERCENT-POP 45)
+			(defconst FIFTEEN-PERCENT-POP 34)
+			(defconst TEN-PERCENT-POP 23)
+			(defconst FIVE-PERCENT-POP 11)
+
+		#end-if
+
+		#load-if-defined POPULATION-CAP-200
+
+			(defconst HUNDRED-PERCENT-POP 200)
+			(defconst NINETY-FIVE-PERCENT-POP 190)
+			(defconst NINETY-PERCENT-POP 180)
+			(defconst EIGHTY-FIVE-PERCENT-POP 170)
+			(defconst EIGHTY-PERCENT-POP 160)
+			(defconst SEVENTY-FIVE-PERCENT-POP 150)
+			(defconst SEVENTY-PERCENT-POP 140)
+			(defconst SIXTY-FIVE-PERCENT-POP 130)
+			(defconst SIXTY-PERCENT-POP 120)
+			(defconst FIFTY-FIVE-PERCENT-POP 110)
+			(defconst FIFTY-PERCENT-POP 100)
+			(defconst FORTY-FIVE-PERCENT-POP 90)
+			(defconst FORTY-PERCENT-POP 80)
+			(defconst THIRTY-FIVE-PERCENT-POP 70)
+			(defconst THIRTY-PERCENT-POP 60)
+			(defconst TWENTY-FIVE-PERCENT-POP 50)
+			(defconst TWENTY-PERCENT-POP 40)
+			(defconst FIFTEEN-PERCENT-POP 30)
+			(defconst TEN-PERCENT-POP 20)
+			(defconst FIVE-PERCENT-POP 10)
+
+		#end-if
+
+		#load-if-defined POPULATION-CAP-175
+
+			(defconst HUNDRED-PERCENT-POP 175)
+			(defconst NINETY-FIVE-PERCENT-POP 166)
+			(defconst NINETY-PERCENT-POP 158)
+			(defconst EIGHTY-FIVE-PERCENT-POP 149)
+			(defconst EIGHTY-PERCENT-POP 140)
+			(defconst SEVENTY-FIVE-PERCENT-POP 131)
+			(defconst SEVENTY-PERCENT-POP 123)
+			(defconst SIXTY-FIVE-PERCENT-POP 114)
+			(defconst SIXTY-PERCENT-POP 105)
+			(defconst FIFTY-FIVE-PERCENT-POP 96)
+			(defconst FIFTY-PERCENT-POP 88)
+			(defconst FORTY-FIVE-PERCENT-POP 79)
+			(defconst FORTY-PERCENT-POP 70)
+			(defconst THIRTY-FIVE-PERCENT-POP 61)
+			(defconst THIRTY-PERCENT-POP 53)
+			(defconst TWENTY-FIVE-PERCENT-POP 44)
+			(defconst TWENTY-PERCENT-POP 35)
+			(defconst FIFTEEN-PERCENT-POP 26)
+			(defconst TEN-PERCENT-POP 18)
+			(defconst FIVE-PERCENT-POP 9)
+
+		#end-if
+
+		#load-if-defined POPULATION-CAP-150
+
+			(defconst HUNDRED-PERCENT-POP 150)
+			(defconst NINETY-FIVE-PERCENT-POP 143)
+			(defconst NINETY-PERCENT-POP 135)
+			(defconst EIGHTY-FIVE-PERCENT-POP 128)
+			(defconst EIGHTY-PERCENT-POP 120)
+			(defconst SEVENTY-FIVE-PERCENT-POP 113)
+			(defconst SEVENTY-PERCENT-POP 105)
+			(defconst SIXTY-FIVE-PERCENT-POP 98)
+			(defconst SIXTY-PERCENT-POP 90)
+			(defconst FIFTY-FIVE-PERCENT-POP 83)
+			(defconst FIFTY-PERCENT-POP 75)
+			(defconst FORTY-FIVE-PERCENT-POP 68)
+			(defconst FORTY-PERCENT-POP 60)
+			(defconst THIRTY-FIVE-PERCENT-POP 53)
+			(defconst THIRTY-PERCENT-POP 45)
+			(defconst TWENTY-FIVE-PERCENT-POP 38)
+			(defconst TWENTY-PERCENT-POP 30)
+			(defconst FIFTEEN-PERCENT-POP 23)
+			(defconst TEN-PERCENT-POP 15)
+			(defconst FIVE-PERCENT-POP 8)
+
+		#end-if
+
+		#load-if-defined POPULATION-CAP-125
+
+			(defconst HUNDRED-PERCENT-POP 125)
+			(defconst NINETY-FIVE-PERCENT-POP 119)
+			(defconst NINETY-PERCENT-POP 113)
+			(defconst EIGHTY-FIVE-PERCENT-POP 106)
+			(defconst EIGHTY-PERCENT-POP 100)
+			(defconst SEVENTY-FIVE-PERCENT-POP 94)
+			(defconst SEVENTY-PERCENT-POP 88)
+			(defconst SIXTY-FIVE-PERCENT-POP 81)
+			(defconst SIXTY-PERCENT-POP 75)
+			(defconst FIFTY-FIVE-PERCENT-POP 69)
+			(defconst FIFTY-PERCENT-POP 63)
+			(defconst FORTY-FIVE-PERCENT-POP 56)
+			(defconst FORTY-PERCENT-POP 50)
+			(defconst THIRTY-FIVE-PERCENT-POP 44)
+			(defconst THIRTY-PERCENT-POP 38)
+			(defconst TWENTY-FIVE-PERCENT-POP 31)
+			(defconst TWENTY-PERCENT-POP 25)
+			(defconst FIFTEEN-PERCENT-POP 19)
+			(defconst TEN-PERCENT-POP 13)
+			(defconst FIVE-PERCENT-POP 6)
+
+		#end-if
+
+		#load-if-defined POPULATION-CAP-100
+
+			(defconst HUNDRED-PERCENT-POP 100)
+			(defconst NINETY-FIVE-PERCENT-POP 95)
+			(defconst NINETY-PERCENT-POP 90)
+			(defconst EIGHTY-FIVE-PERCENT-POP 85)
+			(defconst EIGHTY-PERCENT-POP 80)
+			(defconst SEVENTY-FIVE-PERCENT-POP 75)
+			(defconst SEVENTY-PERCENT-POP 70)
+			(defconst SIXTY-FIVE-PERCENT-POP 65)
+			(defconst SIXTY-PERCENT-POP 60)
+			(defconst FIFTY-FIVE-PERCENT-POP 55)
+			(defconst FIFTY-PERCENT-POP 50)
+			(defconst FORTY-FIVE-PERCENT-POP 45)
+			(defconst FORTY-PERCENT-POP 40)
+			(defconst THIRTY-FIVE-PERCENT-POP 35)
+			(defconst THIRTY-PERCENT-POP 30)
+			(defconst TWENTY-FIVE-PERCENT-POP 25)
+			(defconst TWENTY-PERCENT-POP 20)
+			(defconst FIFTEEN-PERCENT-POP 15)
+			(defconst TEN-PERCENT-POP 10)
+			(defconst FIVE-PERCENT-POP 5)
+
+		#end-if
+
+		#load-if-defined POPULATION-CAP-75
+
+			(defconst HUNDRED-PERCENT-POP 75)
+			(defconst NINETY-FIVE-PERCENT-POP 71)
+			(defconst NINETY-PERCENT-POP 68)
+			(defconst EIGHTY-FIVE-PERCENT-POP 64)
+			(defconst EIGHTY-PERCENT-POP 60)
+			(defconst SEVENTY-FIVE-PERCENT-POP 56)
+			(defconst SEVENTY-PERCENT-POP 53)
+			(defconst SIXTY-FIVE-PERCENT-POP 49)
+			(defconst SIXTY-PERCENT-POP 45)
+			(defconst FIFTY-FIVE-PERCENT-POP 41)
+			(defconst FIFTY-PERCENT-POP 38)
+			(defconst FORTY-FIVE-PERCENT-POP 34)
+			(defconst FORTY-PERCENT-POP 30)
+			(defconst THIRTY-FIVE-PERCENT-POP 26)
+			(defconst THIRTY-PERCENT-POP 23)
+			(defconst TWENTY-FIVE-PERCENT-POP 19)
+			(defconst TWENTY-PERCENT-POP 15)
+			(defconst FIFTEEN-PERCENT-POP 11)
+			(defconst TEN-PERCENT-POP 8)
+			(defconst FIVE-PERCENT-POP 4)
+
+		#end-if
+
+		#load-if-defined POPULATION-CAP-50
+
+			(defconst HUNDRED-PERCENT-POP 50)
+			(defconst NINETY-FIVE-PERCENT-POP 48)
+			(defconst NINETY-PERCENT-POP 45)
+			(defconst EIGHTY-FIVE-PERCENT-POP 43)
+			(defconst EIGHTY-PERCENT-POP 40)
+			(defconst SEVENTY-FIVE-PERCENT-POP 38)
+			(defconst SEVENTY-PERCENT-POP 35)
+			(defconst SIXTY-FIVE-PERCENT-POP 33)
+			(defconst SIXTY-PERCENT-POP 30)
+			(defconst FIFTY-FIVE-PERCENT-POP 28)
+			(defconst FIFTY-PERCENT-POP 25)
+			(defconst FORTY-FIVE-PERCENT-POP 23)
+			(defconst FORTY-PERCENT-POP 20)
+			(defconst THIRTY-FIVE-PERCENT-POP 18)
+			(defconst THIRTY-PERCENT-POP 15)
+			(defconst TWENTY-FIVE-PERCENT-POP 13)
+			(defconst TWENTY-PERCENT-POP 10)
+			(defconst FIFTEEN-PERCENT-POP 8)
+			(defconst TEN-PERCENT-POP 5)
+			(defconst FIVE-PERCENT-POP 3)
+
+		#end-if
+
+		#load-if-defined POPULATION-CAP-25
+
+			(defconst HUNDRED-PERCENT-POP 25)
+			(defconst NINETY-FIVE-PERCENT-POP 24)
+			(defconst NINETY-PERCENT-POP 23)
+			(defconst EIGHTY-FIVE-PERCENT-POP 21)
+			(defconst EIGHTY-PERCENT-POP 20)
+			(defconst SEVENTY-FIVE-PERCENT-POP 19)
+			(defconst SEVENTY-PERCENT-POP 18)
+			(defconst SIXTY-FIVE-PERCENT-POP 16)
+			(defconst SIXTY-PERCENT-POP 15)
+			(defconst FIFTY-FIVE-PERCENT-POP 14)
+			(defconst FIFTY-PERCENT-POP 13)
+			(defconst FORTY-FIVE-PERCENT-POP 11)
+			(defconst FORTY-PERCENT-POP 10)
+			(defconst THIRTY-FIVE-PERCENT-POP 9)
+			(defconst THIRTY-PERCENT-POP 8)
+			(defconst TWENTY-FIVE-PERCENT-POP 6)
+			(defconst TWENTY-PERCENT-POP 5)
+			(defconst FIFTEEN-PERCENT-POP 4)
+			(defconst TEN-PERCENT-POP 3)
+			(defconst FIVE-PERCENT-POP 1)
+
+		#end-if
+
+	;------------------
+	;	Define Goals
+	;------------------
+
+		;Empty goals: 219-228, 304, 387-391, 393-400
+		;Empty reserved goals: 139-140, 171-173, 250, 491-498, 500-512
+
+		(defconst g-general 1)							;The historical general selected for the AI
+			;Aztecs
+			(defconst ACAMAPICHTLI 101)
+			(defconst AHUITZOTOL 102)
+			(defconst CUAUHTEMOC 103)
+			(defconst ITZCOATL 104)
+			(defconst MONTEZUMA 105)
+			;Berbers
+			(defconst IDRIS-IBN-ABDALLAH 111)
+			(defconst MUHAMMAD-IBN-TUMART 112)
+			(defconst MUSA-IBN-NUSAYR 113)
+			(defconst TARIQ-IBN-ZIYAD 114)
+			(defconst YUSUF-IBN-TASHFIN 115)
+			;Britons
+			(defconst EDWARD-LONGSHANKS 121)
+			(defconst HAROLD-GODWINSON 122)
+			(defconst HENRY-V 123)
+			(defconst RICHARD-I 124)
+			(defconst ARTHUR 125)
+			;Bulgarians
+			(defconst ASPARUKH 131)
+			(defconst BORIS 132)
+			(defconst IVAN-ASEN 133)
+			(defconst IVAYLO 134)
+			(defconst SIMEON 135)
+			;Burmese
+			(defconst ANAWRAHTA 141)
+			(defconst BAYINNAUNG 142)
+			(defconst MINGYINYO 143)
+			(defconst NARAPATISITHU 144)
+			(defconst TABINSHWEHTI 145)
+			;Byzantines
+			(defconst BASIL 151)
+			(defconst BELISARIUS 152)
+			(defconst CONSTANTINE 153)
+			(defconst HERACLIUS 154)
+			(defconst JUSTINIAN 155)
+			(defconst MANUEL 156)
+			;Celts
+			(defconst AETHELFIRTH 161)
+			(defconst BRIAN-BORU 162)
+			(defconst MURTAUGH-OBRIEN 163)
+			(defconst ROBERT-THE-BRUCE 164)
+			(defconst WILLIAM-WALLACE 165)
+			;Chinese
+			(defconst LI-SHI-MIN 171)
+			(defconst SU-DINGFANG 172)
+			(defconst YUE-FEI 173)
+			(defconst ZHAO-KUANG-YING 174)
+			(defconst ZHU-YUAN-ZHANG 175)
+			;Cumans
+			(defconst BONIAK 181)
+			(defconst KOTYAN-KHAN 182)
+			(defconst KONCHAK-OTRAKOVICH 183)
+			(defconst SOKAL 184)
+			(defconst AYEPA 185)
+			;Ethiopians
+			(defconst AMDA-SEYON 191)
+			(defconst KALEB-OF-AKSUM 192)
+			(defconst YEKUNO-AMLAK 193)
+			(defconst YODIT 194)
+			(defconst ZARA-YAQOB 195)
+			;Franks
+			(defconst CHARLEMAGNE 201)
+			(defconst CHARLES-MARTEL 202)
+			(defconst JOAN-OF-ARC 203)
+			(defconst LA-HIRE 204)
+			(defconst WILLIAM-THE-CONQUEROR 205)
+			;Goths
+			(defconst ALARIC 211)
+			(defconst ATAULF 212)
+			(defconst FRITIGERN 213)
+			(defconst THEODORIC 214)
+			(defconst WALLIA 215)
+			;Huns
+			(defconst ATTILA 221)
+			(defconst BLEDA 222)
+			(defconst DENGIZICH 223)
+			(defconst RUGILA 224)
+			(defconst ULDIN 225)
+			;Incas
+			(defconst ATAHUALPA 231)
+			(defconst HUAYNA-CAPAC 232)
+			(defconst MANCO-CAPAC 233)
+			(defconst PACHACUTI 234)
+			(defconst TOPA-YUPANQUI 235)
+			;Italians
+			(defconst DOMENICO-SELVO 251)
+			(defconst FRANCESCO-SFORZA 252)
+			(defconst GUGLIELMO-EMBRIACO 253)
+			(defconst LIUTPRAND 254)
+			(defconst OTTONE-VISCONTI 255)
+			(defconst PIETRO-GRADENIGO 256)
+			;Japanese
+			(defconst FUJIWARANO-MICHINAGA 261)
+			(defconst KUSUNOKI-MASASHIGE 262)
+			(defconst MINAMOTONO-YORITOMO 263)
+			(defconst ODA-NOBUNAGA 264)
+			(defconst TOKUGAWA-IEYASU 265)
+			(defconst TOYOTOMI-HIDEYOSHI 266)
+			;Khmer
+			(defconst JAYAVARMAN-II 271)
+			(defconst JAYAVARMAN-VII 272)
+			(defconst SURYAVARMAN-I 273)
+			(defconst SURYAVARMAN-II 274)
+			(defconst YASOVARMAN-I 275)
+			;Koreans
+			(defconst CHOE-MU-SON 281)
+			(defconst ULJI-MUN-TOK 282)
+			(defconst WANG-KON 283)
+			(defconst YI-SONG-KYE 284)
+			(defconst YI-SUN-SHIN 285)
+			;Lithuanians
+			(defconst ALGIRDAS 291)
+			(defconst GEDIMINAS 292)
+			(defconst JOGAILA 293)
+			(defconst MINDAUGAS 294)
+			(defconst VYTAUTAS 295)
+			;Magyars
+			(defconst ARPAD 301)
+			(defconst HUNYADI-JANOS 302)
+			(defconst ISTVAN 303)
+			(defconst KAROLY-ROBERT 304)
+			(defconst LASZLO 305)
+			;Malay
+			(defconst DHARMASETU 311)
+			(defconst GAJAH-MADA 312)
+			(defconst HAYAM-WURUK 313)
+			(defconst PARAMESWARA 314)
+			(defconst RADEN-WIJAYA 315)
+			;Malians
+			(defconst MAHMUD-IV 321)
+			(defconst MUSA 322)
+			(defconst SAKURA 323)
+			(defconst SOULEYMAN 324)
+			(defconst SUNDJATA 325)
+			;Mayans
+			(defconst BALAJ-CHAN-KAWIIL 331)
+			(defconst KINICH-JANAAB-PACAL 332)
+			(defconst UAXACLAJUUN-UBAAH-KAWIIL 333)
+			(defconst YIKIN-CHAN-KAWIIL 334)
+			(defconst YUKNOOM-CHEEN 335)
+			;Mongols
+			(defconst GENGHIS-KHAN 341)
+			(defconst KUBLAI-KHAN 342)
+			(defconst MONGKE-KHAN 343)
+			(defconst OGEDEI-KHAN 344)
+			(defconst SUBOTAI 345)
+			;Persians
+			(defconst ALA-AD-DIN-MUHAMMAD 351)
+			(defconst ANUSH-TIGIN-GHARCHAI 352)
+			(defconst BAHRAM 353)
+			(defconst ISMAIL 354)
+			(defconst KHOSRAU 355)
+			(defconst MAHMUD-GHAZNAVI 356)
+			;Portuguese
+			(defconst AFONSO-DE-ALBUQUERQUE 361)
+			(defconst AFONSO-HENRIQUES 362)
+			(defconst FRANCISCO-DE-ALMEIDA 363)
+			(defconst HENRY-THE-NAVIGATOR 364)
+			(defconst NUNO-ALVARES-PEREIRA 365)
+			;Saracens
+			(defconst BAIBARS 371)
+			(defconst ABU-BAKR 372)
+			(defconst MUAWIYAH 373)
+			(defconst KHALID 374)
+			(defconst HARUN-AL-RASHID 375)
+			(defconst SALADIN 376)
+			;Slavs
+			(defconst ALEXANDER-NEVSKY 381)
+			(defconst IVAN-III 382)
+			(defconst BOLESLAW 382)
+			(defconst SVIATOSLAV 383)
+			(defconst VLADIMIR 384)
+			(defconst YAROSLAV 385)
+			(defconst VLAD-DRACULA 386)
+			;Spanish
+			(defconst ALFONSO 391)
+			(defconst GONZALO-PIZARRO 392)
+			(defconst HERNAN-CORTEZ 393)
+			(defconst RODRIGO-DIAZ 394)
+			(defconst ISABELLA 395)
+			;Tatars
+			(defconst BATU-KHAN 401)
+			(defconst KAIDU 402)
+			(defconst TAMERLANE 403)
+			(defconst TOKHTAMYSH-KHAN 404)
+			(defconst UZBEG-KHAN 405)
+			;Teutons
+			(defconst CHARLES-V 411)
+			(defconst FREDERICK 412)
+			(defconst HENRY-THE-LION 413)
+			(defconst OTTO 414)
+			(defconst WINRICH-VON-KNIPRODE 415)
+			;Turks
+			(defconst ALP-ARSLAN 421)
+			(defconst BAYAZID 422)
+			(defconst OSMAN 423)
+			(defconst SULEIMAN 424)
+			(defconst TUGHRIL 425)
+			;Vietnamese
+			(defconst LE-LOI 431)
+			(defconst LE-THANH-TONG 432)
+			(defconst NGO-QUYEN 433)
+			(defconst TRAN-NHAN-TONG 434)
+			(defconst TRAN-THAI-TONG 435)
+			;Vikings
+			(defconst CNUT 441)
+			(defconst HARALD-FAIRHAIR 443)
+			(defconst HARALD-HARDRAADE 444)
+			(defconst LEIF-ERICSON 445)
+			(defconst OLAF-HARALDSSON 446)
+			;Burgundians
+			(defconst GUNDAHARIUS 451)
+			(defconst JOHN-THE-FEARLESS 452)
+			(defconst ODO-IV 453)
+			(defconst PHILIP-THE-GOOD 454)
+			(defconst RICHARD-THE-JUSTICIAR 455)
+			;Sicilians
+			(defconst BOHEMOND 461)
+			(defconst FREDERICK-II 462)
+			(defconst ROBERT-GUISCARD 463)
+			(defconst ROGER-BOSSO 464)
+			(defconst ROGER-II 465)
+			;Bohemians
+			(defconst BOLESLAUS-I 471)
+			(defconst JAN-HUS 472)
+			(defconst JAN-ZIZKA 473)
+			(defconst OTTOKAR-II 474)
+			(defconst SIGISMUND 475)
+			(defconst SVATOPLUK-I 476)
+			;Poles
+			(defconst BOLESLAW-THE-GREAT 481)
+			(defconst JAGWIGA 482)
+			(defconst KAZIMIERZ-III 483)
+			(defconst MIESZKO-I 484)
+			(defconst ZAWISZA-CZARNY 485)
+			;Bengalis
+			(defconst DEVAPALA 491)
+			(defconst GOPALA 492)
+			(defconst JAYAPALA 493)
+			(defconst SAMANTA 494)
+			(defconst SHAMSUDDIN-ILYAS 495)
+			(defconst SHASHANKA 496)
+			;Dravidians
+			(defconst AMOGHAVARSHA 501)
+			(defconst GOVINDA-III 502)
+			(defconst KADUNGON 503)
+			(defconst KRISHNA-DEVARAYA 504)
+			(defconst RAJENDRA 505)
+			(defconst VIJAYABAHU 506)
+			;Gurjaras
+			(defconst JAYACHANDRA 511)
+			(defconst MIHIRA-BHOJA 512)
+			(defconst NAGABHATA 513)
+			(defconst PRITHVIRAJ 514)
+			(defconst MAHARANA-PRATAP 515)
+			;Hindustanis
+			(defconst AKBAR 521)
+			(defconst ALA-UD-DIN 522)
+			(defconst BABUR 523)
+			(defconst CHANDRAGUPTA 524)
+			(defconst MAHMUD-GHAZNAVI 525)
+			(defconst QUTB-UD-DIN-AIBAK 526)
+			;Romans
+			(defconst AETIUS 531)
+			(defconst HONORIUS 532)
+			(defconst RICIMER 533)
+			(defconst STILICHO 534)
+			(defconst THEODOSIUS-I 535)
+			(defconst VALENTINIAN-III 536)
+			;Armenians
+			(defconst ASHOT 541)
+			(defconst GAGIK 542)
+			(defconst LEVON-THE-MAGNIFICENT 543)
+			(defconst THOROS 544)
+			(defconst VARDAN-MAMIKONIAN 545)
+			;Georgians
+			(defconst BAGRAT 551)
+			(defconst DAVID-THE-BUILDER 552)
+			(defconst GEORGE-THE-BRILLIANT 553)
+			(defconst GREGORIOS-PAKOURIANOS 554)
+			(defconst TAMAR 555)
+			;Jurchens
+			(defconst DUDU-MENGTEMU 561)
+			(defconst HANPU 562)
+			(defconst WANYAN-AYUDA 563)
+			(defconst WANYAN-SHENG 564)
+			(defconst WUQIMAI-TAIZONG 565)
+			;Khitans
+			(defconst ABAOJI 571)
+			(defconst KUSHLUK 572)
+			(defconst SHULU-PING 573)
+			(defconst YELU-DASHI 574)
+			(defconst YELU-LONGXU 575)
+			;Shu
+			(defconst GUAN-YU 581)
+			(defconst HUANG-ZHONG 582)
+			(defconst MA-CHAO 583)
+			(defconst LIU-BEI 584)
+			(defconst ZHANG-FEI 585)
+			(defconst ZHAO-YUN 586)
+			;Wei
+			(defconst CAO-CAO 591)
+			(defconst CAO-PI 592)
+			(defconst CAO-REN 593)
+			(defconst SIMA-YI 594)
+			(defconst XIAHOU-DUN 595)
+			(defconst ZHANG-HE 596)
+			(defconst ZHANG-LIAO 597)
+			;Wu
+			(defconst LU-MENG 601)
+			(defconst LU-XUN 602)
+			(defconst SUN-CE 603)
+			(defconst SUN-JIAN 604)
+			(defconst SUN-QUAN 605)
+		(defconst g-current-strategy 2)					;The current strategy/build order
+			;Dark Age
+			(defconst DARK-STRATS-START 101)
+			(defconst DRUSH 101)				;drush
+			(defconst DOUCHE 102)				;town center drop
+			(defconst DARK-STRATS-END 200)
+			;Flush
+			(defconst FL-STRATS-START 201)
+			(defconst FL-RANGER 201)			;Archers
+			(defconst FL-GUERILLA 202)			;Archers and Skirms
+			(defconst FL-SKIRMMETA 203)			;Skirms
+			(defconst FL-LATHER 204)			;Man-at-Arms
+			(defconst FL-VULTURE 205)			;Scouts
+			(defconst FL-EYRIES 206)			;Eagle Scouts
+			(defconst FL-GOEMUL 207)			;Towers
+			(defconst FL-STRATS-END 300)
+			;Early Feudal
+			(defconst EARLYF-STRATS-START 301)
+			(defconst EARLYF-STRATS-END 400)
+			;Mid Feudal Age
+			(defconst MIDF-STRATS-START 401)
+			(defconst MIDF-FULL-ARCHERS 401)
+			(defconst MIDF-FULL-RANGED 402)
+			(defconst MIDF-FULL-SKIRMS 403)
+			(defconst MIDF-FULL-SCOUTS 404)
+			(defconst MIDF-SCOUT-SKIRM 405)
+			(defconst MIDF-FULL-MAA 406)
+			(defconst MIDF-FULL-EAGLES 407)
+			(defconst MIDF-STRATS-END 500)
+			;Fast Castle
+			(defconst FC-STRATS-START 501)
+			(defconst FC-STRONGBOW 501)			;xbows
+			(defconst FC-KRUSH 502)				;2 stable knights
+			(defconst FC-EAGLES-REVENGE 503)	;3 barracks eagle warriors (castle age)
+			(defconst FC-CRUSH 504)				;2 stable camel rush
+			(defconst FC-DEMON 505)				;monk rush
+			(defconst FC-CASTLE-DROP 506)		;unique units
+			(defconst FC-MORLEY 507)			;steppe lancers
+			(defconst FC-GENGHIS 508)			;cav archers
+			(defconst FC-KRUSH-30 551)			;old 2 stable knights rush, 30-vil feudal
+			(defconst FC-STRATS-END 600)
+			;Early Castle Age
+			(defconst EARLYC-STRATS-START 601)
+			(defconst EARLYC-XBOWS 601)
+			(defconst EARLYC-KNIGHTS 602)
+			(defconst EARLYC-EAGLES 603)
+			(defconst EARLYC-CAMELS 604)
+			(defconst EARLYC-STRATS-END 700)
+			;Mid Castle Age
+			(defconst MIDC-STRATS-START 701)
+			(defconst MIDC-XBOWS 701)
+			(defconst MIDC-KNIGHTS 702)
+			(defconst MIDC-EAGLES 703)
+			(defconst MIDC-CAMELS 704)
+			(defconst MIDC-CAV-ARCHERS 705)
+			(defconst MIDC-CIRCUS 706)			;Battle Elephants
+			(defconst MIDC-UNIQUE 708)
+			(defconst MIDC-MONKS 709)
+			(defconst MIDC-SWORDS 751)
+			(defconst MIDC-PIKES 752)
+			(defconst MIDC-SKIRMS 753)
+			(defconst MIDC-LIGHT 754)
+			(defconst MIDC-LANCERS 755)
+			(defconst MIDC-SLINGERS 756)
+			(defconst MIDC-GENITOURS 757)
+			(defconst MIDC-SHRIVAMSHA 758)
+			(defconst MIDC-ELE-ARCHERS 759)
+			(defconst MIDC-HEI-GUANG 760)
+			(defconst MIDC-STRATS-END 800)
+			;Fast Imperial Age
+			(defconst FI-STRATS-START 801)
+			(defconst FI-SNIPER 801)			;Hand Cannon/Bombard Cannon rush
+			(defconst FI-FARMERTRON 802)		;champion flood
+			(defconst FI-AGEOFSTONEWALLS 803)	;elite eagle warrior rush
+			(defconst FI-STRATS-END 900)
+			;Early Imperial Age
+			(defconst EARLYI-STRATS-START 901)
+			(defconst EARLYI-CHAMPFLOOD 902)	;champions
+			(defconst EARLYI-EL-DORADO 903)		;elite eagle warriors
+			(defconst EARLYI-ARBINGER 904)		;arbalests
+			(defconst EARLYI-HORDE 905)			;heavy cav archers
+			(defconst EARLYI-PALASTORM 906)		;cavaliers to paladins
+			(defconst EARLYI-CAMELSTORM 907)	;heavy camels to imperial camels
+			(defconst EARLYI-CIRCUS-STOMP 908)	;elite battle eles
+			(defconst EARLYI-UNIQUE 909)
+			(defconst EARLYI-HALBSTRIKE 951)	;halberdiers
+			(defconst EARLYI-CONDOTERROR 952)	;condottierri
+			(defconst EARLYI-SKIRMASSACRE 953)	;Skirmishers
+			(defconst EARLYI-MUSKETEER 954)		;hand cannoneers
+			(defconst EARLYI-SLINGSHOT 955)		;slinger
+			(defconst EARLYI-GENITOURAID 956)	;genitours
+			(defconst EARLYI-WALKING-TOWERS 957);Elephant Archers
+			(defconst EARLYI-HUSSARMY 958)		;hussars
+			(defconst EARLYI-LANCELOT 959)		;steppe lancers
+			(defconst EARLYI-STRATS-END 1000)
+			;Mid Imperial Age
+			(defconst MIDI-STRATS-START 1001)
+			(defconst MIDI-EAGLES 1001)
+			(defconst MIDI-PALADINS 1002)
+			(defconst MIDI-CAMELS 1003)
+			(defconst MIDI-ARBS 1004)
+			(defconst MIDI-CAV-ARCHERS 1005)
+			(defconst MIDI-CIRCUS 1006)
+			(defconst MIDI-CHAMPIONS 1007)
+			(defconst MIDI-UNIQUE 1008)
+			(defconst MIDI-HALBS 1051)
+			(defconst MIDI-CONDOS 1052)
+			(defconst MIDI-SKIRMS 1053)
+			(defconst MIDI-CANNONEERS 1054)
+			(defconst MIDI-SLINGERS 1055)
+			(defconst MIDI-GENITOURS 1056)
+			(defconst MIDI-HUSSARS 1057)
+			(defconst MIDI-LANCERS 1058)
+			(defconst MIDI-MONKS 1059)
+			(defconst MIDI-SHRIVAMSHA 1060)
+			(defconst MIDI-ELE-ARCHERS 1061)
+			(defconst MIDI-HEI-GUANG 1062)
+			(defconst MIDI-STRATS-END 1100)
+			;Booming Castle Age Strats
+			(defconst BOOMC-STRATS-START 1101)
+			(defconst BOOMC-KNIGHTS 1101)		;boom with knights defense
+			(defconst BOOMC-XBOWS 1102)			;boom with crossbowmen defense
+			(defconst BOOMC-EAGLES 1103)			;boom with eagle warrior defense
+			(defconst BOOMC-CAMELS 1104)			;boom with camel defense
+			(defconst BOOMC-ARENA-LIGHT-MONK 1105)	;light cav + monks
+			(defconst BOOMC-ARENA-MONK 1106)		;monks only
+			(defconst BOOMC-STRATS-END 1200)
+			;Booming Imperial Age Strats
+			(defconst BOOMI-STRATS-START 1201)
+			(defconst BOOMI-IMPERIAL 1201)		;boom with just spearmen for defense
+			(defconst BOOMI-STRATS-END 1300)
+			;Late Imperial Age
+			(defconst LATEI-STRATS-START 1301)
+			(defconst LATEI-CHAMPIONS 1301)
+			(defconst LATEI-UNIQUE 1302)
+			(defconst LATEI-SHRIVAMSHA 1303)
+			(defconst LATEI-FLEMISH 1304)
+			(defconst LATEI-TRASHBOWS 1311)		;Persian crossbowmen
+			(defconst LATEI-TRASHKIRMS 1312)	;Skirms, supported by halbs or scouts
+			(defconst LATEI-TRASHALBS 1313)		;Halbs, supported by skirms or scouts
+			(defconst LATEI-TRASHUSSARS 1314)	;Hussars, supported by skirms or halbs
+			(defconst LATEI-TRASHGENS 1315)		;Genitours, supported by hussars or halbs
+			(defconst LATEI-HUSSARS 1321)		;All hussars
+			(defconst LATEI-STRATS-END 1400)
+		(defconst g-strategy-type 3)
+			;(defconst DRUSH 101)	;already defined with g-current-strategy 
+			(defconst FLUSH 102)
+			(defconst FAST-CASTLE 103)
+			(defconst FAST-IMPERIAL 104)
+		(defconst g-game-focus 4)						;What the AI is current focused on
+			(defconst REBUILD 1)
+			(defconst DEFENSIVE 2)
+			(defconst BOOM 3)
+			(defconst BALANCED 4)
+			(defconst AGGRESSIVE 5)
+			(defconst RESET 99)	
+		(defconst g-age-status 5)
+			(defconst DARK 11)
+			(defconst SAVE-FOR-FEUDAL 13)
+			(defconst TO-FEUDAL 14)
+			(defconst EARLY-FEUDAL 21)
+			(defconst MID-FEUDAL 22)
+			(defconst SAVE-FOR-CASTLE 23)
+			(defconst TO-CASTLE 24)
+			(defconst EARLY-CASTLE 31)
+			(defconst MID-CASTLE 32)
+			(defconst SAVE-FOR-IMPERIAL 33)
+			(defconst TO-IMPERIAL 34)
+			(defconst EARLY-IMPERIAL 41)
+			(defconst MID-IMPERIAL 42)
+			(defconst LATE-IMPERIAL 43)	
+		(defconst g-attack-status 6)					;Tracks what the status is for our attacks
+			(defconst BEFORE-DARK-ATTACKS 11)
+			(defconst DARK-ATTACKS 12)
+			(defconst BEFORE-FEUDAL-ATTACKS 21)
+			(defconst FIRST-FEUDAL-ATTACK 22)
+			(defconst BEFORE-LATER-FEUDAL-ATTACKS 23)
+			(defconst LATER-FEUDAL-ATTACKS 24)
+			(defconst BEFORE-CASTLE-ATTACKS 31)
+			(defconst FIRST-CASTLE-ATTACK 32)
+			(defconst BEFORE-LATER-CASTLE-ATTACKS 33)
+			(defconst LATER-CASTLE-ATTACKS 34)
+			(defconst BEFORE-IMPERIAL-ATTACKS 41)
+			(defconst FIRST-IMPERIAL-ATTACK 42)
+			(defconst BEFORE-LATER-IMPERIAL-ATTACKS 43)
+			(defconst LATER-IMPERIAL-ATTACKS 44)
+		(defconst g-attack-objective 7)
+			(defconst ATTACK-TARGET-ENEMY 1)
+			(defconst ATTACK-POCKET 2)
+			(defconst HELP-ALLY-DEFEND 3)
+			(defconst HELP-ALLY-ATTACK 4)
+		(defconst g-attack-coordination 8)
+			; OFF = 0
+			(defconst ATTACK-STARTED 1)
+			(defconst SOLDIERS-GATHERED 2)
+			(defconst FIND-TARGET-BUILDING 4)
+			(defconst SET-TARGET-BUILDING 5)
+			(defconst FIND-ATTACK-SOLDIERS 6)
+			(defconst START-PATROL 7)
+			(defconst TARGET-REACHED 8)
+			(defconst STOP-PATROL 9)
+			(defconst STOP-ATTACKING 11)
+			(defconst RETREAT 12)
+		(defconst g-required-attack-num 9)
+		(defconst g-stop-attack-num 10)
+		(defconst g-town-under-attack 11)				;Determines if the town is under attack, helps request assistance from allies
+			;NO = 0
+			;YES = 1
+		(defconst g-attack-method-flag 12)
+			(defconst USE-TSA 1)
+			(defconst USE-ATTACK-GROUPS 2)
+			(defconst USE-ATTACK-NOW 4)
+			(defconst USE-DUC 8)
+			(defconst USE-ARENA-DUC 16)
+
+		(defconst g-enemy-buildings-in-town 13)			;Determines enemy buildings within csn-peaceful-town-size, not sn-maximum-town-size
+		(defconst g-enemy-units-in-town 14)				;Determines enemy units within csn-peaceful-town-size, not sn-maximum-town-size
+		(defconst g-gather-inside 15)
+			(defconst UNGARRISON 2)
+		(defconst g-previous-garrisonable-building-count 16)
+		(defconst g-initial-chat-delay 17)
+		(defconst g-get-enemy-locations 18)
+			(defconst BEGIN-FINDING-PLAYERS 0)
+			(defconst DONE-FINDING-PLAYERS 9)
+		(defconst g-closest-enemy 19)
+		(defconst g-closest-enemy-building-distance 20)
+		(defconst g-nearest-enemy-defenses-distance 21)
+
+		(defconst g-initial-strategy 22)				;The player's original strategy/build order
+		(defconst g-previous-strategy 23)
+		(defconst g-next-strategy 24)
+		(defconst g-dark-strategy 25)					;goals 26-33 use same values as goal 2
+		(defconst g-early-feudal-strategy 26)
+		(defconst g-mid-feudal-strategy 27)
+		(defconst g-early-castle-strategy 28)
+		(defconst g-mid-castle-strategy 29)
+		(defconst g-early-imperial-strategy 30)
+		(defconst g-mid-imperial-strategy 31)
+		(defconst g-late-imperial-strategy 32)
+		
+		(defconst g-resign 33)
+			;0 = NO
+			(defconst ASK-FOR-RES 1)
+			(defconst DECIDE-TO-RESIGN 2)
+			(defconst CHAT-FAREWELL 3)
+			(defconst RESIGN 4)
+		(defconst g-map-style 34)						;Determines the style of map
+			(defconst OPEN-LAND 1)			;Arabia, etc.
+			(defconst CLOSED-LAND 2)		;Black Forest, etc.
+			(defconst WALLED-LAND 3)		;Arena, etc.
+			(defconst SEMI-WALLED-LAND 4)	;Hideout (palisade wall start)
+			(defconst MICHI 5)				;Michi (cannot reach players at beginning of the game)
+			(defconst RIVERS 11)			;Rivers, Highland, etc.
+			(defconst LAKES 12)				;Mediterranean, etc.
+			(defconst NOMAD 21)				;Nomad (no starting TC)
+			; (defconst LAND-NOMAD 22)		;Land Nomad (no starting Tc, can't afford TC at start)
+			(defconst ISLANDS 31)			;Islands where multiple teams can be on same island
+			(defconst TEAM-ISLANDS 32)		;Islands where teams are always on separate islands
+			(defconst MIGRATION 41)			;Migration, etc.
+			(defconst IMMOBILE 51)			;Stay immobile in scenarios with no villagers	
+
+		(defconst g-food-escrow-type 35)
+			;OFF = 0
+			(defconst IMMEDIATE 1)
+			(defconst ACCUMULATED 2)
+		(defconst g-wood-escrow-type 36)
+		(defconst g-stone-escrow-type 37)
+		(defconst g-gold-escrow-type 38)
+		
+		(defconst g-true-housing-headroom 39)
+		(defconst g-rule-pass-count 40)
+
+		(defconst g-id-loop-max-objects 41)
+
+		(defconst g-flag 42)
+			(defconst SCOUT-1-TARGET-SET 1)
+			(defconst SCOUT-2-TARGET-SET 2)
+			(defconst SCOUT-3-TARGET-SET 4)
+			(defconst FIRST-ATTACK-LAUNCHED 8)
+			(defconst PROJECTILE-RETREAT 16)
+			(defconst TRADED 32)
+			(defconst SAVE-FOR-SUPPORT-UNIT-TECHS 64)
+			(defconst ALLOW-QUEUED-VILLAGERS 128)
+			(defconst PLACE-CONTROL-USED 256)
+			(defconst PLACE-POINT-USED 512)
+			(defconst FAR-BOAR 1024)
+			(defconst BOAR-HUNTING-CONDITIONS-MET 2048)
+			(defconst ENEMY-FC 4096)
+			(defconst SUPER-POCKET 8192)
+			(defconst TRUSH-DEFENSE 16384)
+
+		(defconst g-team-partner 43)
+		(defconst g-team-partner-identity 44)			;uses same constants as goal 420
+		(defconst g-difficulty 45)
+			(defconst EASIEST 1)
+			(defconst STANDARD 2)
+			(defconst MODERATE 3)
+			(defconst HARD 4)
+			(defconst HARDEST 5)
+			(defconst EXTREME 6)
+			(defconst CHEAT 7)
+		(defconst g-position 46)						;determines flank/pocket position, used to communicate position with allies
+			(defconst FLANK 1)					
+			(defconst POCKET 2)
+
+		(defconst g-target-enemy-x 47)					;x location of nearest target player TC, or position-flank if no target player TC found
+		(defconst g-target-enemy-y 48)					;y location of nearest target player TC, or position-flank if no target player TC found
+		(defconst g-gather-point-x 49)					;x location where defensive soldiers will gather, also used as retreat point
+		(defconst g-gather-point-y 50)					;y location where defensive soldiers will gather, also used as retreat point
+		
+		(defconst g-usable-farm-count 51)
+		(defconst g-usable-farm-count-total 52)
+		(defconst g-current-gold-camp-total 53)
+		(defconst g-current-stone-camp-total 54)
+
+		(defconst g-current-rule 55)
+		(defconst g-start-loop 56)
+		(defconst g-start-loop2 57)
+		(defconst g-start-loop3 58)
+		(defconst g-start-loop4 59)
+
+		(defconst g-tarkan-line 60)						;counts castle and stable tarkans
+		(defconst g-unique-ship-line 61)
+		(defconst g-tower-line 62)						;counts watch tower, guard tower, keep, and donjon
+		(defconst g-siege-class 63)						;counts all siege weapons (siege-class excludes several siege weapons)
+
+		(defconst g-scout-id 64)						;the map ID of our first scout (usually our primary scout), goal is set to -2 when dead
+		(defconst g-scouting-status 65)					;What we are currently trying to scout
+			(defconst FIND-RESOURCES 3)
+			(defconst SCOUT-TOWN 4)
+			(defconst ALL-RESOURCES-FOUND 5)
+			(defconst PUSH-DEER 10)
+			(defconst FIND-ENEMY 13)
+			(defconst RESCOUT-ENEMY 14)
+			(defconst AUTO-SCOUT 20)
+			(defconst DONT-SCOUT 99)
+		
+		(defconst g-dark-age-max-time 66)
+		(defconst g-feudal-age-max-time 67)
+		(defconst g-castle-age-max-time 68)
+		(defconst g-initial-villager-count 69)
+		(defconst g-feudal-age-start-time 70)
+		(defconst g-feudal-age-initial-villager-count 71)
+		(defconst g-castle-age-start-time 72)
+		(defconst g-castle-age-initial-villager-count 73)
+		
+		(defconst g-lowest-gaia-animal-id 74)
+		(defconst g-highest-gaia-animal-id 75)
+
+		(defconst g-dropsite-min-distance-live-boar 76)
+
+		(defconst g-total-chickens-found 81)			;stores the total number of wild chickens found 
+		(defconst g-current-chicken-count 82)			;stores the current number of alive wild chickens we have
+		(defconst g-total-sheep-found 83)				;stores the total number of livestock found 
+		(defconst g-current-sheep-count 84)				;stores the current number of alive livestock we have
+		(defconst g-total-boar-found 85)				;stores the total number of boar found near our town
+		(defconst g-current-boar-count 86)				;stores the current number of alive boar that currently exist near our town
+		(defconst g-total-deer-found 87)				;stores the total number of deer found near our town
+		(defconst g-current-deer-count 88)				;stores the current number of alive deer that currently exist near our town
+		(defconst g-gaia-sheep-id 89)					;stores the ID of the sheep to claim
+		(defconst g-current-sheep-id 90)				;stores the ID of the sheep we're currently gathering
+		(defconst g-next-sheep-id 91)					;stores the ID of the sheep we will gather next
+		(defconst g-backup-sheep-id 92)
+		(defconst g-sheep-gather-x 93)		;x location where sheep should gather to wait to be gathered
+		(defconst g-sheep-gather-y 94)		;y location where sheep should gather to wait to be gathered
+		(defconst g-boar-hunt-status 95)
+			(defconst MAX-BOAR-HUNT-DISTANCE 38)
+			(defconst NEAR-BOAR-HUNT-DISTANCE 24)
+			#load-if-defined ARENA-MAP
+				#load-if-not-defined MONGOL-CIV
+					(defconst NEAR-BOAR-FOOD-AMOUNT-LEFT 80)
+					(defconst FAR-BOAR-FOOD-AMOUNT-LEFT 135)
+				#else
+					(defconst NEAR-BOAR-FOOD-AMOUNT-LEFT 110)
+					(defconst FAR-BOAR-FOOD-AMOUNT-LEFT 190)
+				#end-if
+			#else
+				#load-if-not-defined MONGOL-CIV
+					(defconst NEAR-BOAR-FOOD-AMOUNT-LEFT 135)
+					(defconst FAR-BOAR-FOOD-AMOUNT-LEFT 160)
+				#else
+					(defconst NEAR-BOAR-FOOD-AMOUNT-LEFT 190)
+					(defconst FAR-BOAR-FOOD-AMOUNT-LEFT 225)
+				#end-if
+			#end-if
+			(defconst READY-TO-LURE 1)
+			(defconst SET-BOAR-ID 2)
+			(defconst DROP-LURER-RESOURCES 3)
+			(defconst TARGET-BOAR 4)
+			(defconst LURE-BOAR 5)
+			(defconst ASSIST-HUNTING-BOAR 6)
+		(defconst g-current-boar-id 96)
+		(defconst g-boar-lurer-id 97)
+		(defconst g-deer-pushing-status 98)				;tracks the progress of deer luring and hunting
+			(defconst SEARCHED-FOR-DEER 1)
+			(defconst FOUND-DEER 2)
+			(defconst SENT-SCOUT-TO-DEER 3)
+			(defconst CHECK-DEER-DISTANCE 4)
+			(defconst FOUND-DEER-HUNTER 5)
+			(defconst SHOOT-DEER 6)
+		(defconst g-current-deer-id 99)					;ID of deer being lured by scout
+		(defconst g-total-decaying-hunt-food 100)
+
+		(defconst g-desired-num-military 101)
+		(defconst g-desired-num-navy 102)
+		(defconst g-min-military-pop 103)
+		(defconst g-required-num-villager 104)
+		(defconst g-desired-num-villager 105)
+		(defconst g-desired-num-trade-cart 106)
+		(defconst g-desired-num-militia 107)
+		(defconst g-desired-num-spearman 108)
+		(defconst g-desired-num-eagle-warrior 109)
+		(defconst g-desired-num-condottiero 110)
+		(defconst g-desired-num-archer 111)
+		(defconst g-desired-num-skirmisher 112)
+		(defconst g-desired-num-cavalry-archer 113)
+		(defconst g-desired-num-hand-cannoneer 114)
+		(defconst g-desired-num-genitour 115)
+		(defconst g-desired-num-elephant-archer 116)
+		(defconst g-desired-num-scout-cavalry 117)
+		(defconst g-desired-num-knight 118)
+		(defconst g-desired-num-camel 119)
+		(defconst g-desired-num-battle-elephant 120)
+		(defconst g-desired-num-steppe-lancer 121)
+		(defconst g-desired-num-fire-lancer 122)
+		(defconst g-desired-num-hei-guang-cavalry 123)
+		(defconst g-desired-num-unique-unit 124)
+		(defconst g-desired-num-second-unique-unit 125)	;flemish militia, shrivamsha rider, slinger, missionary, flaming camel, petard 
+		(defconst g-desired-num-ram-type 126)
+		(defconst g-desired-num-mangonel-type 127)
+		(defconst g-desired-num-scorpion-type 128)
+		(defconst g-desired-num-cannon-type 129)
+		(defconst g-desired-num-trebuchet 130)
+		(defconst g-desired-num-siege-tower 131)
+		(defconst g-desired-num-monk 132)
+		(defconst g-desired-num-fishing-ship 133)
+		(defconst g-desired-num-transport-ship 134)
+		(defconst g-desired-num-trade-cog 135)
+		(defconst g-desired-num-galley 136)
+		(defconst g-desired-num-fire-ship 137)
+		(defconst g-desired-num-demolition-ship 138)
+		(defconst g-desired-num-cannon-galleon 139)
+		(defconst g-desired-num-unique-ship 140
+		)
+		(defconst g-desired-num-infantry-class 141)
+		(defconst g-desired-num-archery-class 142)
+		(defconst g-desired-num-cavalry-archer-class 143)
+		(defconst g-desired-num-cavalry-class 144)
+		(defconst g-desired-num-siege-classes 145)
+		(defconst g-desired-num-cannoneer-classes 146)
+		(defconst g-desired-num-monastery-class 147)
+		(defconst g-desired-num-town-center 148)
+		(defconst g-desired-num-house 149)
+		(defconst g-desired-num-mill 150)
+		(defconst g-desired-num-mining-camp 151)
+		(defconst g-desired-num-gold-camp 152)
+		(defconst g-desired-num-stone-camp 153)
+		(defconst g-desired-num-lumber-camp 154)
+		(defconst g-desired-num-dock 155)
+		(defconst g-desired-num-farm 156)
+		(defconst g-desired-num-blacksmith 157)
+		(defconst g-desired-num-market 158)
+		(defconst g-desired-num-monastery 159)
+		(defconst g-desired-num-university 160)
+		(defconst g-desired-num-wonder 161)
+		(defconst g-desired-num-barracks 162)
+		(defconst g-desired-num-archery-range 163)
+		(defconst g-desired-num-stable 164)
+		(defconst g-desired-num-siege-workshop 165)
+		(defconst g-desired-num-outpost 166)
+		(defconst g-desired-num-tower 167)
+		(defconst g-desired-num-bombard-tower 168)
+		(defconst g-desired-num-castle 169)
+		(defconst g-desired-num-unique-building 170)
+		(defconst g-desired-num-pasture 171)	
+		; (defconst g- 172)	;reserved for new desired building type
+		; (defconst g- 173)
+
+		(defconst g-place-control-bldg 174)
+		(defconst g-place-point-bldg 175)
+		(defconst g-place-point-x 176)		;stores the location of where the next building should be placed with up-build place-point
+		(defconst g-place-point-y 177)		;stores the location of where the next building should be placed with up-build place-point
+
+		(defconst g-primary-unit 178)
+		(defconst g-support-unit 179)
+		(defconst g-previous-support-unit 180)
+		(defconst g-primary-unit-class 181)
+		(defconst g-support-unit-class 182)
+		(defconst g-desired-num-primary-unit 183)
+		(defconst g-desired-num-support-unit 184)
+		(defconst g-constant-train-unit 185)
+		(defconst g-desired-num-constant-train-unit 186)
+		(defconst g-desired-num-constant-train-unit-goal 187)
+		
+		(defconst g-primary-unit-tech-progress 188)
+			(defconst REQUIRED-FEUDAL-COMPLETE 21)
+			(defconst PRIORITY-FEUDAL-COMPLETE 22)
+			(defconst SECONDARY-FEUDAL-COMPLETE 23)
+			(defconst ALL-FEUDAL-COMPLETE 24)
+			(defconst REQUIRED-CASTLE-COMPLETE 31)
+			(defconst PRIORITY-CASTLE-COMPLETE 32)
+			(defconst SECONDARY-CASTLE-COMPLETE 33)
+			(defconst ALL-CASTLE-COMPLETE 34)
+			(defconst REQUIRED-IMPERIAL-COMPLETE 41)
+			(defconst PRIORITY-IMPERIAL-COMPLETE 42)
+			(defconst SECONDARY-IMPERIAL-COMPLETE 43)
+			(defconst ALL-IMPERIAL-COMPLETE 44)
+		(defconst g-support-unit-tech-progress 189)
+		(defconst g-eco-tech-progress 190)
+		(defconst g-current-age-primary-unit-tech-progress 191)
+			(defconst INCOMPLETE 0)
+			(defconst REQUIRED-COMPLETE 1)
+			(defconst PRIORITY-COMPLETE 2)
+			(defconst SECONDARY-COMPLETE 3)
+			(defconst ALL-COMPLETE 4)
+		(defconst g-current-age-support-unit-tech-progress 192)
+		(defconst g-current-age-eco-tech-progress 193)
+		(defconst g-militia-tech-progress 194)
+		(defconst g-spearman-tech-progress 195)
+		(defconst g-eagle-warrior-tech-progress 196)
+		(defconst g-condottiero-tech-progress 197)
+		(defconst g-archer-tech-progress 198)
+		(defconst g-skirmisher-tech-progress 199)
+		(defconst g-cavalry-archer-tech-progress 200)
+		(defconst g-hand-cannoneer-tech-progress 201)
+		(defconst g-elephant-archer-tech-progress 202)
+		(defconst g-genitour-tech-progress 203)
+		(defconst g-scout-cavalry-tech-progress 204)
+		(defconst g-knight-tech-progress 205)
+		(defconst g-camel-tech-progress 206)
+		(defconst g-battle-elephant-tech-progress 207)
+		(defconst g-steppe-lancer-tech-progress 208)
+		(defconst g-unique-unit-tech-progress 209)
+		(defconst g-second-unique-unit-tech-progress 210)
+		
+		(defconst g-barracks-next-unit 211)
+		(defconst g-archery-range-next-unit 212)
+		(defconst g-stable-next-unit 213)
+		(defconst g-siege-workshop-next-unit 214)
+		(defconst g-dock-next-unit 215)
+
+		(defconst g-target-military-parity 216)			;The difference between our military pop and the military pop of the target player, > 0 means we have superiority
+		(defconst g-target-pop-parity 217)				;The difference between our total pop and the total pop of the target player, > 0 means we have superiority
+		(defconst g-target-age-parity 218)				;Determines whether we are ahead or behind in age, compared to our target enemy
+			(defconst WE-ARE-BEHIND 0)
+			(defconst WE-ARE-EQUAL 1)
+			(defconst WE-ARE-AHEAD 2)
+		(defconst g-human-military-count 219)
+		; (defconst g- 220)
+		; (defconst g- 221)
+		; (defconst g- 222)
+		; (defconst g- 223)
+		; (defconst g- 224)
+		; (defconst g- 225)
+		; (defconst g- 226)
+		; (defconst g- 227)
+		; (defconst g- 228)
+		(defconst g-enemy-swordsmen-count 229)			;militia, woad raider, throwing axeman, berserk, condottiero, kamayuk, shotel warrior, gbeto, karambit warrior, foot konnik, serjeant, obuch, flemish militia
+		(defconst g-enemy-spearmen-count 230)			;spearman
+		(defconst g-enemy-eagle-warriors-count 231)		;eagle warrior, ghulam
+		(defconst g-enemy-foot-archers-count 232)		;archer, longbowman, chu-ko-nu, plumed archer, janissary, rattan archer
+		(defconst g-enemy-skirmishers-count 233)		;skirmisher, genitour
+		(defconst g-enemy-cavalry-archers-count 234)	;cavalry archer, war wagon, mangudai, conquistador, camel archer, arambai, kipchak, elephant archer, ratha
+		(defconst g-enemy-hand-cannoneers-count 235)	;hand cannoneer, slinger
+		(defconst g-enemy-light-cavalry-count 236)		;scout cavalry, magyar huszar, steppe lancer, shrivamsha rider
+		(defconst g-enemy-heavy-cavalry-count 237)		;knight, tarkan, boyar, konnik, keshik, leitis, coustillier
+		(defconst g-enemy-camels-count 238)				;camel
+		(defconst g-enemy-elephants-count 239)			;battle elephant, war elephant
+		(defconst g-enemy-field-siege-count 240)		;mangonel, rocket cart, scorpion, war chariot, mounted trebuchet, organ gun, ballista elephant, hussite wagon
+		(defconst g-enemy-monks-count 241)				;monk, missionary
+		(defconst g-enemy-jaguar-warriors-count 242)	;jaguar warrior, urumi swordsman
+		(defconst g-enemy-huskarls-count 243)			;huskarl
+		(defconst g-enemy-chakram-throwers-count 244)	;chakram thrower
+		(defconst g-enemy-samurai-count 245)			;samurai
+		(defconst g-enemy-teutonic-knights-count 246)	;teutonic knight
+		(defconst g-enemy-genoese-crossbowmen-count 247);genoese crossbowman
+		(defconst g-enemy-cataphracts-count 248)		;cataphract
+		(defconst g-enemy-mamelukes-count 249)			;mameluke
+		(defconst g-enemy-composite-bowmen-count 250)	;composite bowmen
+		
+		(defconst g-max-food-needed 251)
+		(defconst g-max-wood-needed 252)
+		(defconst g-max-stone-needed 253)
+		(defconst g-max-gold-needed 254)
+		(defconst g-important-techs-food-needed 255)
+		(defconst g-important-techs-wood-needed 256)
+		(defconst g-important-techs-stone-needed 257)
+		(defconst g-important-techs-gold-needed 258)
+		(defconst g-total-units-food-needed 259)
+		(defconst g-total-units-wood-needed 260)
+		(defconst g-total-units-stone-needed 261)
+		(defconst g-total-units-gold-needed 262)
+		(defconst g-total-buildings-food-needed 263)
+		(defconst g-total-buildings-wood-needed 264)
+		(defconst g-total-buildings-stone-needed 265)
+		(defconst g-total-buildings-gold-needed 266)
+		(defconst g-total-techs-food-needed 267)
+		(defconst g-total-techs-wood-needed 268)
+		(defconst g-total-techs-stone-needed 269)
+		(defconst g-total-techs-gold-needed 270)
+		(defconst g-current-farming-gathering-rate 271)
+		(defconst g-current-wood-gathering-rate 272)
+		(defconst g-current-stone-gathering-rate 273)
+		(defconst g-current-gold-gathering-rate 274)
+		(defconst g-required-num-food-vils 275)
+		(defconst g-required-num-wood-vils 276)
+		(defconst g-required-num-stone-vils 277)
+		(defconst g-required-num-gold-vils 278)
+		(defconst g-desired-num-food-vils 279)
+		(defconst g-desired-num-wood-vils 280)
+		(defconst g-desired-num-stone-vils 281)
+		(defconst g-desired-num-gold-vils 282)
+		(defconst g-desired-future-food-vils 283)
+		(defconst g-desired-future-wood-vils 284)
+		(defconst g-desired-future-stone-vils 285)
+		(defconst g-desired-future-gold-vils 286)
+		(defconst g-previous-villager-count 287)
+		(defconst g-total-needed-villagers 288)
+		(defconst g-percent-dynamic-gathering 289)
+		(defconst g-recent-food-gathered 290)
+		(defconst g-recent-wood-gathered 291)
+		(defconst g-recent-stone-gathered 292)
+		(defconst g-recent-gold-gathered 293)
+		(defconst g-total-food-gathered 294)
+		(defconst g-total-wood-gathered 295)
+		(defconst g-total-stone-gathered 296)
+		(defconst g-total-gold-gathered 297)
+		(defconst g-total-food-bought 298)
+		(defconst g-total-wood-bought 299)
+		(defconst g-total-stone-bought 300)
+		(defconst g-total-gold-bought 301)
+
+		(defconst g-escrow 302)
+		(defconst g-villager-training 303)
+			;OFF = 0
+			(defconst LIMITED-TRAINING 1)
+			(defconst TRAIN-WITHOUT-ESCROW 2)
+			(defconst LIMITED-TRAIN-WITH-ESCROW 3)
+			(defconst TRAIN-WITH-ESCROW 4)
+
+		(defconst g-first-gold-miner-villager-count 304)
+
+		(defconst g-threat-elapsed-time 305)			;time since last attack on the map
+		(defconst g-threat-player 306)					;player that last attacked us anywhere on the map
+		(defconst g-threat-source-class 307)			;class of the unit that last attacked
+		(defconst g-threat-target-class 308)			;class of our unit that was last attacked
+		(defconst g-local-total 309)					;number of objects in local list
+		(defconst g-local-last 310)						;number of objects found in last local search
+		(defconst g-remote-total 311)					;number of objects in remote list
+		(defconst g-remote-last 312)					;number of objects found in last remote search
+
+		;Resource Goals: 313-324
+			(defconst g-food-cost 313)
+			(defconst g-wood-cost 314)
+			(defconst g-stone-cost 315)
+			(defconst g-gold-cost 316)
+			(defconst g-food-delta 317)
+			(defconst g-wood-delta 318)
+			(defconst g-stone-delta 319)
+			(defconst g-gold-delta 320)
+			(defconst g-temp-food-cost 321)
+			(defconst g-temp-wood-cost 322)
+			(defconst g-temp-stone-cost 323)
+			(defconst g-temp-gold-cost 324)
+
+			;Gathering.per
+			(defconst g-food-needed g-temp-food-cost)
+			(defconst g-wood-needed g-temp-wood-cost)
+			(defconst g-stone-needed g-temp-stone-cost)
+			(defconst g-gold-needed g-temp-gold-cost)
+
+		;Single Goals: 325-352
+			(defconst g-temp 325)
+			(defconst g-temp2 326)
+			(defconst g-temp3 327)
+			(defconst g-temp4 328)
+			(defconst g-temp5 329)
+			(defconst g-temp6 330)
+			; (defconst g-temp7 331)
+			; (defconst g-temp8 332)
+			(defconst g-loop-counter 331)
+			(defconst g-loop-counter2 332)
+			;Following temp goals are available to be replaced by renamed goals
+			(defconst g-temp9 333)
+			(defconst g-temp10 334)
+			(defconst g-temp11 335)
+			(defconst g-temp12 336)
+			(defconst g-temp13 337)
+			(defconst g-temp14 338)
+			(defconst g-temp15 339)
+			(defconst g-temp16 340)
+			(defconst g-temp17 341)
+			(defconst g-temp18 342)
+			(defconst g-temp19 343)
+			(defconst g-temp20 344)
+			(defconst g-temp21 345)
+			(defconst g-temp22 346)
+			(defconst g-temp23 347)
+			(defconst g-temp24 348)
+			(defconst g-temp25 349)
+			(defconst g-temp26 350)
+			(defconst g-temp27 351)
+			(defconst g-temp28 352)
+
+			;Army Micro.per
+			;Universal temp goals
+			(defconst g-current-group-flag-goal-id g-temp9)				;Used throughout DUC code
+			(defconst g-current-group-flag g-temp10)						;Used throughout DUC code
+			(defconst g-current-group-action g-temp11)					;Used throughout DUC code
+			(defconst g-current-group-action-goal-id g-temp12)			;Used throughout DUC code
+			(defconst g-current-group-target-object-id g-temp13)			;Used throughout DUC code
+			(defconst g-current-group-target-object-goal-id g-temp14)	;Used throughout DUC code
+			(defconst g-current-group-type-flag-goal-id g-temp15)		;Used throughout DUC code
+			(defconst g-current-group-type-flag g-temp16)				;Used throughout DUC code
+			(defconst g-current-group-destination-time g-temp17)			;Used throughout DUC code
+			(defconst g-current-group-destination-time-goal-id g-temp18)	;Used throughout DUC code
+			(defconst g-current-group-avoidance-counter g-temp19)		;Used throughout DUC code
+			(defconst g-current-group-avoidance-counter-goal-id g-temp20);Used throughout DUC code
+			;Local Attack Target temp goals
+			(defconst g-current-group-smallest-range g-temp21)				;Used ONLY in Set Local Attack Target section
+			(defconst g-current-group-target-selection-status g-temp22)	;Used ONLY in Set Local Attack Target section
+				(defconst SKIP 3426)
+				(defconst SEARCH-FOR-POTENTIAL-TARGETS 3427)
+				(defconst FOUND-POTENTIAL-TARGETS 3428)
+				(defconst FOUND-UNITS-TO-TARGET 3429)
+				(defconst FOUND-BUILDINGS-TO-TARGET 3430)
+				(defconst TARGET-UNIT-SET 3431)
+				(defconst TARGET-BUILDING-SET 3432)
+			(defconst g-current-group-potential-target-score g-temp23)	;Used ONLY in Set Local Attack Target section
+			(defconst g-current-group-best-potential-target-score g-temp24)	;Used ONLY in Set Local Attack Target section
+			(defconst g-current-group-current-target-score g-temp25)		;Used ONLY in Set Local Attack Target section
+			(defconst g-current-group-potential-target-id g-temp26)		;Used ONLY in Set Local Attack Target section
+			;Dangerous Object temp goals
+			(defconst g-dangerous-object-id g-temp21)					;Used ONLY in Retreat From Dangerous Object sections
+			(defconst g-dangerous-object-range g-temp22)					;Used in Retreat From Dangerous Object and Check if in Range of Dangerous Object sections
+			(defconst g-current-group-avoidance-location-flag g-temp23)	;Used ONLY in Retreat From Dangerous Object sections
+				(defconst LOC1-REACHABLE 1)
+				(defconst LOC1-SAFE 2)
+				(defconst LOC2-REACHABLE 4)
+				(defconst LOC2-SAFE 8)
+			;Combine Groups temp goals
+			(defconst g-current-nearby-group g-temp21)					;Used ONLY in Combine Groups section
+			(defconst g-current-nearby-group-flag g-temp22)				;Used ONLY in Combine Groups section
+			(defconst g-current-nearby-group-flag-goal-id g-temp23)		;Used ONLY in Combine Groups section
+			(defconst g-current-nearby-group-type-flag g-temp24)			;Used ONLY in Combine Groups section
+			(defconst g-current-nearby-group-type-flag-goal-id g-temp25)	;Used ONLY in Combine Groups section
+			;Set Group Destination temp goals
+			(defconst g-current-group-destination-object-id g-temp21)	;Used ONLY in Set Group Destination section
+			(defconst g-current-group-best-destination-score g-temp22)	;Used ONLY in Set Group Destination section
+			(defconst g-current-group-destination-score g-temp23)		;Used ONLY in Set Group Destination section
+			(defconst g-current-group-destination-split-goal g-temp24)	;Used ONLY in Set Group Destination section
+			;Gather Group temp goals
+			(defconst g-current-group-gather-status g-temp21)			;Used ONLY in Gather Group Together section
+			;New goals
+			(defconst g-current-group-range 801)
+			(defconst g-current-group-search-range 802)
+			(defconst g-current-group-min-range 803)
+			(defconst g-current-group-ready-to-attack 804)
+			(defconst g-current-group-ready-to-move 805)
+    			(defconst ATTACK-DELAY-ADJUSTMENT 49)
+			(defconst g-arena-group1-size 806)
+			(defconst g-arena-group1-current-relic 807)
+			(defconst g-arena-group1-target 808)
+			(defconst g-arena-group1-x 809)
+			(defconst g-arena-group1-y 810)
+			(defconst g-current-relic-count 811)
+			(defconst g-current-relic-target-number 812)
+			(defconst g-current-relic-target-id 813)
+			(defconst g-monk-near-relic 814)
+			; (defconst g-arena-group2-size 807)
+			; (defconst g-arena-group2-monk-id 809)
+			; (defconst g-arena-group2-x 812)
+			; (defconst g-arena-group2-y 813)
+			; (defconst g-arena-group2-target 815)
+
+			;Army Comp.per
+			(defconst g-current-unit-type g-temp9)
+				(defconst SUPPORT-MILITIA 1)
+				(defconst SUPPORT-SPEARMAN 2)
+				(defconst SUPPORT-EAGLE-WARRIOR 3)
+				(defconst SUPPORT-CONDOTTIERO 4)
+				(defconst SUPPORT-ARCHER 5)
+				(defconst SUPPORT-SKIRMISHER 6)
+				(defconst SUPPORT-CAVALRY-ARCHER 7)
+				(defconst SUPPORT-ELEPHANT-ARCHER 8)
+				(defconst SUPPORT-SLINGER 9)
+				(defconst SUPPORT-GENITOUR 10)
+				(defconst SUPPORT-HAND-CANNONEER 11)
+				(defconst SUPPORT-SCOUT-CAVALRY 12)
+				(defconst SUPPORT-KNIGHT 13)
+				(defconst SUPPORT-CAMEL 14)
+				(defconst SUPPORT-BATTLE-ELEPHANT 15)
+				(defconst SUPPORT-STEPPE-LANCER 16)
+				(defconst SUPPORT-SHRIVAMSHA-RIDER 17)
+				(defconst SUPPORT-UNIQUE-UNIT 18)
+				(defconst SUPPORT-MONK 19)
+				(defconst SUPPORT-BATTERING-RAM 20)
+				(defconst SUPPORT-MANGONEL 21)
+				(defconst SUPPORT-SCORPION 22)
+				(defconst SUPPORT-ARMORED-ELEPHANT 23)
+			(defconst g-current-unit-score g-temp10)
+			(defconst g-best-unit-type g-temp11)
+			(defconst g-best-unit-score g-temp12)
+			(defconst g-current-unit-building g-temp13)
+			(defconst g-current-unit-attack-type g-temp14)
+				; (defconst NONE 0)
+				; (defconst MELEE-ATTACK 1)
+				; (defconst PIERCE-ATTACK 2)
+			(defconst g-current-unit-armor-type g-temp15)
+				; (defconst NONE 0)
+				; (defconst INFANTRY-ARMOR 1)
+				; (defconst ARCHER-ARMOR 2)
+				; (defconst CAVALRY-ARMOR 3)
+
+			;Attacking.per
+			(defconst g-top-enemy-military-parity g-temp9)		;The difference between our military pop and the highest military pop of any enemy, > 0 means we have superiority
+			(defconst g-top-enemy-pop-parity g-temp10)			;The difference between our total pop and the highest total pop of any enemy, > 0 means we have superiority
+
+			;Buildings
+			(defconst g-tc-current-score g-temp9)
+			(defconst g-tc-best-score g-temp10)
+
+			;DUC.per
+			(defconst g-scout-current-score g-temp9)
+			(defconst g-scout-best-score g-temp10)
+			(defconst g-scout-los g-temp11)
+			(defconst g-scout-radius g-temp12)
+				; (defconst SCOUT-SEARCH-RADIUS 10)
+			(defconst g-num-auto-scouts g-temp13)
+			(defconst g-num-villager-auto-scouts g-temp14)
+			(defconst g-num-sheep-scouts g-temp15)
+			(defconst g-num-villager-scouts g-temp16)
+			(defconst g-num-military-scouts g-temp17)
+
+
+			;Escrow.per
+			(defconst g-prior-wood-escrow-type g-temp9)
+			(defconst g-prior-food-escrow-type g-temp10)
+			(defconst g-prior-gold-escrow-type g-temp11)
+			(defconst g-prior-stone-escrow-type g-temp12)
+
+			;Gathering.per
+			(defconst gt-initial-dark-wood-gatherers g-temp9)
+			(defconst gt-initial-dark-food-gatherers g-temp10)
+			(defconst gt-total-dark-wood-gatherers g-temp11)
+			(defconst gt-total-dark-food-gatherers g-temp12)
+			(defconst gt-total-dark-gold-gatherers g-temp13)
+			(defconst gt-total-dark-stone-gatherers g-temp14)
+			(defconst gt-to-feudal-wood-gatherers g-temp15)
+			(defconst gt-to-feudal-food-gatherers g-temp16)
+			(defconst gt-to-feudal-gold-gatherers g-temp17)
+			(defconst gt-to-feudal-stone-gatherers g-temp18)
+			(defconst gt-total-feudal-wood-gatherers g-temp19)
+			(defconst gt-total-feudal-food-gatherers g-temp20)
+			(defconst gt-total-feudal-gold-gatherers g-temp21)
+			(defconst gt-total-feudal-stone-gatherers g-temp22)
+			(defconst gt-to-castle-wood-gatherers g-temp23)
+			(defconst gt-to-castle-food-gatherers g-temp24)
+			(defconst gt-to-castle-gold-gatherers g-temp25)
+			(defconst gt-to-castle-stone-gatherers g-temp26)
+
+			;Goals.per
+			(defconst g-total-enemy-soldier-counts g-temp9)
+			(defconst g-target-army-visible g-temp10)
+			(defconst g-other-enemy-armies-visible g-temp11)
+
+			;Market Trading.per
+			(defconst g-food-price g-temp9)
+			(defconst g-wood-price g-temp10)
+			(defconst g-stone-price g-temp11)
+
+			;Personality
+			(defconst g-ally-requesting-aid g-temp9)
+			
+			;Strats.per
+			(defconst g-late-imp-best-strategy g-temp9)
+			(defconst g-late-imp-strat-score g-temp10)
+
+				;Attacking.per
+				; (defconst g-required-attack-num-reduction g-temp9)
+				; (defconst g-required-attack-num-increase g-temp10)
+				; (defconst g-new-tsa-size g-temp9)
+				; (defconst g-projectile-player g-temp9)
+				; (defconst g-projectile-tower-id g-temp10)
+				; (defconst g-closest-enemy-building-distance g-temp11)
+
+				;Building Construction.per
+				; (defconst g-checkpoint g-temp9)
+				; (defconst g-total-num-houses g-temp10)
+				; (defconst g-loop-counter-is-odd g-temp11)
+				; (defconst g-num-tiles g-temp12)
+				; (defconst g-pending-houses g-temp15)
+				; (defconst g-vil1-id g-temp9)
+				; (defconst g-vil2-id g-temp10)
+				; (defconst g-vil3-id g-temp11)
+				; (defconst g-percent-desired-barracks-built g-temp12)
+				; (defconst g-percent-desired-ranges-built g-temp13)
+				; (defconst g-percent-desired-stables-built g-temp14)
+				; (defconst g-new-houses-needed g-temp9)
+				; (defconst g-current-houses g-temp11)
+				; (defconst g-current-gold-mine-map-id g-temp10)
+				; (defconst g-mine-distance-to-enemy g-temp10)
+				; (defconst g-soldier-gather-point-distance-to-enemy g-temp11)
+				; (defconst g-furthest-wood-dropsite-distance g-temp9)
+				; (defconst g-furthest-mining-dropsite-distance g-temp9)
+				; (defconst g-pending-farms g-temp10)
+				; (defconst g-current-farms g-temp11)
+
+				;Desired Object Counts.per
+				; (defconst g-total-gold-dropsites g-temp9)
+				; (defconst g-needed-gold-dropsites g-temp10)
+				; (defconst g-total-stone-dropsites g-temp9)
+				; (defconst g-needed-stone-dropsites g-temp10)
+				; (defconst g-total-wood-dropsites g-temp9)
+				; (defconst g-needed-wood-dropsites g-temp10)
+				; (defconst g-num-tcs g-temp9)
+				; (defconst g-num-mills g-temp10)
+				; (defconst g-desired-num-siege-workshop-units g-temp9)
+				; (defconst g-new-tcs-needed g-temp9)
+				; (defconst g-total-desired-military-count g-temp9)
+				; (defconst g-desired-military-adjustment-factor g-temp10)
+
+				;DUC.per
+				; (defconst g-current-scout-goal g-temp9)				;detects whether we're tasking scout 1, 2, or 3
+				; (defconst g-current-scout-id g-temp10)				;stores the scout ID that g-current-scout-goal is set to
+				; (defconst g-current-scout-noal g-temp9)				;detects whether we're tasking scout 1, 2, or 3
+				; (defconst g-current-scout-um g-temp11)
+				; (defconst g-cross-tiles-amount g-temp12)
+				; (defconst g-adjusted-scouting-distance g-temp13)
+				; (defconst g-wrong-sheep-id g-temp14)
+				; (defconst g-enemy-strength-near-tc g-temp9)
+				; (defconst g-our-strength-near-tc g-temp10)
+				; (defconst g-building-avoidance-radius g-temp11)
+				; (defconst g-projectile-retreat g-temp12)
+
+				;Gathering.per
+				; (defconst g-min-number-foragers g-temp10)
+				; (defconst g-min-gold-to-sell g-temp12)
+				; (defconst g-wood-needed-for-farms g-temp9)
+				; (defconst g-gather-rate g-temp10)
+				; (defconst g-available-training-time g-temp11)
+				; (defconst g-excess-resource-amount g-temp9)
+				; (defconst g-current-farming-gathering-rate g-temp10)
+				; (defconst g-current-wood-gathering-rate g-temp11)
+				; (defconst g-current-stone-gathering-rate g-temp12)
+				; (defconst g-current-gold-gathering-rate g-temp13)
+				; (defconst g-percent-static-gathering g-temp9)
+				; (defconst g-total-dynamic-gathering-vils g-temp10)
+				; (defconst g-total-desired-future-vils g-temp11)
+				; (defconst g-calculated-desired-num-vils g-temp12)
+				; (defconst g-next-villager-resource-assignment g-temp13)
+				; (defconst g-food-current-to-future-villager-ratio g-temp14)
+				; (defconst g-wood-current-to-future-villager-ratio g-temp15)
+				; (defconst g-stone-current-to-future-villager-ratio g-temp16)
+				; (defconst g-gold-current-to-future-villager-ratio g-temp17)
+				; (defconst g-lowest-current-to-future-villager-ratio g-temp18)
+				; (defconst g-gathering-percentage-sum g-temp19)
+
+				;Goals.per
+				; (defconst g-selected-general g-temp9)
+				; (defconst g-adjusted-military-parity g-temp9)
+				; (defconst g-adjusted-pop-parity g-temp10)
+				; (defconst g-adjusted-peaceful-town-size g-temp9)
+				; (defconst g-scout-distance-increase-timer-length g-temp9)
+				; (defconst g-housing-support g-temp9)
+				; (defconst g-current-pop g-temp10)
+				; (defconst g-queued-pop g-temp11)
+				; (defconst g-num-enemies g-temp9)
+				; (defconst g-average-num-enemy-military g-temp10)
+				; (defconst g-sum-enemy-military-counts g-temp11)
+				; (defconst g-ratio-enemy-military g-temp12)
+				; (defconst g-lowest-ally-distance g-temp9)
+				; (defconst g-top-enemy-military-type g-temp9)
+				; (defconst g-weighted-top-enemy-military-type g-temp10)
+				; (defconst g-current-enemy-military-type-count g-temp11)
+				; (defconst g-previous-total-food-gathered g-temp9)
+				; (defconst g-previous-total-wood-gathered g-temp10)
+				; (defconst g-previous-total-stone-gathered g-temp11)
+				; (defconst g-previous-total-gold-gathered g-temp12)
+				; (defconst g-percent-desired-trained g-temp9)
+				; (defconst g-lowest-percent-desired-trained g-temp10)
+				; (defconst g-enemy-strength-in-town g-temp9)
+				; (defconst g-own-strength g-temp10)
+				; (defconst g-current-garrisonable-building-count g-temp11)
+
+				;Personality.per
+				; (defconst g-initial-chat-delay g-temp10)
+				; (defconst g-get-enemy-locations g-temp11)
+				; 	(defconst BEGIN-FINDING-PLAYERS 0)
+				; 	(defconst DONE-FINDING-PLAYERS 9)
+
+				;Resign.per
+				; (defconst g-resign g-temp9)
+				; (defconst g-team-population-ratio g-temp10)
+
+				;Strategic Numbers.per
+				; (defconst g-max-tile-difference g-temp9)
+				; (defconst g-temp-tile-difference g-temp10)
+
+				;Technology Research.per
+				; (defconst g-desired-num-constant-train-unit g-temp9)
+
+				;Functions/Build Line Lumber.per (also Mining and Mill)
+				; (defconst g-sub-checkpoint g-temp10)
+				; (defconst g-weighted-distance g-temp11)
+				; (defconst g-weighted-distance-from-tc g-temp12)
+
+				;Functions/Build Line.per
+				; (defconst g-placement-zone-size-diameter g-temp9)
+				; (defconst g-building-placement-radius g-temp10)
+				; (defconst g-building-clearance-size g-temp11)
+
+		;Point Goals: 353-376
+			(defconst g-point-x 353)
+			(defconst g-point-y 354)
+			(defconst g-point2-x 355)
+			(defconst g-point2-y 356)
+			(defconst g-point3-x 357)
+			(defconst g-point3-y 358)
+			(defconst g-point4-x 359)
+			(defconst g-point4-y 360)
+			;Temp points after this are available to be renamed
+			(defconst g-point5-x 361)
+			(defconst g-point5-y 362)
+			(defconst g-point6-x 363)
+			(defconst g-point6-y 364)
+			(defconst g-point7-x 365)
+			(defconst g-point7-y 366)
+			(defconst g-point8-x 367)
+			(defconst g-point8-y 368)
+			(defconst g-point9-x 369)
+			(defconst g-point9-y 370)
+			(defconst g-point10-x 371)
+			(defconst g-point10-y 372)
+			(defconst g-point11-x 373)
+			(defconst g-point11-y 374)
+			(defconst g-point12-x 375)
+			(defconst g-point12-y 376)
+
+			;Army Micro.per
+			(defconst g-current-group-location-x g-point5-x)
+			(defconst g-current-group-location-y g-point5-y)
+			(defconst g-current-group-location-x-goal-id g-point6-x)
+			(defconst g-current-group-location-y-goal-id g-point6-y)
+			(defconst g-current-group-destination-x g-point7-x)
+			(defconst g-current-group-destination-y g-point7-y)
+			(defconst g-current-group-destination-x-goal-id g-point8-x)
+			(defconst g-current-group-destination-y-goal-id g-point8-y)
+			(defconst g-dangerous-object-x g-point9-x)
+			(defconst g-dangerous-object-y g-point9-y)
+			(defconst g-current-nearby-group-location-x g-point10-x)
+			(defconst g-current-nearby-group-location-y g-point10-y)
+			(defconst g-current-nearby-group-location-x-goal-id g-point11-x)
+			(defconst g-current-nearby-group-location-y-goal-id g-point11-y)
+			(defconst g-dangerous-object-avoidance-location1-x g-point10-x)
+    		(defconst g-dangerous-object-avoidance-location1-y g-point10-y)
+			(defconst g-dangerous-object-avoidance-location2-x g-point11-x)
+    		(defconst g-dangerous-object-avoidance-location2-y g-point11-y)
+			(defconst g-dangerous-object-avoidance-location3-x g-point12-x)
+			(defconst g-dangerous-object-avoidance-location3-y g-point12-y)
+
+				;Building Construction.per
+				; (defconst g-offset-x g-point5-x)
+				; (defconst g-offset-y g-point5-y)
+
+				; (defconst g-selected-build-location-x g-point5-x)
+				; (defconst g-selected-build-location-y g-point5-y)
+				; (defconst g-current-tile-to-check-x g-point6-x)
+				; (defconst g-current-tile-to-check-y g-point6-y)
+				; (defconst g-gold-mine-x g-point5-x)
+				; (defconst g-gold-mine-y g-point5-y)
+				; (defconst g-dropsite-x g-point5-x)
+				; (defconst g-dropsite-y g-point5-y)
+
+				;DUC.per
+				(defconst g-offset-x g-point5-x)
+				(defconst g-offset-y g-point5-y)
+				(defconst g-offset2-x g-point6-x)
+				(defconst g-offset2-y g-point6-y)
+				; (defconst g-enemy-defensive-building-x g-point5-x)
+				; (defconst g-enemy-defensive-building-y g-point5-y)
+				; (defconst g-nearby-unit-x g-point6-x)
+				; (defconst g-nearby-unit-y g-point6-y)
+				; (defconst g-retreat-location-x g-point7-x)
+				; (defconst g-retreat-location-y g-point7-y)
+				; (defconst g-next-scouting-location-x g-point5-x)
+				; (defconst g-next-scouting-location-y g-point5-y)
+				; (defconst g-adjusted-next-scouting-location-x g-point6-x)
+				; (defconst g-adjusted-next-scouting-location-y g-point6-y)
+				; (defconst g-explore-point-x g-point7-x)
+				; (defconst g-explore-point-y g-point7-y)
+				; (defconst g-push-deer-x g-point5-x)
+				; (defconst g-push-deer-y g-point5-y)
+				; (defconst g-sheep-under-tc-x g-point5-x)
+				; (defconst g-sheep-under-tc-y g-point5-y)
+
+				;Strategic Numbers.per
+				; (defconst g-min-x g-point5-x)
+				; (defconst g-min-y g-point5-y)
+				; (defconst g-max-x g-point6-x)
+				; (defconst g-max-y g-point6-y)
+
+				;Functions/Build Line.per
+				; ; (defconst g-selected-build-location-x g-point5-x)
+				; ; (defconst g-selected-build-location-y g-point5-y)
+				; ; (defconst g-current-tile-to-check-x g-point6-x)
+				;; (defconst g-current-tile-to-check-y g-point6-y)
+				; (defconst g-offset-x g-point7-x)
+				; (defconst g-offset-y g-point7-y)
+				; (defconst g-primary-reference-x g-point5-x)
+				; (defconst g-primary-reference-y	g-point5-y)
+
+				;Functions/Build Line Lumber.per
+				; (defconst g-current-tree-x g-point5-x)
+				; (defconst g-current-tree-y g-point5-y)
+				; (defconst g-best-tree-x g-point6-x)
+				; (defconst g-best-tree-y g-point6-y)
+
+		(defconst g-lumber-camp-construction-rule-id 377)
+		(defconst g-gold-camp-construction-rule-id 378)
+		(defconst g-stone-camp-construction-rule-id 379)
+		(defconst g-place-point-rule-id 380)
+		(defconst g-duc-micro-start-rule-id 381)
+		(defconst g-duc-micro-end-rule-id 382)
+		(defconst g-army-comp-start-rule-id 383)
+		(defconst g-army-comp-end-rule-id 384)
+		(defconst g-strats-end-rule-id 385)
+    	(defconst g-end-get-attack-delay-rule-id 386)
+		(defconst g-arena-duc-micro-end-rule-id 387)
+		; (defconst g- 388)
+		; (defconst g- 389)
+		; (defconst g- 390)
+		; (defconst g- 391)
+
+		(defconst g-attacking 392)
+			; NO = 0
+			; YES = 1
+
+		; (defconst g- 393)
+		; (defconst g- 394)
+		; (defconst g- 395)
+		; (defconst g- 396)
+		; (defconst g- 397)
+		; (defconst g- 398)
+		; (defconst g- 399)
+		; (defconst g- 400)
+
+		;Build Line goals: 401-419
+			(defconst g-temp-build-line1 401)
+			(defconst g-temp-build-line2 402)
+			(defconst g-temp-build-line3 403)
+			(defconst g-temp-build-line4 404)
+			(defconst g-temp-build-line5 405)
+			(defconst g-temp-build-line6 406)
+			(defconst g-temp-build-line7 407)
+			(defconst g-temp-build-line8 408)
+			(defconst g-temp-build-line9 409)
+			(defconst g-temp-build-line10 410)
+			(defconst g-temp-build-line11 411)
+			(defconst g-temp-build-line12 412)
+			(defconst g-temp-build-line13 413)
+			(defconst g-temp-build-line14 414)
+			(defconst g-temp-build-line15 415)
+			(defconst g-temp-build-line16 416)
+			(defconst g-temp-build-line17 417)
+			(defconst g-temp-build-line18 418)
+			(defconst g-temp-build-line19 419)
+
+			(defconst g-build-line-type g-temp-build-line1)					;type of method used to place buildings with Build Line, also functions as an on/off switch for Build Line construction
+				(defconst BUILD-LINE-POINT-NORMAL 1)					;imitate up-build place-point for normal buildings
+				(defconst BUILD-LINE-POINT-MINING-DROPSITE 2)			;imitate up-build place-point for gold and stone dropsites
+				(defconst BUILD-LINE-POINT-LUMBER-DROPSITE 3)			;imitate up-build place-point for wood dropsites
+				(defconst BUILD-LINE-POINT-MILL-DROPSITE 4)				;imitate up-build place-point for food dropsites
+				(defconst BUILD-LINE-NORMAL 5)							;imitate up-build place-normal
+				(defconst BUILD-LINE-FORWARD 6)							;imitate up-build place-forward
+				(defconst BUILD-LINE-CONTROL 7)							;imitate up-build place-control
+				(defconst BUILD-LINE-FARM 8)							;placement for farms
+			(defconst g-build-line-bldg g-temp-build-line2)					;building to be constructed
+			(defconst g-build-line-bldg-foundation g-temp-build-line3)			;foundation ID of building to be constructed (required for town centers, gates, etc.)
+			(defconst g-build-line-zone-radius g-temp-build-line4)				;current radius we are checking to build the building from g-build-line-point-x
+			(defconst g-build-line-max-zone-radius g-temp-build-line5)			;maximum zone radius before Build Line gives up
+			; (defconst g-build-line-expand g-temp-build-line6)					;determines whether the zone radius can increase
+			(defconst g-build-line-expand-direction g-temp-build-line7)		;imitates sn-placement-fail-delta
+				(defconst NO-DIRECTION 0)
+				(defconst TOWARD-TC 1)
+				(defconst HALF-TOWARD-TC 2)
+				(defconst AWAY-FROM-TC 3)
+				(defconst TOWARD-TARGET 4)
+				(defconst TOWARD-CENTER 5)
+				(defconst AWAY-FROM-TARGET 6)
+				(defconst AWAY-FROM-CENTER 7)
+			(defconst g-build-line-enemy-bldg-distance g-temp-build-line8)		;distance buildings must be placed from enemy buildings		
+			(defconst g-build-line-min-distance g-temp-build-line9)			;min distance the building may be constructed from the home TC			
+			(defconst g-build-line-max-distance g-temp-build-line10)			;max distance the building may be constructed from the home TC
+			(defconst g-build-line-escrow g-temp-build-line11)
+			(defconst g-build-line-point-x g-temp-build-line12)
+			(defconst g-build-line-point-y g-temp-build-line13)
+			(defconst g-build-line-size g-temp-build-line14)
+			(defconst g-build-line-resource-type g-temp-build-line15)			;resource type to place building by (used with up-gaia-type-count)
+			(defconst g-build-line-resource-id g-temp-build-line16)				;map ID of resource found
+			(defconst g-build-line-backup-resource-id g-temp-build-line17)		;used to find a second possible tree to build lumber camp nearby
+			(defconst g-build-line-dropsite-distance g-temp-build-line18)		;distance new building must be from other dropsites for the same resource
+			(defconst g-build-line-net-dropsite-distance g-temp-build-line19)	;tracks net camp distance of available dropsite locations. Formula: Distance to flank/center minus (2 * distance to town center)
+
+		(defconst g-identity 420)			; A goal that assigns an ID to the AI that other AIs can detect to know the AI's identity
+			(defconst DOOMSDAY 42)
+			(defconst UNKNOWN 69)
+			(defconst ULYSSES 69)
+			(defconst ILLUMINATI 123)
+			(defconst ODETTE 161) 
+			(defconst PHARAON 181)
+			(defconst JUGGERNAUT 275)
+			(defconst CYAN 369)
+			(defconst PROMI 420)
+			(defconst THE-HORDE 666)
+			(defconst THE-MORRIGAN 795)
+			(defconst THERMOPYLAI 894)
+			(defconst BRUTEFORCE 1001)
+			(defconst YGGDRASIL 1111)
+			(defconst REACTIONARY 1221)
+			(defconst TRIBAL-WARRIOR 1234)
+			(defconst RHAPSODY 1337)
+			(defconst THE-GENERAL 1492)
+			(defconst NAGA 1949)
+			(defconst BAMBI 1982)
+			(defconst DAEDRIC 2000)
+			(defconst MAIAR 2001)
+			(defconst MANGUDAI-ALL-IN 2012)
+			(defconst SHADOW 2048)
+			(defconst MELEON 2197)
+			(defconst BARBARIAN 4651)
+			(defconst SUBJUGATOR 5678)
+			
+		;Army Control Goals:
+		(defconst g-before-group-flags-goal-id 420)
+		(defconst g-before-group-type-flags-goal-id 426)
+		(defconst g-before-group-actions-goal-id 432)
+		(defconst g-before-group-target-objects-goal-id 438)
+		(defconst g-before-group-locations-goal-id 443)
+		(defconst g-before-group-destination-times-goal-id 468)
+		(defconst g-before-group-avoidance-counters-goal-id 479)
+		(defconst g-group1-flag 421)
+			(defconst DANGEROUS-OBJECT-NEARBY 1)
+			(defconst WITHIN-RANGE-OF-DANGEROUS-BUILDING 2)
+			(defconst WITHIN-RETREAT-RANGE-OF-DANGEROUS-BUILDING 4)
+			(defconst ALLOW-COMBINED-GROUPS 8)
+			(defconst FOCUS-SINGLE-TARGET 16)
+			(defconst FOCUS-MULTIPLE-TARGETS 32)
+			(defconst USE-BOX-FORMATION 64)
+			(defconst CLOCKWISE 128)
+			(defconst SCOUT-MODE 256)
+			(defconst RAID-MODE 512)
+			(defconst ASSAULT-MODE 1024)
+			(defconst MAIN-GROUP 2048)
+			(defconst JOIN-MAIN-GROUP 4096)
+			(defconst HIT-AND-RUN 8192)
+			; (defconst  16384)   
+		(defconst g-group2-flag 422)
+		(defconst g-group3-flag 423)
+		(defconst g-group4-flag 424)
+		(defconst g-group5-flag 425)
+		(defconst g-group6-flag 426)
+		(defconst g-group1-type-flag 427)
+			(defconst MELEE-SOLDIER-GROUP 1)
+			(defconst RANGED-SOLDIER-GROUP 2)  
+			(defconst RANGED-SIEGE-GROUP 4)      
+			(defconst MELEE-INFANTRY-GROUP 8)
+			(defconst RANGED-INFANTRY-GROUP 16)
+			(defconst FOOT-ARCHER-GROUP 32)
+			(defconst CAVALRY-ARCHER-GROUP 64)
+			(defconst CAVALRY-GROUP 128)
+			(defconst MONK-GROUP 256)
+			(defconst RAM-GROUP 512)
+			(defconst SCORPION-GROUP 1024)
+			(defconst MANGONEL-GROUP 2048)
+			(defconst CANNON-GROUP 4096)
+			(defconst TREBUCHET-GROUP 8192)
+			; (defconst -GROUP 16384)
+			; (defconst 32768)          ;Anti-infantry sub-group type, defconsts can only be defined up to 32767
+			; (defconst 65536)          ;Anti-pikemen sub-group type
+			; (defconst 131072)         ;Anti-eagles sub-group type
+			; (defconst 262144)         ;Anti-foot-archers sub-group type
+			; (defconst 524288)         ;Anti-cav-archers sub-group type
+			; (defconst 1048576)        ;Anti-skirms sub-group type
+			; (defconst 2097152)        ;Anti-cavalry sub-group type
+			; (defconst 4194304)        ;Anti-camels sub-group type
+			; (defconst 8388608)        ;Anti-elephants sub-group type
+			; (defconst 16777216)       ;Anti-siege sub-group type
+			; (defconst 33554432)       ;Anti-monks sub-group type
+			; (defconst 67108864)       ;Anti-gunpowder sub-group type
+			; (defconst 134217728)      ;Anti-unique-units sub-group type 
+			; (defconst 268435456)               
+			; (defconst 536870912)               
+			; (defconst 1073741824)
+		(defconst g-group2-type-flag 428)
+		(defconst g-group3-type-flag 429)
+		(defconst g-group4-type-flag 430)
+		(defconst g-group5-type-flag 431)
+		(defconst g-group6-type-flag 432)
+		(defconst g-group1-action 433)
+			(defconst GROUP-GATHER 0)
+			(defconst GROUP-MOVE 1)
+			(defconst GROUP-ATTACK 2)
+			(defconst GROUP-RETREAT-FROM-OBJECT 3)
+			(defconst GROUP-HIT-AND-RUN 4)
+		(defconst g-group2-action 434)
+		(defconst g-group3-action 435)
+		(defconst g-group4-action 436)
+		(defconst g-group5-action 437)
+		(defconst g-group6-action 438)
+		(defconst g-group1-target-object-id 439)
+		(defconst g-group2-target-object-id 440)
+		(defconst g-group3-target-object-id 441)
+		(defconst g-group4-target-object-id 442)
+		(defconst g-group5-target-object-id 443)
+		(defconst g-group6-target-object-id 444)
+		(defconst g-group1-location-x 445)
+		(defconst g-group1-location-y 446)
+		(defconst g-group2-location-x 447)
+		(defconst g-group2-location-y 448)
+		(defconst g-group3-location-x 449)
+		(defconst g-group3-location-y 450)
+		(defconst g-group4-location-x 451)
+		(defconst g-group4-location-y 452)
+		(defconst g-group5-location-x 453)
+		(defconst g-group5-location-y 454)
+		(defconst g-group6-location-x 455)
+		(defconst g-group6-location-y 456)
+		(defconst g-group1-destination-x 457)
+		(defconst g-group1-destination-y 458)
+		(defconst g-group2-destination-x 459)
+		(defconst g-group2-destination-y 460)
+		(defconst g-group3-destination-x 461)
+		(defconst g-group3-destination-y 462)
+		(defconst g-group4-destination-x 463)
+		(defconst g-group4-destination-y 464)
+		(defconst g-group5-destination-x 465)
+		(defconst g-group5-destination-y 466)
+		(defconst g-group6-destination-x 467)
+		(defconst g-group6-destination-y 468)
+		(defconst g-group1-destination-time 469)
+			(defconst MAX-DESTINATION-TIME 15)
+		(defconst g-group2-destination-time 470)
+		(defconst g-group3-destination-time 471)
+		(defconst g-group4-destination-time 472)
+		(defconst g-group5-destination-time 473)
+		(defconst g-group6-destination-time 474)
+		(defconst g-current-group 475)
+		(defconst g-min-group-size 476)
+		(defconst g-max-group-size 477)
+		(defconst g-position-self-x 478)	
+		(defconst g-position-self-y 479)
+		(defconst g-group1-avoidance-counter 480)
+		(defconst g-group2-avoidance-counter 481)
+		(defconst g-group3-avoidance-counter 482)
+		(defconst g-group4-avoidance-counter 483)
+		(defconst g-group5-avoidance-counter 484)
+		(defconst g-group6-avoidance-counter 485)
+		(defconst g-recent-target1 486)
+		(defconst g-recent-target2 487)
+		(defconst g-recent-target3 488)
+		(defconst g-recent-target4 489)
+		(defconst g-recent-target5 490)
+		; (defconst g- 491)	;reserved for future DUC stuff
+		; (defconst g- 492)
+		; (defconst g- 493)
+		; (defconst g- 494)
+		; (defconst g- 495)
+		; (defconst g- 496)
+		; (defconst g- 497)
+		; (defconst g- 498)
+		(defconst g-michi-cut-priority 499)	; A goal to use with allies to request cutting forests on Michi/Forest Nothing maps	
+			; NO = 0
+			(defconst REQUEST-PRIORITY 4535)
+		; (defconst 500)
+		; (defconst 501)
+		; (defconst 502)
+		; (defconst 503)
+		; (defconst 504)
+		; (defconst 505)
+		; (defconst 506)
+		; (defconst 507)
+		; (defconst 508)
+		; (defconst 509)
+		; (defconst 510)
+		; (defconst 511)
+		; (defconst 512)
+
+		; (defconst fn-sort-build-order-rule-id 531)
+		; (defconst fn-check-build-order-rule-id 532)
+		; (defconst fn-calc-train-time-rule-id 533)
+		; (defconst fn-calc-remaining-building-time-rule-id 534)
+		; (defconst fn-calc-available-building-time-rule-id 535)
+		; (defconst fn-research-tech-rule-id 536)
+		; (defconst fn-train-unit-rule-id 537)
+		; (defconst fn-construct-building-rule-id 538)
+		(defconst fn-get-attack-delay-rule-id 539)
+
+		(defconst fn-temp 561)
+		(defconst fn-temp2 562)
+		(defconst fn-temp3 563)
+		(defconst fn-temp4 564)
+		(defconst fn-loop-counter 565)
+		(defconst fn-loop-counter2 566)
+		(defconst fn-point-x 567)
+		(defconst fn-point-y 568)
+		(defconst fn-point2-x 569)
+		(defconst fn-point2-y 570)
+		(defconst fn-output 571)
+		(defconst fn-output2 572)
+		(defconst fn-local-total 573)
+		(defconst fn-local-last 574)
+		(defconst fn-remote-total 575)
+		(defconst fn-remote-last 576)
+		(defconst fn-start-loop 577)
+		(defconst fn-start-loop2 578)
+
+		; (defconst fn-bo-current-index 579)
+		; (defconst fn-bo-current-item-score 580)
+		; (defconst fn-bo-above-item-score 581)
+		; (defconst fn-item-time 582)
+		; (defconst fn-item-id 583)
+		; (defconst fn-item-score 584)
+		; (defconst fn-item-building 585)
+		; (defconst fn-actual-item-id 586)
+		(defconst fn-unit-id 587)
+
+
+
+		(defconst g-num-starting-boar 701)
+		(defconst g-num-starting-deer 702)
+		(defconst g-num-starting-sheep 703)
+		(defconst g-size-forage-pile1 704)
+		(defconst g-size-forage-pile2 705)
+		(defconst g-size-gold-pile1 706)
+		(defconst g-size-gold-pile2 707)
+		(defconst g-size-gold-pile3 708)
+		(defconst g-size-stone-pile1 709)
+		(defconst g-size-stone-pile2 710)
+
+		;800s = Army Control group goals
+
+		; ;Min Number Goals
+		; (defconst g-min-military 1701)
+		; (defconst g-min-navy 1702)
+		; (defconst g-min-villager 1703)
+		; (defconst g-min-trade-cart 1704)
+		; (defconst g-min-militia 1705)
+		; (defconst g-min-spearman 1706)
+		; (defconst g-min-eagle-warrior 1707)
+		; (defconst g-min-condottiero 1708)
+		; (defconst g-min-archer 1709)
+		; (defconst g-min-skirmisher 1710)
+		; (defconst g-min-cavalry-archer 1711)
+		; (defconst g-min-hand-cannoneer 1712)
+		; (defconst g-min-genitour 1713)
+		; (defconst g-min-elephant-archer 1714)
+		; (defconst g-min-scout-cavalry 1715)
+		; (defconst g-min-knight 1716)
+		; (defconst g-min-camel 1717)
+		; (defconst g-min-battle-elephant 1718)
+		; (defconst g-min-steppe-lancer 1719)
+		; (defconst g-min-fire-lancer 1720)
+		; (defconst g-min-hei-guang-cavalry 1721)
+		; (defconst g-min-unique-unit 1722)
+		; (defconst g-min-second-unique-unit 1723)	;flemish militia, shrivamsha rider, slinger, missionary, flaming camel, petard 
+		; (defconst g-min-ram-type 1724)
+		; (defconst g-min-mangonel-type 1725)
+		; (defconst g-min-scorpion-type 1726)
+		; (defconst g-min-cannon-type 1727)
+		; (defconst g-min-trebuchet 1728)
+		; (defconst g-min-siege-tower 1729)
+		; (defconst g-min-monk 1730)
+		; (defconst g-min-fishing-ship 1731)
+		; (defconst g-min-transport-ship 1732)
+		; (defconst g-min-trade-cog 1733)
+		; (defconst g-min-galley 1734)
+		; (defconst g-min-fire-ship 1735)
+		; (defconst g-min-demolition-ship 1736)
+		; (defconst g-min-cannon-galleon 1737)
+		; (defconst g-min-unique-ship 1738)
+
+		; (defconst g-min-fire-lancer 1739)
+		; (defconst g-min-hei-guang-cavalry 1740)
+
+		; (defconst g-min-infantry-class 1750)
+		; (defconst g-min-archery-class 1751)
+		; (defconst g-min-cavalry-archer-class 1752)
+		; (defconst g-min-cavalry-class 1753)
+		; (defconst g-min-siege-classes 1754)
+		; (defconst g-min-cannoneer-classes 1755)
+		; (defconst g-min-monastery-class 1756)
+
+		; (defconst g-min-town-center 1767)
+		; (defconst g-min-house 1768)
+		; (defconst g-min-mill 1769)
+		; (defconst g-min-forage-mill 1770)
+		; (defconst g-min-farming-mill 1771)
+		; (defconst g-min-deer-mill 1772)
+		; (defconst g-min-chicken-mill 1773)
+		; (defconst g-min-fish-mill 1774)
+		; (defconst g-min-mining-camp 1775)
+		; (defconst g-min-gold-camp 1776)
+		; (defconst g-min-stone-camp 1777)
+		; (defconst g-min-lumber-camp 1778)
+		; (defconst g-min-dock 1779)
+		; (defconst g-min-farm 1780)
+		; (defconst g-min-blacksmith 1781)
+		; (defconst g-min-market 1782)
+		; (defconst g-min-monastery 1783)
+		; (defconst g-min-university 1784)
+		; (defconst g-min-wonder 1785)
+		; (defconst g-min-barracks 1786)
+		; (defconst g-min-archery-range 1787)
+		; (defconst g-min-stable 1788)
+		; (defconst g-min-siege-workshop 1789)
+		; (defconst g-min-outpost 1790)
+		; (defconst g-min-tower 1791)
+		; (defconst g-min-bombard-tower 1792)
+		; (defconst g-min-castle 1793)
+		; (defconst g-min-unique-building 1794)
+		; (defconst g-min-pasture 1795)
+
+		; (defconst g-min-primary-unit 1799)
+		; (defconst g-min-support-unit 1800)
+
+		; ;Max Number Goals
+		; (defconst g-max-military 1801)
+		; (defconst g-max-navy 1802)
+		; (defconst g-max-villager 1803)
+		; (defconst g-max-trade-cart 1804)
+		; (defconst g-max-militia 1805)
+		; (defconst g-max-spearman 1806)
+		; (defconst g-max-eagle-warrior 1807)
+		; (defconst g-max-condottiero 1808)
+		; (defconst g-max-archer 1809)
+		; (defconst g-max-skirmisher 1810)
+		; (defconst g-max-cavalry-archer 1811)
+		; (defconst g-max-hand-cannoneer 1812)
+		; (defconst g-max-genitour 1813)
+		; (defconst g-max-elephant-archer 1814)
+		; (defconst g-max-scout-cavalry 1815)
+		; (defconst g-max-knight 1816)
+		; (defconst g-max-camel 1818)
+		; (defconst g-max-battle-elephant 1818)
+		; (defconst g-max-steppe-lancer 1819)
+		; (defconst g-max-fire-lancer 1820)
+		; (defconst g-max-hei-guang-cavalry 1821)
+		; (defconst g-max-unique-unit 1822)
+		; (defconst g-max-second-unique-unit 1823)	;flemish militia, shrivamsha rider, slinger, missionary, flamaxg camel, petard 
+		; (defconst g-max-ram-type 1824)
+		; (defconst g-max-mangonel-type 1825)
+		; (defconst g-max-scorpion-type 1826)
+		; (defconst g-max-cannon-type 1827)
+		; (defconst g-max-trebuchet 1828)
+		; (defconst g-max-siege-tower 1829)
+		; (defconst g-max-monk 1830)
+		; (defconst g-max-fishing-ship 1831)
+		; (defconst g-max-transport-ship 1832)
+		; (defconst g-max-trade-cog 1833)
+		; (defconst g-max-galley 1834)
+		; (defconst g-max-fire-ship 1835)
+		; (defconst g-max-demolition-ship 1836)
+		; (defconst g-max-cannon-galleon 1837)
+		; (defconst g-max-unique-ship 1838)
+
+		; (defconst g-max-fire-lancer 1839)
+		; (defconst g-max-hei-guang-cavalry 1840)
+
+		; (defconst g-max-infantry-class 1850)
+		; (defconst g-max-archery-class 1851)
+		; (defconst g-max-cavalry-archer-class 1852)
+		; (defconst g-max-cavalry-class 1853)
+		; (defconst g-max-siege-classes 1854)
+		; (defconst g-max-cannoneer-classes 1855)
+		; (defconst g-max-monastery-class 1856)
+
+		; (defconst g-max-town-center 1867)
+		; (defconst g-max-house 1868)
+		; (defconst g-max-mill 1869)
+		; (defconst g-max-forage-mill 1870)
+		; (defconst g-max-farmaxg-mill 1871)
+		; (defconst g-max-deer-mill 1872)
+		; (defconst g-max-chicken-mill 1873)
+		; (defconst g-max-fish-mill 1874)
+		; (defconst g-max-maxing-camp 1875)
+		; (defconst g-max-gold-camp 1876)
+		; (defconst g-max-stone-camp 1877)
+		; (defconst g-max-lumber-camp 1878)
+		; (defconst g-max-dock 1879)
+		; (defconst g-max-farm 1880)
+		; (defconst g-max-blacksmith 1881)
+		; (defconst g-max-market 1882)
+		; (defconst g-max-monastery 1883)
+		; (defconst g-max-university 1884)
+		; (defconst g-max-wonder 1885)
+		; (defconst g-max-barracks 1886)
+		; (defconst g-max-archery-range 1887)
+		; (defconst g-max-stable 1888)
+		; (defconst g-max-siege-workshop 1889)
+		; (defconst g-max-outpost 1890)
+		; (defconst g-max-tower 1891)
+		; (defconst g-max-bombard-tower 1892)
+		; (defconst g-max-castle 1893)
+		; (defconst g-max-unique-building 1894)
+		; (defconst g-max-pasture 1895)
+
+		; (defconst g-max-primary-unit 1899)
+		; (defconst g-max-support-unit 1900)
+
+		; ;Build Order Goals
+		; (defconst g-bo-num-items 1901)
+		; (defconst g-bo-minimum-score 1902)
+		; (defconst g-bo-id 1903)
+		; (defconst g-bo-score 1904)
+		; (defconst g-bo-number 1905)
+		; (defconst g-bo-percent 1906)
+		; (defconst g-bo-building 1907)
+		; 	; (defconst PLACE-METHOD-NORMAL 10100)
+		; 	; (defconst PLACE-METHOD-FORWARD 10200)
+		; 	(defconst PLACE-METHOD-CONTROL 10300)
+		; 	; (defconst PLACE-METHOD-CONTROL-BACK 10400)
+		; 	; (defconst PLACE-METHOD-CONTROL-FORWARD 10500)
+		; 	; (defconst PLACE-METHOD-CONTROL-AGGRESSIVE 10600)
+		; 	; (defconst PLACE-METHOD-DEFEND-RESOURCES 10700)
+		; 	; (defconst PLACE-METHOD-POINT 10800)
+		; 	; (defconst PLACE-METHOD-LINE 10900)
+		; 	; (defconst PLACE-METHOD-WALL 11000)
+		; 	; (defconst PLACE-METHOD-FARM 12000)
+		; (defconst g-bo-time 1908)
+		; (defconst g-bo-delay 1909)
+		; (defconst g-bo-actual-id 1910)
+		; ; (defconst g-bo 1910)
+		; (defconst g-bo-total-available-resources 1912)
+		; (defconst g-bo-remaining-resources 1913)
+		; (defconst g-bo-foundations-build-time 1914)
+		; (defconst g-bo-est-villager-gather-rate 1915)
+		; (defconst g-bo-total-item-cost 1916)
+		; (defconst g-bo-build-order-full 1917)
+		; (defconst g-bo-lookahead-time 1918)
+		; (defconst g-bo-num-below-max 1919)
+		; (defconst g-bo-remaining-building-time 1920)
+		; (defconst g-bo-available-building-time 1921)
+		; (defconst g-bo-placement-method 1921)
+		; (defconst g-bo-min-builders 1922)
+		; ; (defconst g-bo-used-wood 1911)
+		; ; (defconst g-bo-used-gold 1912)
+		; ; (defconst g-bo-used-stone 1913)
+		; ; (defconst g-bo-used-build-time 1914)
+
+		; (defconst g-bo-town-centers-available 1941)
+		; (defconst g-bo-mills-available 1942)
+		; (defconst g-bo-mining-camps-available 1943)
+		; (defconst g-bo-lumber-camps-available 1944)
+		; (defconst g-bo-docks-available 1945)
+		; (defconst g-bo-blacksmiths-available 1946)
+		; (defconst g-bo-markets-available 1947)
+		; (defconst g-bo-monasteries-available 1948)
+		; (defconst g-bo-universities-available 1949)
+		; (defconst g-bo-barracks-available 1950)
+		; (defconst g-bo-archery-ranges-available 1951)
+		; (defconst g-bo-stables-available 1952)
+		; (defconst g-bo-siege-workshops-available 1953)
+		; (defconst g-bo-castles-available 1954)
+		; (defconst g-bo-donjons-available 1955)
+		; (defconst g-bo-kreposts-available 1956)
+		; (defconst g-bo-mule-carts-available 1957)
+		; ; (defconst g-bo- available 1957)
+		; ; (defconst g-bo- available 1958)
+		; (defconst g-bo-current-buildings-available 1959)
+		; (defconst g-bo-current-buildings-available-goal-id 1960)
+		; ; (defconst g-bo-tc-used-time 1961)
+		; ; (defconst g-bo-mill-used-time 1962)
+		; ; (defconst g-bo-mining-camp-used-time 1963)
+		; ; (defconst g-bo-lumber-camp-used-time 1964)
+		; ; (defconst g-bo-dock-used-time 1965)
+		; ; (defconst g-bo-blacksmith-used-time 1966)
+		; ; (defconst g-bo-market-used-time 1967)
+		; ; (defconst g-bo-monastery-used-time 1968)
+		; ; (defconst g-bo-university-used-time 1969)
+		; ; (defconst g-bo-barracks-used-time 1970)
+		; ; (defconst g-bo-archery-range-used-time 1971)
+		; ; (defconst g-bo-stable-used-time 1972)
+		; ; (defconst g-bo-siege-workshop-used-time 1973)
+		; ; (defconst g-bo-castle-used-time 1974)
+		; ; (defconst g-bo-donjon-used-time 1975)
+		; ; (defconst g-bo-krepost-used-time 1976)
+		; ; (defconst g-bo- used-time 1977)
+		; ; (defconst g-bo- used-time 1978)
+		; ; (defconst g-bo- used-time 1979)
+		; ; (defconst g-bo- used-time 1980)
+		; ; (defconst g-bo-tc-remaining-time 1981)
+		; ; (defconst g-bo-mill-remaining-time 1982)
+		; ; (defconst g-bo-mining-camp-remaining-time 1983)
+		; ; (defconst g-bo-lumber-camp-remaining-time 1984)
+		; ; (defconst g-bo-dock-remaining-time 1985)
+		; ; (defconst g-bo-blacksmith-remaining-time 1986)
+		; ; (defconst g-bo-market-remaining-time 1987)
+		; ; (defconst g-bo-monastery-remaining-time 1988)
+		; ; (defconst g-bo-university-remaining-time 1989)
+		; ; (defconst g-bo-barracks-remaining-time 1990)
+		; ; (defconst g-bo-archery-range-remaining-time 1991)
+		; ; (defconst g-bo-stable-remaining-time 1992)
+		; ; (defconst g-bo-siege-workshop-remaining-time 1993)
+		; ; (defconst g-bo-castle-remaining-time 1994)
+		; ; (defconst g-bo-donjon-remaining-time 1995)
+		; ; (defconst g-bo-krepost-remaining-time 1996)
+		; ; (defconst g-bo- remaining-time 1997)
+		; ; (defconst g-bo- remaining-time 1998)
+		; ; (defconst g-bo- remaining-time 1999)
+		; ; (defconst g-bo- remaining-time 2000)
+
+		; (defconst g-bo-first-item-id 2001)
+		; (defconst g-bo-first-item-score 2101)
+		; (defconst g-bo-first-item-number 2201)
+		; (defconst g-bo-first-item-percent 2301)
+		; (defconst g-bo-first-item-building 2401)
+		; (defconst g-bo-first-item-time 2501)
+		; (defconst g-bo-first-item-delay 2601)
+		; (defconst g-bo-last-item 2700)
+
+	;--------------------------------
+	;	Map Type Loading Constants
+	;		And Goal 7
+	;--------------------------------
+
+		;Stores the amounts of resources placed for each player on the map
+		
+		;Goal 7 saves the style of map that is being played
+		;Initialize this here because if Immobile is selected, it needs to precede the SN initialization section.
+
+		(defrule
+		(true)
+		=>
+		(set-goal g-num-starting-boar 2)
+		(set-goal g-num-starting-deer 3)
+		(set-goal g-num-starting-sheep 8)
+		(set-goal g-size-forage-pile1 6)
+		(set-goal g-size-forage-pile2 0)
+		(set-goal g-size-gold-pile1 7)
+		(set-goal g-size-gold-pile2 4)
+		(set-goal g-size-gold-pile3 4)
+		(set-goal g-size-stone-pile1 5)
+		(set-goal g-size-stone-pile2 4)
+		(set-goal g-map-style OPEN-LAND)
+		(disable-self)
+		)
+
+		#load-if-defined ARCHIPELAGO-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-size-gold-pile2 7)
+			(set-goal g-size-gold-pile3 0)
+			(set-goal g-size-stone-pile1 6)
+			(set-goal g-size-stone-pile2 6)
+			(set-goal g-map-style ISLANDS)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined ARENA-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style WALLED-LAND)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined BALTIC-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style LAKES)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined BLACK-FOREST-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style CLOSED-LAND)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined COASTAL-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style LAKES)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined CONTINENTAL-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style LAKES)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined CRATER-LAKE-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-size-gold-pile1 4)
+			(set-goal g-size-gold-pile2 3)
+			(set-goal g-size-gold-pile3 0)
+			(set-goal g-map-style LAKES)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined FORTRESS-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style WALLED-LAND)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined GHOST-LAKE-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style OPEN-LAND)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined GOLD-RUSH-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-size-gold-pile1 4)
+			(set-goal g-size-gold-pile2 3)
+			(set-goal g-map-style OPEN-LAND)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined HIDEOUT-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style SEMI-WALLED-LAND)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined HIGHLAND-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style RIVERS)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined ISLANDS-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-size-gold-pile1 7)
+			(set-goal g-size-gold-pile2 7)
+			(set-goal g-size-gold-pile3 0)
+			(set-goal g-size-stone-pile1 5)
+			(set-goal g-size-stone-pile2 5)
+			(set-goal g-map-style TEAM-ISLANDS)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined LAND-NOMAD-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-num-starting-boar 0)
+			(set-goal g-num-starting-deer 0)
+			(set-goal g-num-starting-sheep 0)
+			(set-goal g-size-forage-pile1 0)
+			(set-goal g-size-forage-pile2 0)
+			(set-goal g-size-gold-pile1 0)
+			(set-goal g-size-gold-pile2 0)
+			(set-goal g-size-gold-pile3 0)
+			(set-goal g-size-stone-pile1 0)
+			(set-goal g-size-stone-pile2 0)
+			(set-goal g-map-style NOMAD)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined MEDITERRANEAN-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style LAKES)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined MIGRATION-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-num-starting-boar 0)
+			(set-goal g-num-starting-deer 3)
+			(set-goal g-num-starting-sheep 6)
+			(set-goal g-size-forage-pile1 7)
+			(set-goal g-size-forage-pile2 0)
+			(set-goal g-size-gold-pile1 8)
+			(set-goal g-size-gold-pile2 0)
+			(set-goal g-size-gold-pile3 0)
+			(set-goal g-size-stone-pile1 6)
+			(set-goal g-size-stone-pile2 0)
+			(set-goal g-map-style MIGRATION)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined MONGOLIA-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style OPEN-LAND)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined NOMAD-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-num-starting-boar 0)
+			(set-goal g-num-starting-deer 0)
+			(set-goal g-num-starting-sheep 0)
+			(set-goal g-size-forage-pile1 0)
+			(set-goal g-size-forage-pile2 0)
+			(set-goal g-size-gold-pile1 0)
+			(set-goal g-size-gold-pile2 0)
+			(set-goal g-size-gold-pile3 0)
+			(set-goal g-size-stone-pile1 0)
+			(set-goal g-size-stone-pile2 0)
+			(set-goal g-map-style NOMAD)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined OASIS-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style CLOSED-LAND)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined RIVERS-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style RIVERS)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined SALT-MARSH-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-size-forage-pile1 9)
+			(set-goal g-map-style OPEN-LAND)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined SCANDANAVIA-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-num-starting-boar 3)
+			(set-goal g-num-starting-deer 7)
+			(set-goal g-num-starting-sheep 8)
+			(set-goal g-size-forage-pile1 0)
+			(set-goal g-size-forage-pile2 0)
+			(set-goal g-size-gold-pile1 7)
+			(set-goal g-size-gold-pile2 4)
+			(set-goal g-size-gold-pile3 4)
+			(set-goal g-size-stone-pile1 5)
+			(set-goal g-size-stone-pile2 4)
+			(set-goal g-map-style LAKES)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined TEAM-ISLANDS-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style TEAM-ISLANDS)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined YUCATAN-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-num-starting-boar 3)
+			(set-goal g-num-starting-deer 7)
+			(set-goal g-num-starting-sheep 12)
+			(set-goal g-size-forage-pile1 6)
+			(set-goal g-size-forage-pile2 6)
+			(set-goal g-size-gold-pile1 7)
+			(set-goal g-size-gold-pile2 4)
+			(set-goal g-size-gold-pile3 4)
+			(set-goal g-size-stone-pile1 5)
+			(set-goal g-size-stone-pile2 4)
+			(set-goal g-map-style CLOSED-LAND)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined REAL-WORLD-BYZANTIUM-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style ISLANDS)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined REAL-WORLD-CARIBBEAN-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style LAKES)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined REAL-WORLD-ENGLAND-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style ISLANDS)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined REAL-WORLD-FRANCE-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style ISLANDS)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined REAL-WORLD-ITALY-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style MIGRATION)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined REAL-WORLD-JUTLAND-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style LAKES)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined REAL-WORLD-MIDEAST-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style LAKES)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined REAL-WORLD-NIPPON-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style ISLANDS)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined REAL-WORLD-SPAIN-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-map-style ISLANDS)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined REAL-WORLD-TEXAS-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-num-starting-boar 5)
+			(set-goal g-map-style LAKES)
+			(disable-self)
+			)
+
+		#end-if
+
+		#load-if-defined CUSTOM-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-num-starting-boar 0)
+			(set-goal g-num-starting-deer 0)
+			(set-goal g-num-starting-sheep 0)
+			(set-goal g-size-forage-pile1 0)
+			(set-goal g-size-forage-pile2 0)
+			(set-goal g-size-gold-pile1 0)
+			(set-goal g-size-gold-pile2 0)
+			(set-goal g-size-gold-pile3 0)
+			(set-goal g-size-stone-pile1 0)
+			(set-goal g-size-stone-pile2 0)
+			(disable-self)
+			)
+
+			(defrule
+			(game-time < 5)
+			(building-type-count town-center > 0)
+			(cc-players-unit-type-count 0 ocean-fish-class > 10)
+			(goal g-map-style PENDING)
+			=>
+			(set-goal g-map-style ISLANDS)
+			(disable-self)
+			)
+			
+			(defrule
+			(game-time < 5)
+			(building-type-count town-center > 0)
+			(cc-players-unit-type-count 0 ocean-fish-class < 10)
+			(cc-players-unit-type-count 0 shore-fish-class > 15)
+			(goal g-map-style PENDING)
+			=>
+			(set-goal g-map-style RIVERS)
+			(disable-self)
+			)
+
+			(defrule
+			(game-time < 5)
+			(building-type-count town-center > 0)
+			(cc-players-unit-type-count 0 ocean-fish-class == 0)
+			(cc-players-unit-type-count 0 shore-fish-class == 0)
+			(goal g-map-style PENDING)
+			=>
+			(set-goal g-map-style OPEN-LAND)
+			(disable-self)
+			)
+
+			(defrule
+			(game-time < 5)
+			(building-type-count town-center == 0)
+			; (can-build town-center)
+			(goal g-map-style PENDING)
+			=>
+			(set-goal g-map-style NOMAD)
+			; (chat-to-player my-player-number CHAT-NOMAD-MAP-DETECTED)
+			(disable-self)
+			)
+
+			; (defrule
+			; (game-time < 5)
+			; (building-type-count town-center == 0)
+			; (not
+			; 	(can-build town-center))
+			; (goal g-map-style PENDING)
+			; =>
+			; (set-goal g-map-style LAND-NOMAD)
+			; ; (chat-to-player my-player-number CHAT-NOMAD-MAP-DETECTED)
+			; (disable-self)
+			; )
+
+		#end-if
+
+		#load-if-defined SCENARIO-MAP
+
+			(defrule
+			(true)
+			=>
+			(set-goal g-num-starting-boar 0)
+			(set-goal g-num-starting-deer 0)
+			(set-goal g-num-starting-sheep 0)
+			(set-goal g-size-forage-pile1 0)
+			(set-goal g-size-forage-pile2 0)
+			(set-goal g-size-gold-pile1 0)
+			(set-goal g-size-gold-pile2 0)
+			(set-goal g-size-gold-pile3 0)
+			(set-goal g-size-stone-pile1 0)
+			(set-goal g-size-stone-pile2 0)
+			(disable-self)
+			)
+
+			(defrule
+			(game-time < 5)
+			(building-type-count town-center > 0)
+			(cc-players-unit-type-count 0 ocean-fish-class > 10)
+			(goal g-map-style PENDING)
+			=>
+			(set-goal g-map-style ISLANDS)
+			(disable-self)
+			)
+			
+			(defrule
+			(game-time < 5)
+			(building-type-count town-center > 0)
+			(cc-players-unit-type-count 0 ocean-fish-class < 10)
+			(cc-players-unit-type-count 0 shore-fish-class > 15)
+			(goal g-map-style PENDING)
+			=>
+			(set-goal g-map-style RIVERS)
+			(disable-self)
+			)
+
+			(defrule
+			(game-time < 5)
+			(building-type-count town-center > 0)
+			(cc-players-unit-type-count 0 ocean-fish-class == 0)
+			(cc-players-unit-type-count 0 shore-fish-class == 0)
+			(goal g-map-style PENDING)
+			=>
+			(set-goal g-map-style OPEN-LAND)
+			(disable-self)
+			)
+
+			(defrule
+			(game-time < 5)
+			(building-type-count town-center == 0)
+			(unit-type-count villager > 0)
+			; (can-build town-center)
+			(goal g-map-style PENDING)
+			=>
+			(set-goal g-map-style NOMAD)
+			(disable-self)
+			)
+
+			; (defrule
+			; (game-time < 5)
+			; (building-type-count town-center == 0)
+			; (unit-type-count villager > 0)
+			; (not
+			; 	(can-build town-center))
+			; (goal g-map-style PENDING)
+			; =>
+			; (set-goal g-map-style LAND-NOMAD)
+			; (disable-self)
+			; )
+
+			(defrule
+			(game-time < 5)
+			(building-type-count town-center == 0)
+			(building-type-count lumber-camp == 0)
+			(building-type-count mill == 0)
+			(building-type-count mining-camp == 0)
+			(building-type-count dock == 0)
+			(not
+				(can-build lumber-camp))
+			(goal g-map-style PENDING)
+			=>
+			(set-goal g-map-style IMMOBILE)
+			(disable-self)
+			)
+
+			(defrule
+			(game-time < 5)
+			(unit-type-count villager == 0)
+			(not
+				(can-train villager))
+			(goal g-map-style PENDING)
+			=>
+			(set-goal g-map-style IMMOBILE)
+			(disable-self)
+			)
+
+		#end-if
+
+		(defrule
+		(goal g-map-style PENDING)
+		(game-time < 5)
+		(building-type-count town-center > 0)
+		(cc-players-unit-type-count 0 ocean-fish-class > 10)
+		=>
+		(set-goal g-map-style ISLANDS)
+		(disable-self)
+		)
+		
+		(defrule
+		(goal g-map-style PENDING)
+		(game-time < 5)
+		(building-type-count town-center > 0)
+		(cc-players-unit-type-count 0 ocean-fish-class < 10)
+		(cc-players-unit-type-count 0 shore-fish-class > 15)
+		=>
+		(set-goal g-map-style RIVERS)
+		(disable-self)
+		)
+
+		(defrule
+		(goal g-map-style PENDING)
+		(game-time < 5)
+		(building-type-count town-center > 0)
+		(cc-players-unit-type-count 0 ocean-fish-class == 0)
+		(cc-players-unit-type-count 0 shore-fish-class == 0)
+		=>
+		(set-goal g-map-style OPEN-LAND)
+		(disable-self)
+		)
+
+		(defrule
+		(goal g-map-style PENDING)
+		(game-time < 5)
+		(building-type-count town-center == 0)
+		(unit-type-count villager > 0)
+		; (can-build town-center)
+		=>
+		(set-goal g-map-style NOMAD)
+		(disable-self)
+		)
+
+		; (defrule
+		; (goal g-map-style PENDING)
+		; (game-time < 5)
+		; (building-type-count town-center == 0)
+		; (unit-type-count villager > 0)
+		; (not
+		; 	(can-build town-center))
+		; =>
+		; (set-goal g-map-style LAND-NOMAD)
+		; (disable-self)
+		; )
+
+		(defrule
+		(goal g-map-style PENDING)
+		(game-time < 5)
+		(building-type-count town-center == 0)
+		(building-type-count lumber-camp == 0)
+		(building-type-count mill == 0)
+		(building-type-count mining-camp == 0)
+		(building-type-count dock == 0)
+		(not
+			(can-build lumber-camp))
+		=>
+		(set-goal g-map-style IMMOBILE)
+		(disable-self)
+		)
+
+		(defrule
+		(goal g-map-style PENDING)
+		(game-time < 5)
+		(unit-type-count villager == 0)
+		(not
+			(can-train villager))
+		=>
+		(set-goal g-map-style IMMOBILE)
+		(disable-self)
+		)
+
+		;If playing a scenario where troops should stay still, set strategic numbers and run no other code
+		(defrule
+		(goal g-map-style IMMOBILE)	;this rule has FACTS and ACTIONS to keep VILLAGERS still
+		=>
+		(set-strategic-number sn-maximum-food-drop-distance 0)
+		(set-strategic-number sn-maximum-wood-drop-distance 0)
+		(set-strategic-number sn-maximum-gold-drop-distance 0)
+		(set-strategic-number sn-maximum-hunt-drop-distance 0)
+		(set-strategic-number sn-maximum-stone-drop-distance 0)
+		(set-strategic-number sn-food-gatherer-percentage 0)
+		(set-strategic-number sn-wood-gatherer-percentage 0)
+		(set-strategic-number sn-gold-gatherer-percentage 0)
+		(set-strategic-number sn-stone-gatherer-percentage 0)
+		(set-strategic-number sn-cap-civilian-explorers 0)
+		(set-strategic-number sn-percent-civilian-explorers 0)
+		; (up-reset-scouts)
+		(up-reset-unit c: any-objects)
+		(disable-self)
+		)
+
+		(defrule	;this rule has FACTS and ACTIONS to keep TROOPS still
+		(goal g-map-style IMMOBILE)
+		=>
+		(set-strategic-number sn-percent-enemy-sighted-response 100)
+		(set-strategic-number sn-hits-before-alliance-change 25)
+		(set-strategic-number sn-number-explore-groups 0)
+		(set-strategic-number sn-percent-attack-soldiers 0)
+		(set-strategic-number sn-task-ungrouped-soldiers 0)
+		(set-strategic-number sn-number-attack-groups 0)
+		(set-strategic-number sn-enemy-sighted-response-distance 5)
+		(set-strategic-number sn-total-number-explorers 0)
+		(set-strategic-number sn-relic-return-distance 0)
+		(disable-self)
+		)
+
+		;Skip to end of AI every cycle
+		(defrule
+		(goal g-map-style IMMOBILE)
+		=>
+		(up-jump-rule 10000)
+		)
+
+	;------------------------------
+	;	Define Strategic Numbers
+	;------------------------------
+
+		(defconst sn-attack-coordination 47)
+		(defconst sn-special-attack-influence2 110)
+		(defconst sn-special-attack-influence3 111)
+
+		;Custom SNs
+		(defconst csn-ally-to-defend 398)
+		(defconst csn-peaceful-town-size 399)
+		(defconst csn-countering-preference 400)
+
+		;(defconst csn- 401)
+		;(defconst csn- 402)
+		;(defconst csn- 403)
+		;(defconst csn- 404)
+		;(defconst csn- 405)
+		;(defconst csn- 406)
+		;(defconst csn- 407)
+		;(defconst csn- 408)
+		;(defconst csn- 409)
+		;(defconst csn- 410)
+		;(defconst csn- 411)
+		;(defconst csn- 412)
+		;(defconst csn- 413)
+		;(defconst csn- 414)
+		;(defconst csn- 415)
+		;(defconst csn- 416)
+		;(defconst csn- 417)
+		;(defconst csn- 418)
+		;(defconst csn- 419)
+		;(defconst csn- 420)
+		;(defconst csn- 421)
+		;(defconst csn- 422)
+		;(defconst csn- 423)
+		;(defconst csn- 424)
+		;(defconst csn- 425)
+		;(defconst csn- 426)
+		;(defconst csn- 427)
+		;(defconst csn- 428)
+		;(defconst csn- 429)
+		;(defconst csn- 430)
+		;(defconst csn- 431)
+		;(defconst csn- 432)
+		;(defconst csn- 433)
+		;(defconst csn- 434)
+		;(defconst csn- 435)
+		;(defconst csn- 436)
+		;(defconst csn- 437)
+		;(defconst csn- 438)
+		;(defconst csn- 439)
+		;(defconst csn- 440)
+		;(defconst csn- 441)
+		;(defconst csn- 442)
+		;(defconst csn- 443)
+		;(defconst csn- 444)
+		;(defconst csn- 445)
+		;(defconst csn- 446)
+		;(defconst csn- 447)
+		;(defconst csn- 448)
+		;(defconst csn- 449)
+		;(defconst csn- 450)
+		;(defconst csn- 451)
+		;(defconst csn- 452)
+		;(defconst csn- 453)
+		;(defconst csn- 454)
+		;(defconst csn- 455)
+		;(defconst csn- 456)
+		;(defconst csn- 457)
+		;(defconst csn- 458)
+		;(defconst csn- 459)
+		;(defconst csn- 460)
+		;(defconst csn- 461)
+		;(defconst csn- 462)
+		;(defconst csn- 463)
+		;(defconst csn- 464)
+		;(defconst csn- 465)
+		;(defconst csn- 466)
+		;(defconst csn- 467)
+		;(defconst csn- 468)
+		;(defconst csn- 469)
+		;(defconst csn- 470)
+		;(defconst csn- 471)
+		;(defconst csn- 472)
+		;(defconst csn- 473)
+		;(defconst csn- 474)
+		;(defconst csn- 475)
+		;(defconst csn- 476)
+		;(defconst csn- 477)
+		;(defconst csn- 478)
+		;(defconst csn- 479)
+		;(defconst csn- 480)
+		;(defconst csn- 481)
+		;(defconst csn- 482)
+		;(defconst csn- 483)
+		;(defconst csn- 484)
+		;(defconst csn- 485)
+		;(defconst csn- 486)
+		;(defconst csn- 487)
+		;(defconst csn- 488)
+		;(defconst csn- 489)
+		;(defconst csn- 490)
+		;(defconst csn- 491)
+		;(defconst csn- 492)
+		;(defconst csn- 493)
+		;(defconst csn- 494)
+		;(defconst csn- 495)
+		;(defconst csn- 496)
+		;(defconst csn- 497)
+		;(defconst csn- 498)
+		;(defconst csn- 499)
+		;(defconst csn- 500)
+		;(defconst csn- 501)
+		;(defconst csn- 502)
+		;(defconst csn- 503)
+		;(defconst csn- 504)
+		;(defconst csn- 505)
+		;(defconst csn- 506)
+		;(defconst csn- 507)
+		;(defconst csn- 508)
+		;(defconst csn- 509)
+		;(defconst csn- 510)
+		;(defconst csn- 511)
+
+	;-------------------
+	;	Define Timers
+	;-------------------
+
+		(defconst t-5-sec 1)
+		(defconst t-10-sec 2)
+		(defconst t-15-sec 3)
+		(defconst t-30-sec 4)
+		(defconst t-60-sec 5)
+		(defconst t-120-sec 6)
+		(defconst t-town-under-attack 7)
+		(defconst t-scout-distance-increase 8)
+		; (defconst t-change-scouting-direction 9)
+		(defconst t-villager-explore-timer 10)
+		(defconst t-deer-luring 11)
+		(defconst t-boar-hunt 12)
+		(defconst t-lumber-camp-increase 13)
+		(defconst t-resign 14)
+		(defconst t-projectile-retreat 15)
+			(defconst PROJECTILE-RETREAT-TIME 5)
+		(defconst t-first-attack 16)
+		; (defconst t-attack-size-increase 17)
+			(defconst INCREASE-TIME 90)
+		;(defconst t-adjust-gathering 12)
+		;	(defconst ADJUST-GATHERING-TIMER-LENGTH 15)
+		;(defconst t-res-gather-amount 17)
+		;	(defconst T-GATHER-AMOUNT-LENGTH 120)
+		(defconst t-build-line-lumber-camp 18)
+		(defconst t-spread-soldiers 19)
+		(defconst t-attack-patrol 20)
+		(defconst t-enemy-in-town 21)
+		(defconst t-tribute 22)
+		(defconst t-strategy-switch 23)
+		(defconst t-training-delay 24)
+		(defconst t-dead-builders 25)
+		(defconst t-ask-for-ally-assistance 26)
+		(defconst t-ally-assistance-chat-delay 27)
+		(defconst t-arena-gate-retreat-timer 28)
+		;(defconst t- 29)
+		;(defconst t- 30)
+		;(defconst t- 31)
+		;(defconst t- 32)
+		;(defconst t- 33)
+		;(defconst t- 34)
+		;(defconst t- 35)
+		;(defconst t- 36)
+		;(defconst t- 37)
+		;(defconst t- 38)
+		;(defconst t- 39)
+		;(defconst t- 40)
+		;(defconst t- 41)
+		;(defconst t- 42)
+		;(defconst t- 43)
+		;(defconst t- 44)
+		;(defconst t- 45)
+		;(defconst t- 46)
+		;(defconst t- 47)
+		;(defconst t- 48)
+		;(defconst t- 49)
+		;(defconst t- 50)
+
+
+
+;=========================<>=========================
+;				    INITIALIZATION
+;=========================<>=========================
+
+	;-------------------------------------
+	;	Loop Rules - do every rule pass
+	;-------------------------------------
+
+        (load "The General 1.3/Functions/Reset")
+
+		(defrule
+		(true)
+		=>
+		(set-goal g-place-point-x PENDING)
+		(set-goal g-place-point-y PENDING)
+		(up-modify-flag g-flag c:- TRADED)
+		(set-goal g-dropsite-min-distance-live-boar 255)
+		; (up-modify-flag g-flag c:- PLACE-POINT-USED)
+		; (up-modify-flag g-flag c:- PLACE-CONTROL-USED)
+		)
+
+		(defrule
+		(building-type-count-total town-center > 0)
+		=>
+		(up-full-reset-search)
+		(up-find-local c: town-center c: 5)
+		(up-filter-status c: status-pending c: list-active)
+		(up-find-status-local c: town-center-foundation c: 5)
+		(up-clean-search search-local -1 search-order-asc)
+		(up-clean-search search-local object-data-id search-order-asc)
+		)
+
+		(defrule
+		(building-type-count-total town-center > 0)
+		(up-set-target-object search-local c: 0)
+		=>
+		(up-get-point position-object g-position-self-x)
+		)
+
+        (load "The General 1.3/Functions/Reset")
+
+        (defrule
+        (up-compare-goal g-position-self-x < 0)
+        =>
+        (up-full-reset-search)
+        (up-find-local c: villager-class c: 20)
+        (up-get-search-state g-local-total)
+        (set-goal g-loop-counter 0)
+        (up-get-point position-zero g-point-x)
+        (up-get-point position-zero g-point2-x)
+        ; (chat-to-all "calculate new position self")
+        )
+
+            (defrule
+            (up-compare-goal g-position-self-x < 0)
+            (up-compare-goal g-local-total > 0)
+            (up-compare-goal g-loop-counter < 20)
+            (up-set-target-object search-local g: g-loop-counter)
+            =>
+            (up-get-point position-object g-point2-x)
+            ; (up-chat-data-to-all "Loop %d" g: g-loop-counter)
+            ; (up-chat-data-to-all "X %d" g: g-point2-x)
+            ; (up-chat-data-to-all "Y %d" g: g-point2-y)
+            (up-add-point g-point-x g-point2-x c: 1)
+            (up-modify-goal g-loop-counter c:+ 1)
+            (up-jump-rule -1)
+            )
+
+        (defrule
+        (up-compare-goal g-position-self-x < 0)
+        (up-compare-goal g-local-total > 0)
+        (up-compare-goal g-point-x > 0)
+        =>
+        (up-modify-goal g-point-x g:/ g-local-total)
+        (up-modify-goal g-point-y g:/ g-local-total)
+		(up-modify-goal g-point-x c:max THIRTY-PERCENT-MAP-SIZE)
+		(up-modify-goal g-point-y c:max THIRTY-PERCENT-MAP-SIZE)
+		(up-modify-goal g-point-x c:min SEVENTY-PERCENT-MAP-SIZE)
+		(up-modify-goal g-point-y c:min SEVENTY-PERCENT-MAP-SIZE)
+        (up-copy-point g-position-self-x g-point-x)
+        ; (up-chat-data-to-all "X %d" g: g-position-self-x)
+        ; (up-chat-data-to-all "Y %d" g: g-position-self-y)
+        ; (up-send-flare g-position-self-x)
+        )
+
+		;Check for dead builders
+
+		(load "The General 1.3/Functions/Reset Mini")
+
+		(defrule
+		(true)
+		=>
+		(up-full-reset-search)
+		(up-filter-status c: status-down c: list-active)	;find only dying builders
+		(up-find-status-local c: female-builder c: 1)
+		(up-find-status-local c: male-builder c: 1)
+		(up-get-search-state g-local-total)
+		)
+
+		(defrule
+		(up-compare-goal g-local-total > 0)
+		=>
+		(enable-timer t-dead-builders 30)
+		)
+
+	;----------------------
+	;	Initialize Goals
+	;----------------------
+
+		(defrule
+		(true)
+		=>
+		(set-goal g-town-under-attack NO)
+		(set-goal g-attacking NO)
+		(set-goal g-identity THE-GENERAL)
+		(set-goal g-michi-cut-priority NO)
+		(set-goal g-game-focus RESET)
+		(set-goal g-attack-status BEFORE-DARK-ATTACKS)
+		(set-goal g-enemy-buildings-in-town 0)
+		(set-goal g-enemy-units-in-town 0)
+		(set-goal g-target-military-parity 0)
+		(set-goal g-target-pop-parity 0)
+		(disable-self)
+		)
+
+		(defrule
+		(true)
+		=>
+		(set-goal g-target-age-parity WE-ARE-EQUAL)
+		(set-goal g-total-sheep-found 0)
+		(set-goal g-current-sheep-count 0)
+		(set-goal g-total-boar-found 0)
+		(set-goal g-current-boar-count 0)
+		(set-goal g-total-deer-found 0)
+		(set-goal g-current-deer-count 0)
+		(set-goal g-escrow with-escrow)
+		(set-goal g-lowest-gaia-animal-id PENDING)
+		(set-goal g-highest-gaia-animal-id PENDING)
+		(disable-self)
+		)
+
+		(defrule
+		(true)
+		=>
+		(set-goal g-desired-num-food-vils 0)
+		(set-goal g-desired-num-wood-vils 0)
+		(set-goal g-desired-num-stone-vils 0)
+		(set-goal g-desired-num-gold-vils 0)
+		(set-goal g-resign NO)
+		(set-goal g-eco-tech-progress 0)
+		(set-goal g-percent-dynamic-gathering 0)
+		(set-goal g-gather-inside NO)
+		(set-goal g-primary-unit-tech-progress 0)
+		(set-goal g-support-unit-tech-progress 0)
+		(set-goal g-primary-unit-class 0)
+		(set-goal g-support-unit-class 0)
+		(set-goal g-primary-unit 0)
+		(set-goal g-support-unit 0)
+		(disable-self)
+		)
+
+		(defrule
+		(true)
+		=>
+		(up-reset-cost-data g-total-techs-food-needed)
+		(up-reset-cost-data g-total-buildings-food-needed)
+		(up-reset-cost-data g-total-units-food-needed)
+		(up-reset-cost-data g-recent-food-gathered)
+		(up-reset-cost-data g-total-food-gathered)
+		(up-reset-cost-data g-total-food-bought)
+		(set-goal g-attack-coordination OFF)
+		(set-goal g-constant-train-unit 0)
+		(set-goal g-id-loop-max-objects HUNDRED-PERCENT-MAP-SIZE)
+		(up-modify-goal g-id-loop-max-objects c:* HUNDRED-PERCENT-MAP-SIZE)
+		(up-modify-goal g-id-loop-max-objects c:+ 200)
+		(set-goal g-required-attack-num 6)
+		(set-goal g-stop-attack-num 4)
+		(up-copy-point g-gather-point-x g-position-self-x)
+		(disable-self)
+		)
+
+		(defrule
+		(true)
+		=>
+		(set-goal g-barracks-next-unit 0)
+		(set-goal g-archery-range-next-unit 0)
+		(set-goal g-stable-next-unit 0)
+		(set-goal g-siege-workshop-next-unit 0)
+		(set-goal g-dock-next-unit 0)
+		(set-goal g-current-gold-camp-total 0)
+		(set-goal g-current-stone-camp-total 0)
+		(set-goal g-usable-farm-count 0)
+		(set-goal g-usable-farm-count-total 0)
+		(disable-self)
+		)
+
+		(defrule
+		(true)
+		=>
+		(set-goal g-flag 0)
+		(up-modify-flag g-flag c:+ ALLOW-QUEUED-VILLAGERS)
+		(set-goal g-group1-flag 0)
+		(set-goal g-group2-flag 0)
+		(set-goal g-group3-flag 0)
+		(set-goal g-group4-flag 0)
+		(set-goal g-group5-flag 0)
+		(set-goal g-group6-flag 0)
+		(set-goal g-group1-type-flag 0)
+		(set-goal g-group2-type-flag 0)
+		(set-goal g-group3-type-flag 0)
+		(set-goal g-group4-type-flag 0)
+		(set-goal g-group5-type-flag 0)
+		(set-goal g-group6-type-flag 0)
+		(disable-self)
+		)
+
+		(defrule
+		(true)
+		=>
+		(set-goal g-group1-action PENDING)
+		(set-goal g-group2-action PENDING)
+		(set-goal g-group3-action PENDING)
+		(set-goal g-group4-action PENDING)
+		(set-goal g-group5-action PENDING)
+		(set-goal g-group6-action PENDING)
+		(set-goal g-group1-target-object-id PENDING)
+		(set-goal g-group2-target-object-id PENDING)
+		(set-goal g-group3-target-object-id PENDING)
+		(set-goal g-group4-target-object-id PENDING)
+		(set-goal g-group5-target-object-id PENDING)
+		(set-goal g-group6-target-object-id PENDING)
+		(disable-self)
+		)
+
+		(defrule
+		(true)
+		=>
+		(set-goal g-group1-destination-time 0)
+		(set-goal g-group2-destination-time 0)
+		(set-goal g-group3-destination-time 0)
+		(set-goal g-group4-destination-time 0)
+		(set-goal g-group5-destination-time 0)
+		(set-goal g-group6-destination-time 0)
+		(set-goal g-group1-avoidance-counter 0)
+		(set-goal g-group2-avoidance-counter 0)
+		(set-goal g-group3-avoidance-counter 0)
+		(set-goal g-group4-avoidance-counter 0)
+		(set-goal g-group5-avoidance-counter 0)
+		(set-goal g-group6-avoidance-counter 0)
+		(disable-self)
+		)
+
+	;--------------------
+	;	Initialize SNs
+	;--------------------
+
+		;Custom SNs
+		(defrule
+		(true)
+		=>
+		(set-strategic-number csn-countering-preference 65)
+		(disable-self)
+		)
+
+		
+		;Exploration SNs												;Default SN Value
+		(defrule
+		(true)
+		=>
+		(set-strategic-number sn-percent-civilian-explorers 0)			;34
+		(set-strategic-number sn-cap-civilian-explorers 0)				;2
+		(set-strategic-number sn-minimum-civilian-explorers 0)			;0
+		(set-strategic-number sn-percent-exploration-required 0)		;100
+		(set-strategic-number sn-number-explore-groups 0)				;0
+		(set-strategic-number sn-total-number-explorers 1)				;4
+		(set-strategic-number sn-blot-size 10)							;15
+		(set-strategic-number sn-percent-half-exploration 100)			;30
+		;(set-strategic-number sn-home-exploration-time 300)			;300
+		(disable-self)
+		)
+		;Unchanged Exploration SNs:
+		;sn-blot-exploration-map
+		;sn-number-enemy-objects-required 		default=10
+
+
+
+		;Building Construction SNs
+		(defrule
+		(true)
+		=>
+		(set-strategic-number sn-percent-civilian-builders 100)			;0
+		(set-strategic-number sn-cap-civilian-builders 200)				;2
+		(set-strategic-number sn-camp-max-distance 0)					;25
+		(set-strategic-number sn-mill-max-distance 20)					;100
+		(set-strategic-number sn-required-forest-tiles 20)				;10
+		(set-strategic-number sn-initial-exploration-required 0)		;2
+		(set-strategic-number sn-random-placement-factor 0)			;50
+		(set-strategic-number sn-enable-new-building-system 1)			;0
+		(set-strategic-number sn-percent-building-cancellation 30)		;100
+		(set-strategic-number sn-object-repair-level 20547)				;1		;20547 = wonders, castles, monasteries, town centers, docks, towers, siege
+		(set-strategic-number sn-dropsite-separation-distance 6)		;10
+		(set-strategic-number sn-mining-camp-max-distance 20)			;0
+		(set-strategic-number sn-allow-adjacent-dropsites 1)			;0
+		(set-strategic-number sn-ignore-tower-elevation 1) 				;0
+		(disable-self)
+		)
+		(defrule
+		(true)
+		=>
+		(set-strategic-number sn-disable-builder-assistance 1)			;0
+		(disable-self)
+		)
+		;Unchanged Building Construction SNs:
+		;sn-number-forward-builders
+		;sn-preferred-mill-placement
+		;sn-lumber-camp-max-distance 			0
+		;sn-town-center-placement 				0
+		;sn-disable-tower-priority 				0
+		;sn-placement-to-center 				0
+		;sn-placement-zone-size 				20
+		;sn-placement-fail-delta 				0
+		;sn-unexplored-construction 			0
+
+
+
+		;Gathering SNs
+		(defrule
+		(true)
+		=>
+		(set-strategic-number sn-percent-civilian-gatherers 100)		;66
+		(set-strategic-number sn-maximum-wood-drop-distance 30)			;-1	
+		(set-strategic-number sn-maximum-food-drop-distance 8)			;-1	
+		(set-strategic-number sn-maximum-fish-boat-drop-distance 30)	;-1
+		(set-strategic-number sn-maximum-gold-drop-distance 20)			;-1			
+		(set-strategic-number sn-maximum-stone-drop-distance 20)		;-1
+		(set-strategic-number sn-retask-gather-amount 0)				;20
+		(set-strategic-number sn-max-retask-gather-amount 30000)		;40
+		(set-strategic-number sn-food-dropsite-distance 6)				;3
+		(set-strategic-number sn-wood-dropsite-distance 8)				;3
+		(set-strategic-number sn-preferred-trade-distance 200)			;100
+		(set-strategic-number sn-livestock-to-town-center 1)			;0
+		(set-strategic-number sn-stone-dropsite-distance 200)			;3
+		(disable-self)
+		)
+		;Unchanged Gathering SNs:
+		;sn-cap-civilian-gatherers
+		;sn-food-gatherer-percentage
+		;sn-gold-gatherer-percentage
+		;sn-stone-gatherer-percentage
+		;sn-wood-gatherer-percentage
+		;sn-gold-dropsite-distance
+		;sn-defer-dropsite-update 				0
+
+		;Hunting SNs
+		(defrule
+		(true)
+		=>
+		(set-strategic-number sn-maximum-hunt-drop-distance 4)			;-1
+		(set-strategic-number sn-enable-boar-hunting 2)					;1
+		(set-strategic-number sn-minimum-boar-hunt-group-size 0)		;5
+		(set-strategic-number sn-minimum-boar-lure-group-size 1000)		;0
+		(set-strategic-number sn-boar-lure-destination 0)				;0
+		(disable-self)
+		)
+		;Unchanged Hunting SNs:
+		;sn-minimum-number-hunters				0
+
+
+		;Attack SNs
+		(defrule
+		(true)
+		=>
+		(set-strategic-number sn-percent-attack-soldiers 0)				;75
+		(set-strategic-number sn-scale-minimum-attack-group-size 0)		;1
+		(set-strategic-number sn-garrison-rams 0)						;1
+		(disable-self)
+		)
+		;Unchanged Attack SNs:
+		;sn-number-attack-groups
+		;sn-minimum-attack-group-size
+		;sn-maximum-attack-group-size
+		;sn-attack-group-gather-spacing
+		;sn-group-form-distance
+		;sn-scale-maximum-attack-group-size
+		;sn-attack-group-size-randomness
+		;sn-scaling-frequency
+		;sn-initial-attack-delay
+		;sn-initial-attack-delay-type
+
+
+
+		;Defense SNs
+		(defrule
+		(true)
+		=>
+		(set-strategic-number sn-maximum-town-size 10)					;20
+		(set-strategic-number sn-percent-enemy-sighted-response 100)	;50
+		(set-strategic-number sn-enemy-sighted-response-distance 5)	;25
+		(set-strategic-number sn-safe-town-size 10)						;255
+		(set-strategic-number csn-peaceful-town-size 10)
+		(set-strategic-number sn-number-civilian-militia 0)				;10
+		(set-strategic-number sn-disable-sighted-response-cap 1)		;0
+		(set-strategic-number sn-minimum-town-size 0)					;12
+		(set-strategic-number sn-sentry-distance 0)						;12
+		(set-strategic-number sn-sentry-distance-variation 0)			;2
+		(disable-self)
+		)
+		;Unchanged Defense SNs:
+		;sn-ignore-attack-group-under-attack
+		;sn-maximum-gaia-attack-response
+		;sn-allow-civilian-defense
+		;sn-gather-defense-units
+		;sn-allow-civilian-offense 				0
+		;sn-disable-defend-groups 				0
+		;sn-disable-villager-garrison 			0
+		;sn-disable-trade-evasion				0
+
+
+
+		;Navy SNs
+		(defrule
+		(true)
+		=>
+		(set-strategic-number sn-percent-attack-boats 0)				;75
+		(set-strategic-number sn-minimum-water-body-size-for-dock 200)	;300
+		(set-strategic-number sn-dock-placement-mode -1)				;0
+		(set-strategic-number sn-dock-proximity-factor 1000)			;10000
+		(set-strategic-number sn-dock-training-filter 1)					;0
+		(set-strategic-number sn-warship-targeting-mode 1)				;0
+		(disable-self)
+		)
+		;Unchanged Navy SNs:
+		;sn-number-boat-attack-groups
+		;sn-minimum-boat-attack-group-size
+		;sn-maximum-boat-attack-group-size
+		;sn-dock-avoidance-factor				1000
+
+
+
+		;Attack Coordination SNs
+		(defrule
+		(true)
+		=>
+		(set-strategic-number sn-attack-intelligence 1)					;0
+		(set-strategic-number sn-task-ungrouped-soldiers 0)				;1
+		(set-strategic-number sn-attack-winning-player 0)				;1
+		(set-strategic-number sn-attack-coordination 2)					;-1
+		(set-strategic-number sn-enable-patrol-attack 1)				;0
+		(up-find-player enemy find-random g-temp)
+		(up-modify-sn sn-target-player-number g:= g-temp)				;0
+		(set-strategic-number sn-enable-offensive-priority 1)			;0
+		(set-strategic-number sn-disable-attack-groups 1)				;0
+		(set-strategic-number sn-local-targeting-mode 1)				;0
+		(disable-self)
+		)
+		;Unchanged Attack Coordination SNs:
+		;sn-group-commander-selection-method
+		;sn-group-leader-defense-distance
+		;sn-special-attack-type1
+		;sn-special-attack-type2
+		;sn-special-attack-type3
+		;sn-special-attack-influence1
+		;sn-special-attack-influence2
+		;sn-special-attack-influence3
+		;sn-gather-idle-soldiers-at-center
+		;sn-focus-player-number
+		;sn-building-targeting-mode
+		;sn-wall-targeting-mode 				0
+		;sn-free-siege-targeting 				0
+		;sn-number-tasked-units 				0
+		;sn-attack-winning-player-factor 		default=25
+
+
+
+		;Other SNs
+		(defrule
+		(true)
+		=>
+		(set-strategic-number sn-zero-priority-distance 12)				;50
+		(set-strategic-number sn-consecutive-idle-unit-limit 1)			;15
+		(set-strategic-number sn-sentry-distance 0)						;12
+		(set-strategic-number sn-sentry-distance-variation 0)			;2
+		(set-strategic-number sn-number-garrison-units 40)				;0
+		(set-strategic-number sn-livestock-defend-priority 1)			;0
+		(set-strategic-number sn-do-not-scale-for-difficulty-level 1)	;0
+		(set-strategic-number sn-enable-research-queue 1)
+		(set-difficulty-parameter ability-to-maintain-distance 100)
+		(set-difficulty-parameter ability-to-dodge-missiles 0)
+		; (set-strategic-number sn-enable-training-queue 1)
+		(disable-self)
+		)
+		;Unchanged Other SNs:
+		;sn-coop-share-information				1
+		;sn-maximum-garrison-fill 				0
+		;sn-filter-under-attack					0
+		;sn-target-point-adjustment 			0
+
+	;----------------------
+	;	Initialize Escrow
+	;----------------------
+
+		(defrule
+		(true)
+		=>
+		(set-escrow-percentage wood 0)
+		(set-escrow-percentage gold 0)
+		(set-escrow-percentage food 0)
+		(set-escrow-percentage stone 0)
+		(disable-self)
+		)

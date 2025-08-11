@@ -1,0 +1,4913 @@
+
+
+    (load "The General 1.3/Functions/Reset")
+
+;------------------------------
+;	GOAL: g-current-strategy 
+;------------------------------
+
+	;-----------------------
+	;	Update Strategies
+	;-----------------------
+
+		(defrule
+		(current-age == dark-age)
+		(up-compare-goal g-current-strategy g:!= g-dark-strategy)
+		=>
+		(up-modify-goal g-previous-strategy g:= g-dark-strategy)
+		(up-modify-goal g-current-strategy g:= g-dark-strategy)
+		(up-modify-goal g-next-strategy g:= g-early-feudal-strategy)
+		(up-modify-goal g-previous-support-unit g:= g-support-unit)
+		; (set-goal g-support-unit 0)
+		)
+
+		(defrule
+		(up-compare-goal g-age-status == EARLY-FEUDAL)
+		(up-compare-goal g-current-strategy g:!= g-early-feudal-strategy)
+		=>
+		(up-modify-goal g-previous-strategy g:= g-early-feudal-strategy)
+		(up-modify-goal g-current-strategy g:= g-early-feudal-strategy)
+		(up-modify-goal g-next-strategy g:= g-mid-feudal-strategy)
+		(up-modify-goal g-previous-support-unit g:= g-support-unit)
+		; (set-goal g-support-unit 0)
+		)
+
+		(defrule
+		(current-age == feudal-age)
+		(up-compare-goal g-age-status >= MID-FEUDAL)
+		(up-compare-goal g-current-strategy g:!= g-mid-feudal-strategy)
+		=>
+		(up-modify-goal g-previous-strategy g:= g-mid-feudal-strategy)
+		(up-modify-goal g-current-strategy g:= g-mid-feudal-strategy)
+		(up-modify-goal g-next-strategy g:= g-early-castle-strategy)
+		(up-modify-goal g-previous-support-unit g:= g-support-unit)
+		; (set-goal g-support-unit 0)
+		)
+
+		(defrule
+		(up-compare-goal g-age-status == EARLY-CASTLE)
+		(up-compare-goal g-current-strategy g:!= g-early-castle-strategy)
+		=>
+		(up-modify-goal g-previous-strategy g:= g-early-castle-strategy)
+		(up-modify-goal g-current-strategy g:= g-early-castle-strategy)
+		(up-modify-goal g-next-strategy g:= g-mid-castle-strategy)
+		(up-modify-goal g-previous-support-unit g:= g-support-unit)
+		; (set-goal g-support-unit 0)
+		)
+
+		(defrule
+		(current-age == castle-age)
+		(up-compare-goal g-age-status >= MID-CASTLE)
+		(up-compare-goal g-current-strategy g:!= g-mid-castle-strategy)
+		=>
+		(up-modify-goal g-previous-strategy g:= g-mid-castle-strategy)
+		(up-modify-goal g-current-strategy g:= g-mid-castle-strategy)
+		(up-modify-goal g-next-strategy g:= g-early-imperial-strategy)
+		(up-modify-goal g-previous-support-unit g:= g-support-unit)
+		; (set-goal g-support-unit 0)
+		)
+
+		(defrule
+		(up-compare-goal g-age-status == EARLY-IMPERIAL)
+		(up-compare-goal g-current-strategy g:!= g-early-imperial-strategy)
+		=>
+		(up-modify-goal g-previous-strategy g:= g-early-imperial-strategy)
+		(up-modify-goal g-current-strategy g:= g-early-imperial-strategy)
+		(up-modify-goal g-next-strategy g:= g-mid-imperial-strategy)
+		(up-modify-goal g-previous-support-unit g:= g-support-unit)
+		; (set-goal g-support-unit 0)
+		)
+
+		(defrule
+		(up-compare-goal g-age-status == MID-IMPERIAL)
+		(up-compare-goal g-current-strategy g:!= g-mid-imperial-strategy)
+		=>
+		(up-modify-goal g-previous-strategy g:= g-mid-imperial-strategy)
+		(up-modify-goal g-current-strategy g:= g-mid-imperial-strategy)
+		(up-modify-goal g-next-strategy g:= g-mid-imperial-strategy)	;Mid-Imp is our last planned strategy (hopefully we don't have to go to late imp)
+		(up-modify-goal g-previous-support-unit g:= g-support-unit)
+		)
+
+		(defrule
+		(up-compare-goal g-age-status == LATE-IMPERIAL)
+		(up-compare-goal g-current-strategy g:!= g-late-imperial-strategy)
+		=>
+		(up-modify-goal g-previous-strategy g:= g-late-imperial-strategy)
+		(up-modify-goal g-current-strategy g:= g-late-imperial-strategy)
+		(up-modify-goal g-next-strategy g:= g-late-imperial-strategy)
+		(up-modify-goal g-previous-support-unit g:= g-support-unit)
+		)
+
+		(defrule
+		(up-compare-goal g-previous-strategy < 101)
+		=>
+		(up-modify-goal g-previous-strategy g:= g-current-strategy)
+		)
+
+;------------------------------
+;	GOAL: g-initial-strategy
+;------------------------------
+
+	(defrule
+	(up-compare-goal g-current-strategy > 0)
+	=>
+	(up-modify-goal g-initial-strategy g:= g-current-strategy)
+	(disable-self)
+	)
+
+;------------------------
+;	GOAL: g-game-focus
+;------------------------
+
+    (load "The General 1.3/Functions/Reset Mini")
+
+	;What the AI is current focused on
+
+	;-----------
+	;	Reset
+	;-----------
+
+		(defrule
+		(true)
+		=>
+		(set-goal g-game-focus PENDING)
+		)
+
+	;-------------
+	;	Rebuild
+	;-------------
+
+		#load-if-defined TEST-BEFORE-USING
+
+			;Rebuild if we have no TC
+			(defrule
+			(up-compare-goal g-current-strategy != DOUCHE)
+			(or
+				(game-time > 600)
+				(and
+					(game-time > 300)
+					(goal g-map-style NO)))
+			(building-type-count-total town-center == 0)
+			=>
+			(set-goal g-game-focus REBUILD)
+			)
+
+			;If top enemy military pop and total pop are both more than twice our military and total pop, time to rebuild
+			;Check if top enemy player has at least twice as much military and total pop as us
+			;Example: if top enemy has 52 military and we have 23, g-top-player-military-parity will be -29
+			;Calculation: multiply -29 by negative 1 and compare to 23 => enemy has more than twice the military pop
+			(defrule
+			(game-time > 300)
+			(civilian-population < 40)
+			(up-get-fact-max any-enemy military-population 0 g-temp)
+			(up-get-fact military-population 0 g-temp3)
+			(up-modify-goal g-temp g:- g-temp3)
+			(up-get-fact-max any-enemy population 0 g-temp2)
+			(up-get-fact population 0 g-temp3)
+			(up-modify-goal g-temp2 g:- g-temp3)
+			(military-population g:< g-temp)	;our military is less than half of top enemy
+			(population g:< g-temp2)			;our total pop is less than half of top enemy
+			(or
+				(current-age > dark-age)
+				(game-time > 600))
+			=>
+			(set-goal g-game-focus REBUILD)
+			)
+			(defrule
+			(game-time > 300)
+			(civilian-population < 40)
+			(up-get-fact-max any-enemy military-population 0 g-temp)
+			(up-get-fact military-population 0 g-temp3)
+			(up-modify-goal g-temp g:- g-temp3)
+			(up-get-fact-max any-enemy population 0 g-temp2)
+			(up-get-fact population 0 g-temp3)
+			(up-modify-goal g-temp2 g:- g-temp3)
+			(military-population g:< g-temp)	;our military is less than half of top enemy
+			(population g:< g-temp2)			;our total pop is less than half of top enemy
+			(game-time > 300)
+			(goal g-map-style NO)
+			=>
+			(set-goal g-game-focus REBUILD)
+			)
+
+		#end-if
+
+	;---------------
+	;	Defensive
+	;---------------
+
+		;If enemy units are in town, determine military advantage based on multiple variables, store in g-temp
+		(defrule
+		(up-compare-goal g-enemy-units-in-town >= 2)
+		(goal g-town-under-attack YES)
+		=>
+		(up-get-fact military-population 0 g-temp)
+		(up-modify-goal g-temp g:- g-enemy-units-in-town)
+		)
+
+		(defrule
+		(up-compare-goal g-enemy-units-in-town >= 2)
+		(goal g-town-under-attack NO)
+		=>
+		(up-modify-goal g-temp g:= g-target-military-parity)
+		)
+
+		(defrule
+		(up-compare-goal g-enemy-units-in-town >= 8)
+		=>
+		(up-modify-goal g-temp g:min g-target-military-parity)
+		)
+
+		(defrule
+		(up-compare-goal g-enemy-units-in-town >= 2)
+		(building-type-count castle > 0)
+		=>
+		(up-modify-goal g-temp c:+ 8)
+		)
+
+		(defrule
+		(up-compare-goal g-enemy-units-in-town >= 2)
+		(up-building-type-in-town c: castle > 0)
+		(goal g-attacking NO)
+		=>
+		(up-modify-goal g-temp c:- 15)
+		)
+
+		(defrule
+		(up-compare-goal g-enemy-units-in-town >= 2)
+		(goal g-target-age-parity WE-ARE-AHEAD)
+		=>
+		(up-modify-goal g-temp c:+ 10)
+		)
+
+		(defrule
+		(up-compare-goal g-enemy-units-in-town >= 2)
+		(goal g-target-age-parity WE-ARE-BEHIND)
+		=>
+		(up-modify-goal g-temp c:- 10)
+		)
+
+		;Focus on defending if enemy is attacking with large enough numbers
+		(defrule
+		(goal g-game-focus PENDING)
+		(up-compare-goal g-enemy-units-in-town >= 2)
+		(up-compare-goal g-enemy-units-in-town <= 5)
+		(up-compare-goal g-temp <= -5)
+		(up-get-fact military-population 0 g-temp2)
+		(up-modify-goal g-temp2 c:/ -4)
+		(up-compare-goal g-temp g:<= g-temp2)	;calculated military advantage < -25% of our military population
+		=>
+		(set-goal g-game-focus DEFENSIVE)
+		; (chat-local-to-self "Defensive1")
+		)
+
+		(defrule
+		(goal g-game-focus PENDING)
+		(up-compare-goal g-enemy-units-in-town >= 6)
+		(up-compare-goal g-enemy-units-in-town <= 10)
+		(up-compare-goal g-temp <= 0)			;calculated military advantage < 0
+		=>
+		(set-goal g-game-focus DEFENSIVE)
+		; (chat-local-to-self "Defensive2")
+		)
+
+		(defrule
+		(goal g-game-focus PENDING)
+		(up-compare-goal g-enemy-units-in-town >= 11)
+		(up-compare-goal g-temp <= 5)
+		(up-get-fact military-population 0 g-temp2)
+		(up-modify-goal g-temp2 c:/ 4)
+		(up-compare-goal g-temp g:<= g-temp2)	;calculated military advantage < 25% of our military population
+		=>
+		(set-goal g-game-focus DEFENSIVE)
+		; (chat-local-to-self "Defensive3")
+		)
+
+		;Not currently attacked by many soldiers, but a threat from the enemy seems imminent
+		(defrule
+		(goal g-game-focus PENDING)
+		(goal g-position FLANK)
+		(up-compare-goal g-enemy-units-in-town < 2)
+		(or
+			(up-compare-goal g-target-military-parity < -8)
+			(and
+				(goal g-town-under-attack YES)
+				(up-compare-goal g-temp < -5)))
+		(military-population < 12)
+		=>
+		(set-goal g-game-focus DEFENSIVE)
+		; (chat-local-to-self "Defensive4")
+		)
+
+		;At least 2 towers near town
+
+		(load "The General 1.3/Functions/Reset Mini")
+
+		(defrule
+		(up-compare-flag g-flag == TRUSH-DEFENSE)
+		=>
+		(set-goal g-game-focus DEFENSIVE)
+		; (chat-local-to-self "Defensive5")
+		)
+
+	;----------
+	;	Boom
+	;----------
+
+		;Boom if we're pocket
+		(defrule
+		(goal g-game-focus PENDING)
+		(goal g-position POCKET)
+		=>
+		(set-goal g-game-focus BOOM)
+		)
+
+		;Boom if we're playing a walled map
+		(defrule
+		(goal g-game-focus PENDING)
+		(goal g-map-style WALLED-LAND)
+		=>
+		(set-goal g-game-focus BOOM)
+		)
+
+		;Boom if we fell behind in population and we have a strong ally
+		(defrule
+		(goal g-game-focus PENDING)
+		(goal g-position FLANK)
+		(up-get-fact-max any-enemy military-population 0 g-temp)
+		(up-get-fact military-population 0 g-temp2)
+		(up-modify-goal g-temp g:- g-temp2)
+		(up-compare-goal g-temp > 0)							;top enemy has more military than us
+		(up-get-fact-max any-enemy population 0 g-temp)
+		(up-get-fact population 0 g-temp2)
+		(up-modify-goal g-temp g:- g-temp2)
+		(up-compare-goal g-temp > TWENTY-FIVE-PERCENT-POP)		;top enemy has > 50 pop more than us (in 200 pop game)
+		(players-population any-ally >= EIGHTY-PERCENT-POP)		;we have a stronger ally that can support us
+		=>
+		(set-goal g-game-focus BOOM)
+		; (chat-local-to-self "Boom1")
+		)
+
+		;Boom if we are fast castling and got to castle age without many losses
+		(defrule
+		(goal g-game-focus PENDING)
+		(civilian-population >= 30)
+		(goal g-strategy-type FAST-CASTLE)
+		(up-compare-goal g-age-status >= MID-CASTLE)
+		(or
+			(goal g-target-age-parity WE-ARE-AHEAD)
+			(up-compare-flag g-flag != ENEMY-FC))
+		(up-resource-amount amount-killed-by-others <= 4)
+		=>
+		(set-goal g-game-focus BOOM)
+		; (chat-local-to-self "Boom2")
+		)
+		(defrule
+		(goal g-game-focus PENDING)
+		(civilian-population >= 30)
+		(goal g-strategy-type FAST-CASTLE)
+		(up-compare-goal g-age-status >= MID-CASTLE)
+		(or
+			(goal g-target-age-parity WE-ARE-AHEAD)
+			(up-compare-flag g-flag != ENEMY-FC))
+		(up-resource-amount amount-kill-ratio > 0)
+		(up-resource-amount amount-killed-by-others <= 6)
+		(up-get-fact-max any-enemy population 0 g-temp)
+		(up-get-fact population 0 g-temp2)
+		(up-modify-goal g-temp g:- g-temp2)
+		(up-compare-goal g-temp < 10)		;top enemy has < 10 pop more than us
+		=>
+		(set-goal g-game-focus BOOM)
+		; (chat-local-to-self "Boom3")
+		)
+
+		;Boom if we gained map control
+		(defrule
+		(goal g-game-focus PENDING)
+		(goal g-position FLANK)
+		(up-compare-goal g-target-military-parity > 10)				;ahead by 10 in military
+		(up-get-fact civilian-population 0 g-temp)
+		(up-get-fact-max any-enemy civilian-population 0 g-temp2)
+		(up-modify-goal g-temp g:- g-temp2)
+		(up-compare-goal g-temp > 0)								;also ahead in civilian pop
+		(up-get-fact civilian-population 0 g-temp)
+		(up-get-fact-max any-enemy civilian-population 0 g-temp2)
+		(up-modify-goal g-temp g:- g-temp2)
+		(up-compare-goal g-temp > 20)								;ahead by 20 in total pop
+		(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+		(up-compare-goal g-age-status >= MID-CASTLE)
+		(up-timer-status t-first-attack != timer-running)
+		=>
+		(set-goal g-game-focus BOOM)
+		; (chat-local-to-self "Boom4")
+		)
+
+		;Focus on booming if we fell behind in both military and economy
+		(defrule
+		(goal g-game-focus PENDING)
+		(goal g-position FLANK)
+		(up-compare-goal g-target-military-parity < -4)				;behind by 4 military
+		(up-get-fact-max any-enemy civilian-population 0 g-temp2)
+		(up-modify-goal g-temp g:- g-temp2)
+		(up-compare-goal g-temp < 0)								;also behind in civilian pop
+		(up-compare-goal g-primary-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+		(up-compare-goal g-target-age-parity != WE-ARE-AHEAD)
+		=>
+		(set-goal g-game-focus BOOM)
+		; (chat-local-to-self "Boom5")
+		)
+
+		;If pocket, boom after first attack is launched
+		(defrule
+		(goal g-game-focus PENDING)
+		(goal g-position POCKET)
+		(up-compare-goal g-age-status >= MID-CASTLE)
+		(up-modify-goal g-temp g:= g-desired-num-villager)
+		(up-modify-goal g-temp c:- 10)
+		(or
+			(up-compare-goal g-primary-unit-tech-progress < PRIORITY-IMPERIAL-COMPLETE)
+			(or
+				(up-compare-goal g-support-unit-tech-progress < PRIORITY-IMPERIAL-COMPLETE)
+				(up-object-type-count c: villager g:< g-temp)))	;want at least 10 more villagers
+		=>
+		(set-goal g-game-focus BOOM)
+		; (chat-local-to-self "Boom6")
+		)
+
+	;--------------------------
+	;	Aggressive (Default)
+	;--------------------------
+
+		(defrule
+		(goal g-game-focus PENDING)
+		; (goal g-position FLANK)
+		=>
+		(set-goal g-game-focus AGGRESSIVE)
+		; (chat-local-to-self "Aggressive3")
+		)
+
+;------------------------
+;	GOAL: g-age-status
+;------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+		(defrule
+		(true)
+		=>
+		(set-goal g-age-status PENDING)
+		(up-get-threat-data g-threat-elapsed-time g-threat-player g-threat-source-class g-threat-target-class)	;gets data of the most threat from anywhere on the map
+		(up-modify-sn sn-focus-player-number g:= g-threat-player)	;the player that most recently attacked us
+		)
+
+	;--------------
+	;	Dark Age
+	;--------------
+
+		(defrule
+		(up-research-status c: feudal-age == research-pending)
+		=>
+		(set-goal g-age-status TO-FEUDAL)
+		)
+
+		(defrule
+		(current-age == dark-age)
+		(up-compare-goal g-age-status < SAVE-FOR-FEUDAL)
+		(up-modify-goal g-temp g:= g-required-num-villager)
+		(up-modify-goal g-temp c:- 2)
+		(or
+			(up-object-type-count-total c: villager g:>= g-temp)
+			(goal g-town-under-attack YES))
+		(current-age-time > 5)	;wait until g-required-num-villager is set
+		=>
+		(set-goal g-age-status SAVE-FOR-FEUDAL)
+		)
+
+		(defrule
+		(current-age == dark-age)
+		(goal g-age-status PENDING)
+		=>
+		(set-goal g-age-status DARK)
+		)
+
+	;----------------
+	;	Feudal Age
+	;----------------
+
+		(defrule
+		(up-research-status c: castle-age == research-pending)
+		=>
+		(set-goal g-age-status TO-CASTLE)
+		)
+
+		(defrule
+		(current-age == feudal-age)
+		(up-compare-goal g-age-status < SAVE-FOR-CASTLE)
+		(up-modify-goal g-temp g:= g-required-num-villager)
+		(up-modify-goal g-temp c:- 4)
+		(or
+			(up-object-type-count-total c: villager g:>= g-temp)
+			(and
+				(players-current-age focus-player >= castle-age)
+				(goal g-town-under-attack YES)))
+		(current-age-time > 5)	;wait until g-required-num-villager is set
+		=>
+		(set-goal g-age-status SAVE-FOR-CASTLE)
+		)
+
+		(defrule
+		(current-age == feudal-age)
+		(up-compare-goal g-age-status < MID-FEUDAL)
+		(or
+			(up-compare-goal g-attack-status >= FIRST-FEUDAL-ATTACK)
+			(current-age-time >= 300))
+		=>
+		(set-goal g-age-status MID-FEUDAL)
+		)
+
+		(defrule
+		(current-age == feudal-age)
+		(goal g-age-status PENDING)
+		=>
+		(set-goal g-age-status EARLY-FEUDAL)
+		)
+
+	;----------------
+	;	Castle Age
+	;----------------
+
+		(defrule
+		(up-research-status c: imperial-age == research-pending)
+		=>
+		(set-goal g-age-status TO-IMPERIAL)
+		)
+
+		(defrule
+		(current-age == castle-age)
+		(up-compare-goal g-age-status < SAVE-FOR-IMPERIAL)
+		(up-modify-goal g-temp g:= g-required-num-villager)
+		(up-modify-goal g-temp c:- 5)
+		(or
+			(up-object-type-count-total c: villager g:>= g-temp)
+			(and
+				(players-current-age focus-player >= imperial-age)
+				(goal g-town-under-attack YES)))
+		(current-age-time > 5)	;wait until g-required-num-villager is set
+		=>
+		(set-goal g-age-status SAVE-FOR-IMPERIAL)
+		)
+
+		(defrule
+		(current-age == castle-age)
+		(up-compare-goal g-age-status < MID-CASTLE)
+		(or
+			(up-compare-goal g-attack-status >= FIRST-CASTLE-ATTACK)
+			(current-age-time >= 450))
+		=>
+		(set-goal g-age-status MID-CASTLE)
+		)
+
+		(defrule
+		(current-age == castle-age)
+		(goal g-age-status PENDING)
+		=>
+		(set-goal g-age-status EARLY-CASTLE)
+		)
+
+	;------------------
+	;	Imperial Age
+	;------------------
+
+		(defrule
+		(current-age == imperial-age)
+		(up-compare-goal g-age-status < LATE-IMPERIAL)
+		(up-compare-goal g-recent-gold-gathered < 100)
+		(up-compare-sn sn-gold-gatherer-percentage >= 10)
+		(gold-amount < 700)
+		=>
+		(set-goal g-age-status LATE-IMPERIAL)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-age-status LATE-IMPERIAL)
+		(or
+			(up-compare-goal g-recent-gold-gathered >= 100)
+			(or
+				(gold-amount >= 700)
+				(up-compare-sn sn-gold-gatherer-percentage < 10)))
+		=>
+		(set-goal g-age-status MID-IMPERIAL)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(up-compare-goal g-age-status < MID-IMPERIAL)
+		(or
+			(up-compare-goal g-attack-status >= FIRST-IMPERIAL-ATTACK)
+			(current-age-time >= 450))
+		=>
+		(set-goal g-age-status MID-IMPERIAL)
+		)
+
+		(defrule
+		(current-age == imperial-age)
+		(goal g-age-status PENDING)
+		=>
+		(set-goal g-age-status EARLY-IMPERIAL)
+		)
+
+;--------------------------------------
+;	GOALS: g-town-under-attack
+;		   g-enemy-buildings-in-town
+;		   g-enemy-units-in-town
+;--------------------------------------
+
+    (load "The General 1.3/Functions/Reset Mini")
+
+	;Determines if the town is under attack, helps request assistance from allies
+
+	(defrule
+	(true)
+	=>
+	(set-strategic-number sn-focus-player-number 1)
+	(set-goal g-enemy-buildings-in-town 0)
+	; (set-goal g-enemy-units-in-town 0)
+	(set-goal g-temp 0)
+	(set-goal g-temp2 0)
+	)
+
+		;Loop through all in-game enemies and count their buildings and units
+
+		(defrule
+		(nand
+			(player-in-game focus-player)
+			(stance-toward focus-player enemy))
+		(up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
+		=>
+		(up-modify-sn sn-focus-player-number c:+ 1)
+		(up-jump-rule -1)
+		)
+
+		(defrule
+		(true)
+		=>
+		(up-modify-goal g-temp s:= csn-peaceful-town-size)
+		(up-modify-goal g-temp c:* 2)	;increase distance to search for enemy buildings by 200% because csn-peaceful-town-size...
+		(up-modify-goal g-temp c:min 30)	;...is measured as a square around the TC, not a circle
+		(up-full-reset-search)				
+		(up-set-target-point g-position-self-x)	
+		(up-filter-distance c: -1 g: g-temp)	;search for buildings within csn-peaceful-town-size
+		(up-find-remote c: building-class c: 40)
+		(up-find-remote c: tower-class c: 40)
+		(up-filter-status c: status-pending c: list-active)	;find buildings and towers under construction
+		(up-find-status-remote c: building-class c: 40)
+		(up-find-status-remote c: tower-class c: 40)
+		(up-get-search-state g-local-total)
+		(up-modify-goal g-enemy-buildings-in-town g:+ g-remote-total)
+		)
+
+		(defrule
+		(true)
+		=>
+		(up-modify-goal g-temp s:= csn-peaceful-town-size)
+		(up-modify-goal g-temp c:* 2)	
+		(up-modify-goal g-temp c:min 30)
+		(up-full-reset-search)
+		(up-set-target-point g-position-self-x)
+		(up-filter-distance c: -1 g: g-temp)
+		(up-filter-exclude cmdid-military-building -1 -1 building-class)
+		(up-find-remote c: any-objects c: 40)
+		(up-get-search-state g-local-total)
+		(up-modify-goal g-temp2 g:+ g-remote-total)
+		)
+
+		(defrule
+		(up-compare-sn sn-focus-player-number < MAX-PLAYERS)
+		=>
+		(up-modify-sn sn-focus-player-number c:+ 1)
+		(up-jump-rule -4)
+		)
+
+	(defrule
+	(up-compare-goal g-temp2 > 0)
+	=>
+	(up-modify-goal g-enemy-units-in-town g:= g-temp2)
+	(disable-timer t-enemy-in-town)
+	)
+
+	(defrule
+	(up-compare-goal g-temp2 <= 0)
+	(up-compare-goal g-enemy-units-in-town > 0)
+	(up-timer-status t-enemy-in-town == timer-triggered)
+	=>
+	(disable-timer t-enemy-in-town)
+	(set-goal g-enemy-units-in-town 0)
+	)
+
+	(defrule
+	(up-compare-goal g-temp2 <= 0)
+	(up-compare-goal g-enemy-units-in-town > 0)
+	(up-timer-status t-enemy-in-town != timer-running)
+	=>
+	(enable-timer t-enemy-in-town 15)
+	)
+
+	(defrule
+	(true)
+	=>
+	(up-full-reset-search)
+	(up-filter-distance c: -1 s: csn-peaceful-town-size)
+	(set-strategic-number sn-focus-player-number 1)
+	)
+
+	(defrule
+	(nand
+		(player-in-game focus-player)
+		(stance-toward focus-player enemy))
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
+	=>
+	(up-jump-rule -1)
+	)
+
+	(defrule
+	(true)
+	=>
+	(up-find-remote c: castle c: 1)
+	(up-get-search-state g-local-total)
+	)
+
+	(defrule
+	(up-compare-sn sn-focus-player-number < MAX-PLAYERS)
+	(up-compare-goal g-remote-total == 0)
+	=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -3)
+	)
+
+	(defrule
+	(or
+		(town-under-attack)
+		(up-compare-goal g-enemy-units-in-town >= 7))
+	; (goal g-attacking NO)
+	(up-compare-goal g-town-under-attack != YES)
+	(or
+		(up-compare-goal g-remote-total > 0)	;castles in town
+		(or
+			(up-compare-goal g-enemy-units-in-town >= 5)
+			(and
+				(current-age <= feudal-age)
+				(up-compare-goal g-enemy-units-in-town >= 2))))
+	=>
+	(disable-timer t-town-under-attack)
+	(set-goal g-town-under-attack YES)
+	; (chat-to-player my-player-number "town under attack")
+	)
+
+	(defrule
+	(goal g-town-under-attack PENDING)
+	(up-timer-status t-town-under-attack != timer-running)
+	(not
+		(town-under-attack))
+	(goal g-remote-total 0)
+	(up-compare-goal g-enemy-units-in-town < 5)
+	(or
+		(current-age > feudal-age)
+		(up-compare-goal g-enemy-units-in-town < 2))
+	=>
+	(disable-timer t-town-under-attack)
+	(set-goal g-town-under-attack NO)
+	; (chat-to-player my-player-number "town is safe")
+	)
+
+	(defrule
+	(goal g-town-under-attack YES)
+	(up-timer-status t-town-under-attack != timer-running)
+	(not
+		(town-under-attack))
+	(goal g-remote-total 0)
+	(up-compare-goal g-enemy-units-in-town < 5)
+	(or
+		(current-age > feudal-age)
+		(up-compare-goal g-enemy-units-in-town < 2))
+	=>
+	(enable-timer t-town-under-attack 10)
+	(set-goal g-town-under-attack PENDING)
+	; (chat-to-player my-player-number "wait to see if town is safe")
+	)
+
+;------------------------------------
+;	GOAL: g-target-military-parity
+;------------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	;The difference between our military pop and the military pop of the target player, > 0 means we have superiority
+
+	(defrule
+	(player-in-game target-player)
+	=>
+	(up-get-fact military-population 0 g-target-military-parity)
+	(up-get-target-fact military-population 0 g-temp)
+	(up-get-target-fact unit-type-count karambit-warrior g-temp2)
+	(up-get-target-fact unit-type-count elite-karambit-warrior g-temp3)
+	(up-modify-goal g-temp2 g:+ g-temp3)	;add karambit warrior counts together
+	(up-modify-goal g-temp2 c:/ 2)			;divide karambit warrior counts in half
+	(up-modify-goal g-temp g:- g-temp2)	;subtract half of karambit warrior counts since they should only count as half pop, military population counts them as a whole unit
+	(up-modify-goal g-target-military-parity g:- g-temp)	;subtract the military population of target player from our military population
+	)
+
+;-------------------------------
+;	GOAL: g-target-pop-parity
+;-------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	;The difference between our total pop and the total pop of the target player, > 0 means we have superiority
+
+	(defrule
+	(player-in-game target-player)
+	=>
+	(up-get-fact population 0 g-target-pop-parity)
+	(up-get-target-fact population 0 g-temp)
+	(up-get-target-fact unit-type-count karambit-warrior g-temp2)
+	(up-get-target-fact unit-type-count elite-karambit-warrior g-temp3)
+	(up-modify-goal g-temp2 g:+ g-temp3)	;add karambit warrior counts together
+	(up-modify-goal g-temp2 c:/ 2)			;divide karambit warrior counts in half
+	(up-modify-goal g-temp g:- g-temp2)	;subtract half of karambit warrior counts since they should only count as half pop, population counts them as a whole unit
+	(up-modify-goal g-target-pop-parity g:- g-temp)	;subtract the total population of target player from our total population
+	)
+
+;-------------------------------
+;	GOAL: g-target-age-parity
+;-------------------------------
+
+    (load "The General 1.3/Functions/Reset Mini")
+
+	;Determines whether we are ahead or behind in age, compared to our target enemy
+
+	(defrule
+	(true)
+	=>
+	(up-get-fact current-age 0 g-temp)					;store our current age
+	(up-get-target-fact current-age 0 g-temp2)	;store target-player's current age
+	)
+
+	(defrule
+	(up-compare-goal g-temp g:< g-temp2)
+	=>
+	(set-goal g-target-age-parity WE-ARE-BEHIND)
+	)
+	
+	(defrule
+	(up-compare-goal g-temp g:== g-temp2)
+	=>
+	(set-goal g-target-age-parity WE-ARE-EQUAL)
+	)
+
+	(defrule
+	(up-compare-goal g-temp g:> g-temp2)
+	=>
+	(set-goal g-target-age-parity WE-ARE-AHEAD)
+	)
+
+;---------------------------------------------
+;	GOAL: g-dropsite-min-distance-live-boar
+;---------------------------------------------
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-dropsite-min-distance-live-boar 255)
+	)
+
+	(defrule
+	(up-compare-goal g-current-boar-count > 0)
+	(up-compare-goal g-lowest-gaia-animal-id != PENDING)
+	=>
+	(up-full-reset-search)
+	(up-find-local c: town-center c: 10)
+	(up-find-local c: mill c: 10)
+	(up-find-local c: mule-cart c: 10)
+	(up-get-search-state g-local-total)
+	)
+
+	(defrule
+	(up-compare-goal g-current-boar-count > 0)
+	(up-compare-goal g-lowest-gaia-animal-id != PENDING)
+	(up-compare-goal g-local-total > 0)
+	=>
+	(up-modify-goal g-loop-counter g:= g-lowest-gaia-animal-id)
+	)
+
+		(defrule
+		(true)
+		=>
+		(up-get-rule-id g-start-loop)
+		)
+
+		(defrule
+		(up-compare-goal g-current-boar-count > 0)
+		(up-compare-goal g-lowest-gaia-animal-id != PENDING)
+		(up-compare-goal g-local-total > 0)
+		(up-compare-goal g-loop-counter g:< g-highest-gaia-animal-id)
+		(up-set-target-by-id g: g-loop-counter)
+		(up-get-object-data object-data-point-x g-point-x)
+		(up-get-object-data object-data-point-y g-point-y)
+		(or
+			(up-object-data object-data-class != boar-class)
+			(or
+				(up-point-explored g-point-x == explored-no)
+				(or
+					(up-object-data object-data-carry <= 0)
+					(up-object-data object-data-hitpoints <= 0))))
+		(up-modify-goal g-loop-counter c:+ 1)
+		(up-compare-goal g-loop-counter g:< g-highest-gaia-animal-id)
+		=>
+		(up-jump-direct g: g-start-loop)
+		)
+
+		(defrule
+		(up-compare-goal g-current-boar-count > 0)
+		(up-compare-goal g-lowest-gaia-animal-id != PENDING)
+		(up-compare-goal g-local-total > 0)
+		(up-compare-goal g-loop-counter g:< g-highest-gaia-animal-id)
+		(up-set-target-by-id g: g-loop-counter)
+		=>
+		(up-get-object-data object-data-point-x g-point-x)
+		(up-get-object-data object-data-point-y g-point-y)
+		(up-set-target-point g-point-x)
+		(set-goal g-loop-counter2 0)
+		)
+
+			(defrule
+			(true)
+			=>
+			(up-get-rule-id g-start-loop2)
+			)
+
+			(defrule
+			(up-compare-goal g-current-boar-count > 0)
+			(up-compare-goal g-lowest-gaia-animal-id != PENDING)
+			(up-compare-goal g-local-total > 0)
+			(up-compare-goal g-loop-counter g:< g-highest-gaia-animal-id)
+			(up-set-target-by-id g: g-loop-counter)
+			(up-set-target-object search-local g: g-loop-counter2)
+			(up-compare-goal g-loop-counter2 g:< g-local-total)
+			(up-object-data object-data-base-type == town-center)
+			=>
+			(up-get-object-data object-data-distance g-temp)
+			(up-modify-goal g-temp c:- 2)
+			(up-modify-goal g-dropsite-min-distance-live-boar g:min g-temp)
+			(up-jump-rule 1)
+			)
+				(defrule
+				(up-compare-goal g-current-boar-count > 0)
+				(up-compare-goal g-lowest-gaia-animal-id != PENDING)
+				(up-compare-goal g-local-total > 0)
+				(up-compare-goal g-loop-counter g:< g-highest-gaia-animal-id)
+				(up-set-target-by-id g: g-loop-counter)
+				(up-set-target-object search-local c: 0)
+				(up-compare-goal g-loop-counter2 g:< g-local-total)
+				=>
+				(up-get-object-data object-data-distance g-temp)
+				(up-modify-goal g-temp c:- 1)
+				(up-modify-goal g-dropsite-min-distance-live-boar g:min g-temp)
+				)
+
+			(defrule
+			(up-compare-goal g-current-boar-count > 0)
+			(up-compare-goal g-lowest-gaia-animal-id != PENDING)
+			(up-compare-goal g-local-total > 0)
+			(up-compare-goal g-loop-counter g:< g-highest-gaia-animal-id)
+			(up-set-target-by-id g: g-loop-counter)
+			(up-modify-goal g-loop-counter2 c:+ 1)
+			(up-set-target-object search-local c: 0)
+			(up-compare-goal g-loop-counter2 g:< g-local-total)
+			=>
+			(up-jump-direct g: g-start-loop2)
+			)
+
+		(defrule
+		(up-compare-goal g-current-boar-count > 0)
+		(up-compare-goal g-lowest-gaia-animal-id != PENDING)
+		(up-compare-goal g-local-total > 0)
+		(up-modify-goal g-loop-counter c:+ 1)
+		(up-compare-goal g-loop-counter g:< g-highest-gaia-animal-id)
+		(up-set-target-by-id g: g-loop-counter)
+		=>
+		(up-jump-direct g: g-start-loop)
+		)
+
+;-----------------------------
+;	GOAL: g-scouting-status
+;-----------------------------
+
+    (load "The General 1.3/Functions/Reset Mini")
+
+	;Find necessary resources first
+	(defrule
+	(up-group-size c: 8 > 0)
+	(building-type-count-total town-center > 0)
+	=>
+	(set-goal g-scouting-status FIND-RESOURCES)
+	(disable-self)
+	)
+
+	(defrule
+	(goal g-scouting-status FIND-RESOURCES)
+	(building-type-count-total town-center > 0)
+	(or
+		(up-compare-goal g-total-sheep-found > 0)
+		(up-compare-goal g-num-starting-sheep == 0))
+	(or
+		(up-compare-goal g-total-boar-found > 0)
+		(up-compare-goal g-num-starting-boar == 0))
+	(or
+		(up-gaia-type-count-total c: forage-class > 0)
+		(up-compare-goal g-size-forage-pile1 == 0))
+	=>
+	(set-goal g-temp 19001)
+	)
+
+	;If playing a custom map, where sheep/boar/forage amounts aren't known, reset g-temp until we've found a food resource
+	(defrule
+	(goal g-scouting-status FIND-RESOURCES)
+	(building-type-count-total town-center > 0)
+	(up-compare-goal g-num-starting-sheep == 0)
+	(up-compare-goal g-num-starting-boar == 0)
+	(up-compare-goal g-size-forage-pile1 == 0)
+	(up-compare-goal g-total-sheep-found == 0)
+	(up-compare-goal g-total-boar-found == 0)
+	(up-gaia-type-count-total c: forage-class == 0)
+	(up-compare-goal g-total-deer-found == 0)
+	(building-type-count farm == 0)
+	=>
+	(set-goal g-temp 0)
+	)
+
+	(defrule
+	(goal g-temp 19001)
+	(goal g-scouting-status FIND-RESOURCES)
+	(building-type-count-total town-center > 0)
+	(or
+		(resource-found wood)
+		(up-gaia-type-count-total c: wood >= 40))
+	(up-gaia-type-count-total c: gold > 0)
+	(up-gaia-type-count-total c: stone > 0)
+	=>
+	(set-goal g-scouting-status SCOUT-TOWN)
+	)
+
+    (load "The General 1.3/Functions/Reset Mini")
+
+	;Once necessary resources are found, find the rest if possible
+	;Only require a certain percentage of the expected resources to be explored
+	(defrule
+	(goal g-scouting-status SCOUT-TOWN)
+	(building-type-count-total town-center > 0)
+	=>
+	(up-modify-goal g-temp g:= g-num-starting-sheep)
+	(up-modify-goal g-temp c:%* 75)
+	(up-modify-goal g-temp c:min 8)
+	(up-modify-goal g-temp2 g:= g-size-forage-pile1)
+	(up-modify-goal g-temp2 g:+ g-size-forage-pile2)
+	(up-modify-goal g-temp2 c:%* 60)
+	(up-modify-goal g-temp2 c:min 8)
+	)
+
+	(defrule
+	(goal g-scouting-status SCOUT-TOWN)
+	(building-type-count-total town-center > 0)
+	(up-compare-goal g-total-sheep-found g:>= g-temp)
+	(up-gaia-type-count-total c: forage-class g:>= g-temp2)
+	=>
+	(up-modify-goal g-temp g:= g-num-starting-boar)
+	(up-modify-goal g-temp c:%* 60)
+	(up-modify-goal g-temp c:min 2)
+	(up-modify-goal g-temp2 g:= g-num-starting-deer)
+	(up-modify-goal g-temp2 c:%* 55)
+	(up-modify-goal g-temp2 c:min 4)
+	(set-goal g-temp3 20001)
+	)
+
+	(defrule
+	(goal g-temp3 20001)
+	(goal g-scouting-status SCOUT-TOWN)
+	(building-type-count-total town-center > 0)
+	(up-compare-goal g-total-boar-found g:>= g-temp)
+	(up-compare-goal g-total-deer-found g:>= g-temp2)
+	=>
+	(up-modify-goal g-temp g:= g-size-gold-pile1)
+	(up-modify-goal g-temp g:+ g-size-gold-pile2)
+	(up-modify-goal g-temp g:+ g-size-gold-pile3)
+	(up-modify-goal g-temp c:%* 60)
+	(up-modify-goal g-temp c:min 11)
+	(up-modify-goal g-temp2 g:= g-size-stone-pile1)
+	(up-modify-goal g-temp2 g:+ g-size-stone-pile2)
+	(up-modify-goal g-temp2 c:%* 40)
+	(up-modify-goal g-temp2 c:min 7)
+	(set-goal g-temp3 20002)
+	)
+
+	(defrule
+	(goal g-temp3 20002)
+	(goal g-scouting-status SCOUT-TOWN)
+	(building-type-count-total town-center > 0)
+	(up-gaia-type-count-total c: gold g:>= g-temp)
+	(up-gaia-type-count-total c: stone g:>= g-temp2)
+	=>
+	(set-goal g-scouting-status ALL-RESOURCES-FOUND)
+	)
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	(defrule
+	(up-compare-goal g-scouting-status >= ALL-RESOURCES-FOUND)
+	(up-compare-goal g-scouting-status != PUSH-DEER)
+	(up-compare-goal g-scouting-status != FIND-ENEMY)
+	(up-compare-goal g-scouting-status != AUTO-SCOUT)
+	=>
+	(set-goal g-scouting-status AUTO-SCOUT)
+	)
+
+	;If no deer to push or we don't have time to push deer, move on to finding enemy
+	(defrule
+	(up-compare-goal g-difficulty >= HARDEST)
+	; (game-time s:> sn-home-exploration-time)
+	(current-age == dark-age)
+	(up-set-target-by-id g: g-scout-id)
+	(up-compare-goal g-scouting-status >= ALL-RESOURCES-FOUND)
+	(up-compare-goal g-current-boar-count == 0)
+	(up-compare-goal g-scouting-status != PUSH-DEER)
+	(up-compare-goal g-current-deer-count > 0)
+	=>
+	(set-goal g-scouting-status PUSH-DEER)
+	)
+	(defrule
+	(up-compare-goal g-difficulty < HARDEST)
+	; (game-time s:> sn-home-exploration-time)
+	(current-age == dark-age)
+	(up-set-target-by-id g: g-scout-id)
+	(up-compare-goal g-scouting-status >= ALL-RESOURCES-FOUND)
+	(up-compare-goal g-scouting-status != PUSH-DEER)
+	(up-compare-goal g-current-deer-count > 0)
+	=>
+	(set-goal g-scouting-status AUTO-SCOUT)
+	(set-goal g-deer-pushing-status PENDING)
+	(set-goal g-current-deer-id PENDING)
+	)
+
+	(load "The General 1.3/Functions/Reset Mini")
+	
+	(defrule
+	(goal g-scouting-status PUSH-DEER)
+	(or
+		(not 
+			(up-set-target-by-id g: g-scout-id))
+		(goal g-current-deer-count 0))
+	=>
+	(set-goal g-scouting-status AUTO-SCOUT)
+	)
+	
+	(defrule
+	(goal g-scouting-status PUSH-DEER)
+	(up-compare-goal g-game-focus != BOOM)
+	(or
+		(up-compare-goal g-strategy-type < FAST-CASTLE)
+		(current-age == feudal-age))
+	(up-modify-goal g-temp s:= sn-home-exploration-time)
+	(up-modify-goal g-temp c:+ 120)
+	(or
+		(game-time g:> g-temp)
+		(or
+			(unit-type-count villager >= 28)
+			(up-compare-goal g-age-status >= TO-FEUDAL)))
+	=>
+	(set-goal g-scouting-status AUTO-SCOUT)
+	(set-goal g-deer-pushing-status PENDING)
+	(set-goal g-current-deer-id PENDING)
+	)
+
+	;Scout enemy
+	(defrule
+	(timer-triggered t-30-sec)
+	(goal g-scouting-status AUTO-SCOUT)
+	(current-age >= feudal-age)
+	(up-compare-goal g-attack-status <= FIRST-CASTLE-ATTACK)
+	(up-compare-sn sn-number-explore-groups > 0)
+	=>
+	(up-get-point position-flank g-point-x)
+	)
+
+	(defrule
+	(timer-triggered t-30-sec)
+	(goal g-scouting-status AUTO-SCOUT)
+	(current-age >= feudal-age)
+	(up-compare-goal g-attack-status <= FIRST-CASTLE-ATTACK)
+	(up-compare-sn sn-number-explore-groups > 0)
+	(up-point-explored g-point-x == explored-no)
+	=>
+	(up-send-scout group-type-land-explore scout-flank)
+	)
+
+	;Scout for market placement
+	(defrule
+	(goal g-scouting-status AUTO-SCOUT)
+	(military-population >= TEN-PERCENT-POP)
+	(up-compare-sn sn-number-explore-groups > 0)
+	=>
+	(up-get-point position-corner g-point-x)
+	(disable-self)
+	)
+
+	(defrule
+	(goal g-scouting-status AUTO-SCOUT)
+	(military-population >= TEN-PERCENT-POP)
+	(up-compare-sn sn-number-explore-groups > 0)
+	(up-point-explored g-point-x == explored-no)
+	=>
+	(up-send-scout group-type-land-explore scout-corner)
+	(disable-self)
+	)
+
+;---------------------------------
+;	GOAL: g-id-loop-max-objects
+;---------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	(defrule
+	(game-time > 3)
+	(game-time < 10)
+	=>
+	(up-modify-goal g-loop-counter g:= g-id-loop-max-objects)
+	(up-modify-goal g-loop-counter c:+ 100)
+	(disable-self)
+	)
+
+		(defrule
+		(game-time > 3)
+		(game-time < 10)
+		(up-set-target-by-id g: g-loop-counter)
+		=>
+		(up-modify-goal g-loop-counter c:+ 100)
+		(up-modify-goal g-id-loop-max-objects g:= g-loop-counter)
+		; (up-chat-data-to-all "Max Objects on map at start: %d" g: g-id-loop-max-objects)
+		(up-jump-rule 1)
+		)
+
+		(defrule
+		(game-time > 3)
+		(game-time < 10)
+		(up-compare-goal g-loop-counter > 0)
+		=>
+		(up-modify-goal g-loop-counter c:- 1)
+		(up-jump-rule -2)
+		)
+
+	(defrule
+	(timer-triggered t-10-sec)
+	=>
+	(up-modify-goal g-loop-counter g:= g-id-loop-max-objects)
+	(up-modify-goal g-loop-counter c:+ 100)
+	(up-modify-goal g-temp g:= g-id-loop-max-objects)
+	(up-modify-goal g-temp c:- 100)
+	)
+
+		(defrule
+		(timer-triggered t-10-sec)
+		(up-set-target-by-id g: g-loop-counter)
+		=>
+		(up-modify-goal g-loop-counter c:+ 100)
+		(up-modify-goal g-id-loop-max-objects g:= g-loop-counter)
+		; (up-chat-data-to-all "Max Objects on map to search through: %d" g: g-id-loop-max-objects)
+		(up-jump-rule 1)
+		)
+
+		(defrule
+		(timer-triggered t-10-sec)
+		(up-modify-goal g-loop-counter c:- 1)
+		(up-compare-goal g-loop-counter g:> g-temp)
+		=>
+		(up-jump-rule -2)
+		)
+
+;------------------------------------
+;	GOAL: g-lowest-gaia-animal-id
+;	GOAL: g-highest-gaia-animal-id
+;------------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	(defrule
+	(or
+		(game-time < 900)
+		(current-age == dark-age))
+	(goal g-lowest-gaia-animal-id PENDING)
+	=>
+	(set-goal g-temp -9999)
+	(set-goal g-loop-counter 0)
+	)
+
+		(defrule
+		(or
+			(game-time < 900)
+			(current-age == dark-age))
+		(goal g-temp -9999)
+		(up-set-target-by-id g: g-loop-counter)
+		(or
+			(up-object-data object-data-class == boar-class)
+			(up-object-data object-data-class == deer-class))
+		(up-object-data object-data-carry > 0)
+		(up-object-data object-data-hitpoints > 0)
+		(goal g-lowest-gaia-animal-id PENDING)
+		=>
+		(up-get-object-data object-data-id g-lowest-gaia-animal-id)
+		)
+
+		(defrule
+		(or
+			(game-time < 900)
+			(current-age == dark-age))
+		(goal g-temp -9999)
+		(up-set-target-by-id g: g-loop-counter)
+		(or
+			(up-object-data object-data-class == boar-class)
+			(up-object-data object-data-class == deer-class))
+		=>
+		(up-get-object-data object-data-id g-highest-gaia-animal-id)
+		)
+
+		(defrule
+		(or
+			(game-time < 900)
+			(current-age == dark-age))
+		(goal g-temp -9999)
+		(up-compare-goal g-loop-counter g:< g-id-loop-max-objects)
+		=>
+		(up-modify-goal g-loop-counter c:+ 1)
+		(up-jump-rule -3)
+		)
+
+;--------------------------------
+;	GOAL: g-total-boar-found
+;	GOAL: g-current-boar-count
+;--------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	(defrule
+	(or
+		(game-time < 900)
+		(current-age == dark-age))
+	(up-compare-goal g-lowest-gaia-animal-id != PENDING)
+	=>
+	(up-modify-goal g-loop-counter g:= g-lowest-gaia-animal-id)
+	(set-goal g-current-boar-count 0)
+	(up-set-target-point g-position-self-x)
+	)
+
+	(defrule
+	(or
+		(game-time < 900)
+		(current-age == dark-age))
+	(up-set-target-by-id g: g-loop-counter)
+	(up-object-data object-data-class == boar-class)
+	(up-object-data object-data-carry > 0)
+	(up-object-data object-data-hitpoints > 0)
+	(up-object-data object-data-distance <= MAX-BOAR-HUNT-DISTANCE)
+	(up-get-object-data object-data-point-x g-point-x)
+	(up-get-object-data object-data-point-y g-point-y)
+	(up-point-explored g-point-x != explored-no)
+	=>
+	(up-modify-goal g-current-boar-count c:+ 1)
+	(up-modify-goal g-total-boar-found g:max g-current-boar-count)
+	)
+
+	(defrule
+	(or
+		(game-time < 900)
+		(current-age == dark-age))
+	(up-compare-goal g-loop-counter g:< g-highest-gaia-animal-id)
+	=>
+	(up-modify-goal g-loop-counter c:+ 1)
+	(up-jump-rule -2)
+	)
+
+;--------------------------------
+;	GOAL: g-total-deer-found
+;	GOAL: g-current-deer-count
+;--------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	(defrule
+	(or
+		(game-time < 900)
+		(current-age == dark-age))
+	=>
+	(up-modify-goal g-loop-counter g:= g-lowest-gaia-animal-id)
+	(set-goal g-current-deer-count 0)
+	(up-set-target-point g-position-self-x)
+	)
+
+		(defrule
+		(or
+			(game-time < 900)
+			(current-age == dark-age))
+		(up-set-target-by-id g: g-loop-counter)
+		(up-object-data object-data-class == deer-class)
+		(up-object-data object-data-carry > 0)
+		(up-object-data object-data-carry != 65)
+		(up-object-data object-data-hitpoints > 0)
+		(up-object-data object-data-distance <= 45)
+		(up-get-object-data object-data-point-x g-point-x)
+		(up-get-object-data object-data-point-y g-point-y)
+		(up-point-explored g-point-x != explored-no)
+		=>
+		(up-modify-goal g-current-deer-count c:+ 1)
+		(up-modify-goal g-total-deer-found g:max g-current-deer-count)
+		)
+
+		(defrule
+		(or
+			(game-time < 900)
+			(current-age == dark-age))
+		(up-compare-goal g-loop-counter g:< g-highest-gaia-animal-id)
+		=>
+		(up-modify-goal g-loop-counter c:+ 1)
+		(up-jump-rule -2)
+		)
+
+;--------------------------------
+;	GOAL: g-total-chickens-found
+;	GOAL: g-current-chicken-count
+;--------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	(defrule
+	(or
+		(game-time < 900)
+		(current-age == dark-age))
+	=>
+	(up-modify-goal g-loop-counter g:= g-lowest-gaia-animal-id)
+	(set-goal g-current-chicken-count 0)
+	(up-set-target-point g-position-self-x)
+	)
+
+		(defrule
+		(or
+			(game-time < 900)
+			(current-age == dark-age))
+		(up-set-target-by-id g: g-loop-counter)
+		(up-object-data object-data-class == deer-class)
+		(up-object-data object-data-carry == 65)
+		(up-object-data object-data-hitpoints > 0)
+		(up-object-data object-data-distance <= 45)
+		(up-get-object-data object-data-point-x g-point-x)
+		(up-get-object-data object-data-point-y g-point-y)
+		(up-point-explored g-point-x != explored-no)
+		=>
+		(up-modify-goal g-current-chicken-count c:+ 1)
+		(up-modify-goal g-total-chickens-found g:max g-current-chicken-count)
+		)
+
+		(defrule
+		(or
+			(game-time < 900)
+			(current-age == dark-age))
+		(up-compare-goal g-loop-counter g:< g-highest-gaia-animal-id)
+		=>
+		(up-modify-goal g-loop-counter c:+ 1)
+		(up-jump-rule -2)
+		)
+
+;----------------------
+;	GOAL: g-position
+;----------------------
+
+	#load-if-defined UP-POCKET-POSITION
+
+		(defrule
+		(true)
+		=>
+		(set-goal g-position POCKET)
+		(disable-self)
+		)
+
+	#else
+
+		(defrule
+		(true)
+		=>
+		(set-goal g-position FLANK)
+		(disable-self)
+		)
+
+	#end-if
+
+	#load-if-defined UP-1-PLAYER-TEAM
+
+		(defrule
+		(true)
+		=>
+		(set-goal g-position FLANK)
+		(disable-self)
+		)
+
+	#end-if
+
+;----------------------
+;	GOAL: g-scout-id
+;----------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	;find potential scouts
+	(defrule
+	(goal g-scout-id PENDING)
+	(military-population > 0)
+	(game-time < 90)
+	(up-group-size c: 8 > 0)
+	=>
+	(up-full-reset-search)
+	(up-set-group search-local c: 8)
+	(up-clean-search search-local object-data-speed search-order-desc)
+	(up-remove-objects search-local object-data-cmdid != cmdid-military)
+	)
+
+	;Set first unit found as Scout
+	(defrule
+	(goal g-scout-id PENDING)
+	(military-population > 0)
+	(game-time < 90)
+	(up-group-size c: 8 > 0)
+	(up-set-target-object search-local c: 0)
+	=>
+	(up-get-object-data object-data-id g-scout-id)
+	; (chat-to-all "Scout found")
+	)
+
+	;Scout 1 died, set to -2 (not -1 because Scout 1 won't be used after initial scout is dead)
+	(defrule
+	(up-compare-goal g-scout-id >= 0)
+	(not
+		(up-set-target-by-id g: g-scout-id))
+	=>
+	(set-goal g-scout-id -2)
+	)
+
+;----------------------------
+;	GOAL: g-sheep-gather-x
+;	GOAL: g-sheep-gather-y
+;----------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	;Get coordinates for sheep gather point
+	(defrule
+	(up-compare-goal g-map-style != NOMAD)
+	(up-compare-goal g-position-self-x >= 0)
+	(up-compare-goal g-position-self-y >= 0)
+	=>
+	(up-copy-point g-sheep-gather-x g-position-self-x)
+	(up-modify-goal g-sheep-gather-x c:- 4)
+	)
+
+	(defrule
+	(up-compare-goal g-map-style == NOMAD)
+	(up-compare-goal g-position-self-x >= 0)
+	(up-compare-goal g-position-self-y >= 0)
+	=>
+	(up-copy-point g-sheep-gather-x g-position-self-x)
+	(up-modify-goal g-sheep-gather-x c:- 1)
+	(up-modify-goal g-sheep-gather-y c:+ 1)
+	)
+
+	; (defrule
+	; (true)
+	; =>
+	; (up-full-reset-search)
+	; (up-find-local c: villager-class c: 1)
+	; )
+
+	; (defrule
+	; (or
+	; 	(not
+	; 		(up-can-build-line 0 g-sheep-gather-x c: palisade-wall))
+	; 	(and
+	; 		(up-set-target-object search-local c: 0)
+	; 		(up-path-distance g-sheep-gather-x 1 == 65535)))
+	; =>
+	; (up-copy-point g-sheep-gather-x g-position-self-x)
+	; (up-modify-goal g-sheep-gather-x c:- 3)
+	; )
+
+;---------------------------------
+;	GOAL: g-total-sheep-found
+;	GOAL: g-current-sheep-count
+;---------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	(defrule
+	(or
+		(game-time < 900)
+		(current-age == dark-age))
+	=>
+	(up-full-reset-search)
+	(up-find-local c: livestock-class c: 20)
+	(up-get-search-state g-local-total)
+	(up-modify-goal g-temp g:= g-local-total)
+	(up-modify-goal g-temp g:- g-current-sheep-count)
+	(up-modify-goal g-temp c:max 0)
+	(up-modify-goal g-total-sheep-found g:+ g-temp)
+	(up-modify-goal g-current-sheep-count g:= g-local-total)
+	)
+
+
+
+;-----------------------------------
+;	GOAL: g-true-housing-headroom
+;-----------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	;True housing headroom takes headroom buildings in progress
+	;into account.
+
+	#load-if-not-defined HUN-CIV
+		#load-if-not-defined CHINESE-CIV
+			#load-if-not-defined INCAN-CIV
+				#load-if-not-defined SLAVIC-CIV
+					(defrule
+					(true)
+					=>
+					(up-get-fact building-type-count town-center g-temp)
+					(up-modify-goal g-temp c:* 5)
+					(up-modify-goal g-true-housing-headroom g:= g-temp)
+					(up-get-fact building-type-count-total house g-temp)
+					(up-modify-goal g-temp c:* 5)
+					(up-modify-goal g-true-housing-headroom g:+ g-temp)
+					(up-get-fact building-type-count castle g-temp)		;using total causes AI to get housed
+					(up-modify-goal g-temp c:* 20)
+					(up-modify-goal g-true-housing-headroom g:+ g-temp)
+					(up-get-fact population 0 g-temp)
+					(up-modify-goal g-true-housing-headroom g:- g-temp)
+					(up-get-fact resource-amount amount-queued-count g-temp)
+					(up-modify-goal g-true-housing-headroom g:- g-temp)
+					)
+				#end-if
+			#end-if
+		#end-if
+	#end-if
+
+	#load-if-defined CHINESE-CIV
+		(defrule
+		(true)
+		=>
+		(up-get-fact building-type-count town-center g-temp)
+		(up-modify-goal g-temp c:* 15)
+		(up-modify-goal g-true-housing-headroom g:= g-temp)
+		(up-get-fact building-type-count-total house g-temp)
+		(up-modify-goal g-temp c:* 5)
+		(up-modify-goal g-true-housing-headroom g:+ g-temp)
+		(up-get-fact building-type-count castle g-temp)		;using total causes AI to get housed
+		(up-modify-goal g-temp c:* 20)
+		(up-modify-goal g-true-housing-headroom g:+ g-temp)
+		(up-get-fact population 0 g-temp)
+		(up-modify-goal g-true-housing-headroom g:- g-temp)
+		(up-get-fact resource-amount amount-queued-count g-temp)
+		(up-modify-goal g-true-housing-headroom g:- g-temp)
+		)
+	#end-if
+
+	#load-if-defined INCAN-CIV
+		(defrule
+		(true)
+		=>
+		(up-get-fact building-type-count town-center g-temp)
+		(up-modify-goal g-temp c:* 5)
+		(up-modify-goal g-true-housing-headroom g:= g-temp)
+		(up-get-fact building-type-count-total house g-temp)
+		(up-modify-goal g-temp c:* 10)
+		(up-modify-goal g-true-housing-headroom g:+ g-temp)
+		(up-get-fact building-type-count castle g-temp)		;using total causes AI to get housed
+		(up-modify-goal g-temp c:* 20)
+		(up-modify-goal g-true-housing-headroom g:+ g-temp)
+		(up-get-fact population 0 g-temp)
+		(up-modify-goal g-true-housing-headroom g:- g-temp)
+		(up-get-fact resource-amount amount-queued-count g-temp)
+		(up-modify-goal g-true-housing-headroom g:- g-temp)
+		)
+	#end-if
+
+	#load-if-defined SLAVIC-CIV
+
+		(defrule
+		(true)
+		=>
+		(up-get-fact building-type-count town-center g-temp)
+		(up-modify-goal g-temp c:* 5)
+		(up-modify-goal g-true-housing-headroom g:= g-temp)
+		(up-get-fact building-type-count-total house g-temp)
+		(up-modify-goal g-temp c:* 5)
+		(up-modify-goal g-true-housing-headroom g:+ g-temp)
+		(up-get-fact building-type-count castle g-temp)		;using total causes AI to get housed
+		(up-modify-goal g-temp c:* 20)
+		(up-modify-goal g-true-housing-headroom g:+ g-temp)
+		(up-get-fact building-type-count-total barracks g-temp)
+		(up-modify-goal g-temp c:* 5)
+		(up-modify-goal g-true-housing-headroom g:+ g-temp)
+		(up-get-fact building-type-count-total archery-range g-temp)
+		(up-modify-goal g-temp c:* 5)
+		(up-modify-goal g-true-housing-headroom g:+ g-temp)
+		)
+		
+		(defrule
+		(true)
+		=>
+		(up-get-fact building-type-count-total stable g-temp)
+		(up-modify-goal g-temp c:* 5)
+		(up-modify-goal g-true-housing-headroom g:+ g-temp)
+		(up-get-fact building-type-count-total siege-workshop g-temp)
+		(up-modify-goal g-temp c:* 5)
+		(up-modify-goal g-true-housing-headroom g:+ g-temp)
+		(up-get-fact population 0 g-temp)
+		(up-modify-goal g-true-housing-headroom g:- g-temp)
+		(up-get-fact resource-amount amount-queued-count g-temp)
+		(up-modify-goal g-true-housing-headroom g:- g-temp)
+		)
+					
+	#end-if
+
+	#load-if-defined BULGARIANS-CIV
+
+		(defrule
+		(true)
+		=>
+		(up-get-fact building-type-count krepost g-temp)
+		(up-modify-goal g-temp c:* 20)
+		(up-modify-goal g-true-housing-headroom g:+ g-temp)
+		)
+	
+	#end-if
+
+;---------------------------
+;	GOAL: g-strategy-type
+;---------------------------
+
+	(defrule
+	(up-compare-goal g-initial-strategy >= DARK-STRATS-START)
+	(up-compare-goal g-initial-strategy <= DARK-STRATS-END)
+	(up-compare-goal g-strategy-type != DRUSH)
+	=>
+	(set-goal g-strategy-type DRUSH)
+	)
+
+	(defrule
+	(up-compare-goal g-initial-strategy >= FL-STRATS-START)
+	(up-compare-goal g-initial-strategy <= FL-STRATS-END)
+	(up-compare-goal g-strategy-type != FLUSH)
+	=>
+	(set-goal g-strategy-type FLUSH)
+	)
+
+	(defrule
+	(up-compare-goal g-initial-strategy >= FC-STRATS-START)
+	(up-compare-goal g-initial-strategy <= FC-STRATS-END)
+	(up-compare-goal g-strategy-type != FAST-CASTLE)
+	=>
+	(set-goal g-strategy-type FAST-CASTLE)
+	)
+
+	(defrule
+	(up-compare-goal g-initial-strategy >= BOOMC-STRATS-START)	;Booming Castle Age Strats
+	(up-compare-goal g-initial-strategy <= BOOMC-STRATS-END)
+	(up-compare-goal g-strategy-type != FAST-CASTLE)
+	=>
+	(set-goal g-strategy-type FAST-CASTLE)
+	)
+
+	(defrule
+	(up-compare-goal g-initial-strategy >= FI-STRATS-START)
+	(up-compare-goal g-initial-strategy <= FI-STRATS-END)
+	(up-compare-goal g-strategy-type != FAST-IMPERIAL)
+	=>
+	(set-goal g-strategy-type FAST-IMPERIAL)
+	)
+
+	(defrule
+	(up-compare-goal g-initial-strategy >= BOOMI-STRATS-START)	;Booming Imperial Age Strats
+	(up-compare-goal g-initial-strategy <= BOOMI-STRATS-END)
+	(up-compare-goal g-strategy-type != FAST-IMPERIAL)
+	=>
+	(set-goal g-strategy-type FAST-IMPERIAL)
+	)
+
+;------------------------------
+;	GOAL: g-attack-objective
+;------------------------------
+
+	(defrule
+	(goal g-attack-objective PENDING)
+	=>
+	(set-goal g-attack-objective ATTACK-TARGET-ENEMY)
+	; (chat-to-all "default attack objective")
+	)
+
+;---------------------------
+;	GOAL: g-closest-enemy
+;---------------------------
+
+	;If flank, find closest enemy that has > 20 villagers.
+	;If pocket, set closest enemy to same player as nearby flank.
+	;If pocket and team partner isn't a General AI, use same technique as flank players.
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	(defrule
+	(up-timer-status t-10-sec == timer-running)
+	=>
+	(up-jump-rule 8)
+	)
+
+		(defrule
+		(players-building-count any-enemy > 0)
+		=>
+		(set-strategic-number sn-focus-player-number 1)
+		(set-goal g-temp 99999)		;shortest distance to enemy player
+		)
+
+			(defrule
+			(players-building-count any-enemy > 0)
+			(player-in-game focus-player)
+			(stance-toward focus-player enemy)
+			=>
+			(up-full-reset-search)
+			(up-find-remote c: town-center c: 1)
+			(up-find-remote c: building-class c: 1)
+			(up-find-remote c: tower-class c: 1)
+			(up-find-remote c: wall-class c: 1)
+			(up-find-remote c: gate-class c: 1)
+			(set-goal g-temp2 99999)
+			(set-goal g-temp3 PENDING)
+			(set-goal g-temp4 PENDING)
+			(set-goal g-temp5 PENDING)
+			)
+
+			;Get player distance
+			(defrule
+			(players-building-count any-enemy > 0)
+			(player-in-game focus-player)
+			(stance-toward focus-player enemy)
+			(up-set-target-object search-remote c: 0)
+			=>
+			(up-get-point position-object g-point-x)
+			(up-set-target-point g-point-x)
+			(up-get-point-distance g-position-self-x g-point-x g-temp2)
+			)
+
+			;If enemy has low villager pop, double the player distance to make AI less likely to pick it as the closest enemy
+			(defrule
+			(players-building-count any-enemy > 0)
+			(player-in-game focus-player)
+			(stance-toward focus-player enemy)
+			(up-set-target-object search-remote c: 0)
+			(or
+				(players-civilian-population focus-player < 15)
+				(and
+					(players-civilian-population focus-player < 25)
+					(or
+						(players-building-type-count focus-player town-center == 0)
+						(players-current-age focus-player <= feudal-age))))
+			=>
+			(up-modify-goal g-temp2 c:* 25)
+			)
+
+			;Prioritize setting closest enemy to the same as flank's closest enemy
+			(defrule
+			(players-building-count any-enemy > 0)
+			(player-in-game focus-player)
+			(stance-toward focus-player enemy)
+			(up-set-target-object search-remote c: 0)
+			(goal g-position POCKET)
+			(up-compare-goal g-team-partner > 0)
+			(up-compare-goal g-team-partner-identity == THE-GENERAL)
+			=>
+			(up-modify-goal g-temp3 s:= sn-focus-player-number)
+			(up-modify-sn sn-focus-player-number g:= g-team-partner)
+			(up-get-focus-fact allied-goal g-closest-enemy g-temp4)
+			(up-get-focus-fact allied-goal g-position g-temp5)
+			(up-modify-sn sn-focus-player-number g:= g-temp3)
+			)
+
+			(defrule
+			(players-building-count any-enemy > 0)
+			(player-in-game focus-player)
+			(stance-toward focus-player enemy)
+			(up-set-target-object search-remote c: 0)
+			(goal g-position POCKET)
+			(up-compare-goal g-team-partner > 0)
+			(up-compare-goal g-team-partner-identity == THE-GENERAL)
+			(up-compare-sn sn-focus-player-number g:== g-temp4)	;focus player is the same as team partner's closest enemy
+			(goal g-temp5 FLANK)	;team partner is a flank
+			=>
+			(up-modify-goal g-temp2 c:/ 50)
+			)
+
+			;Set closest enemy to current player if current player is closest enemy so far
+			(defrule
+			(players-building-count any-enemy > 0)
+			(player-in-game focus-player)
+			(stance-toward focus-player enemy)
+			(up-set-target-object search-remote c: 0)
+			(up-compare-goal g-temp2 g:< g-temp)	;less than the lowest distance to an enemy found so far
+			(up-compare-goal g-temp2 > 0)
+			=>
+			(up-modify-goal g-closest-enemy s:= sn-focus-player-number)
+			(up-modify-goal g-temp g:= g-temp2)	;store new lowest distance to an ally
+			)
+
+			(defrule
+			(up-compare-sn sn-focus-player-number < MAX-PLAYERS)
+			=>
+			(up-modify-sn sn-focus-player-number c:+ 1)
+			(up-jump-rule -7)
+			)
+
+	;Backup
+	(defrule
+	(true)
+	=>
+	(up-modify-sn sn-focus-player-number g:= g-closest-enemy)
+	)
+
+	(defrule
+	(or
+		(up-compare-goal g-closest-enemy <= 0)
+		(not
+			(player-in-game focus-player)))
+	=>
+	(up-find-player enemy find-closest g-closest-enemy)
+	(up-modify-sn sn-focus-player-number g:= g-closest-enemy)
+	)
+
+	(defrule
+	(or
+		(up-compare-goal g-closest-enemy <= 0)
+		(not
+			(player-in-game focus-player)))
+	=>
+	(up-find-player enemy find-random g-closest-enemy)
+	)
+
+	; (defrule
+	; (players-building-count any-enemy > 0)
+	; (up-compare-goal g-closest-enemy <= 0)
+	; (timer-triggered t-10-sec)
+	; =>
+	; (chat-to-all "Closest enemy not set properly")
+	; )
+
+;---------------------------------------------
+;	GOAL: g-closest-enemy-building-distance
+;---------------------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	(defrule
+	(players-building-count any-enemy > 0)
+	(up-compare-goal g-closest-enemy > 0)
+	=>
+	(up-modify-sn sn-focus-player-number g:= g-closest-enemy)
+	)
+
+	(defrule
+	(players-building-count any-enemy > 0)
+	(players-building-count focus-player > 0)
+	(up-compare-goal g-closest-enemy > 0)
+	=>
+	(up-full-reset-search)
+	(up-set-target-point g-position-self-x)
+	(up-find-remote c: building-class c: 40)
+	(up-find-remote c: tower-class c: 40)
+	(up-filter-status c: status-pending c: list-active)
+	(up-find-status-remote c: building-class c: 40)
+	(up-find-status-remote c: tower-class c: 40)
+	(up-clean-search search-remote object-data-distance search-order-asc)
+	(up-get-search-state g-local-total)
+	)
+
+	(defrule
+	(players-building-count any-enemy > 0)
+	(players-building-count focus-player > 0)
+	(up-compare-goal g-closest-enemy > 0)
+	(up-compare-goal g-remote-total > 0)
+	(up-set-target-object search-remote c: 0)
+	=>
+	(up-get-object-data object-data-distance g-closest-enemy-building-distance)
+	)
+
+;---------------------------------------------
+;	GOAL: g-nearest-enemy-defenses-distance
+;---------------------------------------------
+
+	(defrule
+	(timer-triggered t-10-sec)
+	(players-building-count any-enemy > 0)
+	=>
+	(set-strategic-number sn-focus-player-number 1)
+	(set-goal g-nearest-enemy-defenses-distance HUNDRED-FIFTY-PERCENT-MAP-SIZE)
+	)
+
+		(defrule
+		(timer-triggered t-10-sec)
+		(players-building-count any-enemy > 0)
+        (up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
+        (nand
+            (player-in-game focus-player)
+            (stance-toward focus-player enemy))
+        =>
+        (up-modify-sn sn-focus-player-number c:+ 1)
+        (up-jump-rule -1)
+        )
+		
+		(defrule
+		(timer-triggered t-10-sec)
+		(players-building-count any-enemy > 0)
+		(players-building-count focus-player > 0)
+		(player-in-game focus-player)
+		(stance-toward focus-player enemy)
+		=>
+		(up-full-reset-search)
+		(up-set-target-point g-position-self-x)
+		(up-find-remote c: castle c: 40)
+		(up-find-remote c: krepost c: 40)
+		(up-find-remote c: tower-class c: 40)
+		(up-clean-search search-remote -1 search-order-asc)
+		(up-clean-search search-remote object-data-distance search-order-asc)
+		)
+		
+		(defrule
+		(timer-triggered t-10-sec)
+		(players-building-count any-enemy > 0)
+		(players-building-count focus-player > 0)
+		(player-in-game focus-player)
+		(stance-toward focus-player enemy)
+		(up-set-target-object search-remote c: 0)
+		(up-get-object-data object-data-distance g-temp2)
+		(up-compare-goal g-temp2 g:< g-nearest-enemy-defenses-distance)
+		=>
+		(up-modify-goal g-nearest-enemy-defenses-distance g:min g-temp2)
+		)
+		
+		(defrule
+		(timer-triggered t-10-sec)
+		(players-building-count any-enemy > 0)
+		(strategic-number sn-focus-player-number < MAX-PLAYERS)
+		=>
+		(up-modify-sn sn-focus-player-number c:+ 1)
+		(up-jump-rule -4)
+		)
+
+;--------------------------------------------------
+;	GOAL: g-constant-train-unit
+;	GOAL: g-desired-num-constant-train-unit-goal
+;--------------------------------------------------
+
+	(defrule
+	(up-compare-goal g-constant-train-unit != 0)
+	=>
+	(set-goal g-constant-train-unit 0)
+	)
+
+	(defrule
+	(goal g-current-strategy FC-KRUSH)
+	(current-age == castle-age)
+	(unit-type-count knight-line g:< g-required-attack-num)
+	(up-object-type-count-total c: knight-line g:< g-desired-num-knight)
+	(up-compare-flag g-flag != FIRST-ATTACK-LAUNCHED)
+	(up-compare-goal g-knight-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
+	=>
+	(set-goal g-constant-train-unit knight)
+	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-knight)	;This sets g-desired-num-constant-train-unit-goal to the
+	)																					;goal ID constant of g-desired-num-knight, not the actual
+																						;number of desired knights stored in the goal
+	(defrule
+	(goal g-current-strategy FC-CRUSH)
+	(current-age == castle-age)
+	(unit-type-count-total camel-line g:< g-required-attack-num)
+	(unit-type-count-total camel-line g:< g-desired-num-camel)
+	(up-compare-flag g-flag != FIRST-ATTACK-LAUNCHED)
+	(up-compare-goal g-camel-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
+	=>
+	(set-goal g-constant-train-unit camel)
+	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-camel)
+	)
+
+	(defrule
+	(goal g-current-strategy FC-MORLEY)
+	(current-age == castle-age)
+	(unit-type-count steppe-lancer-line g:< g-required-attack-num)
+	(up-object-type-count-total c: steppe-lancer-line g:< g-desired-num-second-unique-unit)
+	(up-compare-flag g-flag != FIRST-ATTACK-LAUNCHED)
+	(up-compare-goal g-second-unique-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
+	=>
+	(set-goal g-constant-train-unit steppe-lancer)
+	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-steppe-lancer)
+	)
+
+	(defrule
+	(goal g-current-strategy FC-EAGLES-REVENGE)
+	(current-age == castle-age)
+	(unit-type-count-total eagle-warrior-line g:< g-required-attack-num)
+	(unit-type-count-total eagle-warrior-line g:< g-desired-num-eagle-warrior)
+	(up-compare-flag g-flag != FIRST-ATTACK-LAUNCHED)
+	(up-compare-goal g-eagle-warrior-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
+	=>
+	(set-goal g-constant-train-unit eagle-warrior)
+	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-eagle-warrior)
+	)
+
+	(defrule
+	(goal g-current-strategy FC-STRONGBOW)
+	(current-age == castle-age)
+	(unit-type-count-total archer-line g:< g-required-attack-num)
+	(up-object-type-count c: archer-line g:< g-desired-num-archer)
+	(up-compare-flag g-flag != FIRST-ATTACK-LAUNCHED)
+	(up-compare-goal g-archer-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	(up-compare-goal g-eco-tech-progress >= SECONDARY-FEUDAL-COMPLETE)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
+	=>
+	(set-goal g-constant-train-unit archer)
+	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-archer)
+	)
+
+	(defrule
+	(goal g-current-strategy FC-GENGHIS)
+	(current-age == castle-age)
+	(unit-type-count-total cavalry-archer-line g:< g-required-attack-num)
+	(up-object-type-count c: cavalry-archer-line g:< g-desired-num-cavalry-archer)
+	(up-compare-flag g-flag != FIRST-ATTACK-LAUNCHED)
+	(up-compare-goal g-cavalry-archer-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	(up-compare-goal g-eco-tech-progress >= SECONDARY-FEUDAL-COMPLETE)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
+	=>
+	(set-goal g-constant-train-unit cavalry-archer)
+	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-cavalry-archer)
+	)
+
+	(defrule
+	(goal g-current-strategy FC-DEMON)
+	(current-age == castle-age)
+	(unit-type-count-total monk g:< g-required-attack-num)
+	(up-object-type-count c: monk g:< g-desired-num-monk)
+	(up-compare-flag g-flag != FIRST-ATTACK-LAUNCHED)
+	(or
+		(up-research-status c: ri-sanctity >= research-pending)
+		(up-compare-const SANCTITY-AVAILABLE == NO))
+	(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
+	=>
+	(set-goal g-constant-train-unit monk)
+	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-monk)
+	)
+
+	(defrule
+	(goal g-current-strategy FC-CASTLE-DROP)
+	(current-age == castle-age)
+	(unit-type-count-total my-unique-unit g:< g-required-attack-num)
+	(unit-type-count-total my-unique-unit-line g:< g-desired-num-unique-unit)
+	(up-compare-flag g-flag != FIRST-ATTACK-LAUNCHED)
+	(up-compare-goal g-unique-unit-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	(up-compare-goal g-eco-tech-progress >= PRIORITY-CASTLE-COMPLETE)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
+	=>
+	(set-goal g-constant-train-unit my-unique-unit)
+	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-unique-unit)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(up-compare-goal g-desired-num-trade-cart > 0)
+	(up-object-type-count-total c: trade-cart g:< g-desired-num-trade-cart)
+	(research-completed ri-caravan)
+	(goal g-town-under-attack NO)
+	=>
+	(set-goal g-constant-train-unit trade-cart)
+	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-trade-cart)
+	)
+
+	(defrule
+	(current-age >= castle-age)
+	(or
+		(up-building-type-in-town c: castle > 0)
+		(or
+			(military-population > 15)
+			(up-compare-flag g-flag == TRUSH-DEFENSE)))
+	(building-type-count siege-workshop > 0)
+	(up-compare-goal g-siege-class < 2)
+	(up-compare-goal g-desired-num-ram-type >= 2)
+	(up-research-status c: ri-capped-ram != research-available)
+	=>
+	(set-goal g-constant-train-unit battering-ram)
+	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-ram-type)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(or
+		(up-building-type-in-town c: castle > 0)
+		(military-population > 15))
+	(building-type-count castle > 0)
+	(up-compare-goal g-siege-class < 2)
+	(up-compare-goal g-desired-num-trebuchet >= 2)
+	=>
+	(set-goal g-constant-train-unit trebuchet)
+	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-trebuchet)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(or
+		(up-building-type-in-town c: castle > 0)
+		(military-population > 15))
+	(building-type-count siege-workshop > 0)
+	(unit-available my-cannon-line)
+	(unit-type-count-total my-cannon-line == 0)
+	(up-compare-goal g-desired-num-cannon-type > 0)
+	=>
+	(set-goal g-constant-train-unit my-cannon-type)
+	(up-modify-goal g-desired-num-constant-train-unit-goal c:= g-desired-num-cannon-type)
+	)
+
+;-----------------------------------
+;	GOAL: g-team-partner
+;	GOAL: g-team-partner-identity
+;-----------------------------------
+
+	(defrule
+	(true)
+	=>
+	(up-modify-sn sn-focus-player-number g:= g-team-partner)
+	)
+
+	(defrule
+	(not
+		(player-in-game focus-player))
+	=>
+	(set-goal g-team-partner PENDING)
+	)
+
+	;2 Player team
+
+	#load-if-defined UP-2-PLAYER-TEAM
+	(defrule
+	(player-in-game any-ally)
+	=>
+	(set-goal g-team-partner PENDING)
+	(up-find-player ally find-closest g-team-partner)
+	(up-modify-sn sn-focus-player-number g:= g-team-partner)
+	(up-get-focus-fact allied-goal g-identity g-team-partner-identity)
+	)
+	#end-if
+
+	;3+ player team
+	#load-if-not-defined UP-1-PLAYER-TEAM
+	#load-if-not-defined UP-2-PLAYER-TEAM
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+		(defrule
+		(game-time > 5)
+		(goal g-team-partner PENDING)
+		(player-in-game any-ally)
+		=>
+		(up-modify-sn sn-focus-player-number c:= 1)
+		(set-goal g-temp 99999)	;player with the lowest score is the ideal team partner
+		(set-goal g-temp2 0)
+		(set-goal g-temp3 0)
+		(set-goal g-temp4 2098)
+		)
+
+			;Loop through all players and find the closest allied pocket with DUC
+			(defrule
+			(goal g-temp4 2098)
+			(or
+				(up-compare-sn sn-focus-player-number == my-player-number)
+				(nand
+					(player-in-game focus-player)
+					(stance-toward focus-player ally)))
+			(up-compare-sn sn-focus-player-number <= MAX-PLAYERS)
+			=>
+			(up-modify-sn sn-focus-player-number c:+ 1)
+			(up-jump-rule -1)
+			)
+
+			(defrule
+			(goal g-temp4 2098)
+			=>
+			(up-full-reset-search)
+			(up-find-remote c: town-center c: 1)
+			(up-find-remote c: building-class c: 1)
+			)
+
+			(defrule
+			(goal g-temp4 2098)
+			(up-set-target-object search-remote c: 0)
+			=>
+			(up-get-point position-object g-point-x)
+			(up-get-point-distance g-position-self-x g-point-x g-temp2)
+			)
+
+			(defrule
+			(goal g-temp4 2098)
+			(up-set-target-object search-remote c: 0)
+			(goal g-position FLANK)
+			(up-allied-goal focus-player g-position == FLANK)
+			=>
+			(up-modify-goal g-temp2 c:* 100)
+			)
+			(defrule
+			(goal g-temp4 2098)
+			(up-set-target-object search-remote c: 0)
+			(goal g-position POCKET)
+			=>
+			(up-get-focus-fact population 0 g-temp3)
+			(up-modify-goal g-temp3 c:* 3)
+			(up-modify-goal g-temp2 g:- g-temp3)
+			)
+			(defrule
+			(goal g-temp4 2098)
+			(up-set-target-object search-remote c: 0)
+			(goal g-position POCKET)
+			(up-allied-goal focus-player g-position == POCKET)
+			=>
+			(up-modify-goal g-temp2 c:* 100)
+			)
+
+			(defrule
+			(goal g-temp4 2098)
+			(up-set-target-object search-remote c: 0)
+			(up-allied-goal focus-player g-identity == THE-GENERAL)
+			(up-allied-goal focus-player g-team-partner == my-player-number)
+			=>
+			(up-modify-goal g-temp2 c:/ 2)
+			)
+
+			(defrule
+			(goal g-temp4 2098)
+			(up-set-target-object search-remote c: 0)
+			(up-compare-goal g-temp2 g:< g-temp)	;less than the lowest distance to an ally found so far
+			(up-compare-goal g-temp2 > 0)
+			=>
+			(up-modify-goal g-team-partner s:= sn-focus-player-number)
+			(up-modify-goal g-temp g:= g-temp2)	;store new lowest distance to an ally
+			)
+
+			(defrule
+			(goal g-temp4 2098)
+			(up-compare-sn sn-focus-player-number < MAX-PLAYERS)
+			=>
+			(up-modify-sn sn-focus-player-number c:+ 1)
+			(set-goal g-temp2 0)
+			(set-goal g-temp3 0)
+			(up-jump-rule -9)
+			)
+
+	#end-if
+	#end-if
+
+	;Set g-team-partner-identity
+	(defrule
+	(up-compare-goal g-team-partner > 0)
+	=>
+	(up-modify-sn sn-focus-player-number g:= g-team-partner)
+	(up-get-focus-fact allied-goal g-identity g-team-partner-identity)
+	)
+
+;------------------
+;	GOAL: g-flag
+;------------------
+
+	;---------------------------
+	;	First Attack Launched
+	;---------------------------
+
+		(defrule
+		(up-compare-flag g-flag != FIRST-ATTACK-LAUNCHED)
+		(goal g-attacking YES)
+		=>
+		(up-modify-flag g-flag c:+ FIRST-ATTACK-LAUNCHED)
+		)
+	
+	;--------------
+	;	Far Boar
+	;--------------
+	
+		(load "The General 1.3/Functions/Reset Mini")
+
+		;Find furthest boar
+		(defrule
+		(up-compare-flag g-flag != FAR-BOAR)
+		(up-compare-goal g-current-boar-count > 0)
+		=>
+		(up-full-reset-search)
+		(up-set-target-point g-position-self-x)
+		(set-strategic-number sn-focus-player-number 0)
+		(up-filter-distance c: -1 c: 40)
+		(up-find-remote c: boar-class c: 5)
+		(up-remove-objects search-remote object-data-carry == 0)
+		(up-remove-objects search-remote object-data-hitpoints < 5)
+		(up-remove-objects search-remote object-data-id g:== g-current-boar-id)
+		(up-clean-search search-remote object-data-distance search-order-desc)
+		)
+
+		;If boar is further than 24 tiles, set FAR-BOAR flag
+		(defrule
+		(up-compare-goal g-current-boar-count > 0)
+		(up-set-target-object search-remote c: 0)
+		(up-object-data object-data-distance >= NEAR-BOAR-HUNT-DISTANCE)
+		=>
+		(up-modify-flag g-flag c:+ FAR-BOAR)
+		(disable-self)
+		)
+
+	;---------------------------------
+	;	Boar Hunting Conditions Met
+	;---------------------------------
+
+		(load "The General 1.3/Functions/Reset Mini")
+
+		(defrule
+		(true)
+		=>
+		(up-modify-flag g-flag c:- BOAR-HUNTING-CONDITIONS-MET)
+		)
+
+		(defrule
+		; (up-compare-goal g-dropsite-min-distance-live-boar <= MAX-BOAR-HUNT-DISTANCE)
+		(unit-type-count villager >= 5)
+		(or
+			(unit-type-count villager >= 10)
+			(and
+				(unit-type-count villager-shepherd == 0)
+				(goal g-current-sheep-count 0)))
+		(up-compare-goal g-current-boar-count > 0)
+        (up-compare-goal g-total-decaying-hunt-food < FAR-BOAR-FOOD-AMOUNT-LEFT)        ;total decaying hunt food includes all decaying boar and deer
+        (or
+            (up-compare-flag g-flag == FAR-BOAR)
+            (up-compare-goal g-total-decaying-hunt-food < NEAR-BOAR-FOOD-AMOUNT-LEFT))
+		; (or
+		; 	(goal g-map-style NOMAD)
+		; 	(or
+		; 		(up-research-status c: ri-loom >= research-pending)
+		; 		(and
+		; 			(cc-players-unit-type-count 0 elephant == 0)
+		; 			(cc-players-unit-type-count 0 rhino == 0))))
+		=>
+		(up-modify-flag g-flag c:+ BOAR-HUNTING-CONDITIONS-MET)
+		; (up-chat-data-to-all "Total hunt food: %d" g: g-total-decaying-hunt-food)
+		; (up-chat-data-to-all "Flag: %d" g: g-flag)
+		)
+
+		(defrule
+		; (up-compare-goal g-dropsite-min-distance-live-boar <= MAX-BOAR-HUNT-DISTANCE)
+		(unit-type-count villager >= 5)
+		(not
+			(up-set-target-by-id g: g-current-boar-id))
+		(or
+			(unit-type-count villager-shepherd >= 6)
+			(unit-type-count villager-hunter >= 4))
+		(up-compare-goal g-current-boar-count > 0)
+        (up-compare-goal g-total-decaying-hunt-food < FAR-BOAR-FOOD-AMOUNT-LEFT)        ;total decaying hunt food includes all decaying boar and deer
+        (or
+            (up-compare-flag g-flag == FAR-BOAR)
+            (up-compare-goal g-total-decaying-hunt-food < NEAR-BOAR-FOOD-AMOUNT-LEFT))
+		; (or
+		; 	(goal g-map-style NOMAD)
+		; 	(or
+		; 		(up-research-status c: ri-loom >= research-pending)
+		; 		(and
+		; 			(cc-players-unit-type-count 0 elephant == 0)
+		; 			(cc-players-unit-type-count 0 rhino == 0))))
+		=>
+		(up-modify-flag g-flag c:+ BOAR-HUNTING-CONDITIONS-MET)
+		; (up-chat-data-to-all "Total hunt food: %d" g: g-total-decaying-hunt-food)
+		; (up-chat-data-to-all "Flag: %d" g: g-flag)
+		)
+
+		(defrule
+		(up-compare-flag g-flag == BOAR-HUNTING-CONDITIONS-MET)
+		(building-type-count town-center > 0)
+		=>
+		(up-set-target-point g-position-self-x)
+		(up-full-reset-search)
+		(up-filter-distance c: -1 c: 10)
+		(up-find-local c: villager-class c: 20)
+        (up-remove-objects search-local object-data-type == male-gold-miner)
+        (up-remove-objects search-local object-data-type == female-gold-miner)
+        (up-remove-objects search-local object-data-type == male-stone-miner)
+        (up-remove-objects search-local object-data-type == female-stone-miner)
+        (up-remove-objects search-local object-data-type == male-builder)
+        (up-remove-objects search-local object-data-type == female-builder)
+        (up-remove-objects search-local object-data-hitpoints < 25)
+		(up-get-search-state g-local-total)
+		)
+
+		(defrule
+		(up-compare-flag g-flag == BOAR-HUNTING-CONDITIONS-MET)
+		(building-type-count town-center > 0)
+		(up-compare-goal g-local-total < 3)
+		=>
+		(up-modify-flag g-flag c:- BOAR-HUNTING-CONDITIONS-MET)
+		; (chat-to-all "don't lure boar yet")
+		)
+
+	;---------------------------------
+	;	Save for Support Unit Techs
+	;---------------------------------
+
+		(defrule
+		(up-compare-flag g-flag == SAVE-FOR-SUPPORT-UNIT-TECHS)
+		=>
+		(up-modify-flag g-flag c:- SAVE-FOR-SUPPORT-UNIT-TECHS)		;Reset each pass
+		)
+
+		(defrule
+		(up-compare-goal g-current-age-primary-unit-tech-progress >= REQUIRED-COMPLETE)
+		(or
+			(up-compare-goal g-current-age-primary-unit-tech-progress >= PRIORITY-COMPLETE)
+			(up-compare-goal g-current-age-support-unit-tech-progress < REQUIRED-COMPLETE))
+		(unit-type-count villager >= 80)
+		(up-compare-goal g-support-unit >= 0)
+		(or
+			(up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+			(up-compare-goal g-current-age-support-unit-tech-progress < SECONDARY-COMPLETE))
+		(or
+			(building-type-count-total town-center >= 3)
+			(up-compare-goal g-desired-num-town-center < 3))
+		(up-compare-goal g-human-military-count g:>= g-min-military-pop)
+		=>
+		(up-modify-flag g-flag c:+ SAVE-FOR-SUPPORT-UNIT-TECHS)
+		)
+		
+	;----------------------------
+	;	Allow Queued Villagers
+	;----------------------------
+
+		(defrule
+		(true)
+		=>
+		(up-modify-flag g-flag c:+ ALLOW-QUEUED-VILLAGERS)
+		)
+
+		;Cancel training queue for villagers if we need to free up the TC for upcoming techs
+
+		;Low difficulty
+		(defrule
+		(up-compare-goal g-difficulty <= HARD)
+		=>
+		(up-modify-flag g-flag c:- ALLOW-QUEUED-VILLAGERS)
+		)
+		;Loom
+		; (defrule
+		; (up-research-status c: ri-loom < research-complete)
+		; ; (or
+		; 	(players-military-population any-enemy > 1)
+		; 	; (or
+		; 	; 	(cc-players-unit-type-count 0 elephant > 0)
+		; 	; 	(cc-players-unit-type-count 0 rhino > 0)))
+		; (up-object-type-count-total c: villager >= 10)
+		; =>
+		; (up-modify-flag g-flag c:- ALLOW-QUEUED-VILLAGERS)
+		; )
+
+		;Loom or Next Age
+		; (defrule
+		; (up-modify-goal g-temp g:= g-required-num-villager)
+		; (up-modify-goal g-temp c:- 1)
+		; (up-object-type-count c: villager g:>= g-temp)
+		; =>
+		; (up-modify-flag g-flag c:- ALLOW-QUEUED-VILLAGERS)
+		; )
+
+		;Preparing an attack
+		; (defrule
+		; (current-age == castle-age)
+		; (goal g-strategy-type FAST-CASTLE)
+		; (up-compare-flag g-flag != FIRST-ATTACK-LAUNCHED)
+		; =>
+		; (up-modify-flag g-flag c:- ALLOW-QUEUED-VILLAGERS)
+		; )
+
+		;Defensive
+		; (defrule
+		; (military-population < 25)
+		; (goal g-game-focus DEFENSIVE)
+		; (or
+		; 	(current-age >= feudal-age)
+		; 	(goal g-town-under-attack YES))
+		; =>
+		; (up-modify-flag g-flag c:- ALLOW-QUEUED-VILLAGERS)
+		; )
+
+		;Defensive or Aggressive
+		; (defrule
+		; (military-population < 25)
+		; (goal g-game-focus AGGRESSIVE)
+		; (food-amount < 125)
+		; (up-compare-goal g-current-age-primary-unit-tech-progress < PRIORITY-COMPLETE)
+		; (or
+		; 	(current-age >= feudal-age)
+		; 	(goal g-town-under-attack YES))
+		; =>
+		; (up-modify-flag g-flag c:- ALLOW-QUEUED-VILLAGERS)
+		; )
+
+		;Low military
+		; (defrule
+		; (up-compare-goal g-game-focus != REBUILD)
+		; (building-type-count town-center > 1)
+		; (up-compare-goal g-human-military-count g:< g-min-military-pop)
+		; =>
+		; (up-modify-flag g-flag c:- ALLOW-QUEUED-VILLAGERS)
+		; )
+
+		;Wheelbarrow
+		; (defrule
+		; (or
+		; 	(building-type-count town-center > 1)
+		; 	(up-compare-goal g-usable-farm-count >= 18))
+		; (up-compare-goal g-usable-farm-count >= 14)
+		; (or
+		; 	(up-compare-goal g-game-focus != DEFENSIVE)
+		; 	(up-compare-goal g-human-military-count g:>= g-min-military-pop))
+		; (up-research-status c: ri-wheel-barrow == research-available)
+		; =>
+		; (up-modify-flag g-flag c:- ALLOW-QUEUED-VILLAGERS)
+		; )
+
+		;Hand Cart
+		; (defrule
+		; (goal g-game-focus BOOM)
+		; (or
+		; 	(building-type-count town-center > 1)
+		; 	(up-compare-goal g-usable-farm-count >= 25))
+		; (up-compare-goal g-usable-farm-count >= 20)
+		; (population >= 80)
+		; (up-compare-goal g-age-status != SAVE-FOR-IMPERIAL)
+		; (or
+		; 	(up-research-status c: ri-heavy-plow >= research-pending)
+		; 	(up-research-status c: ri-pastoralism >= research-pending))
+		; (up-research-status c: ri-hand-cart == research-available)
+		; =>
+		; (up-modify-flag g-flag c:- ALLOW-QUEUED-VILLAGERS)
+		; )
+
+		;Priority Castle Eco Techs
+		; (defrule
+		; (current-age >= castle-age)
+		; (up-compare-goal g-eco-tech-progress < PRIORITY-CASTLE-COMPLETE)
+		; =>
+		; (up-modify-flag g-flag c:- ALLOW-QUEUED-VILLAGERS)
+		; )
+		
+	;-----------------------
+	;	Enemy Fast Castle
+	;-----------------------
+
+		(defrule
+		(strategic-number sn-target-player-number > 0)
+		(players-current-age target-player == dark-age)
+		(players-civilian-population target-player >= 27)
+		(players-military-population target-player <= 1)
+		=>
+		(up-modify-flag g-flag c:+ ENEMY-FC)
+		(disable-self)
+		)
+
+	;------------------
+	;	Super Pocket
+	;------------------
+
+		(load "The General 1.3/Functions/Reset Mini")
+
+		#load-if-defined UP-POCKET-POSITION
+			;If pocket, determine if we are super-pocket. This is when a pocket player is in between two other pocket players.
+			(defrule
+			(game-time > 10)
+			(up-compare-flag g-flag != SUPER-POCKET)
+			=>
+			(up-find-player ally find-closest g-temp)
+			(up-modify-sn sn-focus-player-number g:= g-temp)
+			)
+
+			(defrule
+			(game-time > 10)
+			(up-compare-flag g-flag != SUPER-POCKET)
+			(up-allied-goal focus-player g-position == 2)	;closest ally is pocket
+			=>
+			(up-find-player ally find-closest g-temp)
+			(up-find-next-player ally find-closest g-temp)	;find second-closest ally
+			(up-modify-sn sn-focus-player-number g:= g-temp)
+			(set-goal g-temp2 123)
+			)
+
+			(defrule
+			(goal g-temp2 123)
+			(game-time > 10)
+			(up-compare-flag g-flag != SUPER-POCKET)
+			(up-allied-goal focus-player g-position == 2)	;second-closest ally is pocket
+			=>
+			(up-modify-flag g-flag c:+ SUPER-POCKET)
+			)
+
+		#end-if
+
+	;-------------------
+	;	Trush Defense
+	;-------------------
+
+		(load "The General 1.3/Functions/Reset Mini")
+
+		(defrule
+		(up-compare-flag g-flag == TRUSH-DEFENSE)
+		=>
+		(up-modify-flag g-flag c:- TRUSH-DEFENSE)
+		)
+
+		(defrule
+		(players-building-count any-enemy > 0)
+		(military-population < 10)
+		(unit-type-count-total battering-ram-line < 2)
+		(unit-type-count-total armored-elephant-line < 2)
+		=>
+		(set-strategic-number sn-focus-player-number 1)
+		(up-full-reset-search)
+		(up-set-target-point g-position-self-x)
+		)
+
+			(defrule
+			(players-building-count any-enemy > 0)
+			(military-population < 10)
+			(unit-type-count-total battering-ram-line < 2)
+			(unit-type-count-total armored-elephant-line < 2)
+			(nand
+				(player-in-game focus-player)
+				(stance-toward focus-player enemy))
+			(strategic-number sn-focus-player-number <= MAX-PLAYERS)
+			=>
+			(up-modify-sn sn-focus-player-number c:+ 1)
+			(up-jump-rule -1)
+			)
+
+			(defrule
+			(players-building-count any-enemy > 0)
+			(military-population < 10)
+			(unit-type-count-total battering-ram-line < 2)
+			(unit-type-count-total armored-elephant-line < 2)
+			=>
+			(up-reset-filters)
+			(up-filter-distance c: -1 c: 30)
+			(up-filter-include cmdid-military -1 -1 -1)
+			(up-find-remote c: -1 c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+			(defrule
+			(players-building-count any-enemy > 0)
+			(military-population < 10)
+			(unit-type-count-total battering-ram-line < 2)
+			(unit-type-count-total armored-elephant-line < 2)
+			(strategic-number sn-focus-player-number < 8)
+			=>
+			(up-modify-sn sn-focus-player-number c:+ 1)
+			(up-jump-rule -3)
+			)
+
+		(defrule
+		(players-building-count any-enemy > 0)
+		(military-population < 10)
+		(unit-type-count-total battering-ram-line < 2)
+		(unit-type-count-total armored-elephant-line < 2)
+		(up-compare-goal g-remote-total < 10)
+		(or
+			(players-current-age every-enemy < castle-age)
+			(up-compare-goal g-remote-total < 6))
+		=>
+		(set-goal g-temp 79)
+		)
+
+		(defrule
+		(goal g-temp 79)
+		(players-building-count any-enemy > 0)
+		(military-population < 10)
+		(unit-type-count-total battering-ram-line < 2)
+		(unit-type-count-total armored-elephant-line < 2)
+		=>
+		(set-strategic-number sn-focus-player-number 1)
+		(up-full-reset-search)
+		(up-set-target-point g-position-self-x)
+		)
+
+			(defrule
+			(goal g-temp 79)
+			(players-building-count any-enemy > 0)
+			(military-population < 10)
+			(unit-type-count-total battering-ram-line < 2)
+			(unit-type-count-total armored-elephant-line < 2)
+			(nand
+				(player-in-game focus-player)
+				(stance-toward focus-player enemy))
+			(strategic-number sn-focus-player-number <= MAX-PLAYERS)
+			=>
+			(up-modify-sn sn-focus-player-number c:+ 1)
+			(up-jump-rule -1)
+			)
+
+			(defrule
+			(goal g-temp 79)
+			(players-building-count any-enemy > 0)
+			(military-population < 10)
+			(unit-type-count-total battering-ram-line < 2)
+			(unit-type-count-total armored-elephant-line < 2)
+			=>
+			(up-reset-filters)
+			(up-filter-distance c: -1 c: 30)
+			(up-find-remote c: tower-class c: 40)
+			(up-find-remote c: castle c: 40)
+			(up-filter-status c: status-pending c: list-active)
+			(up-find-status-remote c: tower-class c: 40)
+			(up-find-status-remote c: castle c: 40)
+			(up-get-search-state g-local-total)
+			)
+
+			(defrule
+			(goal g-temp 79)
+			(players-building-count any-enemy > 0)
+			(military-population < 10)
+			(unit-type-count-total battering-ram-line < 2)
+			(unit-type-count-total armored-elephant-line < 2)
+			(strategic-number sn-focus-player-number < 8)
+			=>
+			(up-modify-sn sn-focus-player-number c:+ 1)
+			(up-jump-rule -3)
+			)
+
+		(defrule
+		(goal g-temp 79)
+		(players-building-count any-enemy > 0)
+		(military-population < 10)
+		(unit-type-count-total battering-ram-line < 2)
+		(unit-type-count-total armored-elephant-line < 2)
+		(up-compare-goal g-remote-total > 0)
+		=>
+		(up-modify-flag g-flag c:+ TRUSH-DEFENSE)
+		)
+
+;------------------------------
+;	GOAL: g-min-military-pop
+;------------------------------
+
+	(defrule
+	(up-compare-goal g-min-military-pop != 0)
+	=>
+	(set-goal g-min-military-pop 0)
+	)
+
+	(defrule
+	(current-age == feudal-age)
+	(or
+		(up-compare-goal g-strategy-type < FAST-CASTLE)
+		(up-compare-goal g-age-status >= TO-CASTLE))
+	(or
+		(goal g-primary-unit militiaman)
+		(or
+			(goal g-primary-unit spearman)
+			(or
+				(goal g-primary-unit flemish-militia-trained)
+				(or
+					(goal g-primary-unit eagle-warrior)
+					(or
+						(goal g-primary-unit archer)
+						(or
+							(goal g-primary-unit skirmisher)
+							(or
+								(goal g-primary-unit scout-cavalry)
+								(goal g-primary-unit camel))))))))
+	=>
+	(set-goal g-min-military-pop 6)
+	)
+
+	(defrule
+	(up-compare-goal g-age-status >= TO-CASTLE)
+	(or
+		(goal g-age-status EARLY-CASTLE)
+		(goal g-game-focus BOOM))
+	(or
+		(goal g-primary-unit-class cavalry-class)
+		(goal g-primary-unit-class scout-cavalry-class))
+	=>
+	(set-goal g-min-military-pop 6)
+	)
+
+	(defrule
+	(or
+		(goal g-age-status EARLY-CASTLE)
+		(goal g-game-focus BOOM))
+	(or
+		(up-compare-goal g-strategy-type < FAST-CASTLE)
+		(up-compare-goal g-age-status >= TO-CASTLE))
+	(up-compare-goal g-primary-unit-class != cavalry-class)
+	(up-compare-goal g-primary-unit-class != scout-cavalry-class)
+	=>
+	(set-goal g-min-military-pop 9)
+	)
+
+	(defrule
+	(current-age == castle-age)
+	(up-compare-goal g-age-status >= MID-CASTLE)
+	(up-compare-goal g-game-focus != BOOM)
+	=>
+	(set-goal g-min-military-pop 12)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	=>
+	(set-goal g-min-military-pop 20)
+	)
+
+	(defrule
+	(goal g-game-focus REBUILD)
+	(up-compare-goal g-min-military-pop > 0)
+	=>
+	(set-goal g-min-military-pop 0)
+	)
+
+	(defrule
+	(current-age == imperial-age)
+	(players-current-age any-enemy == imperial-age)
+	(players-unit-count any-enemy >= SEVENTY-PERCENT-POP)
+	=>
+	(set-goal g-min-military-pop 25)
+	)
+
+;----------------------------------------------------
+;	GOAL: g-current-age-primary-unit-tech-progress
+;----------------------------------------------------
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-current-age-primary-unit-tech-progress INCOMPLETE)
+	)
+
+	(defrule
+	(up-compare-goal g-age-status < TO-FEUDAL)
+	=>
+	(set-goal g-current-age-primary-unit-tech-progress ALL-COMPLETE)
+	)
+
+	(defrule
+	(goal g-primary-unit-tech-progress REQUIRED-FEUDAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-FEUDAL)
+	(up-compare-goal g-age-status < TO-CASTLE)
+	=>
+	(set-goal g-current-age-primary-unit-tech-progress REQUIRED-COMPLETE)
+	)
+
+	(defrule
+	(goal g-primary-unit-tech-progress PRIORITY-FEUDAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-FEUDAL)
+	(up-compare-goal g-age-status < TO-CASTLE)
+	=>
+	(set-goal g-current-age-primary-unit-tech-progress PRIORITY-COMPLETE)
+	)
+
+	(defrule
+	(goal g-primary-unit-tech-progress SECONDARY-FEUDAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-FEUDAL)
+	(up-compare-goal g-age-status < TO-CASTLE)
+	=>
+	(set-goal g-current-age-primary-unit-tech-progress SECONDARY-COMPLETE)
+	)
+
+	(defrule
+	(goal g-primary-unit-tech-progress ALL-FEUDAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-FEUDAL)
+	(up-compare-goal g-age-status < TO-CASTLE)
+	=>
+	(set-goal g-current-age-primary-unit-tech-progress ALL-COMPLETE)
+	)
+
+	(defrule
+	(goal g-primary-unit-tech-progress REQUIRED-CASTLE-COMPLETE)
+	(up-compare-goal g-age-status >= TO-CASTLE)
+	(up-compare-goal g-age-status < TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-primary-unit-tech-progress REQUIRED-COMPLETE)
+	)
+
+	(defrule
+	(goal g-primary-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+	(up-compare-goal g-age-status >= TO-CASTLE)
+	(up-compare-goal g-age-status < TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-primary-unit-tech-progress PRIORITY-COMPLETE)
+	)
+
+	(defrule
+	(goal g-primary-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+	(up-compare-goal g-age-status >= TO-CASTLE)
+	(up-compare-goal g-age-status < TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-primary-unit-tech-progress SECONDARY-COMPLETE)
+	)
+
+	(defrule
+	(goal g-primary-unit-tech-progress ALL-CASTLE-COMPLETE)
+	(up-compare-goal g-age-status >= TO-CASTLE)
+	(up-compare-goal g-age-status < TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-primary-unit-tech-progress ALL-COMPLETE)
+	)
+
+	(defrule
+	(goal g-primary-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-primary-unit-tech-progress REQUIRED-COMPLETE)
+	)
+
+	(defrule
+	(goal g-primary-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-primary-unit-tech-progress PRIORITY-COMPLETE)
+	)
+
+	(defrule
+	(goal g-primary-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-primary-unit-tech-progress SECONDARY-COMPLETE)
+	)
+
+	(defrule
+	(goal g-primary-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-primary-unit-tech-progress ALL-COMPLETE)
+	)
+	
+;----------------------------------------------------
+;	GOAL: g-current-age-support-unit-tech-progress
+;----------------------------------------------------
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-current-age-support-unit-tech-progress INCOMPLETE)
+	)
+
+	(defrule
+	(up-compare-goal g-age-status < TO-FEUDAL)
+	=>
+	(set-goal g-current-age-support-unit-tech-progress ALL-COMPLETE)
+	)
+
+	(defrule
+	(goal g-support-unit-tech-progress REQUIRED-FEUDAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-FEUDAL)
+	(up-compare-goal g-age-status < TO-CASTLE)
+	=>
+	(set-goal g-current-age-support-unit-tech-progress REQUIRED-COMPLETE)
+	)
+
+	(defrule
+	(goal g-support-unit-tech-progress PRIORITY-FEUDAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-FEUDAL)
+	(up-compare-goal g-age-status < TO-CASTLE)
+	=>
+	(set-goal g-current-age-support-unit-tech-progress PRIORITY-COMPLETE)
+	)
+
+	(defrule
+	(goal g-support-unit-tech-progress SECONDARY-FEUDAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-FEUDAL)
+	(up-compare-goal g-age-status < TO-CASTLE)
+	=>
+	(set-goal g-current-age-support-unit-tech-progress SECONDARY-COMPLETE)
+	)
+
+	(defrule
+	(goal g-support-unit-tech-progress ALL-FEUDAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-FEUDAL)
+	(up-compare-goal g-age-status < TO-CASTLE)
+	=>
+	(set-goal g-current-age-support-unit-tech-progress ALL-COMPLETE)
+	)
+
+	(defrule
+	(goal g-support-unit-tech-progress REQUIRED-CASTLE-COMPLETE)
+	(up-compare-goal g-age-status >= TO-CASTLE)
+	(up-compare-goal g-age-status < TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-support-unit-tech-progress REQUIRED-COMPLETE)
+	)
+
+	(defrule
+	(goal g-support-unit-tech-progress PRIORITY-CASTLE-COMPLETE)
+	(up-compare-goal g-age-status >= TO-CASTLE)
+	(up-compare-goal g-age-status < TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-support-unit-tech-progress PRIORITY-COMPLETE)
+	)
+
+	(defrule
+	(goal g-support-unit-tech-progress SECONDARY-CASTLE-COMPLETE)
+	(up-compare-goal g-age-status >= TO-CASTLE)
+	(up-compare-goal g-age-status < TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-support-unit-tech-progress SECONDARY-COMPLETE)
+	)
+
+	(defrule
+	(goal g-support-unit-tech-progress ALL-CASTLE-COMPLETE)
+	(up-compare-goal g-age-status >= TO-CASTLE)
+	(up-compare-goal g-age-status < TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-support-unit-tech-progress ALL-COMPLETE)
+	)
+
+	(defrule
+	(goal g-support-unit-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-support-unit-tech-progress REQUIRED-COMPLETE)
+	)
+
+	(defrule
+	(goal g-support-unit-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-support-unit-tech-progress PRIORITY-COMPLETE)
+	)
+
+	(defrule
+	(goal g-support-unit-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-support-unit-tech-progress SECONDARY-COMPLETE)
+	)
+
+	(defrule
+	(goal g-support-unit-tech-progress ALL-IMPERIAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-support-unit-tech-progress ALL-COMPLETE)
+	)
+
+;-------------------------------------------
+;	GOAL: g-current-age-eco-tech-progress
+;-------------------------------------------
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-current-age-eco-tech-progress INCOMPLETE)
+	)
+
+	(defrule
+	(up-compare-goal g-age-status < TO-FEUDAL)
+	=>
+	(set-goal g-current-age-eco-tech-progress ALL-COMPLETE)
+	)
+
+	(defrule
+	(goal g-eco-tech-progress REQUIRED-FEUDAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-FEUDAL)
+	(up-compare-goal g-age-status < TO-CASTLE)
+	=>
+	(set-goal g-current-age-eco-tech-progress REQUIRED-COMPLETE)
+	)
+
+	(defrule
+	(goal g-eco-tech-progress PRIORITY-FEUDAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-FEUDAL)
+	(up-compare-goal g-age-status < TO-CASTLE)
+	=>
+	(set-goal g-current-age-eco-tech-progress PRIORITY-COMPLETE)
+	)
+
+	(defrule
+	(goal g-eco-tech-progress SECONDARY-FEUDAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-FEUDAL)
+	(up-compare-goal g-age-status < TO-CASTLE)
+	=>
+	(set-goal g-current-age-eco-tech-progress SECONDARY-COMPLETE)
+	)
+
+	(defrule
+	(goal g-eco-tech-progress ALL-FEUDAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-FEUDAL)
+	(up-compare-goal g-age-status < TO-CASTLE)
+	=>
+	(set-goal g-current-age-eco-tech-progress ALL-COMPLETE)
+	)
+
+	(defrule
+	(goal g-eco-tech-progress REQUIRED-CASTLE-COMPLETE)
+	(up-compare-goal g-age-status >= TO-CASTLE)
+	(up-compare-goal g-age-status < TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-eco-tech-progress REQUIRED-COMPLETE)
+	)
+
+	(defrule
+	(goal g-eco-tech-progress PRIORITY-CASTLE-COMPLETE)
+	(up-compare-goal g-age-status >= TO-CASTLE)
+	(up-compare-goal g-age-status < TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-eco-tech-progress PRIORITY-COMPLETE)
+	)
+
+	(defrule
+	(goal g-eco-tech-progress SECONDARY-CASTLE-COMPLETE)
+	(up-compare-goal g-age-status >= TO-CASTLE)
+	(up-compare-goal g-age-status < TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-eco-tech-progress SECONDARY-COMPLETE)
+	)
+
+	(defrule
+	(goal g-eco-tech-progress ALL-CASTLE-COMPLETE)
+	(up-compare-goal g-age-status >= TO-CASTLE)
+	(up-compare-goal g-age-status < TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-eco-tech-progress ALL-COMPLETE)
+	)
+
+	(defrule
+	(goal g-eco-tech-progress REQUIRED-IMPERIAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-eco-tech-progress REQUIRED-COMPLETE)
+	)
+
+	(defrule
+	(goal g-eco-tech-progress PRIORITY-IMPERIAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-eco-tech-progress PRIORITY-COMPLETE)
+	)
+
+	(defrule
+	(goal g-eco-tech-progress SECONDARY-IMPERIAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-eco-tech-progress SECONDARY-COMPLETE)
+	)
+
+	(defrule
+	(goal g-eco-tech-progress ALL-IMPERIAL-COMPLETE)
+	(up-compare-goal g-age-status >= TO-IMPERIAL)
+	=>
+	(set-goal g-current-age-eco-tech-progress ALL-COMPLETE)
+	)
+
+;-------------------------------
+;	GOAL: g-villager-training
+;-------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	(defrule
+	(up-compare-goal g-villager-training != TRAIN-WITH-ESCROW)
+	(up-object-type-count-total c: villager g:< g-desired-num-villager)
+	=>
+	(set-goal g-villager-training TRAIN-WITH-ESCROW)
+	)
+
+	(defrule
+	(up-compare-goal g-villager-training != LIMITED-TRAIN-WITH-ESCROW)
+	(up-object-type-count-total c: villager g:< g-desired-num-villager)
+	(goal g-game-focus DEFENSIVE)
+	(up-compare-goal g-human-military-count g:< g-min-military-pop)
+	(or
+		(up-compare-goal g-desired-num-infantry-class > 0)
+		(up-compare-goal g-desired-num-cavalry-class > 0))
+	(up-pending-objects c: villager >= 2)
+	=>
+	(set-goal g-villager-training LIMITED-TRAIN-WITH-ESCROW)
+	)
+	(defrule
+	(up-compare-goal g-villager-training != LIMITED-TRAIN-WITH-ESCROW)
+	(up-object-type-count-total c: villager g:< g-desired-num-villager)
+	(goal g-game-focus DEFENSIVE)
+	(up-compare-goal g-human-military-count g:< g-min-military-pop)
+	(or
+		(up-compare-goal g-desired-num-genitour > 0)
+		(or
+			(up-compare-goal g-desired-num-skirmisher > 0)
+			(up-compare-goal g-desired-num-cannoneer-classes > 0)))
+	(up-pending-objects c: villager >= 2)
+	=>
+	(set-goal g-villager-training LIMITED-TRAIN-WITH-ESCROW)
+	)
+	#load-if-defined INCAN-CIV
+	(defrule
+	(up-compare-goal g-villager-training != LIMITED-TRAIN-WITH-ESCROW)
+	(up-object-type-count-total c: villager g:< g-desired-num-villager)
+	(goal g-game-focus DEFENSIVE)
+	(up-compare-goal g-human-military-count g:< g-min-military-pop)
+	(up-compare-goal g-desired-num-second-unique-unit > 0)
+	(up-pending-objects c: villager >= 2)
+	=>
+	(set-goal g-villager-training LIMITED-TRAIN-WITH-ESCROW)
+	)
+	#end-if
+
+	;Stop training villagers if close to required vils when going fast castle
+	(defrule
+	(goal g-age-status SAVE-FOR-CASTLE)
+	(goal g-strategy-type FAST-CASTLE)
+	(up-compare-goal g-villager-training != OFF)
+	(current-age-time >= 45)
+	(building-type-count-total blacksmith > 0)
+	(or
+		(building-type-count-total market > 0)
+		(or
+			(building-type-count-total archery-range > 0)
+			(building-type-count-total stable > 0)))
+	(food-amount >= 750)
+	(food-amount < 850)
+	=>
+	(set-goal g-villager-training OFF)
+	)
+
+	(defrule
+	(goal g-age-status SAVE-FOR-CASTLE)
+	(goal g-strategy-type FAST-CASTLE)
+	(up-compare-goal g-villager-training != OFF)
+	(up-compare-goal g-game-focus != DEFENSIVE)
+	(up-compare-goal g-game-focus != REBUILD)
+	(goal g-strategy-type FAST-CASTLE)
+	(or
+		(goal g-current-strategy FC-EAGLES-REVENGE)
+		(goal g-current-strategy FC-STRONGBOW))		
+	(up-modify-goal g-temp g:= g-required-num-villager)
+	(up-modify-goal g-temp c:+ 2)
+	(up-object-type-count c: villager g:>= g-temp)
+	=>
+	(set-goal g-villager-training OFF)
+	)
+
+	;Stop training villagers if we are close to researching Feudal age
+	(defrule
+	(goal g-age-status SAVE-FOR-FEUDAL)
+	(up-compare-goal g-villager-training != OFF)
+	(up-object-type-count-total c: villager g:< g-desired-num-villager)
+	(up-object-type-count-total c: villager g:>= g-required-num-villager)
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-research-cost c: feudal-age c: 1)
+	)
+
+	(defrule
+	(goal g-age-status SAVE-FOR-FEUDAL)
+	(up-compare-goal g-villager-training != OFF)
+	(up-object-type-count-total c: villager g:< g-desired-num-villager)
+	(up-object-type-count-total c: villager g:>= g-required-num-villager)
+	(up-modify-goal g-temp g:= g-food-cost)
+	(up-modify-goal g-temp c:- 50)
+	(food-amount g:>= g-temp)	;usually 450 food
+	(up-modify-goal g-temp2 g:= g-food-cost)
+	(up-modify-goal g-temp2 c:+ 50)
+	(food-amount g:< g-temp2)	;usually 550 food
+	=>
+	(set-goal g-villager-training OFF)
+	)
+
+	;Stop training villagers if we are close to researching Castle age
+	(defrule
+	(goal g-age-status SAVE-FOR-CASTLE)
+	(up-compare-goal g-villager-training != OFF)
+	(up-object-type-count-total c: villager g:< g-desired-num-villager)
+	(up-object-type-count-total c: villager g:>= g-required-num-villager)
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-research-cost c: castle-age c: 1)
+	)
+
+	(defrule
+	(goal g-age-status SAVE-FOR-CASTLE)
+	(up-compare-goal g-villager-training != OFF)
+	(up-object-type-count-total c: villager g:< g-desired-num-villager)
+	(up-object-type-count-total c: villager g:>= g-required-num-villager)
+	(up-modify-goal g-temp g:= g-food-cost)
+	(up-modify-goal g-temp c:- 100)
+	(food-amount g:>= g-temp)			;usually 700 food
+	(up-modify-goal g-temp2 g:= g-gold-cost)
+	(up-modify-goal g-temp2 c:- 20)
+	(gold-amount g:>= g-temp2)			;usually 180 gold
+	(up-modify-goal g-temp3 g:= g-food-cost)
+	(up-modify-goal g-temp3 c:+ 50)
+	(food-amount g:< g-temp3)			;usually 850 food
+	=>
+	(set-goal g-villager-training OFF)
+	)
+
+	;Stop training villagers if we are close to researching Imperial age
+	(defrule
+	(goal g-age-status SAVE-FOR-IMPERIAL)
+	(up-compare-goal g-villager-training != OFF)
+	(up-object-type-count-total c: villager g:< g-desired-num-villager)
+	(up-object-type-count-total c: villager g:>= g-required-num-villager)
+	=>
+	(up-setup-cost-data 1 g-food-cost)
+	(up-add-research-cost c: imperial-age c: 1)
+	)
+
+	(defrule
+	(goal g-age-status SAVE-FOR-IMPERIAL)
+	(up-compare-goal g-villager-training != OFF)
+	(up-object-type-count-total c: villager g:< g-desired-num-villager)
+	(up-object-type-count-total c: villager g:>= g-required-num-villager)
+	(up-modify-goal g-temp g:= g-food-cost)
+	(up-modify-goal g-temp c:- 150)
+	(food-amount g:>= g-temp)			;usually 850 food
+	(up-modify-goal g-temp2 g:= g-gold-cost)
+	(up-modify-goal g-temp2 c:- 100)
+	(gold-amount g:>= g-temp2)			;usually 700 gold
+	(up-modify-goal g-temp3 g:= g-food-cost)
+	(up-modify-goal g-temp3 c:+ 50)
+	(food-amount g:< g-temp3)			;usually 1050 food
+	=>
+	(set-goal g-villager-training OFF)
+	)
+
+	;Slow down villager training if saving for Imperial
+	(defrule
+	(goal g-age-status SAVE-FOR-IMPERIAL)
+	(up-compare-goal g-villager-training != OFF)
+	(up-object-type-count-total c: villager g:< g-desired-num-villager)
+	(up-object-type-count-total c: villager g:>= g-required-num-villager)
+	(food-amount >= 400)
+	(up-pending-objects c: villager >= 1)
+	(or
+		(food-amount >= 700)
+		(up-pending-objects c: villager >= 2))
+	=>
+	(set-goal g-villager-training OFF)
+	)
+
+	(defrule
+	(goal g-age-status SAVE-FOR-IMPERIAL)
+	(up-compare-goal g-villager-training != OFF)
+	(up-object-type-count-total c: villager g:< g-desired-num-villager)
+	(goal g-target-age-parity WE-ARE-BEHIND)
+	(up-pending-objects c: villager >= 1)
+	=>
+	(set-goal g-villager-training OFF)
+	)
+
+	;Stop training villagers if over our desired amount
+	(defrule
+	(up-compare-goal g-villager-training != OFF)
+	(up-object-type-count-total c: villager g:>= g-desired-num-villager)
+	=>
+	(set-goal g-villager-training OFF)
+	)
+
+;--------------------------------------------
+;	GOAL: g-current-farming-gathering-rate
+;--------------------------------------------
+
+	;constants are defined in Game Stats.per
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-current-farming-gathering-rate FARM-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-wheel-barrow)
+	=>
+	(set-goal g-current-farming-gathering-rate FARM-WHEEL-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-hand-cart)
+	=>
+	(set-goal g-current-farming-gathering-rate FARM-CART-RATE)
+	(disable-self)
+	)
+
+;-----------------------------------------
+;	GOAL: g-current-wood-gathering-rate
+;-----------------------------------------
+
+	(defrule
+	(up-research-status c: ri-wheel-barrow != research-complete)
+	(up-research-status c: ri-double-bit-axe != research-complete)
+	=>
+	(set-goal g-current-wood-gathering-rate WOOD-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-wheel-barrow)
+	(up-research-status c: ri-hand-cart != research-complete)
+	(up-research-status c: ri-double-bit-axe != research-complete)
+	=>
+	(set-goal g-current-wood-gathering-rate WOOD-WHEEL-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-hand-cart)
+	(up-research-status c: ri-double-bit-axe != research-complete)
+	=>
+	(set-goal g-current-wood-gathering-rate WOOD-CART-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(up-research-status c: ri-wheel-barrow != research-complete)
+	(research-completed ri-double-bit-axe)
+	(up-research-status c: ri-bow-saw != research-complete)
+	=>
+	(set-goal g-current-wood-gathering-rate WOOD-DBA-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-wheel-barrow)
+	(up-research-status c: ri-hand-cart != research-complete)
+	(research-completed ri-double-bit-axe)
+	(up-research-status c: ri-bow-saw != research-complete)
+	=>
+	(set-goal g-current-wood-gathering-rate WOOD-DBA-WHEEL-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-hand-cart)
+	(research-completed ri-double-bit-axe)
+	(up-research-status c: ri-bow-saw != research-complete)
+	=>
+	(set-goal g-current-wood-gathering-rate WOOD-DBA-CART-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(up-research-status c: ri-wheel-barrow != research-complete)
+	(research-completed ri-bow-saw)
+	(up-research-status c: ri-two-man-saw != research-complete)
+	=>
+	(set-goal g-current-wood-gathering-rate WOOD-BS-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-wheel-barrow)
+	(up-research-status c: ri-hand-cart != research-complete)
+	(research-completed ri-bow-saw)
+	(up-research-status c: ri-two-man-saw != research-complete)
+	=>
+	(set-goal g-current-wood-gathering-rate WOOD-BS-WHEEL-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-hand-cart)
+	(research-completed ri-bow-saw)
+	(up-research-status c: ri-two-man-saw != research-complete)
+	=>
+	(set-goal g-current-wood-gathering-rate WOOD-BS-CART-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(up-research-status c: ri-wheel-barrow != research-complete)
+	(research-completed ri-two-man-saw)
+	=>
+	(set-goal g-current-wood-gathering-rate WOOD-TMS-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-wheel-barrow)
+	(up-research-status c: ri-hand-cart != research-complete)
+	(research-completed ri-two-man-saw)
+	=>
+	(set-goal g-current-wood-gathering-rate WOOD-TMS-WHEEL-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-hand-cart)
+	(research-completed ri-two-man-saw)
+	=>
+	(set-goal g-current-wood-gathering-rate WOOD-TMS-CART-RATE)
+	(disable-self)
+	)
+
+;------------------------------------------
+;	GOAL: g-current-stone-gathering-rate
+;------------------------------------------
+
+	(defrule
+	(up-research-status c: ri-wheel-barrow != research-complete)
+	(up-research-status c: ri-stone-mining != research-complete)
+	=>
+	(set-goal g-current-stone-gathering-rate STONE-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-wheel-barrow)
+	(up-research-status c: ri-hand-cart != research-complete)
+	(up-research-status c: ri-stone-mining != research-complete)
+	=>
+	(set-goal g-current-stone-gathering-rate STONE-WHEEL-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-hand-cart)
+	(up-research-status c: ri-stone-mining != research-complete)
+	=>
+	(set-goal g-current-stone-gathering-rate STONE-CART-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(up-research-status c: ri-wheel-barrow != research-complete)
+	(research-completed ri-stone-mining)
+	(up-research-status c: ri-stone-shaft-mining != research-complete)
+	=>
+	(set-goal g-current-stone-gathering-rate STONE-SM-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-wheel-barrow)
+	(up-research-status c: ri-hand-cart != research-complete)
+	(research-completed ri-stone-mining)
+	(up-research-status c: ri-stone-shaft-mining != research-complete)
+	=>
+	(set-goal g-current-stone-gathering-rate STONE-SM-WHEEL-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-hand-cart)
+	(research-completed ri-stone-mining)
+	(up-research-status c: ri-stone-shaft-mining != research-complete)
+	=>
+	(set-goal g-current-stone-gathering-rate STONE-SM-CART-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(up-research-status c: ri-wheel-barrow != research-complete)
+	(research-completed ri-stone-shaft-mining)
+	=>
+	(set-goal g-current-stone-gathering-rate STONE-SSM-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-wheel-barrow)
+	(up-research-status c: ri-hand-cart != research-complete)
+	(research-completed ri-stone-shaft-mining)
+	=>
+	(set-goal g-current-stone-gathering-rate STONE-SSM-WHEEL-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-hand-cart)
+	(research-completed ri-stone-shaft-mining)
+	=>
+	(set-goal g-current-stone-gathering-rate STONE-SSM-CART-RATE)
+	(disable-self)
+	)
+
+;-----------------------------------------
+;	GOAL: g-current-gold-gathering-rate
+;-----------------------------------------
+
+	(defrule
+	(up-research-status c: ri-wheel-barrow != research-complete)
+	(up-research-status c: ri-gold-mining != research-complete)
+	=>
+	(set-goal g-current-gold-gathering-rate GOLD-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-wheel-barrow)
+	(up-research-status c: ri-hand-cart != research-complete)
+	(up-research-status c: ri-gold-mining != research-complete)
+	=>
+	(set-goal g-current-gold-gathering-rate GOLD-WHEEL-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-hand-cart)
+	(up-research-status c: ri-gold-mining != research-complete)
+	=>
+	(set-goal g-current-gold-gathering-rate GOLD-CART-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(up-research-status c: ri-wheel-barrow != research-complete)
+	(research-completed ri-gold-mining)
+	(up-research-status c: ri-gold-shaft-mining != research-complete)
+	=>
+	(set-goal g-current-gold-gathering-rate GOLD-GM-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-wheel-barrow)
+	(up-research-status c: ri-hand-cart != research-complete)
+	(research-completed ri-gold-mining)
+	(up-research-status c: ri-gold-shaft-mining != research-complete)
+	=>
+	(set-goal g-current-gold-gathering-rate GOLD-GM-WHEEL-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-hand-cart)
+	(research-completed ri-gold-mining)
+	(up-research-status c: ri-gold-shaft-mining != research-complete)
+	=>
+	(set-goal g-current-gold-gathering-rate GOLD-GM-CART-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(up-research-status c: ri-wheel-barrow != research-complete)
+	(research-completed ri-gold-shaft-mining)
+	=>
+	(set-goal g-current-gold-gathering-rate GOLD-GSM-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-wheel-barrow)
+	(up-research-status c: ri-hand-cart != research-complete)
+	(research-completed ri-gold-shaft-mining)
+	=>
+	(set-goal g-current-gold-gathering-rate GOLD-GSM-WHEEL-RATE)
+	(disable-self)
+	)
+
+	(defrule
+	(research-completed ri-hand-cart)
+	(research-completed ri-gold-shaft-mining)
+	=>
+	(set-goal g-current-gold-gathering-rate GOLD-GSM-CART-RATE)
+	(disable-self)
+	)
+
+
+
+
+
+;--------------------------------------
+;	GOAL: g-total-decaying-hunt-food
+;--------------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	(defrule
+	(dropsite-min-distance hunting < 10)
+	(building-type-count town-center > 0)
+	=>
+	(up-full-reset-search)
+	(up-set-target-point g-position-self-x)
+	(up-filter-distance c: -1 c: 6)
+	(up-filter-status c: status-gather c: list-inactive)
+	(up-find-resource c: boar-class c: 20)
+	(up-find-resource c: deer-class c: 20)
+	(up-filter-status c: status-down c: list-active)
+	(up-find-resource c: boar-class c: 20)
+	(up-find-resource c: deer-class c: 20)
+	(up-remove-objects search-remote object-data-carry <= 0)
+	(up-clean-search search-remote -1 search-order-asc)	;remove duplicates
+	(set-goal g-loop-counter 0)
+	(set-goal g-total-decaying-hunt-food 0)
+	)
+
+		(defrule
+		(dropsite-min-distance hunting < 10)
+		(building-type-count town-center > 0)
+		(up-set-target-object search-remote g: g-loop-counter)
+		(up-compare-goal g-loop-counter < 20)
+		; (up-object-data object-data-class == boar-class)
+		(up-get-object-data object-data-carry g-temp)
+		=>
+		(up-modify-goal g-total-decaying-hunt-food g:+ g-temp)
+		(up-modify-goal g-loop-counter c:+ 1)
+		(up-jump-rule -1)
+		)
+
+		; (defrule
+		; (dropsite-min-distance hunting < 10)
+		; (building-type-count town-center > 0)
+		; (up-set-target-object search-remote g: g-loop-counter)
+		; (up-compare-goal g-loop-counter < 20)
+		; (up-object-data object-data-class == deer-class)
+		; (up-get-object-data object-data-carry g-temp)
+		; (up-modify-goal g-temp c:/ 2)
+		; =>
+		; (up-modify-goal g-total-decaying-hunt-food g:+ g-temp)
+		; (up-modify-goal g-loop-counter c:+ 1)
+		; (up-jump-rule -2)
+		; )
+
+	(defrule
+	(dropsite-min-distance hunting >= 10)
+	(up-compare-goal g-total-decaying-hunt-food != 0)
+	=>
+	(set-goal g-total-decaying-hunt-food 0)
+	)
+
+;--------------------------------------
+;	GOALS: Recent Resources Gathered 
+;--------------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	;Track how many resources are gathered in 120 seconds
+	(defrule
+	(timer-triggered t-60-sec)
+	=>
+	(up-modify-goal g-temp g:= g-total-food-gathered)
+	(up-get-fact resource-amount amount-food-total g-total-food-gathered)
+	(up-modify-goal g-total-food-gathered g:- g-total-food-bought)
+	; (up-get-fact-sum any-ally players-tribute food g-temp2)
+	; (up-modify-goal g-total-food-gathered g:+ g-temp2)
+	(up-modify-goal g-recent-food-gathered g:= g-total-food-gathered)
+	(up-modify-goal g-recent-food-gathered g:- g-temp)
+	(up-modify-goal g-temp g:= g-total-wood-gathered)
+	(up-get-fact resource-amount amount-wood-total g-total-wood-gathered)
+	(up-modify-goal g-total-wood-gathered g:- g-total-wood-bought)
+	; (up-get-fact-sum any-ally players-tribute wood g-temp2)
+	; (up-modify-goal g-total-wood-gathered g:+ g-temp2)
+	(up-modify-goal g-recent-wood-gathered g:= g-total-wood-gathered)
+	(up-modify-goal g-recent-wood-gathered g:- g-temp)
+	)
+
+	(defrule
+	(timer-triggered t-60-sec)
+	=>
+	(up-modify-goal g-temp g:= g-total-stone-gathered)
+	(up-get-fact resource-amount amount-stone-total g-total-stone-gathered)
+	(up-modify-goal g-total-stone-gathered g:- g-total-stone-bought)
+	; (up-get-fact-sum any-ally players-tribute stone g-temp2)
+	; (up-modify-goal g-total-stone-gathered g:+ g-temp2)
+	(up-modify-goal g-recent-stone-gathered g:= g-total-stone-gathered)
+	(up-modify-goal g-recent-stone-gathered g:- g-temp)
+	(up-modify-goal g-temp g:= g-total-gold-gathered)
+	(up-get-fact resource-amount amount-gold-total g-total-gold-gathered)
+	(up-modify-goal g-total-gold-gathered g:- g-total-gold-bought)
+	; (up-get-fact-sum any-ally players-tribute gold g-temp2)
+	; (up-modify-goal g-total-gold-gathered g:+ g-temp2)
+	(up-modify-goal g-recent-gold-gathered g:= g-total-gold-gathered)
+	(up-modify-goal g-recent-gold-gathered g:- g-temp)
+	; (up-chat-data-to-all "Recent gold: %d" g: g-recent-gold-gathered)
+	)
+
+;--------------------------------
+;	GOAL: g-barracks-next-unit
+;--------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	;This goal controls which unit from the building we want to train next. If multiple units from the same building should be trained,
+	;pick the soldier type that has the smallest percent of trained units out of the total desired number of units, because that is the
+	;soldier type we need to train most. The training rules can override this goal in certain circumstances.
+
+	(defrule
+	(building-type-count barracks > 0)
+	=>
+	(set-goal g-barracks-next-unit 0)
+	(set-goal g-temp 100)   ;used to track the percent trained out of total desired number of the current next unit to be trained. Set to 100% to start.
+	)
+
+	(defrule
+	(building-type-count barracks > 0)
+	(up-object-type-count-total c: militiaman-line g:< g-desired-num-militia)
+	=>
+	(set-goal g-barracks-next-unit militiaman-line)
+	(up-get-fact unit-type-count-total militiaman-line g-temp)
+	(up-modify-goal g-temp g:%/ g-desired-num-militia)
+	)
+	
+	(defrule
+	(building-type-count barracks > 0)
+	(up-object-type-count-total c: spearman-line g:< g-desired-num-spearman)
+	(up-get-fact unit-type-count-total spearman-line g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-spearman)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-barracks-next-unit spearman-line)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+	
+	(defrule
+	(building-type-count barracks > 0)
+	(unit-type-count-total eagle-warrior-line g:< g-desired-num-eagle-warrior)
+	(up-get-fact unit-type-count-total eagle-warrior-line g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-eagle-warrior)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-barracks-next-unit eagle-warrior)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+	
+	(defrule
+	(building-type-count barracks > 0)
+	(up-object-type-count-total c: condottiero g:< g-desired-num-condottiero)
+	(up-get-fact unit-type-count-total condottiero g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-condottiero)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-barracks-next-unit condottiero-placeholder)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+
+	#load-if-defined GOTHIC-CIV
+	
+		(defrule
+		(research-completed ri-anarchy)
+		(building-type-count barracks > 0)
+		(unit-type-count-total my-unique-unit-line g:< g-desired-num-unique-unit)
+		(up-get-fact unit-type-count-total my-unique-unit-line g-temp2)
+		(up-modify-goal g-temp2 g:%/ g-desired-num-unique-unit)
+		(up-compare-goal g-temp2 g:< g-temp)
+		=>
+		(set-goal g-barracks-next-unit barracks-huskarl)
+		(up-modify-goal g-temp g:= g-temp2)
+		)
+
+	#end-if
+
+;-------------------------------------
+;	GOAL: g-archery-range-next-unit
+;-------------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	;This goal controls which unit from the building we want to train next. If multiple units from the same building should be trained,
+	;pick the soldier type that has the smallest percent of trained units out of the total desired number of units, because that is the
+	;soldier type we need to train most. The training rules can override this goal in certain circumstances.
+
+	(defrule
+	(building-type-count archery-range > 0)
+	=>
+	(set-goal g-archery-range-next-unit 0)
+	(set-goal g-temp 100)   ;used to track the percent trained out of total desired number of the current next unit to be trained. Set to 100% to start.
+	)
+
+	(defrule
+	(building-type-count archery-range > 0)
+	(up-object-type-count-total c: archer-line g:< g-desired-num-archer)
+	=>
+	(set-goal g-archery-range-next-unit archer-line)
+	(up-get-fact unit-type-count-total archer-line g-temp)
+	(up-modify-goal g-temp g:%/ g-desired-num-archer)
+	)
+	
+	(defrule
+	(building-type-count archery-range > 0)
+	(unit-type-count-total skirmisher-line g:< g-desired-num-skirmisher)
+	(up-get-fact unit-type-count-total skirmisher-line g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-skirmisher)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-archery-range-next-unit skirmisher)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+	
+	(defrule
+	(building-type-count archery-range > 0)
+	(up-object-type-count-total c: cavalry-archer-line g:< g-desired-num-cavalry-archer)
+	(up-get-fact unit-type-count-total cavalry-archer-line g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-cavalry-archer)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-archery-range-next-unit cavalry-archer-line)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+	
+	(defrule
+	(building-type-count archery-range > 0)
+	(up-object-type-count-total c: elephant-archer-line g:< g-desired-num-elephant-archer)
+	(up-get-fact unit-type-count-total elephant-archer-line g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-elephant-archer)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-archery-range-next-unit elephant-archer-line)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+	
+	(defrule
+	(building-type-count archery-range > 0)
+	(up-object-type-count-total c: hand-cannoneer g:< g-desired-num-hand-cannoneer)
+	(up-get-fact unit-type-count-total hand-cannoneer g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-hand-cannoneer)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-archery-range-next-unit hand-cannoneer)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+
+	#load-if-defined INCAN-CIV
+	
+		(defrule
+		(building-type-count archery-range > 0)
+		(up-object-type-count-total c: slinger g:< g-desired-num-second-unique-unit)
+		(up-get-fact unit-type-count-total slinger g-temp2)
+		(up-modify-goal g-temp2 g:%/ g-desired-num-second-unique-unit)
+		(up-compare-goal g-temp2 g:< g-temp)
+		=>
+		(set-goal g-archery-range-next-unit slinger)
+		(up-modify-goal g-temp g:= g-temp2)
+		)
+
+	#end-if
+	
+	(defrule
+	(building-type-count archery-range > 0)
+	(unit-type-count-total genitour-line g:< g-desired-num-genitour)
+	(up-get-fact unit-type-count-total genitour-line g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-genitour)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-archery-range-next-unit genitour-placeholder)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+
+;------------------------------
+;	GOAL: g-stable-next-unit
+;------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	;This goal controls which unit from the building we want to train next. If multiple units from the same building should be trained,
+	;pick the soldier type that has the smallest percent of trained units out of the total desired number of units, because that is the
+	;soldier type we need to train most. The training rules can override this goal in certain circumstances.
+
+	(defrule
+	(building-type-count stable > 0)
+	=>
+	(set-goal g-stable-next-unit 0)
+	(set-goal g-temp 100)   ;used to track the percent trained out of total desired number of the current next unit to be trained. Set to 100% to start.
+	)
+
+	(defrule
+	(building-type-count stable > 0)
+	(up-object-type-count-total c: scout-cavalry-line g:< g-desired-num-scout-cavalry)
+	=>
+	(set-goal g-stable-next-unit scout-cavalry-line)
+	(up-get-fact unit-type-count-total scout-cavalry-line g-temp)
+	(up-modify-goal g-temp g:%/ g-desired-num-scout-cavalry)
+	)
+	
+	(defrule
+	(building-type-count stable > 0)
+	(up-object-type-count-total c: knight-line g:< g-desired-num-knight)
+	(up-get-fact unit-type-count-total knight-line g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-knight)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-stable-next-unit knight-line)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+	
+	(defrule
+	(building-type-count stable > 0)
+	(unit-type-count-total camel-line g:< g-desired-num-camel)
+	(up-get-fact unit-type-count-total camel-line g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-camel)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-stable-next-unit camel)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+	
+	(defrule
+	(building-type-count stable > 0)
+	(unit-type-count-total battle-elephant-line g:< g-desired-num-battle-elephant)
+	(up-get-fact unit-type-count-total battle-elephant-line g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-battle-elephant)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-stable-next-unit battle-elephant)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+	
+	(defrule
+	(building-type-count stable > 0)
+	(up-object-type-count-total c: steppe-lancer-line g:< g-desired-num-steppe-lancer)
+	(up-get-fact unit-type-count-total steppe-lancer-line g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-steppe-lancer)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-stable-next-unit steppe-lancer-line)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+
+	#load-if-defined GURJARAS-CIV
+	
+		(defrule
+		(building-type-count stable > 0)
+		(up-object-type-count-total c: shrivamsha-rider-line g:< g-desired-num-second-unique-unit)
+		(up-get-fact unit-type-count-total shrivamsha-rider-line g-temp2)
+		(up-modify-goal g-temp2 g:%/ g-desired-num-second-unique-unit)
+		(up-compare-goal g-temp2 g:< g-temp)
+		=>
+		(set-goal g-stable-next-unit shrivamsha-rider-line)
+		(up-modify-goal g-temp g:= g-temp2)
+		)
+
+	#end-if
+
+	#load-if-defined HUN-CIV
+	
+		(defrule
+		(research-completed ri-marauders)
+		(building-type-count stable > 0)
+		(unit-type-count-total my-unique-unit-line g:< g-desired-num-unique-unit)
+		(up-get-fact unit-type-count-total my-unique-unit-line g-temp2)
+		(up-modify-goal g-temp2 g:%/ g-desired-num-unique-unit)
+		(up-compare-goal g-temp2 g:< g-temp)
+		=>
+		(set-goal g-stable-next-unit stable-tarkan)
+		(up-modify-goal g-temp g:= g-temp2)
+		)
+
+	#end-if
+
+;--------------------------------------
+;	GOAL: g-siege-workshop-next-unit
+;--------------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	;This goal controls which unit from the building we want to train next. If multiple units from the same building should be trained,
+	;pick the soldier type that has the smallest percent of trained units out of the total desired number of units, because that is the
+	;soldier type we need to train most. The training rules can override this goal in certain circumstances.
+
+	(defrule
+	(building-type-count siege-workshop > 0)
+	=>
+	(set-goal g-siege-workshop-next-unit 0)
+	(set-goal g-temp 100)   ;used to track the percent trained out of total desired number of the current next unit to be trained. Set to 100% to start.
+	)
+
+	(defrule
+	(building-type-count siege-workshop > 0)
+	(up-object-type-count-total c: battering-ram-line g:< g-desired-num-ram-type)
+	=>
+	(set-goal g-siege-workshop-next-unit battering-ram-line)
+	(up-get-fact unit-type-count-total battering-ram-line g-temp)
+	(up-modify-goal g-temp g:%/ g-desired-num-ram-type)
+	)
+	
+	(defrule
+	(building-type-count siege-workshop > 0)
+	(unit-type-count-total my-mangonel-line g:< g-desired-num-mangonel-type)
+	(up-get-fact unit-type-count-total my-mangonel-line g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-mangonel-type)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-siege-workshop-next-unit my-mangonel-type)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+	
+	(defrule
+	(building-type-count siege-workshop > 0)
+	(up-get-fact unit-type-count-total scorpion-line g-temp2)
+	(up-get-fact unit-type-count-total war-chariot-focus-fire g-temp3)
+	(up-modify-goal g-temp2 g:+ g-temp3)
+	(up-get-fact unit-type-count-total war-chariot-barrage g-temp3)
+	(up-modify-goal g-temp2 g:+ g-temp3)
+	(up-compare-goal g-temp2 g:< g-desired-num-scorpion-type)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-scorpion-type)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-siege-workshop-next-unit my-scorpion-line)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+	
+	(defrule
+	(building-type-count siege-workshop > 0)
+	(up-object-type-count-total c: my-cannon-line g:< g-desired-num-cannon-type)
+	(up-get-fact unit-type-count-total my-cannon-line g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-cannon-type)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-siege-workshop-next-unit my-cannon-type)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+
+;----------------------------
+;	GOAL: g-dock-next-unit
+;----------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	;This goal controls which unit from the building we want to train next. If multiple units from the same building should be trained,
+	;pick the soldier type that has the smallest percent of trained units out of the total desired number of units, because that is the
+	;soldier type we need to train most. The training rules can override this goal in certain circumstances.
+
+	(defrule
+	(building-type-count dock > 0)
+	=>
+	(set-goal g-dock-next-unit 0)
+	(set-goal g-temp 100)   ;used to track the percent trained out of total desired number of the current next unit to be trained. Set to 100% to start.
+	)
+
+	(defrule
+	(building-type-count dock > 0)
+	(up-object-type-count-total c: fishing-ship g:< g-desired-num-fishing-ship)
+	=>
+	(set-goal g-dock-next-unit fishing-ship)
+	(up-get-fact unit-type-count-total fishing-ship g-temp)
+	(up-modify-goal g-temp g:%/ g-desired-num-fishing-ship)
+	)
+	
+	(defrule
+	(building-type-count dock > 0)
+	(up-object-type-count-total c: transport-ship g:< g-desired-num-transport-ship)
+	(up-get-fact unit-type-count-total transport-ship g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-transport-ship)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-dock-next-unit transport-ship)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+	
+	(defrule
+	(building-type-count dock > 0)
+	(up-object-type-count-total c: trade-cog g:< g-desired-num-trade-cog)
+	(up-get-fact unit-type-count-total trade-cog g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-trade-cog)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-dock-next-unit trade-cog)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+	
+	(defrule
+	(building-type-count dock > 0)
+	(up-object-type-count-total c: galley-line g:< g-desired-num-galley)
+	(up-get-fact unit-type-count-total galley-line g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-galley)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-dock-next-unit galley-line)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+	
+	(defrule
+	(building-type-count dock > 0)
+	(unit-type-count-total fire-ship-line g:< g-desired-num-fire-ship)
+	(up-get-fact unit-type-count-total fire-ship-line g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-fire-ship)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-dock-next-unit fire-ship-line)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+	
+	(defrule
+	(building-type-count dock > 0)
+	(unit-type-count-total demolition-ship-line g:< g-desired-num-demolition-ship)
+	(up-get-fact unit-type-count-total demolition-ship-line g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-demolition-ship)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-dock-next-unit demolition-ship-line)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+	
+	(defrule
+	(building-type-count dock > 0)
+	(up-object-type-count-total c: cannon-galleon-line g:< g-desired-num-cannon-galleon)
+	(up-get-fact unit-type-count-total cannon-galleon-line g-temp2)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-cannon-galleon)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-dock-next-unit cannon-galleon-line)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+	
+	(defrule
+	(building-type-count dock > 0)
+	(up-compare-goal g-unique-ship-line g:< g-desired-num-unique-ship)
+	(up-modify-goal g-temp2 g:= g-unique-ship-line)
+	(up-modify-goal g-temp2 g:%/ g-desired-num-unique-ship)
+	(up-compare-goal g-temp2 g:< g-temp)
+	=>
+	(set-goal g-dock-next-unit my-unique-ship-line)
+	(up-modify-goal g-temp g:= g-temp2)
+	)
+
+;--------------------------------------------------
+;				  GARRISON INSIDE
+;	GOAL: g-previous-garrisonable-building-count
+;--------------------------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	;g-temp = enemy military power inside town
+	;g-temp2 = own military power
+
+	;Calculate attacking army parity
+	;Adjust for knights and skirmishers
+	(defrule
+	(true)
+	=>
+	(up-modify-goal g-temp g:= g-enemy-units-in-town)
+	(up-get-fact unit-type-in-town knight-line g-temp3)
+	(up-modify-goal g-temp3 c:/ 2)
+	(up-modify-goal g-temp g:+ g-temp3)			;treat enemy knights as 1.5 soldiers
+	(up-get-fact soldier-count 0 g-temp2)
+	(up-get-fact unit-type-count knight-line g-temp3)
+	(up-modify-goal g-temp3 c:/ 2)
+	(up-modify-goal g-temp2 g:+ g-temp3)			;treat own knights as 1.5 soldiers
+	)
+
+	(defrule
+	(up-compare-goal g-primary-unit != archer)
+	(up-compare-goal g-primary-unit != cavalry-archer)
+	(up-compare-goal g-primary-unit != hand-cannoneer)
+	(up-compare-goal g-primary-unit != slinger)
+	=>
+	(up-get-fact unit-type-in-town skirmisher-line g-temp3)
+	(up-modify-goal g-temp3 c:/ 2)
+	(up-modify-goal g-temp g:- g-temp3)			;treat enemy skirmishers as 0.5 soldiers
+	)
+
+	(defrule
+	(goal g-target-age-parity WE-ARE-AHEAD)
+	=>
+	(up-modify-goal g-temp c:/ 2)					;treat enemy as half pop if we are ahead in age
+	)
+
+	;Garrison new units inside buildings if we have small military
+	; (defrule
+	; (goal g-gather-inside NO)
+	; (goal g-attacking NO)
+	; (goal g-target-age-parity WE-ARE-AHEAD)
+	; ; (soldier-count < 3)
+	; =>
+	; (set-goal g-gather-inside YES)
+	; (up-gather-inside c: monastery c: 1)
+	; (up-gather-inside c: barracks c: 1)
+	; (up-gather-inside c: archery-range c: 1)
+	; (up-gather-inside c: stable c: 1)
+	; (up-gather-inside c: siege-workshop c: 1)
+	; (up-gather-inside c: castle c: 1)
+	; (up-jump-rule 1)
+	; )
+		(defrule
+		(goal g-gather-inside NO)
+		(goal g-attacking NO)
+		(up-compare-goal g-target-age-parity != WE-ARE-AHEAD)
+		; (soldier-count < 4)
+		(soldier-count < 3)
+		(up-compare-flag g-flag != TRUSH-DEFENSE)
+		=>
+		(up-gather-inside c: siege-workshop c: 1)
+		)
+		(defrule
+		(goal g-gather-inside NO)
+		(goal g-attacking NO)
+		(up-compare-goal g-target-age-parity != WE-ARE-AHEAD)
+		; (soldier-count < 4)
+		(soldier-count < 3)
+		=>
+		(set-goal g-gather-inside YES)
+		(up-gather-inside c: monastery c: 1)
+		(up-gather-inside c: barracks c: 1)
+		(up-gather-inside c: archery-range c: 1)
+		(up-gather-inside c: stable c: 1)
+		(up-gather-inside c: castle c: 1)
+		)
+
+	; ;Garrison new units inside buildings if we are attacked and outnumbered
+	; (defrule
+	; (goal g-gather-inside NO)
+	; (goal g-attacking NO)
+	; (goal g-town-under-attack YES)
+	; (up-compare-goal g-enemy-units-in-town >= 6)
+	; (soldier-count < 10)
+	; (up-compare-goal g-temp g:> g-temp2)	;Enemy outnumbers us
+	; =>
+	; (set-goal g-gather-inside YES)
+	; (up-gather-inside c: monastery c: 1)
+	; (up-gather-inside c: barracks c: 1)
+	; (up-gather-inside c: archery-range c: 1)
+	; (up-gather-inside c: stable c: 1)
+	; (up-gather-inside c: siege-workshop c: 1)
+	; (up-gather-inside c: castle c: 1)
+	; )
+	
+	;Set new buildings to also garrison units
+	;Check if new garrisonable building exists, if so, set gather point
+	(defrule
+	(true)
+	=>
+	(up-get-fact building-type-count monastery g-temp3)
+	(up-get-fact building-type-count barracks g-temp4)
+	(up-modify-goal g-temp3 g:+ g-temp4)
+	(up-get-fact building-type-count archery-range g-temp4)
+	(up-modify-goal g-temp3 g:+ g-temp4)
+	(up-get-fact building-type-count stable g-temp4)
+	(up-modify-goal g-temp3 g:+ g-temp4)
+	(up-get-fact building-type-count siege-workshop g-temp4)
+	(up-modify-goal g-temp3 g:+ g-temp4)
+	(up-get-fact building-type-count castle g-temp4)
+	(up-modify-goal g-temp3 g:+ g-temp4)
+	)
+
+	(defrule
+	(up-compare-goal g-temp3 g:!= g-previous-garrisonable-building-count)	;the number of garrisonable buildings has changed, reset gather points
+	(goal g-gather-inside YES)
+	=>
+	(up-gather-inside c: monastery c: 1)
+	(up-gather-inside c: barracks c: 1)
+	(up-gather-inside c: archery-range c: 1)
+	(up-gather-inside c: stable c: 1)
+	(up-gather-inside c: castle c: 1)
+	)
+	(defrule
+	(up-compare-goal g-temp3 g:!= g-previous-garrisonable-building-count)	;the number of garrisonable buildings has changed, reset gather points
+	(goal g-gather-inside YES)
+	(up-compare-flag g-flag != TRUSH-DEFENSE)
+	=>
+	(up-gather-inside c: siege-workshop c: 1)
+	)
+
+	;Ungarrison
+	(defrule
+	(goal g-attacking NO)
+	; (soldier-count < 4)
+	(soldier-count < 3)
+	(up-compare-goal g-target-age-parity != WE-ARE-AHEAD)
+	=>
+	(up-jump-rule 1)
+	)
+	
+	; (defrule
+	; (goal g-attacking NO)
+	; (goal g-town-under-attack YES)
+	; (up-compare-goal g-enemy-units-in-town >= 6)
+	; (soldier-count < 10)
+	; (up-compare-goal g-temp g:> g-temp2)	;Enemy outnumbers us
+	; =>
+	; (up-jump-rule 1)
+	; )
+
+		(defrule
+		(goal g-gather-inside YES)
+		=>
+		(set-goal g-gather-inside NO)
+		(up-gather-inside c: barracks c: 0)
+		(up-gather-inside c: archery-range c: 0)
+		(up-gather-inside c: stable c: 0)
+		(up-gather-inside c: siege-workshop c: 0)
+		(up-gather-inside c: castle c: 0)
+		(up-gather-inside c: monastery c: 0)
+		(up-ungarrison c: barracks)
+		(up-ungarrison c: archery-range)
+		(up-ungarrison c: stable)
+		(up-ungarrison c: siege-workshop)
+		(up-ungarrison c: castle)
+		(up-ungarrison c: monastery)
+		)
+	
+	; (defrule
+	; (goal g-gather-inside YES)
+	; (up-unit-type-in-town c: skirmisher-line >= 5)
+	; (or
+	; 	(unit-type-count scout-cavalry-line >= 4)
+	; 	(and
+	; 		(up-compare-goal g-enemy-units-in-town < 8)
+	; 		(unit-type-count scout-cavalry-line >= 2)))
+	; =>
+	; (up-ungarrison c: stable)
+	; )
+	
+	; (defrule
+	; (goal g-gather-inside YES)
+	; (up-unit-type-in-town c: skirmisher-line >= 5)
+	; (or
+	; 	(unit-type-count knight-line >= 4)
+	; 	(and
+	; 		(up-compare-goal g-enemy-units-in-town < 10)
+	; 		(unit-type-count knight-line >= 2)))
+	; =>
+	; (up-ungarrison c: stable)
+	; )
+
+	; (defrule
+	; (goal g-gather-inside YES)
+	; (up-unit-type-in-town c: skirmisher-line >= 5)
+	; (or
+	; 	(unit-type-count-total eagle-warrior-line >= 4)
+	; 	(and
+	; 		(up-compare-goal g-enemy-units-in-town < 8)
+	; 		(unit-type-count-total eagle-warrior-line >= 2)))
+	; =>
+	; (up-ungarrison c: barracks)
+	; )
+
+	; (defrule
+	; (goal g-gather-inside YES)
+	; (up-unit-type-in-town c: knight-line > 3)
+	; (up-unit-type-in-town c: knight-line < 12)
+	; (or
+	; 	(unit-type-count spearman-line >= 6)
+	; 	(and
+	; 		(up-compare-goal g-enemy-units-in-town < 7)
+	; 		(unit-type-count spearman-line >= 4)))
+	; =>
+	; (up-ungarrison c: barracks)
+	; )
+
+	; (defrule
+	; (goal g-gather-inside YES)
+	; (up-unit-type-in-town c: knight-line > 3)
+	; (up-unit-type-in-town c: knight-line < 12)
+	; (or
+	; 	(unit-type-count-total camel-line >= 5)
+	; 	(and
+	; 		(up-compare-goal g-enemy-units-in-town < 7)
+	; 		(unit-type-count-total camel-line >= 3)))
+	; =>
+	; (up-ungarrison c: stable)
+	; )
+
+	; #load-if-defined SARACEN-CIV
+
+	; 	(defrule
+	; 	(goal g-gather-inside YES)
+	; 	(up-unit-type-in-town c: knight-line > 3)
+	; 	(up-unit-type-in-town c: knight-line < 12)
+	; 	(or
+	; 		(unit-type-count-total my-unique-unit-line >= 5)
+	; 		(and
+	; 			(up-compare-goal g-enemy-units-in-town < 7)
+	; 			(unit-type-count-total my-unique-unit-line >= 3)))
+	; 	=>
+	; 	(up-ungarrison c: castle)
+	; 	)
+		
+	; #end-if
+
+	;Re-calculate number of garrisonable buildings for next pass
+	(defrule
+	(true)
+	=>
+	(up-get-fact building-type-count monastery g-previous-garrisonable-building-count)
+	(up-get-fact building-type-count barracks g-temp)
+	(up-modify-goal g-previous-garrisonable-building-count g:+ g-temp)
+	(up-get-fact building-type-count archery-range g-temp)
+	(up-modify-goal g-previous-garrisonable-building-count g:+ g-temp)
+	(up-get-fact building-type-count stable g-temp)
+	(up-modify-goal g-previous-garrisonable-building-count g:+ g-temp)
+	(up-get-fact building-type-count siege-workshop g-temp)
+	(up-modify-goal g-previous-garrisonable-building-count g:+ g-temp)
+	(up-get-fact building-type-count castle g-temp)
+	(up-modify-goal g-previous-garrisonable-building-count g:+ g-temp)
+	)
+
+;-------------------------------
+;	GOAL: g-usable-farm-count
+;-------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	(defrule
+	(building-type-count farm == 0)
+	(up-compare-goal g-usable-farm-count > 0)
+	=>
+	(set-goal g-usable-farm-count 0)
+	)
+
+	(defrule
+	(building-type-count farm > 0)
+	=>
+	(up-full-reset-search)
+	(up-find-local c: farm c: 240)
+	(set-goal g-loop-counter 0)
+	(up-get-search-state g-local-total)
+	(up-modify-goal g-usable-farm-count g:= g-local-total)
+	)
+
+		(defrule
+		(building-type-count farm > 0)
+		(up-compare-goal g-loop-counter g:< g-local-total)
+		(up-set-target-object search-local g: g-loop-counter)
+		=>
+		(up-get-point position-object g-point-x)
+		(up-set-target-point g-point-x)
+		(set-strategic-number sn-focus-player-number my-player-number)
+		(up-reset-search 0 0 1 1)
+		(up-reset-filters)
+		(up-filter-distance c: -1 c: 12)
+		(up-find-remote c: town-center c: 20)
+		(up-find-remote c: mill c: 20)
+		(up-get-search-state g-local-total)
+		)
+
+		(defrule
+		(building-type-count farm > 0)
+		(up-compare-goal g-loop-counter g:< g-local-total)
+		(up-set-target-object search-local g: g-loop-counter)
+		(goal g-remote-total 0)
+		=>
+		(up-modify-goal g-usable-farm-count c:- 1)
+		)
+
+		(defrule
+		(building-type-count farm > 0)
+		(up-compare-goal g-loop-counter g:< g-local-total)
+		(up-set-target-object search-local g: g-loop-counter)
+		=>
+		(up-modify-goal g-loop-counter c:+ 1)
+		(up-jump-rule -3)
+		)
+
+;-------------------------------------
+;	GOAL: g-usable-farm-count-total
+;-------------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+
+	(defrule
+	(building-type-count-total farm > 0)
+	=>
+	(up-get-fact building-type-count farm g-temp)
+	(up-get-fact building-type-count-total farm g-temp2)
+	(up-modify-goal g-temp2 g:- g-temp)
+	(up-modify-goal g-usable-farm-count-total g:= g-usable-farm-count)
+	(up-modify-goal g-usable-farm-count-total g:+ g-temp2)
+	)
+
+;-------------------------------------
+;	GOAL: g-current-gold-camp-total
+;-------------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+	
+	(defrule
+	(building-type-count-total mining-camp > 0)
+	=>
+	(up-full-reset-search)
+	(up-find-local c: mining-camp c: 100)
+	(up-filter-status c: status-pending c: list-active)
+	(up-find-status-local c: mining-camp c: 5)
+	(up-clean-search search-local -1 search-order-asc)	;remove duplicates just in case
+	(up-get-search-state g-local-total)
+	(set-goal g-loop-counter 0)
+	(set-goal g-current-gold-camp-total 0)
+	)
+
+		(defrule
+		(building-type-count-total mining-camp > 0)
+		(up-compare-goal g-loop-counter g:< g-local-total)
+		(up-set-target-object search-local g: g-loop-counter)
+		=>
+		(up-get-point position-object g-point-x)
+		(up-set-target-point g-point-x)
+		(up-reset-search 0 0 1 1)
+		(up-reset-filters)
+		(up-filter-distance c: -1 c: 6)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: gold c: 1)
+		(up-get-search-state g-local-total)
+		)
+
+		(defrule
+		(building-type-count-total mining-camp > 0)
+		(up-compare-goal g-loop-counter g:< g-local-total)
+		(up-set-target-object search-local g: g-loop-counter)
+		(up-compare-goal g-remote-total > 0)            ;gold mines found
+		=>
+		(up-modify-goal g-current-gold-camp-total c:+ 1)
+		)
+
+		(defrule
+		(building-type-count-total mining-camp > 0)
+		(up-compare-goal g-loop-counter g:< g-local-total)
+		(up-set-target-object search-local g: g-loop-counter)
+		=>
+		(up-modify-goal g-loop-counter c:+ 1)
+		(up-jump-rule -3)
+		)
+
+;--------------------------------------
+;	GOAL: g-current-stone-camp-total
+;--------------------------------------
+
+	(load "The General 1.3/Functions/Reset Mini")
+	
+	(defrule
+	(building-type-count-total mining-camp > 0)
+	=>
+	(up-full-reset-search)
+	(up-find-local c: mining-camp c: 100)
+	(up-filter-status c: status-pending c: list-active)
+	(up-find-status-local c: mining-camp c: 5)
+	(up-clean-search search-local -1 search-order-asc)	;remove duplicates just in case
+	(up-get-search-state g-local-total)
+	(set-goal g-loop-counter 0)
+	(set-goal g-current-stone-camp-total 0)
+	)
+
+		(defrule
+		(building-type-count-total mining-camp > 0)
+		(up-compare-goal g-loop-counter g:< g-local-total)
+		(up-set-target-object search-local g: g-loop-counter)
+		=>
+		(up-get-point position-object g-point-x)
+		(up-set-target-point g-point-x)
+		(up-reset-search 0 0 1 1)
+		(up-reset-filters)
+		(up-filter-distance c: -1 c: 6)
+		(up-filter-status c: status-resource c: list-active)
+		(up-find-resource c: stone c: 1)
+		(up-get-search-state g-local-total)
+		)
+
+		(defrule
+		(building-type-count-total mining-camp > 0)
+		(up-compare-goal g-loop-counter g:< g-local-total)
+		(up-set-target-object search-local g: g-loop-counter)
+		(up-compare-goal g-remote-total > 0)            ;stone mines found
+		=>
+		(up-modify-goal g-current-stone-camp-total c:+ 1)
+		)
+
+		(defrule
+		(building-type-count-total mining-camp > 0)
+		(up-compare-goal g-loop-counter g:< g-local-total)
+		(up-set-target-object search-local g: g-loop-counter)
+		=>
+		(up-modify-goal g-loop-counter c:+ 1)
+		(up-jump-rule -3)
+		)
+
+;----------------------------------
+;	GOAL: g-human-military-count
+;----------------------------------
+
+	(defrule
+	(military-population > 0)
+	=>
+	(up-get-fact military-population 0 g-human-military-count)
+	(up-get-fact unit-type-count warship-class g-temp)
+	(up-modify-goal g-human-military-count g:- g-temp)
+	(up-modify-goal g-human-military-count g:- g-siege-class)
+	(up-get-fact unit-type-count scorpion-class g-temp)
+	(up-modify-goal g-human-military-count g:- g-temp)
+	(up-get-fact unit-type-count war-chariot-focus-fire g-temp)
+	(up-modify-goal g-human-military-count g:- g-temp)
+	(up-get-fact unit-type-count war-chariot-barrage g-temp)
+	(up-modify-goal g-human-military-count g:- g-temp)
+	)
+
+;---------------------------------
+;	GOAL: g-current-relic-count
+;---------------------------------
+
+	(defrule
+	(true)
+	=>
+	(up-full-reset-search)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-find-remote c: relic c: 10)
+	(up-get-search-state g-local-total)
+	(up-modify-goal g-current-relic-count g:= g-remote-total)
+	)
+
+; ;------------------------------------
+; ;	GOAL: g-dark-age-max-time
+; ;	GOAL: g-feudal-age-max-time
+; ;	GOAL: g-castle-age-max-time
+; ;	GOAL: g-initial-villager-count
+; ;------------------------------------
+
+; 	(defrule
+; 	(true)
+; 	=>
+; 	(up-get-fact unit-type-count villager g-initial-villager-count)
+; 	(disable-self)
+; 	)
+
+; 	(defrule
+; 	(current-age == feudal-age)
+; 	=>
+; 	(up-get-fact game-time 0 g-feudal-age-start-time)
+; 	(up-get-fact unit-type-count villager g-feudal-age-initial-villager-count)
+; 	(disable-self)
+; 	)
+
+; 	(defrule
+; 	(current-age == castle-age)
+; 	=>
+; 	(up-get-fact game-time 0 g-castle-age-start-time)
+; 	(up-get-fact unit-type-count villager g-castle-age-initial-villager-count)
+; 	(disable-self)
+; 	)
+
+; 	(defrule
+; 	(up-compare-goal fn-calc-train-time-rule-id <= 0)
+; 	=>
+; 	(set-goal g-dark-age-max-time 99999)
+; 	(set-goal g-feudal-age-max-time 99999)
+; 	(set-goal g-castle-age-max-time 99999)
+; 	)
+
+; 	(defrule
+; 	(up-compare-goal fn-calc-train-time-rule-id > 0)
+; 	=>
+; 	(set-goal fn-item-id villager)
+; 	(set-goal fn-item-building town-center)
+; 	(up-get-rule-id g-current-rule)
+; 	(up-jump-direct g: fn-calc-train-time-rule-id)
+; 	)
+
+; 	(defrule
+; 	(current-age == dark-age)
+; 	=>
+; 	(up-modify-goal g-dark-age-max-time g:= g-required-num-villager)
+; 	(up-modify-goal g-dark-age-max-time g:- g-initial-villager-count)
+; 	(up-modify-goal g-dark-age-max-time g:* fn-item-time)
+; 	(up-modify-goal g-dark-age-max-time c:+ 75)
+; 	)
+
+; 	(defrule
+; 	(current-age == feudal-age)
+; 	=>
+; 	(up-modify-goal g-feudal-age-max-time g:= g-required-num-villager)
+; 	(up-modify-goal g-feudal-age-max-time g:- g-feudal-age-initial-villager-count)
+; 	(up-modify-goal g-feudal-age-max-time g:* fn-item-time)
+; 	(up-modify-goal g-feudal-age-max-time c:+ 50)
+; 	)
+
+; 	#load-if-not-defined VIKING-CIV
+; 	(defrule
+; 	(current-age == feudal-age)
+; 	(up-research-status c: ri-wheel-barrow >= research-pending)
+; 	=>
+; 	(up-modify-goal g-feudal-age-max-time c:+ 75)
+; 	)
+; 	#end-if
+; 	#load-if-not-defined BYZANTINE-CIV
+; 	(defrule
+; 	(current-age == feudal-age)
+; 	(up-research-status c: ri-town-watch >= research-pending)
+; 	=>
+; 	(up-modify-goal g-feudal-age-max-time c:+ 25)
+; 	)
+; 	#end-if
+
+; 	(defrule
+; 	(true)
+; 	=>
+; 	(set-goal g-castle-age-max-time 2000)
+; 	(disable-self)
+; 	)
