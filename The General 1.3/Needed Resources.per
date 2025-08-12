@@ -6089,6 +6089,31 @@
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
 		)
 
+		(defrule
+		(up-compare-goal g-age-status >= TO-CASTLE)
+		(goal g-current-strategy FC-CASTLE-DROP)
+		(up-compare-goal g-tower-line > 0)
+		(up-set-target-by-id g: g-wall-id-under-attack)
+		=>
+		(up-setup-cost-data 1 g-food-cost)
+		(up-add-research-cost c: ri-fletching c: 1)
+		(up-modify-goal g-max-food-needed g:max g-food-cost)
+		(up-modify-goal g-max-gold-needed g:max g-gold-cost)
+		)
+
+		(defrule
+		(taunt-detected TAUNT-PLAYER 246)
+		(up-compare-goal g-age-status >= TO-CASTLE)
+		(goal g-current-strategy FC-CASTLE-DROP)
+		(up-compare-goal g-tower-line > 0)
+		(up-set-target-by-id g: g-wall-id-under-attack)
+		(up-research-status c: ri-fletching == research-available)
+		(building-type-count blacksmith > 0)
+		=>
+		(up-store-tech-name c: ri-fletching)
+		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)
+		)
+
 	;------------------------------------------
 	;	Bodkin Arrow - Secondary Castle Tech (>= 8/12 ranged units)
 	;------------------------------------------
@@ -9593,7 +9618,9 @@
 	;-----------------
 
 		(defrule
-		(up-object-type-count-total c: mining-camp g:< g-desired-num-mining-camp)
+		(or
+            (up-compare-goal g-current-gold-camp-total g:< g-desired-num-gold-camp)
+		    (up-compare-goal g-current-stone-camp-total g:< g-desired-num-stone-camp))
 		=>
 		(up-setup-cost-data 1 g-food-cost)
 		(up-add-object-cost c: mining-camp c: 1)
@@ -9602,7 +9629,9 @@
 
 		(defrule
 		(taunt-detected TAUNT-PLAYER 246)
-		(up-object-type-count-total c: mining-camp g:< g-desired-num-mining-camp)
+		(or
+            (up-compare-goal g-current-gold-camp-total g:< g-desired-num-gold-camp)
+		    (up-compare-goal g-current-stone-camp-total g:< g-desired-num-stone-camp))
 		=>
 		(up-store-type-name c: mining-camp)
 		(up-chat-data-to-player THIS-ANY-TAUNT-PLAYER TAUNT-246-SAVING c: 7031232)

@@ -170,10 +170,10 @@
 		(defrule
 		(true)
 		=>
-		(up-get-fact unit-type-count-total my-tower-type g-tower-line)
-		(up-get-fact unit-type-count-total guard-tower g-temp)
+		(up-get-fact building-type-count-total my-tower-type g-tower-line)
+		(up-get-fact building-type-count-total guard-tower g-temp)
 		(up-modify-goal g-tower-line g:+ g-temp)
-		(up-get-fact unit-type-count-total keep g-temp)
+		(up-get-fact building-type-count-total keep g-temp)
 		(up-modify-goal g-tower-line g:+ g-temp)
 		)
 		
@@ -540,7 +540,8 @@
 
 		(defrule
 		(up-compare-goal g-age-status >= TO-CASTLE)
-		(goal g-map-style WALLED-LAND)
+		(goal g-current-strategy BOOMC-ARENA-LIGHT-MONK)
+		(goal g-town-under-attack NO)
 		=>
 		(up-modify-goal g-desired-num-monk c:max 2)
 		(up-modify-goal g-desired-num-military c:- 2)
@@ -564,6 +565,7 @@
 		(up-compare-goal g-age-status >= MID-CASTLE)
 		(up-compare-goal g-game-focus != DEFENSIVE)
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
+		(military-population g:>= g-min-military-pop)
 		=>
 		(up-modify-goal g-desired-num-monk c:max 2)
 		(up-modify-goal g-desired-num-military c:- 2)
@@ -5454,7 +5456,8 @@
 		(up-object-type-count-total c: town-center > 0)
 		(up-object-type-count-total c: lumber-camp g:>= g-desired-num-lumber-camp)
 		(up-object-type-count-total c: dock g:>= g-desired-num-dock)
-		(up-object-type-count-total c: mining-camp g:>= g-desired-num-mining-camp)
+		(up-compare-goal g-current-gold-camp-total g:>= g-desired-num-gold-camp)
+		(up-compare-goal g-current-stone-camp-total g:>= g-desired-num-stone-camp)
 		(up-object-type-count-total c: market g:>= g-desired-num-market)
 		(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
 		(up-object-type-count-total c: archery-range g:>= g-desired-num-archery-range)
@@ -5470,7 +5473,8 @@
 		(up-object-type-count-total c: town-center g:>= g-desired-num-town-center)
 		(up-object-type-count-total c: lumber-camp g:>= g-desired-num-lumber-camp)
 		(up-object-type-count-total c: dock g:>= g-desired-num-dock)
-		(up-object-type-count-total c: mining-camp g:>= g-desired-num-mining-camp)
+		(up-compare-goal g-current-gold-camp-total g:>= g-desired-num-gold-camp)
+		(up-compare-goal g-current-stone-camp-total g:>= g-desired-num-stone-camp)
 		(up-object-type-count-total c: market g:>= g-desired-num-market)
 		(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
 		(up-object-type-count-total c: archery-range g:>= g-desired-num-archery-range)
@@ -6024,6 +6028,36 @@
 		(players-current-age target-player <= feudal-age)
 		=>
 		(up-modify-goal g-desired-num-tower c:max 1)
+		)
+
+		(defrule
+		(goal g-map-style WALLED-LAND)
+		(players-military-population target-player > 3)
+		(up-set-target-by-id g: g-wall-id-under-attack)
+		(up-compare-goal g-enemy-units-in-town <= 2)
+		=>
+		(up-get-point position-object g-point-x)
+		(up-set-target-point g-point-x)
+		(up-full-reset-search)
+		(up-filter-distance c: -1 c: 8)
+		(up-find-local c: tower-class c: 1)
+		(up-find-local c: castle c: 1)
+		(up-filter-status c: status-pending c: list-active)
+		(up-find-status-local c: tower-class c: 1)
+		(up-find-status-local c: castle c: 1)
+		(up-get-search-state g-local-total)
+		)
+
+		(defrule
+		(goal g-map-style WALLED-LAND)
+		(players-military-population target-player > 3)
+		(up-set-target-by-id g: g-wall-id-under-attack)
+		(up-compare-goal g-enemy-units-in-town <= 2)
+		(goal g-local-total 0)
+		=>
+		(up-modify-goal g-desired-num-tower g:max g-tower-line)
+		(up-modify-goal g-desired-num-tower c:+ 1)
+		; (up-chat-data-to-all "Desired towers: %d" g: g-desired-num-tower)
 		)
 
 		#load-if-defined UP-3-PLAYER-TEAM

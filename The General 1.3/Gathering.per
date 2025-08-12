@@ -1259,14 +1259,18 @@
         ;Mining Camps
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
-        (up-object-type-count-total c: mining-camp g:< g-desired-num-mining-camp)
+		(or
+            (up-compare-goal g-current-gold-camp-total g:< g-desired-num-gold-camp)
+		    (up-compare-goal g-current-stone-camp-total g:< g-desired-num-stone-camp))
         =>
         (up-setup-cost-data 1 g-food-cost)
         (up-add-object-cost c: mining-camp c: 1)
         )
         (defrule
         (up-timer-status t-15-sec == timer-triggered)
-        (up-object-type-count-total c: mining-camp g:< g-desired-num-mining-camp)
+		(or
+            (up-compare-goal g-current-gold-camp-total g:< g-desired-num-gold-camp)
+		    (up-compare-goal g-current-stone-camp-total g:< g-desired-num-stone-camp))
         ; (up-resource-amount amount-wood g:< g-wood-cost)
         (wood-amount < 300)
         =>

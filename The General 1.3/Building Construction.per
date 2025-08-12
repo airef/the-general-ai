@@ -1952,6 +1952,12 @@
 		)
 
 		(defrule
+		(up-set-target-by-id g: g-wall-id-under-attack)
+		=>
+		(up-assign-builders c: my-tower-type c: 4)
+		)
+
+		(defrule
 		(up-pending-objects c: my-tower-type > 0)
 		(up-timer-status t-dead-builders == timer-running)
 		=>
@@ -1962,7 +1968,8 @@
 		;Build watch tower near closest dropsite to enemy. Also prioritize tower near soldier gather point.
 		(defrule
 		(up-compare-goal g-tower-line g:< g-desired-num-tower)
-		(up-compare-goal g-tower-line == 0)
+		(up-compare-goal g-tower-line > 0)
+		(up-compare-goal g-tower-line <= 2)
 		(can-build-with-escrow my-tower-type)
 		(up-pending-objects c: my-tower-type < 1)
 		(up-compare-flag g-flag != PLACE-POINT-USED)
@@ -1981,7 +1988,8 @@
 		(defrule
 		(goal g-current-strategy FC-CASTLE-DROP)
 		(up-compare-goal g-tower-line g:< g-desired-num-tower)
-		(up-compare-goal g-tower-line == 0)
+		(up-compare-goal g-tower-line > 0)
+		(up-compare-goal g-tower-line <= 2)
 		(can-build-with-escrow my-tower-type)
 		(up-pending-objects c: my-tower-type < 1)
 		(up-compare-flag g-flag != PLACE-POINT-USED)
@@ -2071,10 +2079,141 @@
 		(up-copy-point g-place-point-x g-point-x)
 		(up-set-target-point g-place-point-x)
 		(up-modify-flag g-flag c:+ PLACE-POINT-USED)
-		(set-strategic-number sn-placement-zone-size 0)
+		(set-strategic-number sn-placement-zone-size 1)
 		(set-strategic-number sn-placement-fail-delta 0)
 		(up-build place-point g-escrow c: my-tower-type)
 		; (chat-to-player my-player-number "Build Tower by dropsite")
+		; (up-send-flare g-place-point-x)
+		)
+		
+		;Build tower on Arena near walls if under attack
+		(defrule
+		(goal g-map-style WALLED-LAND)
+		(players-military-population target-player > 3)
+		(can-build-with-escrow my-tower-type)
+		(up-pending-objects c: my-tower-type < 2)
+		(up-compare-flag g-flag != PLACE-POINT-USED)
+		(up-set-target-by-id g: g-wall-id-under-attack)
+		(up-compare-goal g-enemy-units-in-town <= 2)
+		=>
+		(up-get-point position-object g-point-x)
+		(up-set-target-point g-point-x)
+		(up-full-reset-search)
+		(up-filter-distance c: -1 c: 8)
+		(up-find-local c: tower-class c: 1)
+		(up-find-local c: castle c: 1)
+		(up-filter-status c: status-pending c: list-active)
+		(up-find-status-local c: tower-class c: 1)
+		(up-find-status-local c: castle c: 1)
+		(up-get-search-state g-local-total)
+		)
+
+		(defrule
+		(goal g-map-style WALLED-LAND)
+		(players-military-population target-player > 3)
+		(can-build-with-escrow my-tower-type)
+		(up-pending-objects c: my-tower-type < 2)
+		(up-compare-flag g-flag != PLACE-POINT-USED)
+		(up-set-target-by-id g: g-wall-id-under-attack)
+		(up-compare-goal g-enemy-units-in-town <= 2)
+		(goal g-local-total 0)
+		=>
+		(up-get-point position-object g-place-point-x)
+		(up-lerp-tiles g-place-point-x g-position-self-x c: 7)
+		(up-set-target-point g-place-point-x)
+		(up-modify-flag g-flag c:+ PLACE-POINT-USED)
+		(set-strategic-number sn-placement-zone-size 1)
+		(set-strategic-number sn-placement-fail-delta 1)
+		(up-build place-point g-escrow c: my-tower-type)
+		; (chat-to-all "place tower")
+		)
+
+		;Build tower near stone mine if under attack in Arena map
+		(load "The General 1.3/Functions/Reset Mini")
+
+		(defrule
+		(goal g-map-style WALLED-LAND)
+		(goal g-current-strategy FC-CASTLE-DROP)
+		(goal g-town-under-attack YES)
+		(building-type-count-total castle == 0)
+		(up-compare-goal g-current-stone-camp-total > 0)
+		(can-build-with-escrow my-tower-type)
+		(up-pending-objects c: my-tower-type < 1)
+		(up-compare-flag g-flag != PLACE-POINT-USED)
+		=>
+		(up-assign-builders c: my-tower-type c: 4)
+		(up-full-reset-search)
+		(up-find-local c: mining-camp c: 10)
+		(set-goal g-temp3 54630)
+		(set-goal g-loop-counter 0)		;loop counter
+		)
+
+			(defrule
+			(true)
+			=>
+			(up-get-rule-id g-start-loop)
+			)
+
+			;Loop through each dropsite and see which one has the best location
+			(defrule
+			(goal g-temp3 54630)
+			(can-build-with-escrow my-tower-type)
+			(up-set-target-object search-local g: g-loop-counter)
+			=>
+			(up-get-point position-object g-point-x)
+			(up-set-target-point g-point-x)
+			(up-filter-distance c: -1 c: 5)
+			(up-filter-status c: status-resource c: list-active)
+			(up-find-resource c: stone c: 1)
+			)
+
+			(defrule
+			(goal g-temp3 54630)
+			(can-build-with-escrow my-tower-type)
+			(up-set-target-object search-local g: g-loop-counter)
+			(up-set-target-object search-remote c: 0)
+			=>
+			(set-goal g-temp3 54631)
+			(up-reset-search 0 0 1 1)
+			(up-filter-distance c: -1 c: 6)
+			(set-strategic-number sn-focus-player-number my-player-number)
+			(up-find-remote c: tower-class c: 1)
+			(up-get-search-state g-local-total)
+			)
+
+			(defrule
+			(goal g-temp3 54631)
+			(can-build-with-escrow my-tower-type)
+			(up-set-target-object search-local g: g-loop-counter)
+			(up-compare-goal g-remote-total > 0)
+			=>
+			(set-goal g-temp3 54632)
+			)
+
+			(defrule
+			(up-compare-goal g-temp3 < 54632)
+			(can-build-with-escrow my-tower-type)
+			(up-modify-goal g-loop-counter c:+ 1)
+			(up-set-target-object search-local g: g-loop-counter)
+			(up-compare-goal g-loop-counter < 10)
+			=>
+			(set-goal g-temp3 54630)
+			(up-jump-direct g: g-start-loop)
+			)
+		
+		;Dropsite nearby, check if it's closer than g-gather-point-x
+		(defrule
+		(goal g-temp3 54632)
+		(can-build-with-escrow my-tower-type)
+		=>
+		(up-lerp-tiles g-point-x g-target-enemy-x c: 2)
+		(up-copy-point g-place-point-x g-point-x)
+		(up-set-target-point g-place-point-x)
+		(up-modify-flag g-flag c:+ PLACE-POINT-USED)
+		(set-strategic-number sn-placement-zone-size 1)
+		(set-strategic-number sn-placement-fail-delta 0)
+		(up-build place-point g-escrow c: my-tower-type)
+		(chat-to-player my-player-number "Build Tower by stone camp")
 		; (up-send-flare g-place-point-x)
 		)
 
@@ -2567,8 +2706,29 @@
 			(goal g-map-style WALLED-LAND)
 			(goal g-map-style SEMI-WALLED-LAND))
 		(up-compare-flag g-flag != PLACE-CONTROL-USED)
+		(goal g-town-under-attack NO)
 		=>
 		(up-set-placement-data my-player-number -1 c: 15)
+		(set-strategic-number sn-placement-zone-size 3)
+		(set-strategic-number sn-placement-fail-delta 0)
+		(up-assign-builders c: castle c: 4)
+		(up-build place-control g-escrow c: castle)
+		(up-modify-flag g-flag c:+ PLACE-CONTROL-USED)
+		(up-store-type-name c: castle)
+		; (up-chat-data-to-player my-player-number CHAT-BUILD-BACKUP-BUILDING c: 7031232)
+		)
+
+		(defrule
+		(up-object-type-count-total c: castle g:< g-desired-num-castle)
+		(can-build-with-escrow castle)
+		(up-pending-objects c: castle < 2)
+		(or
+			(goal g-map-style WALLED-LAND)
+			(goal g-map-style SEMI-WALLED-LAND))
+		(up-compare-flag g-flag != PLACE-CONTROL-USED)
+		(goal g-town-under-attack YES)
+		=>
+		(up-set-placement-data my-player-number -1 c: 4)
 		(set-strategic-number sn-placement-zone-size 3)
 		(set-strategic-number sn-placement-fail-delta 0)
 		(up-assign-builders c: castle c: 4)
@@ -2602,6 +2762,15 @@
 		(up-timer-status t-dead-builders != timer-running)
 		=>
 		(up-assign-builders c: castle c: 4)
+		)
+
+		(defrule
+		(up-pending-objects c: castle > 0)
+		(up-timer-status t-dead-builders != timer-running)
+		(building-type-count-total castle == 1)
+		(up-compare-goal g-target-military-parity <= -8)
+		=>
+		(up-assign-builders c: castle c: 8)
 		)
 
 		(defrule
@@ -2668,6 +2837,8 @@
 			)
 
 		#end-if
+
+	
 
 	;--------------------
 	;	Siege Workshop
@@ -3838,7 +4009,8 @@
 		(up-compare-goal g-usable-farm-count-total g:< g-desired-num-farm)
 		(up-pending-objects c: farm < 2)
 		(up-object-type-count-total c: lumber-camp g:>= g-desired-num-lumber-camp)
-		(up-object-type-count-total c: mining-camp g:>= g-desired-num-mining-camp)
+		(up-compare-goal g-current-gold-camp-total g:>= g-desired-num-gold-camp)
+		(up-compare-goal g-current-stone-camp-total g:>= g-desired-num-stone-camp)
 		(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
 		(up-object-type-count-total c: dock g:>= g-desired-num-dock)
 		(idle-farm-count <= 2)
@@ -3876,7 +4048,8 @@
 		(current-age == feudal-age)
 		(building-type-count-total town-center > 0)
 		(up-object-type-count-total c: lumber-camp g:>= g-desired-num-lumber-camp)
-		(up-object-type-count-total c: mining-camp g:>= g-desired-num-mining-camp)
+		(up-compare-goal g-current-gold-camp-total g:>= g-desired-num-gold-camp)
+		(up-compare-goal g-current-stone-camp-total g:>= g-desired-num-stone-camp)
 		(up-object-type-count-total c: barracks g:>= g-desired-num-barracks)
 		(up-object-type-count-total c: dock g:>= g-desired-num-dock)
 		(up-object-type-count-total c: archery-range g:>= g-desired-num-archery-range)

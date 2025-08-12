@@ -259,8 +259,12 @@
     (defrule
     (up-compare-goal g-arena-group1-size >= 2)
     (up-compare-goal g-arena-group1-target != PENDING)
-    (not
-        (up-set-target-by-id g: g-arena-group1-target))
+    (or
+        (not
+            (up-set-target-by-id g: g-arena-group1-target))
+        (and
+            (up-set-target-by-id g: g-arena-group1-target)
+            (up-object-data object-data-hitpoints <= 0)))
     =>
     (set-goal g-arena-group1-target PENDING)
     )

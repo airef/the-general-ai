@@ -236,6 +236,7 @@
 		(defrule
 		(up-compare-goal g-enemy-units-in-town >= 2)
 		(goal g-target-age-parity WE-ARE-AHEAD)
+		(military-population g:>= g-min-military-pop)
 		=>
 		(up-modify-goal g-temp c:+ 10)
 		)
@@ -653,16 +654,27 @@
 		(true)
 		=>
 		(up-modify-goal g-temp s:= csn-peaceful-town-size)
-		(up-modify-goal g-temp c:* 2)	;increase distance to search for enemy buildings by 200% because csn-peaceful-town-size...
+		(up-modify-goal g-temp c:+ 2)
+		; (up-modify-goal g-temp c:* 2)	;increase distance to search for enemy buildings by 200% because csn-peaceful-town-size...
 		(up-modify-goal g-temp c:min 30)	;...is measured as a square around the TC, not a circle
 		(up-full-reset-search)				
-		(up-set-target-point g-position-self-x)	
-		(up-filter-distance c: -1 g: g-temp)	;search for buildings within csn-peaceful-town-size
+		(up-set-target-point g-position-self-x)
+		(up-filter-distance c: -1 c: 30)	;search for buildings within csn-peaceful-town-size
 		(up-find-remote c: building-class c: 40)
 		(up-find-remote c: tower-class c: 40)
 		(up-filter-status c: status-pending c: list-active)	;find buildings and towers under construction
 		(up-find-status-remote c: building-class c: 40)
 		(up-find-status-remote c: tower-class c: 40)
+		(up-copy-point g-point-x g-position-self-x)
+		(up-modify-goal g-point-x g:- g-temp)
+		(up-modify-goal g-point-y g:- g-temp)
+		(up-remove-objects search-remote object-data-point-x g:< g-point-x)
+		(up-remove-objects search-remote object-data-point-y g:< g-point-y)
+		(up-copy-point g-point-x g-position-self-x)
+		(up-modify-goal g-point-x g:+ g-temp)
+		(up-modify-goal g-point-y g:+ g-temp)
+		(up-remove-objects search-remote object-data-point-x g:> g-point-x)
+		(up-remove-objects search-remote object-data-point-y g:> g-point-y)
 		(up-get-search-state g-local-total)
 		(up-modify-goal g-enemy-buildings-in-town g:+ g-remote-total)
 		)
@@ -671,13 +683,24 @@
 		(true)
 		=>
 		(up-modify-goal g-temp s:= csn-peaceful-town-size)
-		(up-modify-goal g-temp c:* 2)	
+		(up-modify-goal g-temp c:+ 2)
+		; (up-modify-goal g-temp c:* 2)	
 		(up-modify-goal g-temp c:min 30)
 		(up-full-reset-search)
 		(up-set-target-point g-position-self-x)
-		(up-filter-distance c: -1 g: g-temp)
+		(up-filter-distance c: -1 c: 30)
 		(up-filter-exclude cmdid-military-building -1 -1 building-class)
 		(up-find-remote c: any-objects c: 40)
+		(up-copy-point g-point-x g-position-self-x)
+		(up-modify-goal g-point-x g:- g-temp)
+		(up-modify-goal g-point-y g:- g-temp)
+		(up-remove-objects search-remote object-data-point-x g:< g-point-x)
+		(up-remove-objects search-remote object-data-point-y g:< g-point-y)
+		(up-copy-point g-point-x g-position-self-x)
+		(up-modify-goal g-point-x g:+ g-temp)
+		(up-modify-goal g-point-y g:+ g-temp)
+		(up-remove-objects search-remote object-data-point-x g:> g-point-x)
+		(up-remove-objects search-remote object-data-point-y g:> g-point-y)
 		(up-get-search-state g-local-total)
 		(up-modify-goal g-temp2 g:+ g-remote-total)
 		)
@@ -755,7 +778,7 @@
 	(or
 		(up-compare-goal g-remote-total > 0)	;castles in town
 		(or
-			(up-compare-goal g-enemy-units-in-town >= 5)
+			(up-compare-goal g-enemy-units-in-town >= 3)
 			(and
 				(current-age <= feudal-age)
 				(up-compare-goal g-enemy-units-in-town >= 2))))
@@ -771,7 +794,7 @@
 	(not
 		(town-under-attack))
 	(goal g-remote-total 0)
-	(up-compare-goal g-enemy-units-in-town < 5)
+	(up-compare-goal g-enemy-units-in-town < 3)
 	(or
 		(current-age > feudal-age)
 		(up-compare-goal g-enemy-units-in-town < 2))
@@ -787,7 +810,7 @@
 	(not
 		(town-under-attack))
 	(goal g-remote-total 0)
-	(up-compare-goal g-enemy-units-in-town < 5)
+	(up-compare-goal g-enemy-units-in-town < 3)
 	(or
 		(current-age > feudal-age)
 		(up-compare-goal g-enemy-units-in-town < 2))
@@ -1008,7 +1031,9 @@
 
 	;Find necessary resources first
 	(defrule
-	(up-group-size c: 8 > 0)
+	(or
+		(up-group-size c: 8 > 0)
+		(up-set-target-by-id g: g-scout-id))
 	(building-type-count-total town-center > 0)
 	=>
 	(set-goal g-scouting-status FIND-RESOURCES)
@@ -1144,6 +1169,7 @@
 	(up-compare-goal g-current-deer-count > 0)
 	=>
 	(set-goal g-scouting-status PUSH-DEER)
+	; (chat-to-all "deer")
 	)
 	(defrule
 	(up-compare-goal g-difficulty < HARDEST)
@@ -1192,6 +1218,7 @@
 
 	;Scout enemy
 	(defrule
+	(goal g-map-style OPEN-LAND)
 	(timer-triggered t-30-sec)
 	(goal g-scouting-status AUTO-SCOUT)
 	(current-age >= feudal-age)
@@ -1202,6 +1229,7 @@
 	)
 
 	(defrule
+	(goal g-map-style OPEN-LAND)
 	(timer-triggered t-30-sec)
 	(goal g-scouting-status AUTO-SCOUT)
 	(current-age >= feudal-age)
@@ -1466,7 +1494,7 @@
 		(up-object-data object-data-class == deer-class)
 		(up-object-data object-data-carry == 65)
 		(up-object-data object-data-hitpoints > 0)
-		(up-object-data object-data-distance <= 45)
+		(up-object-data object-data-distance <= 25)
 		(up-get-object-data object-data-point-x g-point-x)
 		(up-get-object-data object-data-point-y g-point-y)
 		(up-point-explored g-point-x != explored-no)
@@ -1545,6 +1573,29 @@
 	(military-population > 0)
 	(game-time < 90)
 	(up-group-size c: 8 > 0)
+	(up-set-target-object search-local c: 0)
+	=>
+	(up-get-object-data object-data-id g-scout-id)
+	; (chat-to-all "Scout found")
+	)
+
+	;Set scout ID if we aren't using scout group
+	(defrule
+	(goal g-scout-id PENDING)
+	(military-population > 0)
+	(game-time >= 10)
+	(game-time < 90)
+	(up-group-size c: 8 == 0)
+	=>
+	(up-full-reset-search)
+	(up-find-local c: scout-unit c: 1)
+	)
+	(defrule
+	(goal g-scout-id PENDING)
+	(military-population > 0)
+	(game-time >= 10)
+	(game-time < 90)
+	(up-group-size c: 8 == 0)
 	(up-set-target-object search-local c: 0)
 	=>
 	(up-get-object-data object-data-id g-scout-id)
@@ -4822,6 +4873,34 @@
 	(up-get-search-state g-local-total)
 	(up-modify-goal g-current-relic-count g:= g-remote-total)
 	)
+
+;--------------------------------
+;	GOAL: g-wall-id-under-attack
+;--------------------------------
+
+	(defrule
+	(true)
+	=>
+	(set-goal g-wall-id-under-attack PENDING)
+	)
+	
+	(defrule
+	(goal g-map-style WALLED-LAND)
+	=>
+	(up-full-reset-search)
+	(up-find-local c: gate-class c: 5)
+	(up-find-local c: wall-class c: 100)
+	(up-remove-objects search-local object-data-attacker-id < 0)
+	)
+	
+	(defrule
+	(goal g-map-style WALLED-LAND)
+	(up-set-target-object search-local c: 0)
+	=>
+	(up-get-object-data object-data-id g-wall-id-under-attack)
+	; (chat-to-all "Wall under attack")
+	)
+
 
 ; ;------------------------------------
 ; ;	GOAL: g-dark-age-max-time

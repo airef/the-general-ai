@@ -256,6 +256,38 @@
 		(set-goal g-early-castle-strategy BOOMC-ARENA-LIGHT-MONK)
 		(set-goal g-mid-castle-strategy MIDC-UNIQUE)
 		(set-goal g-early-imperial-strategy EARLYI-UNIQUE)
+		(disable-self)
+		)
+		(defrule
+		(up-compare-goal g-map-style == WALLED-LAND)
+		(up-compare-goal g-game-focus <= DEFENSIVE)
+		(or
+			(up-compare-goal g-enemy-units-in-town <= 2)
+			(building-type-count-total castle > 0))
+		=>
+		(set-goal g-initial-strategy FC-CASTLE-DROP)
+		(set-goal g-dark-strategy FC-CASTLE-DROP)
+		(set-goal g-early-feudal-strategy FC-CASTLE-DROP)
+		(set-goal g-mid-feudal-strategy FC-CASTLE-DROP)
+		(set-goal g-early-castle-strategy FC-CASTLE-DROP)
+		(set-goal g-mid-castle-strategy MIDC-UNIQUE)
+		(set-goal g-early-imperial-strategy EARLYI-UNIQUE)
+		)
+		(defrule
+		(up-compare-goal g-map-style == WALLED-LAND)
+		(goal g-initial-strategy FC-CASTLE-DROP)
+		(or
+			(up-compare-goal g-game-focus > DEFENSIVE)
+			(and
+				(up-compare-goal g-enemy-units-in-town > 2)
+				(building-type-count-total castle == 0)))
+		=>
+		(set-goal g-dark-strategy FC-KRUSH)
+		(set-goal g-early-feudal-strategy FC-KRUSH)
+		(set-goal g-mid-feudal-strategy FC-KRUSH)
+		(set-goal g-early-castle-strategy FC-KRUSH)
+		(set-goal g-mid-castle-strategy MIDC-KNIGHTS)
+		(set-goal g-early-imperial-strategy EARLYI-PALASTORM)
 		)
 		(defrule
 		(building-type-count-total castle >= 2)

@@ -5248,6 +5248,20 @@
 			)
 
 		(defrule
+		(up-compare-goal g-age-status >= TO-CASTLE)
+		(goal g-current-strategy FC-CASTLE-DROP)
+		(up-compare-goal g-tower-line > 0)
+		(up-set-target-by-id g: g-wall-id-under-attack)
+		(can-research-with-escrow ri-fletching)
+		=>
+		(up-setup-cost-data 1 g-food-cost)
+		(up-add-research-cost c: ri-fletching c: 1)
+		(up-modify-escrow food g:- g-food-cost)
+		(up-modify-escrow gold g:- g-gold-cost)
+		(research ri-fletching)
+		)
+
+		(defrule
 		(current-age >= castle-age)
 		(up-compare-const CROSSBOWMAN-AVAILABLE == YES)
 		(up-compare-goal g-desired-num-archer >= 10)
@@ -7956,6 +7970,7 @@
 			(or
 				(unit-type-count villager-gold == 0)
 				(up-compare-goal g-current-strategy >= 1301)))	;Late Imperial
+		(current-age == imperial-age)
 		(can-research ri-guilds)
 		=>
 		(research ri-guilds)
