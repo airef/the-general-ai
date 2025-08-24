@@ -249,22 +249,24 @@
 		)
 
 		;Focus on defending if enemy is attacking with large enough numbers
-		(defrule
-		(goal g-game-focus PENDING)
-		(up-compare-goal g-enemy-units-in-town >= 2)
-		(up-compare-goal g-enemy-units-in-town <= 5)
-		(up-compare-goal g-temp <= -5)
-		(up-get-fact military-population 0 g-temp2)
-		(up-modify-goal g-temp2 c:/ -4)
-		(up-compare-goal g-temp g:<= g-temp2)	;calculated military advantage < -25% of our military population
-		=>
-		(set-goal g-game-focus DEFENSIVE)
-		; (chat-local-to-self "Defensive1")
-		)
+		; (defrule
+		; (goal g-game-focus PENDING)
+		; (up-compare-goal g-enemy-units-in-town >= 2)
+		; (up-compare-goal g-enemy-units-in-town <= 5)
+		; (or
+		; 	(up-compare-goal g-temp <= -5)
+		; 	(military-population <= 3))
+		; (up-get-fact military-population 0 g-temp2)
+		; (up-modify-goal g-temp2 c:/ -4)
+		; (up-compare-goal g-temp g:<= g-temp2)	;calculated military advantage < -25% of our military population
+		; =>
+		; (set-goal g-game-focus DEFENSIVE)
+		; ; (chat-local-to-self "Defensive1")
+		; )
 
 		(defrule
 		(goal g-game-focus PENDING)
-		(up-compare-goal g-enemy-units-in-town >= 6)
+		(up-compare-goal g-enemy-units-in-town >= 2)
 		(up-compare-goal g-enemy-units-in-town <= 10)
 		(up-compare-goal g-temp <= 0)			;calculated military advantage < 0
 		=>
@@ -930,6 +932,21 @@
 		(up-get-rule-id g-start-loop)
 		)
 
+		;Go to next object if current ID is invalid
+		(defrule
+		(up-compare-goal g-current-boar-count > 0)
+		(up-compare-goal g-lowest-gaia-animal-id != PENDING)
+		(up-compare-goal g-local-total > 0)
+		(up-compare-goal g-loop-counter g:< g-highest-gaia-animal-id)
+		(not
+			(up-set-target-by-id g: g-loop-counter))
+		(up-modify-goal g-loop-counter c:+ 1)
+		(up-compare-goal g-loop-counter g:< g-highest-gaia-animal-id)
+		=>
+		(up-jump-direct g: g-start-loop)
+		)
+
+		;Check if object is a boar-class animal we have explored
 		(defrule
 		(up-compare-goal g-current-boar-count > 0)
 		(up-compare-goal g-lowest-gaia-animal-id != PENDING)
@@ -951,6 +968,7 @@
 		(up-jump-direct g: g-start-loop)
 		)
 
+		;If a boar class animal, find distance to the closest dropsite
 		(defrule
 		(up-compare-goal g-current-boar-count > 0)
 		(up-compare-goal g-lowest-gaia-animal-id != PENDING)
@@ -962,8 +980,11 @@
 		(up-get-object-data object-data-point-y g-point-y)
 		(up-set-target-point g-point-x)
 		(set-goal g-loop-counter2 0)
+		; (up-send-flare g-point-x)
 		)
 
+			;If building is closer than the lowest dropsite distance found so far, set new dropsite distance
+			;If dropsite is a TC, subtract 2 from distance, otherwise subtract 1
 			(defrule
 			(true)
 			=>
@@ -1018,7 +1039,7 @@
 		(up-compare-goal g-local-total > 0)
 		(up-modify-goal g-loop-counter c:+ 1)
 		(up-compare-goal g-loop-counter g:< g-highest-gaia-animal-id)
-		(up-set-target-by-id g: g-loop-counter)
+		; (up-set-target-by-id g: g-loop-counter)
 		=>
 		(up-jump-direct g: g-start-loop)
 		)
@@ -4403,37 +4424,37 @@
 	;g-temp = enemy military power inside town
 	;g-temp2 = own military power
 
-	;Calculate attacking army parity
-	;Adjust for knights and skirmishers
-	(defrule
-	(true)
-	=>
-	(up-modify-goal g-temp g:= g-enemy-units-in-town)
-	(up-get-fact unit-type-in-town knight-line g-temp3)
-	(up-modify-goal g-temp3 c:/ 2)
-	(up-modify-goal g-temp g:+ g-temp3)			;treat enemy knights as 1.5 soldiers
-	(up-get-fact soldier-count 0 g-temp2)
-	(up-get-fact unit-type-count knight-line g-temp3)
-	(up-modify-goal g-temp3 c:/ 2)
-	(up-modify-goal g-temp2 g:+ g-temp3)			;treat own knights as 1.5 soldiers
-	)
+	; ;Calculate attacking army parity
+	; ;Adjust for knights and skirmishers
+	; (defrule
+	; (true)
+	; =>
+	; (up-modify-goal g-temp g:= g-enemy-units-in-town)
+	; (up-get-fact unit-type-in-town knight-line g-temp3)
+	; (up-modify-goal g-temp3 c:/ 2)
+	; (up-modify-goal g-temp g:+ g-temp3)			;treat enemy knights as 1.5 soldiers
+	; (up-get-fact soldier-count 0 g-temp2)
+	; (up-get-fact unit-type-count knight-line g-temp3)
+	; (up-modify-goal g-temp3 c:/ 2)
+	; (up-modify-goal g-temp2 g:+ g-temp3)			;treat own knights as 1.5 soldiers
+	; )
 
-	(defrule
-	(up-compare-goal g-primary-unit != archer)
-	(up-compare-goal g-primary-unit != cavalry-archer)
-	(up-compare-goal g-primary-unit != hand-cannoneer)
-	(up-compare-goal g-primary-unit != slinger)
-	=>
-	(up-get-fact unit-type-in-town skirmisher-line g-temp3)
-	(up-modify-goal g-temp3 c:/ 2)
-	(up-modify-goal g-temp g:- g-temp3)			;treat enemy skirmishers as 0.5 soldiers
-	)
+	; (defrule
+	; (up-compare-goal g-primary-unit != archer)
+	; (up-compare-goal g-primary-unit != cavalry-archer)
+	; (up-compare-goal g-primary-unit != hand-cannoneer)
+	; (up-compare-goal g-primary-unit != slinger)
+	; =>
+	; (up-get-fact unit-type-in-town skirmisher-line g-temp3)
+	; (up-modify-goal g-temp3 c:/ 2)
+	; (up-modify-goal g-temp g:- g-temp3)			;treat enemy skirmishers as 0.5 soldiers
+	; )
 
-	(defrule
-	(goal g-target-age-parity WE-ARE-AHEAD)
-	=>
-	(up-modify-goal g-temp c:/ 2)					;treat enemy as half pop if we are ahead in age
-	)
+	; (defrule
+	; (goal g-target-age-parity WE-ARE-AHEAD)
+	; =>
+	; (up-modify-goal g-temp c:/ 2)					;treat enemy as half pop if we are ahead in age
+	; )
 
 	;Garrison new units inside buildings if we have small military
 	; (defrule
@@ -4455,8 +4476,12 @@
 		(goal g-gather-inside NO)
 		(goal g-attacking NO)
 		(up-compare-goal g-target-age-parity != WE-ARE-AHEAD)
-		; (soldier-count < 4)
-		(soldier-count < 3)
+		(soldier-count < 4)
+		(or
+			(soldier-count < 3)
+			(and
+				(up-compare-goal g-primary-unit-class != infantry-class)
+				(up-compare-goal g-primary-unit-class != cavalry-class)))
 		(up-compare-flag g-flag != TRUSH-DEFENSE)
 		=>
 		(up-gather-inside c: siege-workshop c: 1)
@@ -4465,8 +4490,12 @@
 		(goal g-gather-inside NO)
 		(goal g-attacking NO)
 		(up-compare-goal g-target-age-parity != WE-ARE-AHEAD)
-		; (soldier-count < 4)
-		(soldier-count < 3)
+		(soldier-count < 4)
+		(or
+			(soldier-count < 3)
+			(and
+				(up-compare-goal g-primary-unit-class != infantry-class)
+				(up-compare-goal g-primary-unit-class != cavalry-class)))
 		=>
 		(set-goal g-gather-inside YES)
 		(up-gather-inside c: monastery c: 1)
@@ -4475,6 +4504,17 @@
 		(up-gather-inside c: stable c: 1)
 		(up-gather-inside c: castle c: 1)
 		)
+		; (defrule
+		; (goal g-gather-inside NO)
+        ; (goal g-attacking NO)
+        ; (goal g-town-under-attack YES)
+		; (up-compare-flag g-attack-method-flag != USE-ARENA-DUC)
+        ; (military-population g:< g-min-military-pop)
+        ; (military-population g:< g-enemy-units-in-town)
+		; =>
+		; (set-goal g-gather-inside archery-range)
+		; (up-gather-inside c: archery-range c: 1)
+		; )
 
 	; ;Garrison new units inside buildings if we are attacked and outnumbered
 	; (defrule
@@ -4529,12 +4569,22 @@
 	=>
 	(up-gather-inside c: siege-workshop c: 1)
 	)
+	; (defrule
+	; (up-compare-goal g-temp3 g:!= g-previous-garrisonable-building-count)	;the number of garrisonable buildings has changed, reset gather points
+	; (goal g-gather-inside archery-range)
+	; =>
+	; (up-gather-inside c: archery-range c: 1)
+	; )
 
 	;Ungarrison
 	(defrule
 	(goal g-attacking NO)
-	; (soldier-count < 4)
-	(soldier-count < 3)
+	(soldier-count < 4)
+	(or
+		(soldier-count < 3)
+		(and
+			(up-compare-goal g-primary-unit-class != infantry-class)
+			(up-compare-goal g-primary-unit-class != cavalry-class)))
 	(up-compare-goal g-target-age-parity != WE-ARE-AHEAD)
 	=>
 	(up-jump-rule 1)
@@ -4567,6 +4617,24 @@
 		(up-ungarrison c: castle)
 		(up-ungarrison c: monastery)
 		)
+
+	; (defrule
+	; (goal g-attacking NO)
+	; (goal g-town-under-attack YES)
+	; (up-compare-flag g-attack-method-flag != USE-ARENA-DUC)
+	; (military-population g:< g-min-military-pop)
+	; (military-population g:< g-enemy-units-in-town)
+	; =>
+	; (up-jump-rule 1)
+	; )
+
+	; 	(defrule
+	; 	(goal g-gather-inside archery-range)
+	; 	=>
+	; 	(set-goal g-gather-inside NO)
+	; 	(up-gather-inside c: archery-range c: 0)
+	; 	(up-ungarrison c: archery-range)
+	; 	)
 	
 	; (defrule
 	; (goal g-gather-inside YES)
@@ -4749,12 +4817,18 @@
 	(up-full-reset-search)
 	(up-find-local c: mining-camp c: 100)
 	(up-filter-status c: status-pending c: list-active)
-	(up-find-status-local c: mining-camp c: 5)
+	(up-find-status-local c: mining-camp c: 2)
 	(up-clean-search search-local -1 search-order-asc)	;remove duplicates just in case
 	(up-get-search-state g-local-total)
 	(set-goal g-loop-counter 0)
 	(set-goal g-current-gold-camp-total 0)
 	)
+
+		(defrule
+		(true)
+		=>
+		(up-get-rule-id g-start-loop)
+		)
 
 		(defrule
 		(building-type-count-total mining-camp > 0)
@@ -4786,7 +4860,7 @@
 		(up-set-target-object search-local g: g-loop-counter)
 		=>
 		(up-modify-goal g-loop-counter c:+ 1)
-		(up-jump-rule -3)
+		(up-jump-direct g: g-start-loop)
 		)
 
 ;--------------------------------------
@@ -4801,12 +4875,18 @@
 	(up-full-reset-search)
 	(up-find-local c: mining-camp c: 100)
 	(up-filter-status c: status-pending c: list-active)
-	(up-find-status-local c: mining-camp c: 5)
+	(up-find-status-local c: mining-camp c: 2)
 	(up-clean-search search-local -1 search-order-asc)	;remove duplicates just in case
 	(up-get-search-state g-local-total)
 	(set-goal g-loop-counter 0)
 	(set-goal g-current-stone-camp-total 0)
 	)
+
+		(defrule
+		(true)
+		=>
+		(up-get-rule-id g-start-loop)
+		)
 
 		(defrule
 		(building-type-count-total mining-camp > 0)
@@ -4838,7 +4918,7 @@
 		(up-set-target-object search-local g: g-loop-counter)
 		=>
 		(up-modify-goal g-loop-counter c:+ 1)
-		(up-jump-rule -3)
+		(up-jump-direct g: g-start-loop)
 		)
 
 ;----------------------------------

@@ -2272,24 +2272,24 @@
         ; (chat-to-player my-player-number CHAT-BOAR-GET-ASSISTANT-HUNTERS)
         )
 
-        (defrule
-        (up-compare-goal g-difficulty >= HARD)
-        (up-compare-goal g-boar-hunt-status >= LURE-BOAR)
-        (up-compare-goal g-dropsite-min-distance-live-boar <= 3)
-        (up-set-target-by-id g: g-current-boar-id)
-        (up-object-data object-data-hitpoints > 0)
-        (up-compare-goal g-local-total < 4)
-        =>
-        (up-set-target-point g-position-self-x)
-        (up-filter-exclude -1 actionid-build orderid-build -1)
-        (up-find-local c: female-lumberjack c: 40)
-        (up-find-local c: male-lumberjack c: 40)
-        (up-remove-objects search-local object-data-hitpoints < 25)
-        (up-clean-search search-local object-data-distance search-order-asc)
-        (up-remove-objects search-local object-data-index > 3)
-        (up-get-search-state g-local-total)
-        ; (chat-local-to-self CHAT-BOAR-GET-ASSISTANT-HUNTERS)
-        )
+        ; (defrule
+        ; (up-compare-goal g-difficulty >= HARD)
+        ; (up-compare-goal g-boar-hunt-status >= LURE-BOAR)
+        ; (up-compare-goal g-dropsite-min-distance-live-boar <= 3)
+        ; (up-set-target-by-id g: g-current-boar-id)
+        ; (up-object-data object-data-hitpoints > 0)
+        ; (up-compare-goal g-local-total < 4)
+        ; =>
+        ; (up-set-target-point g-position-self-x)
+        ; (up-filter-exclude -1 actionid-build orderid-build -1)
+        ; (up-find-local c: female-lumberjack c: 40)
+        ; (up-find-local c: male-lumberjack c: 40)
+        ; (up-remove-objects search-local object-data-hitpoints < 25)
+        ; (up-clean-search search-local object-data-distance search-order-asc)
+        ; (up-remove-objects search-local object-data-index > 3)
+        ; (up-get-search-state g-local-total)
+        ; ; (chat-local-to-self CHAT-BOAR-GET-ASSISTANT-HUNTERS)
+        ; )
 
         (defrule
         (up-compare-goal g-difficulty >= HARD)
@@ -4002,6 +4002,11 @@
 
         (defrule
         (goal g-attacking NO)
+        (or
+            (goal g-town-under-attack NO)
+            (or
+                (military-population g:>= g-min-military-pop)
+                (military-population g:>= g-enemy-units-in-town)))
         =>
         (up-full-reset-search)
         (up-set-target-point g-position-self-x)
@@ -4018,6 +4023,11 @@
         ;Set remaining units to Aggressive stance
         (defrule
         (goal g-attacking NO)
+        (or
+            (goal g-town-under-attack NO)
+            (or
+                (military-population g:>= g-min-military-pop)
+                (military-population g:>= g-enemy-units-in-town)))
 		(up-compare-flag g-attack-method-flag != USE-ARENA-DUC)
         (goal g-temp 440)
         (up-set-target-object search-local c: 0)	;we still have units in search local set to No Attack Stance
@@ -4033,6 +4043,11 @@
         (or
             (goal g-attacking NO)
             (up-compare-flag g-attack-method-flag != USE-DUC))
+        (or
+            (goal g-town-under-attack NO)
+            (or
+                (military-population g:>= g-min-military-pop)
+                (military-population g:>= g-enemy-units-in-town)))
         =>
         (up-full-reset-search)
         (up-filter-exclude cmdid-villager actionid-explore orderid-explore livestock-class)
@@ -4049,6 +4064,11 @@
         (or
             (goal g-attacking NO)
             (up-compare-flag g-attack-method-flag != USE-DUC))
+        (or
+            (goal g-town-under-attack NO)
+            (or
+                (military-population g:>= g-min-military-pop)
+                (military-population g:>= g-enemy-units-in-town)))
 		(up-compare-flag g-attack-method-flag != USE-ARENA-DUC)
         (goal g-temp 441)
         (up-set-target-object search-local c: 0)	;we still have units in search local set to No Attack Stance
@@ -4145,7 +4165,10 @@
         (set-goal g-attack-coordination OFF)
         )
 
-        ;Occasionally retreat when not attacking
+    ;---------------------------------------------
+    ;   Occasionally retreat when not attacking
+    ;---------------------------------------------
+
         (defrule
         (up-compare-goal g-attacking == NO)
 		(up-compare-flag g-attack-method-flag != USE-ARENA-DUC)
@@ -4212,6 +4235,129 @@
             (up-modify-goal g-loop-counter c:+ 1)
             (up-jump-rule -4)
             )
+
+    ;----------------------------------------
+    ;   Retreat units to TC when defending
+    ;----------------------------------------
+
+        ; (defrule
+        ; (up-modify-goal g-temp g:= g-rule-pass-count)
+        ; (up-modify-goal g-temp c:mod 3)
+        ; (goal g-temp 0)
+        ; (goal g-town-under-attack YES)
+        ; (goal g-attacking NO)
+        ; (military-population g:< g-min-military-pop)
+        ; (military-population g:< g-enemy-units-in-town)
+		; (up-compare-flag g-attack-method-flag != USE-ARENA-DUC)
+        ; =>
+        ; (up-set-target-point g-position-self-x)
+        ; (up-filter-distance c: 4 c: -1)
+        ; (up-filter-exclude -1 actionid-explore orderid-explore -1)
+        ; (up-find-local c: archery-class g: g-min-military-pop)
+        ; (up-find-local c: cavalry-archer-class g: g-min-military-pop)
+        ; (up-remove-objects search-local object-data-hitpoints > 60)
+        ; (up-get-search-state g-local-total)
+        ; )
+
+        ; (defrule
+        ; (up-modify-goal g-temp g:= g-rule-pass-count)
+        ; (up-modify-goal g-temp c:mod 3)
+        ; (goal g-temp 0)
+        ; (goal g-town-under-attack YES)
+        ; (goal g-attacking NO)
+        ; (military-population g:< g-min-military-pop)
+        ; (military-population g:< g-enemy-units-in-town)
+		; (up-compare-flag g-attack-method-flag != USE-ARENA-DUC)
+        ; (up-compare-goal g-local-total > 0)
+        ; =>
+        ; (up-target-point g-position-self-x action-move -1 stance-no-attack)
+        ; )
+
+        ; (defrule
+        ; (goal g-town-under-attack YES)
+        ; (goal g-attacking NO)
+        ; (military-population g:< g-min-military-pop)
+        ; (up-compare-goal g-local-total > 0)
+        ; =>
+        ; (up-target-point g-position-self-x action-move -1 stance-no-attack)
+        ; ; (chat-to-all "order soldiers to TC")
+        ; )
+
+        ; ;Reset attack stances of units that are under the TC
+        ; (defrule
+        ; (goal g-attacking NO)
+        ; (goal g-town-under-attack YES)
+		; (up-compare-flag g-attack-method-flag != USE-ARENA-DUC)
+        ; (military-population g:< g-min-military-pop)
+        ; (military-population g:< g-enemy-units-in-town)
+        ; =>
+        ; (up-full-reset-search)
+        ; (up-set-target-point g-position-self-x)
+        ; (up-filter-include cmdid-military -1 -1 -1)
+        ; (up-filter-exclude -1 actionid-explore orderid-explore -1)
+        ; (up-filter-distance c: -1 c: 2)
+        ; (up-find-local c: any-objects c: 40)
+        ; (up-remove-objects search-local object-data-attack-stance != stance-no-attack)	;only change attack stances for units on No Attack Stance
+        ; (up-remove-objects search-local object-data-id g:== g-scout-id)
+        ; (up-remove-objects search-local object-data-group-flag == 8)
+        ; (set-goal g-temp 442)
+        ; )
+
+        ; ;Set remaining units to Aggressive stance
+        ; (defrule
+        ; (goal g-attacking NO)
+        ; (goal g-town-under-attack YES)
+        ; (military-population g:< g-min-military-pop)
+        ; (military-population g:< g-enemy-units-in-town)
+		; (up-compare-flag g-attack-method-flag != USE-ARENA-DUC)
+        ; (goal g-temp 442)
+        ; (up-set-target-object search-local c: 0)	;we still have units in search local set to No Attack Stance
+        ; =>
+        ; (up-target-point 0 action-none -1 stance-aggressive)
+        ; )
+
+        ; ;Failsafe
+
+        ; (load "The General 1.3/Functions/Reset Mini")
+
+        ; (defrule
+        ; (or
+        ;     (goal g-attacking NO)
+        ;     (up-compare-flag g-attack-method-flag != USE-DUC))
+        ; (military-population g:< g-min-military-pop)
+        ; (military-population g:< g-enemy-units-in-town)
+		; (up-compare-flag g-attack-method-flag != USE-ARENA-DUC)
+        ; (goal g-town-under-attack NO)
+        ; =>
+        ; (up-full-reset-search)
+        ; (up-set-target-point g-position-self-x)
+        ; (up-filter-include cmdid-military -1 -1 -1)
+        ; (up-filter-exclude -1 actionid-explore orderid-explore -1)
+        ; (up-filter-distance c: 4 c: -1)
+        ; (up-find-local c: any-objects c: 80)
+        ; (up-remove-objects search-local object-data-idling != 1)
+        ; (up-remove-objects search-local object-data-attack-stance != stance-no-attack)	;only change attack stances for units on No Attack Stance
+        ; (up-remove-objects search-local object-data-id g:== g-scout-id)
+        ; (up-remove-objects search-local object-data-group-flag == 8)
+        ; (up-remove-objects search-local object-data-class == archery-class)
+        ; (up-remove-objects search-local object-data-class == cavalry-archer-class)
+        ; (set-goal g-temp 443)
+        ; )
+
+        ; (defrule
+        ; (or
+        ;     (goal g-attacking NO)
+        ;     (up-compare-flag g-attack-method-flag != USE-DUC))
+        ; (military-population g:< g-min-military-pop)
+        ; (military-population g:< g-enemy-units-in-town)
+		; (up-compare-flag g-attack-method-flag != USE-ARENA-DUC)
+        ; (goal g-town-under-attack NO)
+        ; (goal g-temp 443)
+        ; (up-set-target-object search-local c: 0)	;we still have units in search local set to No Attack Stance
+        ; =>
+        ; (up-target-point 0 action-none -1 stance-aggressive)
+        ; )
+
 
     ;-------------------------------------------
     ;   Delete Walls Around TCs and Dropsites

@@ -1968,8 +1968,9 @@
 		;Build watch tower near closest dropsite to enemy. Also prioritize tower near soldier gather point.
 		(defrule
 		(up-compare-goal g-tower-line g:< g-desired-num-tower)
-		(up-compare-goal g-tower-line > 0)
+		; (up-compare-goal g-tower-line > 0)
 		(up-compare-goal g-tower-line <= 2)
+		(goal g-map-style OPEN-LAND)
 		(can-build-with-escrow my-tower-type)
 		(up-pending-objects c: my-tower-type < 1)
 		(up-compare-flag g-flag != PLACE-POINT-USED)
@@ -1987,14 +1988,7 @@
 
 		(defrule
 		(goal g-current-strategy FC-CASTLE-DROP)
-		(up-compare-goal g-tower-line g:< g-desired-num-tower)
-		(up-compare-goal g-tower-line > 0)
-		(up-compare-goal g-tower-line <= 2)
-		(can-build-with-escrow my-tower-type)
-		(up-pending-objects c: my-tower-type < 1)
-		(up-compare-flag g-flag != PLACE-POINT-USED)
-		(up-compare-goal g-gather-point-x > 0)
-		(up-point-distance g-gather-point-x g-position-self-x > 5)
+		(goal g-temp3 9986)
 		=>
 		(up-remove-objects search-local object-data-type != mining-camp)
 		)
